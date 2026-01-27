@@ -326,10 +326,10 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE) file f
 
 **Automated Technologies** delivers enterprise automation, compliance, and infrastructure solutions for regulated industries.
 
-- **Website:** https://automatedtech.com
+- **LinkedIn:** https://www.linkedin.com/company/automatedtechnologies/
 - **GitHub Organization:** https://github.com/AutomatedTechnologies
 - **Repository:** https://github.com/AutomatedTechnologies/AT-Infrastructure
-- **Contact:** info@automatedtech.com
+- **Contact:** GitHub Issues or Discussions in the repository
 
 ---
 
