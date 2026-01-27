@@ -14,19 +14,20 @@
 Use this repository as a **template for new AT projects**:
 
 ```bash
-# 1. Click "Use this template" on GitHub
-# 2. Clone your new repository
+# 1. Go to https://github.com/AutomatedTechnologies/AT-Infrastructure
+# 2. Click "Use this template" button
+# 3. Create new repository from template
 git clone https://github.com/AutomatedTechnologies/your-project.git
 cd your-project
 
-# 3. Initialize development environment
+# 4. Initialize development environment
 pip install -r requirements.txt
 pre-commit install
 
-# 4. Run tests
+# 5. Run tests
 pytest
 
-# 5. Push to GitHub (CI/CD triggers automatically)
+# 6. Push to GitHub (CI/CD triggers automatically)
 git add .
 git commit -m "init: project setup from AT-Infrastructure template"
 git push
@@ -326,7 +327,8 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE) file f
 **Automated Technologies** delivers enterprise automation, compliance, and infrastructure solutions for regulated industries.
 
 - **Website:** https://automatedtech.com
-- **GitHub Org:** https://github.com/AutomatedTechnologies
+- **GitHub Organization:** https://github.com/AutomatedTechnologies
+- **Repository:** https://github.com/AutomatedTechnologies/AT-Infrastructure
 - **Contact:** info@automatedtech.com
 
 ---
