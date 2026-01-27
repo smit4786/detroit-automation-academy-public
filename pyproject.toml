@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
 authors = [
-    {name = "AutomatedTechnologies", email = "contact@automatedtechnologies.com"}
+    {name = "AutomatedTechnologies", email = "dbkrsmith@gmail.com"}
 ]
 dependencies = [
     "pytest>=7.0",

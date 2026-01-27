@@ -329,7 +329,7 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE) file f
 - **LinkedIn:** https://www.linkedin.com/company/automatedtechnologies/
 - **GitHub Organization:** https://github.com/AutomatedTechnologies
 - **Repository:** https://github.com/AutomatedTechnologies/AT-Infrastructure
-- **Contact:** GitHub Issues or Discussions in the repository
+- **Contact:** dbkrsmith@gmail.com
 
 ---
 
