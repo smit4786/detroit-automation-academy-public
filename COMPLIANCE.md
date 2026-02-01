@@ -10,7 +10,7 @@ This document outlines how AT-Infrastructure aligns with major regulatory and se
 |-----------|-------|--------|----------|
 | **HIPAA** | Healthcare data protection | ✅ Supported | Encryption, audit logging, access controls |
 | **PCI-DSS** | Payment card security | ✅ Supported | Secrets scanning, network isolation, monitoring |
-| **SOX** | Financial reporting integrity | ✅ Supported | Change tracking, audit trails, segregation of duties |
+| **SOX** | Financial reporting integrity | ⚠️ Conditional | Change tracking, audit trails, segregation of duties (applies when used by SOX-subject entities) |
 | **GDPR** | EU data privacy | ✅ Supported | Data handling, consent, right to erasure |
 | **NIST** | Cybersecurity standards | ✅ Supported | Identity & access, supply chain, incident response |
 | **CIS** | Control implementation | ✅ Supported | Security baselines, vulnerability management |
@@ -98,7 +98,7 @@ PCI-DSS applies to organizations processing credit card data.
 
 ### Requirements
 
-SOX applies to public companies and requires financial reporting integrity.
+SOX applies to public companies and requires financial reporting integrity. **Note:** This applies only when AT-Infrastructure is used by organizations subject to SOX regulations.
 
 ### Implementation in AT-Infrastructure
 
@@ -365,7 +365,7 @@ Teams should:
 
 - [HIPAA Compliance](https://www.hhs.gov/hipaa/) — U.S. Department of Health & Human Services
 - [PCI-DSS Compliance](https://www.pcisecuritystandards.org/) — Payment Card Industry
-- [SOX Compliance](https://www.sarbanes-oxley.com/) — SEC Financial Reporting
+- [SOX Compliance](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000000000&type=&dateb=&owner=exclude&count=100&search_text=) — SEC Financial Reporting (Sarbanes-Oxley Act of 2002)
 - [GDPR Compliance](https://gdpr-info.eu/) — EU Data Protection Regulation
 - [NIST Framework](https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final) — NIST Cybersecurity Framework
 - [CIS Controls](https://www.cisecurity.org/cis-controls/) — Center for Internet Security
