@@ -329,8 +329,6 @@ Teams should:
 - [GDPR Compliance](https://gdpr-info.eu/) — EU Data Protection Regulation
 - [NIST Framework](https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final) — NIST Cybersecurity Framework
 - [CIS Controls](https://www.cisecurity.org/cis-controls/) — Center for Internet Security
-- [GitHub Security](https://github.com/security) — GitHub Security Features
-- [GitHub Compliance](https://github.com/features/security) — GitHub Compliance Programs
 
 ---
 
