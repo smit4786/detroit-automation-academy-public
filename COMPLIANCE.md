@@ -10,7 +10,6 @@ This document outlines how AT-Infrastructure aligns with major regulatory and se
 |-----------|-------|--------|----------|
 | **HIPAA** | Healthcare data protection | ✅ Supported | Encryption, audit logging, access controls |
 | **PCI-DSS** | Payment card security | ✅ Supported | Secrets scanning, network isolation, monitoring |
-| **SOX** | Financial reporting integrity | ⚠️ Conditional | Change tracking, audit trails, segregation of duties (applies when used by SOX-subject entities) |
 | **GDPR** | EU data privacy | ✅ Supported | Data handling, consent, right to erasure |
 | **NIST** | Cybersecurity standards | ✅ Supported | Identity & access, supply chain, incident response |
 | **CIS** | Control implementation | ✅ Supported | Security baselines, vulnerability management |
@@ -94,45 +93,7 @@ PCI-DSS applies to organizations processing credit card data.
 
 ---
 
-## 3. SOX (Sarbanes-Oxley Act)
-
-### Requirements
-
-SOX applies to public companies and requires financial reporting integrity. **Note:** This applies only when AT-Infrastructure is used by organizations subject to SOX regulations.
-
-### Implementation in AT-Infrastructure
-
-#### Change Management
-- **Git History:** Every change tracked with author, timestamp, message
-- **Code Review:** 2-review approval before deployment
-- **Traceability:** Links between commits, PRs, and tickets (recommended)
-
-#### Segregation of Duties
-- **Branch Protection:** Developers cannot merge their own code
-- **Review Requirement:** 2 different people must approve
-- **Admin Separation:** Infrastructure admins separate from developers
-
-#### Audit Trail
-- **Commit History:** All changes permanently logged
-- **GitHub Actions Logs:** Workflow execution captured
-- **Access Logs:** GitHub audit log for all user actions
-
-#### Configuration Management
-- **Version Control:** All configuration as code
-- **Backup:** GitHub replication provides backup
-- **Disaster Recovery:** Code always recoverable from git
-
-### Compliance Checklist
-
-- ✅ Complete change history (git commits)
-- ✅ Segregation of duties (2-review requirement)
-- ✅ Audit trail (GitHub logs + git history)
-- ✅ Change approval process
-- ✅ Configuration management as code
-
----
-
-## 4. GDPR (General Data Protection Regulation)
+## 3. GDPR (General Data Protection Regulation)
 
 ### Requirements
 
@@ -170,7 +131,7 @@ GDPR applies to organizations processing personal data of EU residents.
 
 ---
 
-## 5. NIST (National Institute of Standards & Technology)
+## 4. NIST (National Institute of Standards & Technology)
 
 ### Cybersecurity Framework
 
@@ -241,7 +202,7 @@ NIST SP 800-53 provides baseline security controls. AT-Infrastructure implements
 
 ---
 
-## 6. CIS (Center for Internet Security)
+## 5. CIS (Center for Internet Security)
 
 ### Critical Security Controls
 
@@ -365,7 +326,6 @@ Teams should:
 
 - [HIPAA Compliance](https://www.hhs.gov/hipaa/) — U.S. Department of Health & Human Services
 - [PCI-DSS Compliance](https://www.pcisecuritystandards.org/) — Payment Card Industry
-- [SOX Compliance](https://www.sec.gov/cgi-bin/viewer?action=view&cik=0&accession_number=0000000000000001&xbrl_type=v) — SEC Sarbanes-Oxley Information
 - [GDPR Compliance](https://gdpr-info.eu/) — EU Data Protection Regulation
 - [NIST Framework](https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final) — NIST Cybersecurity Framework
 - [CIS Controls](https://www.cisecurity.org/cis-controls/) — Center for Internet Security
