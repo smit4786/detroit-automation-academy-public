@@ -365,7 +365,7 @@ Teams should:
 
 - [HIPAA Compliance](https://www.hhs.gov/hipaa/) — U.S. Department of Health & Human Services
 - [PCI-DSS Compliance](https://www.pcisecuritystandards.org/) — Payment Card Industry
-- [SOX Compliance](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000000000&type=&dateb=&owner=exclude&count=100&search_text=) — SEC Financial Reporting (Sarbanes-Oxley Act of 2002)
+- [SOX Compliance](https://www.congress.gov/bill/107th-congress/senate-bill/0878) — Sarbanes-Oxley Act of 2002
 - [GDPR Compliance](https://gdpr-info.eu/) — EU Data Protection Regulation
 - [NIST Framework](https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final) — NIST Cybersecurity Framework
 - [CIS Controls](https://www.cisecurity.org/cis-controls/) — Center for Internet Security
