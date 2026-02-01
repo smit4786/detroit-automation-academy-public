@@ -415,6 +415,61 @@ If critical issues found:
 
 ---
 
+## **DATE CORRECTION PROCEDURES (SOP)**
+
+### When to Update Dates
+
+After any significant milestone, maintenance window, or document update, verify all "Last Updated" dates across documentation are current.
+
+### Documents Requiring Date Updates
+
+- ✅ COMPLIANCE.md - "Last Updated" field
+- ✅ README.md - Documentation date (if present)
+- ✅ GO_LIVE_ACTION_PLAN.md - Timeline and status dates
+- ✅ DEPLOYMENT_READY_SUMMARY.md - Review dates
+- ✅ docs/COMPLIANCE.md - Audit date fields
+- ✅ All agent coordination documents
+
+### Date Correction Workflow
+
+**Step 1: Identify Changed Documents**
+```bash
+git diff HEAD~1 --name-only | grep -E "\.md$"
+```
+
+**Step 2: Update Last Updated Fields**
+- Search for: "Last Updated:" or "Updated:" or similar date patterns
+- Replace with: Current date in format "Month DD, YYYY" (e.g., "February 1, 2026")
+
+**Step 3: Verify No Broken References**
+```bash
+grep -r "January 27\|January 28\|January 29" *.md
+```
+
+**Step 4: Commit with Clear Message**
+```bash
+git add *.md docs/*.md
+git commit -m "Update documentation dates to [CURRENT_DATE]"
+git push
+```
+
+**Step 5: Coordinate with Agents**
+- Notify all autonomous agents of date updates
+- Update AGENT_EXECUTION_DASHBOARD.md with new dates
+- Confirm changes reflected in CTO_DEPLOYMENT_BRIEFING.md
+
+### Agent Coordination Protocol
+
+**All agents must:**
+1. Check AGENT_EXECUTION_DASHBOARD.md for current status dates
+2. Update their task timestamps when completing work
+3. Report date discrepancies immediately
+4. Sync documentation dates before go-live
+
+**Frequency:** Every 4 hours during active deployment phase
+
+---
+
 ## **CRITICAL CONTACTS**
 
 | Role | Contact | Responsibility |
