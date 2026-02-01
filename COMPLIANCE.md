@@ -336,6 +336,6 @@ Teams should:
 
 Contact your compliance or security team for framework-specific requirements. See the main [README.md](README.md) for general information.
 
-**Last Updated:** January 27, 2026  
+**Last Updated:** February 1, 2026  
 **Maintained By:** Infrastructure Team  
 **Review Cycle:** Quarterly
