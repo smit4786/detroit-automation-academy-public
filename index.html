@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detroit Automation Academy - Automation Skills for Detroit's Future</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="branding/palette.css"> <!-- Link palette.css -->
+    <style>
+        /* General styles, already fine */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--daa-fg); /* Use CSS variable */
+            background: var(--daa-bg); /* Use CSS variable */
+        }
+        
+        header {
+            background: var(--daa-card); /* Use CSS variable */
+            box-shadow: 0 2px 8px var(--daa-shadow); /* Use CSS variable */
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--daa-primary); /* Use CSS variable */
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--daa-fg); /* Use CSS variable */
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--daa-primary); /* Use CSS variable */
+        }
+        
+        .cta-button {
+            background: var(--daa-primary); /* Use CSS variable */
+            color: var(--daa-bg); /* Use CSS variable */
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+            display: inline-block;
+        }
+        
+        .cta-button:hover {
+            background: #0052A3; /* Hardcoded hover */
+        }
+        
+        .cta-button-secondary {
+            background: var(--daa-secondary); /* Use CSS variable */
+        }
+        
+        .cta-button-secondary:hover {
+            background: #A83F1A; /* Hardcoded hover */
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--daa-primary) 0%, #004A99 100%); /* Use CSS variable */
+            color: var(--daa-bg); /* Use CSS variable */
+            padding: 80px 32px;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 32px;
+            opacity: 0.95;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .hero .cta-button {
+            background: var(--daa-accent); /* Use CSS variable */
+            color: var(--daa-fg); /* Use CSS variable */
+        }
+        
+        .hero .cta-button:hover {
+            background: #52A300; /* Hardcoded hover */
+        }
+        
+        .event-success {
+            background: var(--daa-card); /* Use CSS variable */
+            padding: 48px 32px;
+            margin: 48px 0;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px var(--daa-shadow); /* Use CSS variable */
+        }
+        
+        .event-success-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+        
+        .event-success h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--daa-primary); /* Use CSS variable */
+        }
+        
+        .event-success p {
+            font-size: 16px;
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .stat {
+            background: var(--daa-bg); /* Use CSS variable */
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--daa-secondary); /* Use CSS variable */
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .programs {
+            max-width: 1200px;
+            margin: 48px auto;
+            padding: 0 32px;
+        }
+        
+        .programs h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 48px;
+            color: var(--daa-fg); /* Use CSS variable */
+        }
+        
+        .program-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+        
+        .program-card {
+            background: var(--daa-card); /* Use CSS variable */
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--daa-shadow); /* Use CSS variable */
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .program-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px var(--daa-shadow); /* Use CSS variable */
+        }
+        
+        .program-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--daa-primary); /* Use CSS variable */
+        }
+        
+        .program-card p {
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 16px;
+            color: #666;
+        }
+        
+        .phase-badge {
+            display: inline-block;
+            background: var(--daa-bg); /* Use CSS variable */
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--daa-primary); /* Use CSS variable */
+            margin-bottom: 12px;
+        }
+        
+        .roles {
+            max-width: 1200px;
+            margin: 64px auto;
+            padding: 0 32px;
+        }
+        
+        .roles h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 48px;
+            color: var(--daa-fg); /* Use CSS variable */
+        }
+        
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+        
+        .role-card {
+            background: var(--daa-card); /* Use CSS variable */
+            padding: 40px 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--daa-shadow); /* Use CSS variable */
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .role-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px var(--daa-shadow); /* Use CSS variable */
+            border-top: 4px solid var(--daa-primary); /* Use CSS variable */
+        }
+        
+        .role-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .role-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--daa-fg); /* Use CSS variable */
+        }
+        
+        .role-card p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+        
+        .role-card a {
+            display: inline-block;
+            background: var(--daa-primary); /* Use CSS variable */
+            color: var(--daa-bg); /* Use CSS variable */
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .role-card a:hover {
+            background: #0052A3; /* Hardcoded hover */
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, var(--daa-secondary) 0%, #A83F1A 100%); /* Use CSS variable */
+            color: var(--daa-bg); /* Use CSS variable */
+            padding: 64px 32px;
+            text-align: center;
+            margin: 64px 0;
+        }
+        
+        .cta-section h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .cta-section p {
+            font-size: 16px;
+            margin-bottom: 32px;
+            opacity: 0.95;
+        }
+        
+        footer {
+            background: #222;
+            color: white;
+            padding: 32px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .footer-links {
+            margin-bottom: 16px;
+        }
+        
+        .footer-links a {
+            color: var(--daa-accent); /* Use CSS variable */
+            text-decoration: none;
+            margin: 0 16px;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #52A300; /* Hardcoded hover */
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .event-success-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .program-grid,
+            .role-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .programs h2,
+            .roles h2,
+            .cta-section h2 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode"> <!-- Add default class -->
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; display: flex; align-items: center;">
+                    <span style="display: inline-block; vertical-align: middle; margin-right: 12px;">
+                        <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Logo (Gear + Circuit) -->
+                            <g id="logo" transform="translate(25, 25)">
+                                <g id="gear">
+                                    <circle cx="100" cy="100" r="75" fill="none" stroke="#0066CC" stroke-width="4"/>
+                                    <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" 
+                                             fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round"/>
+                                </g>
+                                <g id="circuits" stroke="#66CC00" stroke-width="3" fill="none" stroke-linecap="round">
+                                    <path d="M 100 30 L 100 15 L 85 10" />
+                                    <path d="M 130 70 L 155 50 L 170 55" />
+                                    <path d="M 140 130 L 160 155 L 165 170" />
+                                    <path d="M 60 160 L 30 180 L 20 175" />
+                                    <path d="M 60 70 L 35 50 L 25 60" />
+                                </g>
+                                <g id="nodes" fill="#66CC00" opacity="0.9">
+                                    <circle cx="100" cy="15" r="4"/><circle cx="170" cy="55" r="4"/>
+                                    <circle cx="165" cy="170" r="4"/><circle cx="20" cy="175" r="4"/><circle cx="25" cy="60" r="4"/>
+                                </g>
+                            </g>
+                            <g id="text" transform="translate(260, 110)">
+                                <text font-family="'Poppins', sans-serif" font-weight="800" font-size="64" fill="#111111">
+                                    <tspan x="0" y="0">DETROIT</tspan>
+                                    <tspan x="0" y="75" font-size="54" font-weight="700" fill="#0066CC">AUTOMATION ACADEMY</tspan>
+                                </text>
+                            </g>
+                        </svg>
+                    </span>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="index.html">🎓 Program (Home)</a></li>
+                <li><a href="students.html">👨‍🎓 Students</a></li>
+                <li><a href="instructors.html">👨‍🏫 Instructors</a></li>
+                <li><a href="partners.html">💼 Partners</a></li>
+            </ul>
+            <button id="theme-toggle" class="cta-button" style="background: #66CC00; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">🌙 Dark Mode</button>
+        </nav>
+    </header>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply theme from localStorage or system preference on load
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-toggle').textContent = '☀️ Light Mode';
+            } else {
+                document.body.classList.add('light-mode');
+                document.getElementById('theme-toggle').textContent = '🌙 Dark Mode';
+            }
+
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.body.classList.contains('dark-mode')) {
+                    document.body.classList.remove('dark-mode');
+                    document.body.classList.add('light-mode');
+                    this.textContent = '🌙 Dark Mode';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.body.classList.remove('light-mode');
+                    document.body.classList.add('dark-mode');
+                    this.textContent = '☀️ Light Mode';
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+    </script>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Automation Skills for Detroit's Future</h1>
+            <p>Learn robotics, CAD design, and autonomous systems. Built by Detroit, for Detroit.</p>
+            <div class="hero-buttons">
+                <a href="students.html" class="cta-button">Apply Now</a>
+                <a href="#programs" class="cta-button cta-button-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="event-success">
+        <div class="event-success-content">
+            <div>
+                <h2>🎉 Launch Event Success</h2>
+                <p>Our inaugural event at the Boys & Girls Club of Greater Detroit was a tremendous success! We excited and inspired the next generation of Detroit engineers.</p>
+                <p><strong>What happened:</strong></p>
+                <ul style="text-align: left; display: inline-block; margin-top: 12px;">
+                    <li>✅ 50+ attendees from local schools and community</li>
+                    <li>✅ 5+ immediate sign-ups for our program</li>
+                    <li>✅ Partnership formalized with Michigan Central</li>
+                    <li>✅ Equipment demonstrations showcasing all 3 phases</li>
+                    <li>✅ Student testimonials and parent enthusiasm</li>
+                </ul>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Attendees</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Phases Demonstrated</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">5+</div>
+                    <div class="stat-label">Direct Signups</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Parent Approval</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="programs" id="programs">
+        <h2>Three Progressive Phases</h2>
+        <div class="program-grid">
+            <div class="program-card">
+                <span class="phase-badge">PHASE 1: GPIO & HARDWARE</span>
+                <h3>🔌 Electronics Control</h3>
+                <p>Learn Raspberry Pi GPIO programming, control LEDs and buttons, understand hardware fundamentals, and build event-driven applications.</p>
+            </div>
+            <div class="program-card">
+                <span class="phase-badge">PHASE 2: CAD & FABRICATION</span>
+                <h3>🏗️ 3D Design & Laser Cutting</h3>
+                <p>Design parametric 3D models, generate STL files for 3D printing, create G-code for laser cutting, and fabricate real parts.</p>
+            </div>
+            <div class="program-card">
+                <span class="phase-badge">PHASE 3: AUTONOMOUS SYSTEMS</span>
+                <h3>🤖 Rover Navigation & Autonomy</h3>
+                <p>Program autonomous rover behavior, implement navigation algorithms, test in simulated environments, and deploy on real hardware.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="roles" id="roles">
+        <h2>Choose Your Path</h2>
+        <div class="role-grid">
+            <div class="role-card">
+                <div class="role-icon">👨‍🎓</div>
+                <h3>Students</h3>
+                <p>Ready to learn automation? Apply to our 12-week program and gain hands-on skills in robotics and autonomous systems.</p>
+                <a href="students.html">Apply Today</a>
+            </div>
+            <div class="role-card">
+                <div class="role-icon">👩‍🏫</div>
+                <h3>Instructors</h3>
+                <p>Want to teach? Access our complete curriculum, teaching guides, and resources to deliver world-class automation education.</p>
+                <a href="instructors.html">Explore Curriculum</a>
+            </div>
+            <div class="role-card">
+                <div class="role-icon">🤝</div>
+                <h3>Partners & Donors</h3>
+                <p>Support Detroit's future. Partner with us to scale automation education to 500+ students annually.</p>
+                <a href="partners.html">Get Involved</a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta-section">
+        <h2>Ready to Join Detroit Automation Academy?</h2>
+        <p>The next cohort is accepting applications now. Limited seats available.</p>
+        <a href="students.html" class="cta-button" style="background: #66CC00; color: #222;">Start Your Application</a>
+    </section>
+    
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/smit4786/DetroitAutomationAcademy" target="_blank">GitHub</a>
+            <a href="quick_start.md">Quick Start</a>
+            <a href="index.html" target="_blank">Live Dashboard</a>
+            <a href="mailto:dbkrsmith+daa@gmail.com">Contact</a>
+        </div>
+        <p>&copy; 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built by Detroiters.</p>
+    </footer>
+</body>
+</html>
