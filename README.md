@@ -1,338 +1,82 @@
-# AT-Infrastructure: Production-Grade DevOps Blueprint
+# <img src="https://raw.githubusercontent.com/smit4786/detroit-automation-academy-public/main/assets/DAA_Logo_Horizontal.svg" width="400" alt="Detroit Automation Academy Logo">
 
-**Industry-standard CI/CD, security, and compliance automation for all AutomatedTechnologies projects.**
+# Detroit Automation Academy (DAA) - Public Overview
+## Empowering Detroit's Future Workforce in Automation & AI
 
-[![CI/CD](https://github.com/AutomatedTechnologies/AT-Infrastructure/actions/workflows/ci.yml/badge.svg)](https://github.com/AutomatedTechnologies/AT-Infrastructure/actions)
-[![Code Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)](#)
-[![Python 3.8-3.11](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue)](#)
-[![License](https://img.shields.io/badge/license-MIT-green)](#)
+**Welcome to the Detroit Automation Academy (DAA) Public Repository.** This repository serves as a public-facing brochure for our industry-leading educational programs, partnerships, and strategic vision.
 
 ---
 
-## 🎯 **Quick Start**
+## 🎯 Our Mission: Bridging the Skills Gap
 
-Use this repository as a **template for new AT projects**:
+The Detroit Automation Academy is dedicated to equipping Detroit's workforce with critical skills in **industrial automation, robotics, AI, and advanced manufacturing**. We foster talent development through a unique "digital-to-physical" curriculum that translates theoretical knowledge into tangible, deployable skills.
 
-```bash
-# 1. Go to https://github.com/AutomatedTechnologies/AT-Infrastructure
-# 2. Click "Use this template" button
-# 3. Create new repository from template
-git clone https://github.com/AutomatedTechnologies/your-project.git
-cd your-project
-
-# 4. Initialize development environment
-pip install -r requirements.txt
-pre-commit install
-
-# 5. Run tests
-pytest
-
-# 6. Push to GitHub (CI/CD triggers automatically)
-git add .
-git commit -m "init: project setup from AT-Infrastructure template"
-git push
-```
+**Key Outcome:** Graduates are prepared for high-demand roles in the rapidly evolving automation sector, contributing to Detroit's economic resurgence.
 
 ---
 
-## 🏗️ **What's Included**
+## 🚀 Our Impact: Business Outcomes & Efficiency
 
-### **CI/CD Pipeline (7 Jobs)**
-- ✅ Black code formatting (Python 3.9)
-- ✅ Flake8 linting with extended checks
-- ✅ Multi-version testing (Python 3.8-3.11)
-- ✅ Code coverage tracking
-- ✅ Security scanning (Bandit)
-- ✅ Code quality analysis (Radon)
-- ✅ Documentation validation
+Our curriculum is designed with industry demands in mind, leading to demonstrable business outcomes for our partners and tangible career growth for our students.
 
-### **Pre-Commit Hooks (8 Checks)**
-- Black formatting on commit
-- Flake8 linting
-- Security scanning (Bandit)
-- Import sorting (isort)
-- YAML/JSON/TOML validation
-- Docstring style checking (pydocstyle)
-- Merge conflict detection
-- Trailing whitespace cleanup
-
-### **Compliance & Security**
-- HIPAA-ready patterns (PHI handling guidelines)
-- PCI-DSS compliance (payment data security)
-- SOX compatibility (audit logging)
-- GDPR support (data handling templates)
-- NIST framework alignment
-- CIS security controls
-
-### **Documentation**
-- Architecture overview
-- Setup guide
-- Development workflow
-- Deployment procedures
-- Compliance checklists
-- GitHub Actions configuration
+*   **85% Efficiency Gain:** Our "Design-by-Code" methodology (Phase 2) has shown to reduce design-to-prototype cycles by up to 85% compared to traditional methods.
+*   **Zero-Defect Production:** Through precise digital fabrication (Phase 2) and robust autonomous control (Phase 3), students learn principles that drive near zero-defect manufacturing.
+*   **Talent Pipeline:** We provide a pipeline of certified automation technicians and engineers, directly addressing the critical shortage of skilled labor in advanced manufacturing.
+*   **Scalable IP Framework:** Our proprietary curriculum and tools are designed for scalability, enabling partners to rapidly deploy and customize training programs.
 
 ---
 
-## 📋 **Repository Structure**
+## ⚙️ Our Industry-Leading Curriculum
 
-```
-AT-Infrastructure/
-├── .github/
-│   ├── workflows/
-│   │   └── ci.yml              # 7-job CI/CD pipeline
-│   └── agents/
-│       └── instructions.md     # AI agent guidelines
-├── .pre-commit-config.yaml     # 8 pre-commit hooks
-├── pyproject.toml              # Python project config
-├── requirements.txt            # Dependencies
-├── README.md                   # This file
-├── LICENSE                     # MIT License
-├── docs/
-│   ├── SETUP.md               # Development setup
-│   ├── COMPLIANCE.md          # Regulatory requirements
-│   ├── DEPLOYMENT.md          # Deployment guide
-│   └── ARCHITECTURE.md        # System design
-└── src/                        # Your project code here
-```
+DAA's program is structured into three progressive phases:
+
+### Phase 1: Software & Hardware Integration (GPIO & Python)
+*   **Focus:** Foundational Python programming, microcontroller interfacing, and event-driven hardware control.
+*   **Skills:** Python, Raspberry Pi, Electronics, IoT fundamentals.
+
+### Phase 2: Parametric CAD & Digital Fabrication (Design-by-Code)
+*   **Focus:** Algorithmic geometry generation, 3D modeling, G-code for CNC machines, and rapid prototyping with laser cutters and 3D printers.
+*   **Skills:** Parametric Design, CAD Software, CNC Programming, Agile Hardware Development.
+
+### Phase 3: Autonomous Systems & Sensor Fusion (Robotics & AI)
+*   **Focus:** Robotic navigation algorithms, sensor data integration, autonomous decision-making, and deployment on mobile platforms (e.g., rovers).
+*   **Skills:** Robotics, AI/Machine Learning Fundamentals, Sensor Fusion, Control Systems Engineering.
 
 ---
 
-## 🔧 **Core Features**
+## 🤝 Partnership Opportunities
 
-### **1. Automated Code Quality**
+The Detroit Automation Academy partners with corporations, educational institutions, and community organizations to scale our impact.
 
-Every commit triggers:
-```bash
-→ Black formatting
-→ Flake8 linting
-→ Import sorting (isort)
-→ Docstring validation (pydocstyle)
-→ YAML/JSON checks
-```
+*   **Corporate Sponsors:** Invest in scholarships, secure talent pipelines, and contribute to workforce development.
+*   **Educational Partners:** Integrate DAA curriculum into existing programs, access instructor training and materials.
+*   **Community Organizations:** Extend STEM education reach to underserved communities.
 
-### **2. Multi-Version Testing**
-
-Automatically test on Python 3.8, 3.9, 3.10, and 3.11:
-```bash
-→ Tests pass on all versions
-→ Coverage tracked
-→ Results reported
-```
-
-### **3. Security Scanning**
-
-Real-time vulnerability detection:
-```bash
-→ Bandit (code security)
-→ Dependency checks
-→ CWE-level reporting
-```
-
-### **4. Compliance Automation**
-
-Built-in regulatory support:
-- HIPAA data handling checklist
-- PCI-DSS security requirements
-- SOX audit logging template
-- GDPR data processing agreement
-- NIST framework mapping
-- CIS control alignment
+**For partnership inquiries, please contact: dbkrsmith+daa@gmail.com**
 
 ---
 
-## 📦 **Installation & Setup**
+## 🛡️ Licensing Model: Powering Your Automation Training
 
-### **Prerequisites**
-- Python 3.8+
-- Git
-- pip
+DAA's curriculum and proprietary tools are available under a flexible licensing model. This ensures that our partners can confidently deliver high-quality automation education while respecting our intellectual property.
 
-### **Installation**
-
-1. **Clone the repository:**
-```bash
-git clone https://github.com/AutomatedTechnologies/your-project.git
-cd your-project
-```
-
-2. **Create virtual environment:**
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. **Install dependencies:**
-```bash
-pip install -r requirements.txt
-pip install pre-commit
-```
-
-4. **Setup pre-commit hooks:**
-```bash
-pre-commit install
-```
-
-5. **Run tests:**
-```bash
-pytest
-```
+**Key Benefits of Licensing:**
+*   **Verified Curriculum:** Access to constantly updated, industry-relevant training materials.
+*   **Proprietary Tools:** Leverage DAA's specialized software for CAD and robotics.
+*   **Quality Assurance:** Benefit from DAA's instructor certification and program standards.
+*   **Scalable Deployment:** Rapidly deploy training programs across multiple sites.
 
 ---
 
-## 🧪 **Testing**
-
-### **Run all tests:**
-```bash
-pytest -v
-```
-
-### **Run with coverage:**
-```bash
-pytest --cov --cov-report=html
-```
-
-### **Run specific test file:**
-```bash
-pytest tests/test_specific.py -v
-```
+### **[View Sample Educational Partner License Agreement (EDUCATIONAL_PARTNER_LICENSE.md)](./EDUCATIONAL_PARTNER_LICENSE.md)**
 
 ---
 
-## 📊 **Code Quality Standards**
+## 📝 Licensing & Copyright Notice
 
-| Metric | Target | Tool |
-|--------|--------|------|
-| Code Style | 88-char lines | Black |
-| Linting | E/W errors only | Flake8 |
-| Imports | Sorted alphabetically | isort |
-| Docstrings | Valid style | pydocstyle |
-| Security | Zero critical issues | Bandit |
-| Coverage | 85%+ | pytest-cov |
+**© 2026 Detroit Automation Academy. All Rights Reserved.**  
+*This repository serves as a public overview. All core curriculum, proprietary code, and detailed operational documentation are protected under strict licensing agreements and hosted in private repositories. Unauthorized reproduction, distribution, or use without a valid license agreement is strictly prohibited. For licensing inquiries, contact:* **dbkrsmith+daa@gmail.com**
 
 ---
 
-## 🔒 **Compliance & Security**
-
-### **HIPAA Compliance**
-- Protected Health Information (PHI) handling patterns
-- Access control templates
-- Audit logging requirements
-- Data encryption guidelines
-
-### **PCI-DSS Compliance**
-- Payment card data security
-- Network segmentation
-- Access control lists
-- Vulnerability management
-
-### **SOX Compliance**
-- Financial data integrity
-- Audit trail logging
-- Change management
-- Segregation of duties
-
-### **GDPR Compliance**
-- Data processing agreements
-- Right-to-be-forgotten procedures
-- Data portability support
-- Privacy by design patterns
-
-### **NIST Framework**
-- Risk management
-- Security controls
-- Incident response
-- Recovery procedures
-
-### **CIS Controls**
-- Asset management
-- Access control
-- Malware defense
-- Data protection
-
-See [docs/COMPLIANCE.md](docs/COMPLIANCE.md) for detailed requirements.
-
----
-
-## 🚀 **Deployment**
-
-### **Development**
-```bash
-git checkout -b feature/my-feature
-# Make changes
-pre-commit run --all-files
-pytest
-git push origin feature/my-feature
-```
-
-### **Staging**
-```bash
-# Merge to develop branch
-# CI/CD runs all tests
-# Automated deployment to staging
-```
-
-### **Production**
-```bash
-# Merge to main branch
-# CI/CD runs full test suite
-# Manual approval for production deploy
-```
-
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed procedures.
-
----
-
-## 📚 **Documentation**
-
-- **[Setup Guide](docs/SETUP.md)** — Development environment configuration
-- **[Compliance Guide](docs/COMPLIANCE.md)** — Regulatory requirements
-- **[Deployment Guide](docs/DEPLOYMENT.md)** — Release procedures
-- **[Architecture](docs/ARCHITECTURE.md)** — System design overview
-
----
-
-## 👥 **Contributing**
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/name`
-3. Make changes and commit: `git commit -am 'Add feature'`
-4. Push to branch: `git push origin feature/name`
-5. Submit pull request
-
-### **Code Standards**
-- All code must pass pre-commit hooks
-- Tests required for new features
-- Documentation must be updated
-- Commits should reference issues
-
----
-
-## 🤝 **Support & Questions**
-
-- **GitHub Issues** — Bug reports and feature requests
-- **Discussions** — Questions and ideas
-- **Documentation** — See `docs/` folder
-
----
-
-## 📄 **License**
-
-This project is licensed under the MIT License — see [LICENSE](LICENSE) file for details.
-
----
-
-## 🏢 **About AutomatedTechnologies**
-
-**Automated Technologies** delivers enterprise automation, compliance, and infrastructure solutions for regulated industries.
-
-- **LinkedIn:** https://www.linkedin.com/company/automatedtechnologies/
-- **GitHub Organization:** https://github.com/AutomatedTechnologies
-- **Repository:** https://github.com/AutomatedTechnologies/AT-Infrastructure
-- **Contact:** dbkrsmith@gmail.com
-
----
-
-**Last Updated:** January 27, 2026  
-**Template Version:** 1.0.0  
-**Maintained by:** AT DevOps Team
+**Built by Detroiters, for Detroit's Future in Automation & AI. Join us!** 🚀
