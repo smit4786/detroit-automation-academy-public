@@ -1,0 +1,33 @@
+/* Detroit Automation Academy Brand Palette - Light/Dark Mode CSS Variables */
+:root {
+  --daa-bg: #FFFFFF;
+  --daa-fg: #222222;
+  --daa-primary: #0066CC;
+  --daa-secondary: #CC5522;
+  --daa-accent: #66CC00;
+  --daa-card: #F5F7FA;
+  --daa-border: #E0E0E0;
+  --daa-link: #0066CC;
+  --daa-shadow: rgba(0,0,0,0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --daa-bg: #181A1B;
+    --daa-fg: #F5F7FA;
+    --daa-primary: #66CCFF;
+    --daa-secondary: #FF8855;
+    --daa-accent: #99FF33;
+    --daa-card: #23272A;
+    --daa-border: #333333;
+    --daa-link: #66CCFF;
+    --daa-shadow: rgba(0,0,0,0.32);
+  }
+}
+
+/* Usage Example:
+   background: var(--daa-bg);
+   color: var(--daa-fg);
+   border-color: var(--daa-border);
+   box-shadow: 0 2px 8px var(--daa-shadow);
+*/

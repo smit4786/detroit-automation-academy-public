@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Now - Detroit Automation Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="branding/palette.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: #222;
+            background: #f7f7fa;
+        }
+        
+        header {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: #0066CC;
+        }
+        
+        .logo a {
+            color: #0066CC;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #222;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #0066CC;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #0066CC 0%, #004A99 100%);
+            color: white;
+            padding: 60px 32px;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        
+        .content {
+            max-width: 900px;
+            margin: 48px auto;
+            padding: 0 32px;
+        }
+        
+        .application-section {
+            background: white;
+            padding: 48px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 32px;
+        }
+        
+        .application-section h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #0066CC;
+        }
+        
+        .info-box {
+            background: #f7f7fa;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 4px solid #CC5522;
+        }
+        
+        .info-box h3 {
+            margin-bottom: 12px;
+            color: #222;
+        }
+        
+        .info-box p {
+            margin-bottom: 8px;
+            color: #666;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist li::before {
+            content: '✓';
+            color: #66CC00;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .apply-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #0066CC 0%, #004A99 100%);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-top: 24px;
+        }
+        
+        .apply-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,102,204,0.3);
+        }
+        
+        .faq {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .faq-item {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .faq-item h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #0066CC;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .faq-item p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        footer {
+            background: #222;
+            color: white;
+            padding: 32px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 64px;
+        }
+        
+        .footer-links {
+            margin-bottom: 16px;
+        }
+        
+        .footer-links a {
+            color: #66CC00;
+            text-decoration: none;
+            margin: 0 16px;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #52A300;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .application-section {
+                padding: 32px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav style="background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 16px 32px; font-family: 'Inter', Arial, sans-serif;">
+            <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; display: flex; align-items: center;">
+                        <span style="display: inline-block; vertical-align: middle; margin-right: 12px;">
+                            <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Logo (Gear + Circuit) -->
+                                <g id="logo" transform="translate(25, 25)">
+                                    <g id="gear">
+                                        <circle cx="100" cy="100" r="75" fill="none" stroke="#0066CC" stroke-width="4"/>
+                                        <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" 
+                                                 fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round"/>
+                                    </g>
+                                    <g id="circuits" stroke="#66CC00" stroke-width="3" fill="none" stroke-linecap="round">
+                                        <path d="M 100 30 L 100 15 L 85 10" />
+                                        <path d="M 130 70 L 155 50 L 170 55" />
+                                        <path d="M 140 130 L 160 155 L 165 170" />
+                                        <path d="M 60 160 L 30 180 L 20 175" />
+                                        <path d="M 60 70 L 35 50 L 25 60" />
+                                    </g>
+                                    <g id="nodes" fill="#66CC00" opacity="0.9">
+                                        <circle cx="100" cy="15" r="4"/><circle cx="170" cy="55" r="4"/>
+                                        <circle cx="165" cy="170" r="4"/><circle cx="20" cy="175" r="4"/><circle cx="25" cy="60" r="4"/>
+                                    </g>
+                                </g>
+                                <g id="text" transform="translate(260, 110)">
+                                    <text font-family="'Poppins', sans-serif" font-weight="800" font-size="64" fill="#111111">
+                                        <tspan x="0" y="0">DETROIT</tspan>
+                                        <tspan x="0" y="75" font-size="54" font-weight="700" fill="#0066CC">AUTOMATION ACADEMY</tspan>
+                                    </text>
+                                </g>
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+                <ul class="nav-links" style="display: flex; gap: 32px; list-style: none;">
+                    <li><a href="dashboard.html">📊 Dashboard</a></li>
+                    <li><a href="index.html">🎓 Program (Home)</a></li>
+                    <li><a href="students.html">👨‍🎓 Students</a></li>
+                    <li><a href="instructors.html">👨‍🏫 Instructors</a></li>
+                    <li><a href="partners.html">💼 Partners</a></li>
+                </ul>
+                <button id="theme-toggle" style="background: #66CC00; color: var(--daa-bg); border: none; border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">🌙 Dark Mode</button>
+            </div>
+        </nav>
+    </header>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var btn = document.getElementById('theme-toggle');
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    this.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+                });
+            }
+        });
+        </script>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Apply to Detroit Automation Academy</h1>
+            <p>Join our 12-week hands-on curriculum in robotics, CAD design, and autonomous systems.</p>
+        </div>
+    </section>
+    
+    <section class="content">
+        <section class="application-section">
+            <h2>🎓 Student Application Process</h2>
+            
+            <div class="info-box">
+                <h3>Program Overview</h3>
+                <p><strong>Duration:</strong> 12 weeks (March 5 - May 26, 2026)</p>
+                <p><strong>Schedule:</strong> Tuesdays and Thursdays, 4:30 PM - 7:00 PM</p>
+                <p><strong>Location:</strong> Boys & Girls Club of Greater Detroit & Michigan Central</p>
+                <p><strong>Cost:</strong> FREE for all students from Detroit</p>
+                <p><strong>Prerequisites:</strong> Enthusiasm to learn! No prior experience necessary.</p>
+            </div>
+            
+            <h3 style="margin-top: 32px; margin-bottom: 16px; color: #0066CC;">What You'll Learn</h3>
+            <ul class="checklist">
+                <li><strong>Phase 1: Electronics & GPIO</strong> - Control hardware with Python, build event-driven applications</li>
+                <li><strong>Phase 2: CAD & Fabrication</strong> - Design 3D models, laser cut parts, 3D print prototypes</li>
+                <li><strong>Phase 3: Autonomous Systems</strong> - Program rover navigation, implement algorithms, test in real environments</li>
+                <li><strong>Real Hardware</strong> - Work with Raspberry Pi, motors, sensors, and custom-designed robots</li>
+                <li><strong>Team Projects</strong> - Collaborate with peers on real-world automation challenges</li>
+                <li><strong>Portfolio Building</strong> - Create projects for your resume and college applications</li>
+            </ul>
+            
+            <h3 style="margin-top: 32px; margin-bottom: 16px; color: #0066CC;">How to Apply</h3>
+            <ol style="margin-left: 20px; margin-bottom: 24px;">
+                <li><strong>Fill out the online form</strong> (click button below) - takes 5 minutes</li>
+                <li><strong>Share a bit about yourself</strong> - what interests you about automation?</li>
+                <li><strong>Get approval from a parent/guardian</strong> - we need their consent</li>
+                <li><strong>Attend student orientation</strong> - March 5, 2026 (5 PM - 6 PM)</li>
+                <li><strong>Start the program!</strong> - March 8, 2026</li>
+            </ol>
+            
+            <a href="https://github.com/smit4786/DetroitAutomationAcademy/issues/new?template=enrollment-inquiry.md" target="_blank" class="apply-button">📝 Start Application</a>
+            
+            <div class="info-box" style="margin-top: 32px; border-left-color: #66CC00;">
+                <h3>⏰ Important Dates</h3>
+                <p><strong>Applications Open:</strong> February 7, 2026</p>
+                <p><strong>Applications Close:</strong> February 28, 2026</p>
+                <p><strong>Acceptance Notifications:</strong> March 1, 2026</p>
+                <p><strong>Student Orientation:</strong> March 5, 2026</p>
+                <p><strong>Program Starts:</strong> March 8, 2026</p>
+            </div>
+        </section>
+        
+        <section class="application-section">
+            <h2>❓ Frequently Asked Questions</h2>
+            
+            <div class="faq">
+                <div class="faq-item">
+                    <h4>Do I need programming experience?</h4>
+                    <p>No! We teach Python from the ground up. The only requirement is enthusiasm and a willingness to learn. Many of our students have never coded before.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>What if I can't make every day?</h4>
+                    <p>We understand life happens. We require attendance at 10+ of 12 sessions. Talk to us if you have scheduling conflicts!</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>Do I need to buy anything?</h4>
+                    <p>Nope! Everything is provided:
+                    <ul style="margin-top: 8px; margin-left: 16px; font-size: 13px;">
+                        <li>Raspberry Pi boards & sensors</li>
+                        <li>Laptop access (we have spares)</li>
+                        <li> 3D printer & laser cutter use</li>
+                        <li>Snacks & lunch (we'll have you covered!)</li>
+                    </ul></p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>What happens after the 12 weeks?</h4>
+                    <p>You'll have completed a full automation curriculum and built a portfolio of projects. We'll help you transition to advanced cohorts, internships, or college programs. Plus, you'll be part of our alumni network!</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>Is this for college prep or just fun?</h4>
+                    <p>Both! Our curriculum aligns with manufacturing and tech industry certifications. Many students use this for college admissions portfolios and internship applications. But it's also genuinely fun hands-on learning.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>What's the time commitment?</h4>
+                    <p>Sessions are Tuesdays and Thursdays, 4:30 PM - 7:00 PM. Plus 1-2 hours of optional homework per week if you want to dive deeper. You set your own pace!</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>Can I bring a friend?</h4>
+                    <p>Absolutely! We love when students refer friends. Applying together is encouraged—you'll have built-in study partners for the 12 weeks.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h4>Questions not answered here?</h4>
+                    <p>Email us at <strong>dbkrsmith+daa@gmail.com</strong> or ask during student orientation (March 5).</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="application-section">
+            <h2>🎉 What Our Students Say</h2>
+            <p style="margin-bottom: 24px; font-style: italic; color: #666;">Coming soon after our first cohort completes the program!</p>
+        </section>
+        
+        <div style="text-align: center; padding: 32px; background: linear-gradient(135deg, #0066CC15 0%, #CC552215 100%); border-radius: 12px; margin-bottom: 48px;">
+            <h3 style="margin-bottom: 16px; color: #0066CC;">Ready to apply?</h3>
+            <a href="https://github.com/smit4786/DetroitAutomationAcademy/issues/new?template=enrollment-inquiry.md" target="_blank" class="apply-button">Start Your Application Now</a>
+            <p style="margin-top: 16px; color: #666; font-size: 14px;">Limited spots available • Applications close Feb 28</p>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-links">
+            <a href="landing.html">Home</a>
+            <a href="https://github.com/smit4786/DetroitAutomationAcademy" target="_blank">GitHub</a>
+            <a href="quick_start.md">Quick Start</a>
+            <a href="mailto:dbkrsmith+daa@gmail.com">Contact</a>
+        </div>
+        <p>&copy; 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built by Detroiters.</p>
+    </footer>
+</body>
+</html>
