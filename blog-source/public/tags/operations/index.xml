@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Operations on Automated Insights</title>
+    <link>https://example.org/tags/operations/</link>
+    <description>Recent content in Operations on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 21 Feb 2026 21:30:00 -0500</lastBuildDate>
+    <atom:link href="https://example.org/tags/operations/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DAA: Engineering Operational Resilience</title>
+      <link>https://example.org/posts/daa-resilience/</link>
+      <pubDate>Sat, 21 Feb 2026 21:30:00 -0500</pubDate>
+      <guid>https://example.org/posts/daa-resilience/</guid>
+      <description>&lt;h3 id=&#34;standardizing-the-detroit-automation-academy-infrastructure&#34;&gt;Standardizing the Detroit Automation Academy Infrastructure&lt;/h3&gt;&#xA;&lt;p&gt;Operational excellence is the foundation of scale. Today, we successfully finalized the &lt;strong&gt;DAA Troubleshooting Guide&lt;/strong&gt;, a critical resource for instructors at the &lt;strong&gt;Michigan Central&lt;/strong&gt; and &lt;strong&gt;Boys &amp;amp; Girls Clubs&lt;/strong&gt; locations.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Synthesized Improvements:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Dynamic Diagnostics:&lt;/strong&gt; Real-time troubleshooting for QR code systems and event dashboards.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Portability:&lt;/strong&gt; Migrated from external dependencies to robust inline architectures.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Agent Coordination:&lt;/strong&gt; Integrated technical support protocols into the instructor workflow.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This documentation ensures that our educational activations remain resilient as we expand our footprint in the Detroit automation ecosystem.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Betrieb on Automated Insights</title>
+    <link>https://example.org/de/tags/betrieb/</link>
+    <description>Recent content in Betrieb on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>de</language>
+    <lastBuildDate>Sat, 21 Feb 2026 21:30:00 -0500</lastBuildDate>
+    <atom:link href="https://example.org/de/tags/betrieb/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DAA: Entwicklung operativer Resilienz</title>
+      <link>https://example.org/de/posts/daa-resilience/</link>
+      <pubDate>Sat, 21 Feb 2026 21:30:00 -0500</pubDate>
+      <guid>https://example.org/de/posts/daa-resilience/</guid>
+      <description>&lt;h3 id=&#34;standardisierung-der-infrastruktur-der-detroit-automation-academy&#34;&gt;Standardisierung der Infrastruktur der Detroit Automation Academy&lt;/h3&gt;&#xA;&lt;p&gt;Operative Exzellenz ist die Grundlage für Skalierbarkeit. Heute haben wir den &lt;strong&gt;DAA Troubleshooting Guide&lt;/strong&gt; erfolgreich abgeschlossen – eine entscheidende Ressource für Ausbilder an den Standorten &lt;strong&gt;Michigan Central&lt;/strong&gt; und &lt;strong&gt;Boys &amp;amp; Girls Clubs&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Synthetisierte Verbesserungen:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Dynamische Diagnose:&lt;/strong&gt; Echtzeit-Fehlerbehebung für QR-Code-Systeme und Event-Dashboards.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Portabilität:&lt;/strong&gt; Migration von externen Abhängigkeiten zu robusten Inline-Architekturen.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Agenten-Koordination:&lt;/strong&gt; Integration von technischen Support-Protokollen in den Arbeitsablauf der Ausbilder.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Diese Dokumentation stellt sicher, dass unsere Bildungsangebote belastbar bleiben, während wir unsere Präsenz im Detroiter Automatisierungs-Ökosystem ausbauen.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

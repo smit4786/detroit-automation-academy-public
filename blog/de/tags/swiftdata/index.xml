@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SwiftData on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/de/tags/swiftdata/</link>
+    <description>Recent content in SwiftData on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>de</language>
+    <lastBuildDate>Sat, 21 Feb 2026 22:30:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/de/tags/swiftdata/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Stabilität durch gemeinsamen Speicher: Der App-Group-Meilenstein</title>
+      <link>https://detroitautomationacademy.com/blog/de/posts/app-group-stability/</link>
+      <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/posts/app-group-stability/</guid>
+      <description>&lt;h3 id=&#34;datenkonsistenz-über-ökosysteme-hinweg-entwickeln&#34;&gt;Datenkonsistenz über Ökosysteme hinweg entwickeln&lt;/h3&gt;&#xA;&lt;p&gt;Systemstabilität ist nicht verhandelbar. Heute haben wir erfolgreich eine gemeinsame &lt;strong&gt;App-Group&lt;/strong&gt;-Architektur für das Projekt &lt;strong&gt;@AT_Diary&lt;/strong&gt; implementiert, die einen nahtlosen Datenfluss zwischen der Hauptanwendung und ihrem Home-Screen-Widget gewährleistet.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Technische Synthese:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Gemeinsamer Modell-Container:&lt;/strong&gt; Durch die Migration zu &lt;code&gt;group.com.automatedtechnologies.atdiary&lt;/code&gt; haben wir Datenlatenzen zwischen Systemzielen eliminiert.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Entitlement-Abgleich:&lt;/strong&gt; Die Sicherheitsstruktur von App und Widget wurde vereinheitlicht, um Echtzeit-Lese-/Schreibzugriff auf den Kern-SwiftData-Speicher zu ermöglichen.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Zuverlässigkeit:&lt;/strong&gt; Dieser Meilenstein verhindert das „Leere-Widget-Syndrom“ und stellt sicher, dass die „Story des Tages“ des Nutzers immer mit seinen neuesten Erlebnissen synchronisiert ist.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Diese Grundlagenarbeit bereitet @AT_Diary auf fortgeschrittene Funktionen wie Live-Standortverfolgung und Hintergrund-Fotoverarbeitung vor.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
