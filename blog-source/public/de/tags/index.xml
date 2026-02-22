@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Automated Insights</title>
+    <link>https://example.org/de/tags/</link>
+    <description>Recent content in Tags on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>de</language>
+    <lastBuildDate>Sat, 21 Feb 2026 22:00:00 -0500</lastBuildDate>
+    <atom:link href="https://example.org/de/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AT_Music</title>
+      <link>https://example.org/de/tags/at_music/</link>
+      <pubDate>Sat, 21 Feb 2026 22:00:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/at_music/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Effizienz</title>
+      <link>https://example.org/de/tags/effizienz/</link>
+      <pubDate>Sat, 21 Feb 2026 22:00:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/effizienz/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>KI-Gesteuert</title>
+      <link>https://example.org/de/tags/ki-gesteuert/</link>
+      <pubDate>Sat, 21 Feb 2026 22:00:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/ki-gesteuert/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Strategie</title>
+      <link>https://example.org/de/tags/strategie/</link>
+      <pubDate>Sat, 21 Feb 2026 22:00:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/strategie/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Betrieb</title>
+      <link>https://example.org/de/tags/betrieb/</link>
+      <pubDate>Sat, 21 Feb 2026 21:30:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/betrieb/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>DAA</title>
+      <link>https://example.org/de/tags/daa/</link>
+      <pubDate>Sat, 21 Feb 2026 21:30:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/daa/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Detroit</title>
+      <link>https://example.org/de/tags/detroit/</link>
+      <pubDate>Sat, 21 Feb 2026 21:30:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/detroit/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Automatisierung</title>
+      <link>https://example.org/de/tags/automatisierung/</link>
+      <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/automatisierung/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>IOS</title>
+      <link>https://example.org/de/tags/ios/</link>
+      <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/ios/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ökosystem</title>
+      <link>https://example.org/de/tags/%C3%B6kosystem/</link>
+      <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
+      <guid>https://example.org/de/tags/%C3%B6kosystem/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

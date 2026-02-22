@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Автоматизация on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/tags/%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F/</link>
+    <description>Recent content in Автоматизация on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Sat, 21 Feb 2026 21:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>@AT_Diary: Достигнута важная веха в автоматизированной разработке</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/at-diary-milestone/</link>
+      <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/at-diary-milestone/</guid>
+      <description>&lt;h3 id=&#34;синтез-будущего-личных-данных&#34;&gt;Синтез будущего личных данных&lt;/h3&gt;&#xA;&lt;p&gt;Сегодня мы отмечаем важную веху для компании &lt;strong&gt;Automated Technologies&lt;/strong&gt;. Мы успешно завершили основную сборку &lt;strong&gt;@AT_Diary&lt;/strong&gt; — iOS-приложения, ориентированного на конфиденциальность, которое сокращает разрыв между повседневной жизнью и автоматизированной аналитикой.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Основные достижения:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Полная интеграция с экосистемой:&lt;/strong&gt; Синхронизация в реальном времени с MusicKit, EventKit и CoreLocation.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Интеллект на устройстве:&lt;/strong&gt; Использование фреймворка NaturalLanguage для анализа настроения без ущерба для конфиденциальности пользователей.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Быстрое прототипирование:&lt;/strong&gt; Путь от концепции до успешной сборки в Xcode менее чем за 4 часа благодаря продвинутой координации ИИ.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Этот проект демонстрирует мощь скоординированной разработки с использованием нескольких агентов — методологии, которую мы также применяем в &lt;strong&gt;Detroit Automation Academy (DAA)&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

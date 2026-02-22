@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/posts/</link>
+    <description>Recent content in Posts on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 21 Feb 2026 22:30:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Stability through Shared Storage: The App Group Milestone</title>
+      <link>https://detroitautomationacademy.com/blog/posts/app-group-stability/</link>
+      <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/app-group-stability/</guid>
+      <description>&lt;h3 id=&#34;engineering-data-consistency-across-ecosystems&#34;&gt;Engineering Data Consistency across Ecosystems&lt;/h3&gt;&#xA;&lt;p&gt;System stability is non-negotiable. Today, we successfully implemented a shared &lt;strong&gt;App Group&lt;/strong&gt; architecture for the &lt;strong&gt;@AT_Diary&lt;/strong&gt; project, ensuring seamless data flow between the main application and its Home Screen widget.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Technical Synthesis:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Shared Model Container:&lt;/strong&gt; By migrating to &lt;code&gt;group.com.automatedtechnologies.atdiary&lt;/code&gt;, we eliminated data latency between system targets.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Entitlement Alignment:&lt;/strong&gt; Unified the security posture of both the App and the Widget to permit real-time read/write access to the core SwiftData store.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Reliability:&lt;/strong&gt; This milestone prevents the &amp;ldquo;Empty Widget&amp;rdquo; syndrome and ensures that the user&amp;rsquo;s &amp;ldquo;Story of the Day&amp;rdquo; is always synchronized with their latest experiences.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This foundational work prepares @AT_Diary for advanced features like live location tracking and background photo processing.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>AT_Music: The $35k Strategic Pivot</title>
+      <link>https://detroitautomationacademy.com/blog/posts/at-music-pivot/</link>
+      <pubDate>Sat, 21 Feb 2026 22:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/at-music-pivot/</guid>
+      <description>&lt;h3 id=&#34;optimizing-engineering-value-via-ai-coordination&#34;&gt;Optimizing Engineering Value via AI Coordination&lt;/h3&gt;&#xA;&lt;p&gt;Efficiency is the ultimate metric of modern engineering. Today, &lt;strong&gt;Automated Technologies&lt;/strong&gt; successfully pivoted the &lt;strong&gt;AT_Music&lt;/strong&gt; project, deprecating the requirement for a second human developer and achieving immediate &lt;strong&gt;savings of approximately $35,300&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;The Synthesis of Success:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Technical Rescue:&lt;/strong&gt; Our AI-led ecosystem agents resolved complex API and build-system blockers that were previously scoped for a high-cost contractor.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Immediate Readiness:&lt;/strong&gt; By removing the human onboarding latency, we have moved the &lt;strong&gt;Sprint 1 Kickoff&lt;/strong&gt; to immediate status.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Resource Allocation:&lt;/strong&gt; These savings are being redirected into rapid prototyping for the &lt;strong&gt;@AT_Diary&lt;/strong&gt; initiative and broader Detroit-based automation efforts.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This pivot demonstrates that with the right agent coordination, technical debt can be cleared autonomously, allowing leadership to focus on high-level strategy rather than recruitment bottlenecks.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>DAA: Engineering Operational Resilience</title>
+      <link>https://detroitautomationacademy.com/blog/posts/daa-resilience/</link>
+      <pubDate>Sat, 21 Feb 2026 21:30:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/daa-resilience/</guid>
+      <description>&lt;h3 id=&#34;standardizing-the-detroit-automation-academy-infrastructure&#34;&gt;Standardizing the Detroit Automation Academy Infrastructure&lt;/h3&gt;&#xA;&lt;p&gt;Operational excellence is the foundation of scale. Today, we successfully finalized the &lt;strong&gt;DAA Troubleshooting Guide&lt;/strong&gt;, a critical resource for instructors at the &lt;strong&gt;Michigan Central&lt;/strong&gt; and &lt;strong&gt;Boys &amp;amp; Girls Clubs&lt;/strong&gt; locations.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Synthesized Improvements:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Dynamic Diagnostics:&lt;/strong&gt; Real-time troubleshooting for QR code systems and event dashboards.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Portability:&lt;/strong&gt; Migrated from external dependencies to robust inline architectures.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Agent Coordination:&lt;/strong&gt; Integrated technical support protocols into the instructor workflow.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This documentation ensures that our educational activations remain resilient as we expand our footprint in the Detroit automation ecosystem.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>@AT_Diary: Milestone Achieved in Automated Engineering</title>
+      <link>https://detroitautomationacademy.com/blog/posts/at-diary-milestone/</link>
+      <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-milestone/</guid>
+      <description>&lt;h3 id=&#34;synthesizing-the-future-of-personal-data&#34;&gt;Synthesizing the Future of Personal Data&lt;/h3&gt;&#xA;&lt;p&gt;Today marks a significant milestone for &lt;strong&gt;Automated Technologies&lt;/strong&gt;. We have successfully completed the core build of &lt;strong&gt;@AT_Diary&lt;/strong&gt;, a privacy-first iOS application that bridges the gap between daily life and automated insights.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Key Achievements:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Full Ecosystem Integration:&lt;/strong&gt; Real-time synchronization with MusicKit, EventKit, and CoreLocation.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;On-Device Intelligence:&lt;/strong&gt; Leveraging the NaturalLanguage framework for sentiment analysis without sacrificing user privacy.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Rapid Prototyping:&lt;/strong&gt; Moving from concept to a successful Xcode build in under 4 hours using advanced AI coordination.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This project demonstrates the power of highly-coordinated multi-agent development, a methodology we are also applying to the &lt;strong&gt;Detroit Automation Academy (DAA)&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Welcome to Automated Insights</title>
+      <link>https://detroitautomationacademy.com/blog/posts/welcome/</link>
+      <pubDate>Sat, 21 Feb 2026 20:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/welcome/</guid>
+      <description>&lt;p&gt;Welcome to &lt;strong&gt;Automated Insights&lt;/strong&gt;, a space dedicated to the intersection of technology, engineering, and automation.&lt;/p&gt;&#xA;&lt;p&gt;In this blog, we&amp;rsquo;ll explore:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;The evolution of AI-led development.&lt;/li&gt;&#xA;&lt;li&gt;Engineering projects in the Detroit ecosystem.&lt;/li&gt;&#xA;&lt;li&gt;Strategic technical insights and rapid prototyping.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Stay tuned for more updates!&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,19 @@
+baseURL = 'https://detroitautomationacademy.com/blog/'
+title = "Automated Insights"
+theme = 'ananke'
+publishDir = '../blog'
+
+defaultContentLanguage = 'en'
+[languages]
+  [languages.en]
+    contentDir = 'content/en'
+    languageName = 'English'
+    weight = 1
+  [languages.de]
+    contentDir = 'content/de'
+    languageName = 'Deutsch'
+    weight = 2
+  [languages.ru]
+    contentDir = 'content/ru'
+    languageName = 'Русский'
+    weight = 3

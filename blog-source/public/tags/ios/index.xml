@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>IOS on Automated Insights</title>
+    <link>https://example.org/tags/ios/</link>
+    <description>Recent content in IOS on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 21 Feb 2026 21:00:00 -0500</lastBuildDate>
+    <atom:link href="https://example.org/tags/ios/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>@AT_Diary: Milestone Achieved in Automated Engineering</title>
+      <link>https://example.org/posts/at-diary-milestone/</link>
+      <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
+      <guid>https://example.org/posts/at-diary-milestone/</guid>
+      <description>&lt;h3 id=&#34;synthesizing-the-future-of-personal-data&#34;&gt;Synthesizing the Future of Personal Data&lt;/h3&gt;&#xA;&lt;p&gt;Today marks a significant milestone for &lt;strong&gt;Automated Technologies&lt;/strong&gt;. We have successfully completed the core build of &lt;strong&gt;@AT_Diary&lt;/strong&gt;, a privacy-first iOS application that bridges the gap between daily life and automated insights.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Key Achievements:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Full Ecosystem Integration:&lt;/strong&gt; Real-time synchronization with MusicKit, EventKit, and CoreLocation.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;On-Device Intelligence:&lt;/strong&gt; Leveraging the NaturalLanguage framework for sentiment analysis without sacrificing user privacy.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Rapid Prototyping:&lt;/strong&gt; Moving from concept to a successful Xcode build in under 4 hours using advanced AI coordination.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This project demonstrates the power of highly-coordinated multi-agent development, a methodology we are also applying to the &lt;strong&gt;Detroit Automation Academy (DAA)&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
