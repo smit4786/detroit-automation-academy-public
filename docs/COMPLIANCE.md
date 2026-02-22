@@ -381,6 +381,6 @@ Next Audit Date: ______________
 
 ---
 
-**Last Updated:** January 27, 2026  
+**Last Updated:** February 22, 2026  
 **Compliance Officer:** AutomatedTechnologies Compliance Team  
 **Review Frequency:** Annually or when regulations change
