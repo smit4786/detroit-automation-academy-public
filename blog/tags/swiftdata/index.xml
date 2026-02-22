@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SwiftData on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/tags/swiftdata/</link>
+    <description>Recent content in SwiftData on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 21 Feb 2026 22:30:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/tags/swiftdata/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Stability through Shared Storage: The App Group Milestone</title>
+      <link>https://detroitautomationacademy.com/blog/posts/app-group-stability/</link>
+      <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/app-group-stability/</guid>
+      <description>&lt;h3 id=&#34;engineering-data-consistency-across-ecosystems&#34;&gt;Engineering Data Consistency across Ecosystems&lt;/h3&gt;&#xA;&lt;p&gt;System stability is non-negotiable. Today, we successfully implemented a shared &lt;strong&gt;App Group&lt;/strong&gt; architecture for the &lt;strong&gt;@AT_Diary&lt;/strong&gt; project, ensuring seamless data flow between the main application and its Home Screen widget.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Technical Synthesis:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Shared Model Container:&lt;/strong&gt; By migrating to &lt;code&gt;group.com.automatedtechnologies.atdiary&lt;/code&gt;, we eliminated data latency between system targets.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Entitlement Alignment:&lt;/strong&gt; Unified the security posture of both the App and the Widget to permit real-time read/write access to the core SwiftData store.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Reliability:&lt;/strong&gt; This milestone prevents the &amp;ldquo;Empty Widget&amp;rdquo; syndrome and ensures that the user&amp;rsquo;s &amp;ldquo;Story of the Day&amp;rdquo; is always synchronized with their latest experiences.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This foundational work prepares @AT_Diary for advanced features like live location tracking and background photo processing.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
