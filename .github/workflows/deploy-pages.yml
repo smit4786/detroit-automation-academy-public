@@ -63,7 +63,8 @@ jobs:
             --minify \
             --baseURL "https://detroitautomationacademy.com/blog/" \
             --publishDir "../public-blog"
-          echo "Hugo build complete."
+          echo "Hugo build complete. Contents of public-blog:"
+          ls -R ../public-blog | head -n 20
 
       - name: Prepare Deployment
         run: |
