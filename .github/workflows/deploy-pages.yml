@@ -48,7 +48,9 @@ jobs:
           node-version: '20'
 
       - name: Install PostCSS
-        run: npm install -g postcss postcss-cli autoprefixer
+        run: |
+          cd blog-source
+          npm install
 
       - name: Setup Pages
         id: pages
