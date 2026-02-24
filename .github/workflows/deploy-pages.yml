@@ -45,7 +45,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install autoprefixer postcss postcss-cli
+        run: cd blog-source && npm install
 
       - name: Build with Hugo
         run: |
