@@ -52,7 +52,7 @@ The Detroit Automation Academy partners with corporations, educational instituti
 *   **Educational Partners:** Integrate DAA curriculum into existing programs, access instructor training and materials.
 *   **Community Organizations:** Extend STEM education reach to underserved communities.
 
-**For partnership inquiries, please contact: dbkrsmith+daa@gmail.com**
+**For partnership inquiries, please contact: info@detroitautomationacademy.com**
 
 ---
 
@@ -75,7 +75,7 @@ DAA's curriculum and proprietary tools are available under a flexible licensing 
 ## 📝 Licensing & Copyright Notice
 
 **© 2026 Detroit Automation Academy. All Rights Reserved.**  
-*This repository serves as a public overview. All core curriculum, proprietary code, and detailed operational documentation are protected under strict licensing agreements and hosted in private repositories. Unauthorized reproduction, distribution, or use without a valid license agreement is strictly prohibited. For licensing inquiries, contact:* **dbkrsmith+daa@gmail.com**
+*This repository serves as a public overview. All core curriculum, proprietary code, and detailed operational documentation are protected under strict licensing agreements and hosted in private repositories. Unauthorized reproduction, distribution, or use without a valid license agreement is strictly prohibited. For licensing inquiries, contact:* **info@detroitautomationacademy.com**
 
 ---
 

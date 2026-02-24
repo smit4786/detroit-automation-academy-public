@@ -21,7 +21,7 @@ We identified several instances of hardcoded personal emails and phone numbers b
 |-----------|---------|--------------|
 | `STAFF_EVENT_NOTIFICATION.md` | Founder email/phone number | ✅ SCRUBBED: Replaced with `.env` placeholders. |
 | `ABOUT_ME.md` | Personal email | ✅ SCRUBBED: Replaced with professional inquiry text. |
-| `landing.html` | Footer mailto link | ✅ UPDATED: Replaced with generic `dbkrsmith+daa@gmail.com`. |
+| `landing.html` | Footer mailto link | ✅ UPDATED: Replaced with professional `info@detroitautomationacademy.com`. |
 | `index.html` | Branding | ✅ UPDATED: Incorporated new horizontal high-res logo. |
 
 ### 2. Secret & Credential Management

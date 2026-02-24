@@ -26,4 +26,4 @@ Specialized in branchless Bash and Python programming, with deep experience in r
 - **Documentation-Driven Development:** Maintained comprehensive guides, role-based navigation, and synchronized documentation.
 - **Branding & Identity:** Executed professional branding rollout, ensuring consistent public-facing assets and accessibility.
 - **Event Infrastructure:** Automated real-time enrollment tracking, dashboard generation, and calendar integration for major events.
-- **Financial & Grant Management:** Built transparent expense sync and grant tracking systems for nonprofit operations.
+- **Financial & Grant Management:** Built transparent expense sync and grant tracking systems for commercial operations.
