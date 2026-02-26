@@ -23,11 +23,16 @@ The Automated Insights Blog is a multilingual technical publication platform tha
 - **Integration:** Seamless navigation between the main DAA site and the `/blog` subdirectory.
 
 ## 5. Technical Requirements
-- **Framework:** Hugo (Static Site Generator).
-- **Theme:** Ananke (as a submodule).
+- **Core Framework:** Hugo (Static Site Generator).
+- **Search & Interactive Features:** React with TypeScript for a dynamic frontend search and project-filtering interface.
+- **Backend/Automation:** Rust-based CLI for automated project synthesis and translation pre-processing.
+- **Cloud/Compute:**
+    - **Modal:** High-performance AI compute for automated technical translation and content synthesis.
+    - **Cloudflare:** Secure content delivery and edge redirects.
+- **Data & Analytics:** BigQuery for analyzing cross-project engagement and reader insights.
+- **Local Tooling:** Nix/DevEnv for Hugo and Node.js environment consistency.
 - **Hosting:** GitHub Pages (shared with detroitautomationacademy.com).
-- **Deployment:** GitHub Actions deploying to the `gh-pages` branch.
-- **Source Management:** Hugo source located in `blog-source/` within the `detroit-automation-academy-public` repository.
+- **Deployment:** GitHub Actions CI/CD; Terraform for future cloud resource management.
 
 ## 6. Roadmap & Milestones (2026)
 - **Feb 24:** Current Status — Integrated into DAA site; source structure finalized.

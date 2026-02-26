@@ -24,10 +24,16 @@ The Detroit Automation Academy (DAA) is a STEM education initiative focused on p
 
 ## 5. Technical Requirements
 - **Website Framework:** Hugo (Static Site Generator) with the Ananke theme.
-- **Hosting/Deployment:** GitHub Pages (branch-based deployment via `gh-pages`).
-- **Build Tools:** Node.js (PostCSS), `.nojekyll` configuration for GitHub Pages compatibility.
+- **CRM Frontend:** React with TypeScript for enrollment and progress management dashboards.
+- **CRM Backend:** Golang-based microservices for data processing and API integration.
+- **Hosting/Deployment:**
+    - **GitHub Pages:** Static site hosting for the public blog.
+    - **GCP:** Cloud Run for CRM backend; Firestore for student data; BigQuery for cohort analytics.
+    - **Cloudflare:** Edge security, DNS, and Workers for lightweight integrations.
+- **Data Layer:** Clickhouse for high-performance session telemetry; Spanner for global relational data.
+- **Build Tools:** Node.js (PostCSS), Terraform for infrastructure management, Nix for local development.
 - **Repository:** `detroit-automation-academy-public`.
-- **Integrations:** Google Workspace (Forms, Sheets) for initial CRM/Data management.
+- **Integrations:** Google Workspace (Forms, Sheets) for legacy data; OpenTelemetry for system observability.
 
 ## 6. Roadmap & Milestones (2026)
 - **Feb 4:** BGC Event (50 participants, 5 STEM sessions).
