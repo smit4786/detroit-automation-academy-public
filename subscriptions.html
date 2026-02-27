@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscriptions - Detroit Automation Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="branding/palette.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: var(--daa-fg); background: var(--daa-bg); }
+        header { background: var(--daa-card); box-shadow: 0 2px 8px var(--daa-shadow); position: sticky; top: 0; z-index: 100; }
+        nav { max-width: 1200px; margin: 0 auto; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 24px; color: var(--daa-primary); }
+        .nav-links { display: flex; gap: 24px; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--daa-fg); font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--daa-primary); }
+        .cta-button { background: var(--daa-primary); color: var(--daa-bg); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background 0.3s; display: inline-block; border: none; cursor: pointer; }
+        .cta-button:hover { background: #0052A3; }
+        
+        .hero { background: linear-gradient(135deg, var(--daa-primary) 0%, #004A99 100%); color: var(--daa-bg); padding: 60px 32px; text-align: center; }
+        .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 800; margin-bottom: 16px; }
+        .hero p { font-size: 18px; max-width: 800px; margin: 0 auto 32px; opacity: 0.9; }
+
+        .pricing-section { max-width: 1200px; margin: 64px auto; padding: 0 32px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+        .pricing-card { background: var(--daa-card); border-radius: 16px; padding: 40px; box-shadow: 0 4px 20px var(--daa-shadow); display: flex; flex-direction: column; position: relative; transition: transform 0.3s; border: 1px solid var(--daa-bg); }
+        .pricing-card:hover { transform: translateY(-8px); }
+        .pricing-card.popular { border: 2px solid var(--daa-primary); }
+        .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--daa-primary); color: white; padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        
+        .tier-name { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--daa-fg); }
+        .price { font-family: 'Poppins', sans-serif; font-size: 48px; font-weight: 800; margin-bottom: 24px; color: var(--daa-primary); }
+        .price span { font-size: 18px; font-weight: 500; color: #666; }
+        
+        .features { list-style: none; margin-bottom: 32px; flex-grow: 1; }
+        .features li { margin-bottom: 12px; font-size: 15px; display: flex; align-items: flex-start; }
+        .features li::before { content: "✅"; margin-right: 12px; font-size: 14px; }
+        
+        .feature-description { font-size: 14px; color: #666; margin-bottom: 24px; }
+
+        footer { background: #222; color: white; padding: 32px; text-align: center; font-size: 14px; margin-top: 64px; }
+        .footer-links a { color: var(--daa-accent); text-decoration: none; margin: 0 16px; }
+
+        @media (max-width: 992px) { .pricing-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; } }
+    </style>
+</head>
+<body class="light-mode">
+    <header>
+        <nav>
+            <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">DAA</a></div>
+            <ul class="nav-links">
+                <li><a href="blog/">📝 Blog</a></li>
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="index.html">🎓 Home</a></li>
+                <li><a href="subscriptions.html" style="color: var(--daa-primary);">💎 Subscriptions</a></li>
+            </ul>
+            <button id="theme-toggle" class="cta-button" style="background: #66CC00; color: #fff;">🌙 Dark Mode</button>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Empower Your Organization with DAA</h1>
+        <p>Scale automation education with our proven curriculum, operational framework, and AI-driven platform.</p>
+    </section>
+
+    <section class="pricing-section">
+        <div class="pricing-grid">
+            <!-- Tier 1 -->
+            <div class="pricing-card">
+                <h3 class="tier-name">Educator Pack</h3>
+                <p class="feature-description">Perfect for individual teachers and small youth clubs.</p>
+                <div class="price">$29<span>/mo</span></div>
+                <ul class="features">
+                    <li>Full STEM Session Curriculum</li>
+                    <li>Detailed Lesson Plans</li>
+                    <li>Equipment Lists & Setup Guides</li>
+                    <li>Quality Checklists</li>
+                </ul>
+                <a href="#" class="cta-button">Subscribe Now</a>
+            </div>
+
+            <!-- Tier 2 -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">Most Scalable</div>
+                <h3 class="tier-name">Academy-in-a-Box</h3>
+                <p class="feature-description">Everything you need to run a local DAA chapter.</p>
+                <div class="price">$149<span>/mo</span></div>
+                <ul class="features">
+                    <li>Everything in Educator Pack</li>
+                    <li>18-Doc Execution Framework</li>
+                    <li>Delegation & Task Matrices</li>
+                    <li>Marketing & Branding Package</li>
+                    <li>Stakeholder Comms Templates</li>
+                </ul>
+                <a href="#" class="cta-button">Launch Your Academy</a>
+                <p style="font-size: 11px; margin-top: 12px; text-align: center;"><a href="EDUCATIONAL_PARTNER_LICENSE.md" style="color: #666; text-decoration: underline;">View License Agreement</a></p>
+            </div>
+
+            <!-- Tier 3 -->
+            <div class="pricing-card">
+                <h3 class="tier-name">Automation Engine</h3>
+                <p class="feature-description">Enterprise-grade platform for large organizations.</p>
+                <div class="price">$499<span>/mo</span></div>
+                <ul class="features">
+                    <li>Everything in Academy-in-a-Box</li>
+                    <li>DAA CRM Enterprise License</li>
+                    <li>AI Agent Integration (CTO/COO)</li>
+                    <li>Multi-tenant Dashboard</li>
+                    <li>Monthly Consulting Call</li>
+                </ul>
+                <a href="#" class="cta-button">Go Enterprise</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="blog/">Blog</a>
+            <a href="mailto:info@detroitautomationacademy.com">Contact</a>
+        </div>
+        <p>&copy; 2026 Detroit Automation Academy. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            if (document.body.classList.contains('dark-mode')) {
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+                this.textContent = '🌙 Dark Mode';
+            } else {
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+                this.textContent = '☀️ Light Mode';
+            }
+        });
+    </script>
+</body>
+</html>

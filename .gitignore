@@ -55,6 +55,15 @@ Thumbs.db
 # Pre-commit
 .pre-commit/
 
+# Node
+node_modules/
+package-lock.json
+
+# Hugo
+public/
+resources/
+.hugo_build.lock
+
 # Testing
 .pytest_cache/
 .tox/

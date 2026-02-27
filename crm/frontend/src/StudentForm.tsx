@@ -3,9 +3,10 @@ import { Student } from './types';
 
 interface StudentFormProps {
   onStudentAdded: (student: Student) => void;
+  tenantId: string;
 }
 
-const StudentForm: React.FC<StudentFormProps> = ({ onStudentAdded }) => {
+const StudentForm: React.FC<StudentFormProps> = ({ onStudentAdded, tenantId }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -25,7 +26,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ onStudentAdded }) => {
     };
 
     try {
-      const response = await fetch('/api/students', {
+      const response = await fetch(`/api/students?tenant_id=${tenantId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newStudent),
