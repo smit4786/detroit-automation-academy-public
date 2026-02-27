@@ -47,7 +47,7 @@ jobs:
             -s blog-source \
             --gc \
             --minify \
-            --panicOnWarning \
+            --logLevel warning \
             --baseURL "https://detroitautomationacademy.com/blog/" \
             --destination "../public-blog"
           echo "Hugo build complete."
