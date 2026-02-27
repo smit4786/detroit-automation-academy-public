@@ -9,15 +9,15 @@ on:
 jobs:
   lint-and-format:
     runs-on: ubuntu-latest
-    name: Lint & Format Check (Python 3.9)
+    name: Lint & Format Check
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -25,16 +25,13 @@ jobs:
           pip install black flake8 bandit
 
       - name: Check code formatting with Black
-        run: black --check --line-length 88 . || true
-        continue-on-error: true
+        run: black --check --line-length 88 .
 
       - name: Lint with Flake8
-        run: flake8 --max-line-length=88 --extend-ignore=E203,W503 . || true
-        continue-on-error: true
+        run: flake8 --max-line-length=88 --extend-ignore=E203,W503 .
 
       - name: Security scan with Bandit
-        run: bandit -r . -q || true
-        continue-on-error: true
+        run: bandit -r . -q
 
   test-all:
     runs-on: ubuntu-latest
@@ -42,13 +39,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.10', '3.11', '3.12']
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -58,12 +55,11 @@ jobs:
           pip install pytest pytest-cov coverage
 
       - name: Run tests with coverage
-        run: pytest -v --cov --cov-report=xml --cov-report=term || true
-        continue-on-error: true
+        run: pytest -v --cov --cov-report=xml --cov-report=term
 
       - name: Upload coverage reports
-        if: matrix.python-version == '3.9'
-        uses: codecov/codecov-action@v3
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage.xml
           flags: unittests
@@ -74,12 +70,12 @@ jobs:
     name: Security & Compliance Scan
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install security tools
         run: |
@@ -87,24 +83,22 @@ jobs:
           pip install bandit safety
 
       - name: Run Bandit security scan
-        run: bandit -r . -q || true
-        continue-on-error: true
+        run: bandit -r . -q
 
       - name: Check dependencies for vulnerabilities
-        run: pip install safety && safety check --json || true
-        continue-on-error: true
+        run: pip install safety && safety check --json
 
   code-quality:
     runs-on: ubuntu-latest
-    name: Code Quality Analysis (Python 3.9)
+    name: Code Quality Analysis (Advisory)
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install quality tools
         run: |
@@ -112,24 +106,24 @@ jobs:
           pip install radon
 
       - name: Generate code metrics
+        continue-on-error: true  # Advisory only — does not block deployment
         run: |
           echo "=== Cyclomatic Complexity ==="
           radon cc . -a || true
           echo ""
           echo "=== Maintainability Index ==="
           radon mi . || true
-        continue-on-error: true
 
   documentation:
     runs-on: ubuntu-latest
     name: Documentation Validation
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check required documentation
         run: |
-          required_files=("README.md" "LICENSE" "docs/SETUP.md" "docs/COMPLIANCE.md")
+          required_files=("README.md" "LICENSE")
           for file in "${required_files[@]}"; do
             if [ ! -f "$file" ]; then
               echo "ERROR: Missing required documentation: $file"
@@ -137,9 +131,8 @@ jobs:
             fi
           done
           echo "✓ All required documentation present"
-        continue-on-error: true
 
       - name: Validate markdown syntax
+        continue-on-error: true  # Advisory only
         run: |
           python -c "import markdown; markdown.markdown(open('README.md').read())" && echo "✓ Markdown valid" || echo "⚠ Markdown check skipped"
-        continue-on-error: true

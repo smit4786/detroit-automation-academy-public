@@ -1,18 +1,13 @@
 name: Deploy Hugo site to gh-pages branch
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment
 permissions:
   contents: write
 
-# Allow only one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -24,8 +19,6 @@ defaults:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      HUGO_VERSION: 0.143.1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,7 +29,7 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: 'latest'
+          hugo-version: '0.156.0'
           extended: true
 
       - name: Setup Node
@@ -54,6 +47,7 @@ jobs:
             -s blog-source \
             --gc \
             --minify \
+            --panicOnWarning \
             --baseURL "https://detroitautomationacademy.com/blog/" \
             --destination "../public-blog"
           echo "Hugo build complete."
@@ -82,12 +76,59 @@ jobs:
           if [ -d "public-blog" ]; then
             cp -r public-blog/* deployment/blog/
           else
-            echo "Error: public-blog directory not found!"
+            echo "FATAL: public-blog directory not found!"
             exit 1
           fi
 
           echo "Deployment directory prepared."
           ls deployment/
+
+      - name: QA Gate - Pre-Deploy Validation
+        run: |
+          echo "=== QA Gate: Pre-Deploy Validation ==="
+          FAIL=0
+
+          # 1. Verify deployment directory exists and is non-empty
+          if [ ! -d "deployment" ] || [ -z "$(ls -A deployment)" ]; then
+            echo "FATAL: Deployment directory is missing or empty"
+            FAIL=1
+          fi
+
+          # 2. Verify critical HTML pages exist
+          for page in index.html partners.html students.html; do
+            if [ ! -f "deployment/$page" ]; then
+              echo "FATAL: Missing critical page: $page"
+              FAIL=1
+            fi
+          done
+
+          # 3. Verify blog output
+          if [ ! -f "deployment/blog/index.html" ]; then
+            echo "FATAL: Blog index.html missing from deployment"
+            FAIL=1
+          fi
+
+          # 4. Scan for banned content
+          BANNED_TERMS="501(c)(3)|nonprofit|non-profit"
+          if grep -riE "$BANNED_TERMS" deployment/*.html 2>/dev/null; then
+            echo "FATAL: Banned content detected in HTML files (non-profit claims)"
+            FAIL=1
+          fi
+
+          # 5. Check for empty HTML files
+          EMPTY_FILES=$(find deployment/ -name "*.html" -empty)
+          if [ -n "$EMPTY_FILES" ]; then
+            echo "FATAL: Empty HTML files detected:"
+            echo "$EMPTY_FILES"
+            FAIL=1
+          fi
+
+          if [ $FAIL -ne 0 ]; then
+            echo "❌ QA Gate FAILED — deployment blocked"
+            exit 1
+          fi
+
+          echo "✅ QA Gate passed — all checks clean"
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
