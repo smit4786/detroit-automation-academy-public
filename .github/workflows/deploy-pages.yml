@@ -55,7 +55,7 @@ jobs:
             --gc \
             --minify \
             --baseURL "https://detroitautomationacademy.com/blog/" \
-            --publishDir "../public-blog"
+            --destination "../public-blog"
           echo "Hugo build complete."
           ls -R ../public-blog | head -n 20
 
