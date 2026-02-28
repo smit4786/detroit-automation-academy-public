@@ -502,7 +502,7 @@ When completing a major phase or task:
 | Component | Status | URL |
 |-----------|--------|-----|
 | Backend (Go/Cloud Run) | ✅ LIVE | https://daa-crm-backend-87748455115.us-central1.run.app |
-| Frontend (React/Cloud Run) | ✅ LIVE | https://daa-crm-frontend-87748455115.us-central1.run.app |
+| Frontend (React/Cloud Run) | ✅ LIVE | https://enroll.detroitautomationacademy.com |
 | IAM Permissions | ✅ Configured | `roles/editor`, `artifactregistry.admin`, `logging.logWriter` |
 | Public Site CTA Links | ✅ Updated | `index.html` → CRM frontend |
 

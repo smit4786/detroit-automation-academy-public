@@ -61,7 +61,7 @@ The original backend stored students in memory — wiped on every cold start. We
 | Service | URL |
 |---------|-----|
 | Backend API (Go + Firestore) | `daa-crm-backend-87748455115.us-central1.run.app` |
-| Registration Portal (React) | `daa-crm-frontend-87748455115.us-central1.run.app` |
+| Registration Portal (React) | `enroll.detroitautomationacademy.com` |
 
 The admin dashboard is now protected by a PIN gate — staff enter the passcode once per session, stored in `sessionStorage`. The registration form remains fully public.
 
