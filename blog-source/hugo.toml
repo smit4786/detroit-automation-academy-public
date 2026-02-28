@@ -35,9 +35,15 @@ defaultContentLanguage = 'en'
 
 # ── Navigation ───────────────────────────────────────────────────────────────
 [[menus.main]]
+  identifier = "about"
+  name = "About"
+  url = "/about/"
+  weight = 5
+
+[[menus.main]]
   identifier = "posts"
   name = "Posts"
-  url = "/blog/posts/"
+  url = "/posts/"
   weight = 10
 
 [[menus.main]]

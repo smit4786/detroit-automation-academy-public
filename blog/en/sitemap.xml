@@ -113,6 +113,9 @@
     <loc>https://detroitautomationacademy.com/blog/tags/eventkit/</loc>
     <lastmod>2026-02-28T04:00:00-05:00</lastmod>
   </url><url>
+    <loc>https://detroitautomationacademy.com/blog/categories/ios/</loc>
+    <lastmod>2026-02-28T04:00:00-05:00</lastmod>
+  </url><url>
     <loc>https://detroitautomationacademy.com/blog/tags/ios/</loc>
     <lastmod>2026-02-28T04:00:00-05:00</lastmod>
     <xhtml:link
@@ -130,9 +133,6 @@
                 hreflang="en"
                 href="https://detroitautomationacademy.com/blog/tags/ios/"
                 />
-  </url><url>
-    <loc>https://detroitautomationacademy.com/blog/categories/ios/</loc>
-    <lastmod>2026-02-28T04:00:00-05:00</lastmod>
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/tags/musickit/</loc>
     <lastmod>2026-02-28T04:00:00-05:00</lastmod>
@@ -269,6 +269,9 @@
                 hreflang="en"
                 href="https://detroitautomationacademy.com/blog/posts/multi-agent-activation/"
                 />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/about/</loc>
+    <lastmod>2026-02-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/tags/appgroups/</loc>
     <lastmod>2026-02-21T22:30:00-05:00</lastmod>

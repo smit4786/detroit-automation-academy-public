@@ -5,7 +5,7 @@ draft: false
 tags: ["DAA", "Automation", "Technical-Review", "Multi-Agent"]
 categories: ["Project-Milestones"]
 author: "Justin Smith"
-featured_image: "/images/daa-success.jpg"
+featured_image: "/images/daa-logo.svg"
 description: "Mission accomplished: A comprehensive review of the Detroit Automation Academy website improvement project, delivered 7 days ahead of schedule with A+ quality standards."
 ---
 
