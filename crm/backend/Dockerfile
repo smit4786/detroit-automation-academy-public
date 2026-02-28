@@ -4,10 +4,10 @@ WORKDIR /app
 
 # Copy Go module files
 COPY go.mod ./
-# RUN go mod download # Uncomment when go.sum is present or if dependencies are added
 
 # Copy source code
 COPY . .
+RUN go mod tidy
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .

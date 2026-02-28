@@ -2,234 +2,80 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Automated Insights</title>
-    <link>https://detroitautomationacademy.com/blog/tags/</link>
+    <link>https://example.org/tags/</link>
     <description>Recent content in Tags on Automated Insights</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 28 Feb 2026 05:00:00 -0500</lastBuildDate>
-    <atom:link href="https://detroitautomationacademy.com/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 21 Feb 2026 22:00:00 -0500</lastBuildDate>
+    <atom:link href="https://example.org/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Cloud-Run</title>
-      <link>https://detroitautomationacademy.com/blog/tags/cloud-run/</link>
-      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/cloud-run/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Crm</title>
-      <link>https://detroitautomationacademy.com/blog/tags/crm/</link>
-      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/crm/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Devops</title>
-      <link>https://detroitautomationacademy.com/blog/tags/devops/</link>
-      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/devops/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Gcp</title>
-      <link>https://detroitautomationacademy.com/blog/tags/gcp/</link>
-      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/gcp/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Golang</title>
-      <link>https://detroitautomationacademy.com/blog/tags/golang/</link>
-      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/golang/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>React</title>
-      <link>https://detroitautomationacademy.com/blog/tags/react/</link>
-      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/react/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Coredata</title>
-      <link>https://detroitautomationacademy.com/blog/tags/coredata/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/coredata/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Eventkit</title>
-      <link>https://detroitautomationacademy.com/blog/tags/eventkit/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/eventkit/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>IOS</title>
-      <link>https://detroitautomationacademy.com/blog/tags/ios/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/ios/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Musickit</title>
-      <link>https://detroitautomationacademy.com/blog/tags/musickit/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/musickit/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Privacy</title>
-      <link>https://detroitautomationacademy.com/blog/tags/privacy/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/privacy/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Swift</title>
-      <link>https://detroitautomationacademy.com/blog/tags/swift/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/swift/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Ci-Cd</title>
-      <link>https://detroitautomationacademy.com/blog/tags/ci-cd/</link>
-      <pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/ci-cd/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Clawd</title>
-      <link>https://detroitautomationacademy.com/blog/tags/clawd/</link>
-      <pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/clawd/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Github-Actions</title>
-      <link>https://detroitautomationacademy.com/blog/tags/github-actions/</link>
-      <pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/github-actions/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Hugo</title>
-      <link>https://detroitautomationacademy.com/blog/tags/hugo/</link>
-      <pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/hugo/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Pipeline</title>
-      <link>https://detroitautomationacademy.com/blog/tags/pipeline/</link>
-      <pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/pipeline/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>AT_Diary</title>
-      <link>https://detroitautomationacademy.com/blog/tags/at_diary/</link>
-      <pubDate>Fri, 27 Feb 2026 10:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/at_diary/</guid>
+      <title>AI-Led</title>
+      <link>https://example.org/tags/ai-led/</link>
+      <pubDate>Sat, 21 Feb 2026 22:00:00 -0500</pubDate>
+      <guid>https://example.org/tags/ai-led/</guid>
       <description></description>
     </item>
     <item>
       <title>AT_Music</title>
-      <link>https://detroitautomationacademy.com/blog/tags/at_music/</link>
-      <pubDate>Fri, 27 Feb 2026 10:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/at_music/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>DAA</title>
-      <link>https://detroitautomationacademy.com/blog/tags/daa/</link>
-      <pubDate>Fri, 27 Feb 2026 10:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/daa/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Ecosystem</title>
-      <link>https://detroitautomationacademy.com/blog/tags/ecosystem/</link>
-      <pubDate>Fri, 27 Feb 2026 10:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/ecosystem/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Multi-Agent</title>
-      <link>https://detroitautomationacademy.com/blog/tags/multi-agent/</link>
-      <pubDate>Fri, 27 Feb 2026 10:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/multi-agent/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>AppGroups</title>
-      <link>https://detroitautomationacademy.com/blog/tags/appgroups/</link>
-      <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/appgroups/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Architecture</title>
-      <link>https://detroitautomationacademy.com/blog/tags/architecture/</link>
-      <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/architecture/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>SwiftData</title>
-      <link>https://detroitautomationacademy.com/blog/tags/swiftdata/</link>
-      <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/swiftdata/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>AI-Led</title>
-      <link>https://detroitautomationacademy.com/blog/tags/ai-led/</link>
+      <link>https://example.org/tags/at_music/</link>
       <pubDate>Sat, 21 Feb 2026 22:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/ai-led/</guid>
+      <guid>https://example.org/tags/at_music/</guid>
       <description></description>
     </item>
     <item>
       <title>Efficiency</title>
-      <link>https://detroitautomationacademy.com/blog/tags/efficiency/</link>
+      <link>https://example.org/tags/efficiency/</link>
       <pubDate>Sat, 21 Feb 2026 22:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/efficiency/</guid>
+      <guid>https://example.org/tags/efficiency/</guid>
       <description></description>
     </item>
     <item>
       <title>Strategy</title>
-      <link>https://detroitautomationacademy.com/blog/tags/strategy/</link>
+      <link>https://example.org/tags/strategy/</link>
       <pubDate>Sat, 21 Feb 2026 22:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/strategy/</guid>
+      <guid>https://example.org/tags/strategy/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>DAA</title>
+      <link>https://example.org/tags/daa/</link>
+      <pubDate>Sat, 21 Feb 2026 21:30:00 -0500</pubDate>
+      <guid>https://example.org/tags/daa/</guid>
       <description></description>
     </item>
     <item>
       <title>Detroit</title>
-      <link>https://detroitautomationacademy.com/blog/tags/detroit/</link>
+      <link>https://example.org/tags/detroit/</link>
       <pubDate>Sat, 21 Feb 2026 21:30:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/detroit/</guid>
+      <guid>https://example.org/tags/detroit/</guid>
       <description></description>
     </item>
     <item>
       <title>Operations</title>
-      <link>https://detroitautomationacademy.com/blog/tags/operations/</link>
+      <link>https://example.org/tags/operations/</link>
       <pubDate>Sat, 21 Feb 2026 21:30:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/operations/</guid>
+      <guid>https://example.org/tags/operations/</guid>
       <description></description>
     </item>
     <item>
       <title>Automation</title>
-      <link>https://detroitautomationacademy.com/blog/tags/automation/</link>
+      <link>https://example.org/tags/automation/</link>
       <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/automation/</guid>
+      <guid>https://example.org/tags/automation/</guid>
       <description></description>
     </item>
     <item>
-      <title>Technical-Review</title>
-      <link>https://detroitautomationacademy.com/blog/tags/technical-review/</link>
-      <pubDate>Mon, 09 Feb 2026 15:15:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/technical-review/</guid>
+      <title>Ecosystem</title>
+      <link>https://example.org/tags/ecosystem/</link>
+      <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
+      <guid>https://example.org/tags/ecosystem/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>IOS</title>
+      <link>https://example.org/tags/ios/</link>
+      <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
+      <guid>https://example.org/tags/ios/</guid>
       <description></description>
     </item>
   </channel>

@@ -5,8 +5,8 @@ import EnrollmentForm from './EnrollmentForm';
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
-const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '87748455115-compute@developer.gserviceaccount.com'; // User needs to provide actual Client ID
-const ALLOWED_EMAILS = ['dbkrsmith@gmail.com', 'nicole.yungers@gmail.com'];
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "87748455115-483j472l7c7scjkcm8qpguen8jaa4ie6.apps.googleusercontent.com";
+const ALLOWED_EMAILS = ["dbkrsmith@gmail.com", "smit4786@gmail.com"];
 
 const AppContent: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);

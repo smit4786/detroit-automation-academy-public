@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	ALLOWED_EMAILS = []string{"dbkrsmith@gmail.com", "nicole.yungers@gmail.com"}
+	ALLOWED_EMAILS = []string{"dbkrsmith@gmail.com", "smit4786@gmail.com"}
 	// User should set this in environment variables
 	CLIENT_ID = os.Getenv("GOOGLE_CLIENT_ID")
 )
@@ -84,7 +84,7 @@ func main() {
 		log.Printf("✅ Firestore connected (project: %s)", projectID)
 	}
 
-	fmt.Printf("🚀 DAA CRM Backend starting on port %s...\n", port)
+	fmt.Printf("🚀 Detroit Automation Academy Registration Backend starting on port %s...\n", port)
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

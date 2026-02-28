@@ -1,5 +1,5 @@
 ---
-title: "DAA CRM Live: From Zero to Cloud Run in One Session"
+title: "Detroit Automation Academy Registration Live: From Zero to Cloud Run in One Session"
 date: 2026-02-28T05:00:00-05:00
 draft: false
 author: "Justin Smith"
@@ -8,7 +8,7 @@ tags: ["gcp", "cloud-run", "react", "golang", "crm", "devops"]
 description: "How we built and deployed a fully functional multi-tenant CRM for Detroit Automation Academy — from broken Go string literals to a live React registration portal on Google Cloud Run."
 ---
 
-Tonight we shipped the DAA CRM from a broken build to a fully deployed, publicly accessible system in a single engineering session. Here's what that actually looked like.
+Tonight we shipped the Detroit Automation Academy Registration from a broken build to a fully deployed, publicly accessible system in a single engineering session. Here's what that actually looked like.
 
 ## Starting Point: Five Consecutive Build Failures
 
@@ -18,11 +18,11 @@ The first failure was a Go syntax error in `backend/main.go` — a raw newline e
 
 ```go
 // Broken
-fmt.Printf("DAA CRM Backend starting on port %s...
+fmt.Printf("Detroit Automation Academy Registration Backend starting on port %s...
 ", port)
 
 // Fixed
-fmt.Printf("DAA CRM Backend starting on port %s...\n", port)
+fmt.Printf("Detroit Automation Academy Registration Backend starting on port %s...\n", port)
 ```
 
 Go doesn't allow unescaped newlines inside string literals. The fix was one character.
