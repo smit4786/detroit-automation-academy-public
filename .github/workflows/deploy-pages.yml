@@ -38,13 +38,15 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: cd blog-source && npm install
+        working-directory: blog-source
+        run: npm install
 
       - name: Build with Hugo
+        working-directory: blog-source
         run: |
           echo "Building Hugo site..."
+          export PATH=$PWD/node_modules/.bin:$PATH
           hugo \
-            -s blog-source \
             --gc \
             --minify \
             --logLevel warning \
@@ -59,20 +61,22 @@ jobs:
           mkdir -p deployment/blog
 
           # Copy root HTML files
-          cp index.html deployment/     || echo "index.html not found"
-          cp dashboard.html deployment/ || echo "dashboard.html not found"
-          cp students.html deployment/  || echo "students.html not found"
-          cp instructors.html deployment/ || echo "instructors.html not found"
-          cp partners.html deployment/  || echo "partners.html not found"
-          cp CNAME deployment/          || echo "CNAME not found"
-          cp .nojekyll deployment/      || echo ".nojekyll not found"
+          cp index.html deployment/          || echo "index.html not found"
+          cp dashboard.html deployment/      || echo "dashboard.html not found"
+          cp students.html deployment/       || echo "students.html not found"
+          cp instructors.html deployment/    || echo "instructors.html not found"
+          cp partners.html deployment/       || echo "partners.html not found"
+          cp landing.html deployment/        || echo "landing.html not found"
+          cp subscriptions.html deployment/  || echo "subscriptions.html not found"
+          cp CNAME deployment/               || echo "CNAME not found"
+          cp .nojekyll deployment/           || echo ".nojekyll not found"
 
           # Copy asset directories
           cp -r assets deployment/   || (mkdir -p deployment/assets   && echo "assets dir created empty")
           cp -r branding deployment/ || (mkdir -p deployment/branding && echo "branding dir created empty")
           cp -r qr_codes deployment/ || (mkdir -p deployment/qr_codes && echo "qr_codes dir created empty")
 
-          # Copy blog content
+          # Copy blog content (Hugo built output)
           if [ -d "public-blog" ]; then
             cp -r public-blog/* deployment/blog/
           else
