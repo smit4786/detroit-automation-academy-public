@@ -6,8 +6,15 @@
     <description>Recent content in Categories on Automated Insights</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 28 Feb 2026 10:15:00 -0500</lastBuildDate>
+    <lastBuildDate>Sat, 28 Feb 2026 11:00:00 -0500</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Strategies</title>
+      <link>https://detroitautomationacademy.com/blog/categories/strategies/</link>
+      <pubDate>Sat, 28 Feb 2026 11:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/categories/strategies/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Technical-Updates</title>
       <link>https://detroitautomationacademy.com/blog/categories/technical-updates/</link>

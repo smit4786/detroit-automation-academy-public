@@ -3,7 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://detroitautomationacademy.com/blog/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="de"
@@ -20,11 +20,8 @@
                 href="https://detroitautomationacademy.com/blog/"
                 />
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/tags/automation/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
-  </url><url>
     <loc>https://detroitautomationacademy.com/blog/categories/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="de"
@@ -41,17 +38,17 @@
                 href="https://detroitautomationacademy.com/blog/categories/"
                 />
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/tags/gcp/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+    <loc>https://detroitautomationacademy.com/blog/posts/pause-and-pivot-protocol/</loc>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/tags/infrastructure/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+    <loc>https://detroitautomationacademy.com/blog/tags/digital-problem-solving/</loc>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+    <loc>https://detroitautomationacademy.com/blog/tags/digital-stoicism/</loc>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/posts/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="de"
@@ -68,14 +65,14 @@
                 href="https://detroitautomationacademy.com/blog/posts/"
                 />
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/tags/security/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+    <loc>https://detroitautomationacademy.com/blog/tags/productivity/</loc>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/tags/sso/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+    <loc>https://detroitautomationacademy.com/blog/categories/strategies/</loc>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/tags/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="de"
@@ -91,6 +88,27 @@
                 hreflang="en"
                 href="https://detroitautomationacademy.com/blog/tags/"
                 />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/tags/youth-engagement/</loc>
+    <lastmod>2026-02-28T11:00:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/tags/automation/</loc>
+    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/tags/gcp/</loc>
+    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/tags/infrastructure/</loc>
+    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/</loc>
+    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/tags/security/</loc>
+    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/tags/sso/</loc>
+    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/categories/technical-updates/</loc>
     <lastmod>2026-02-28T10:15:00-05:00</lastmod>
