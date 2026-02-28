@@ -53,7 +53,7 @@ jobs:
             --baseURL "https://detroitautomationacademy.com/blog/" \
             --destination "../public-blog"
           echo "Hugo build complete."
-          ls -R ../public-blog | head -n 20
+          ls ../public-blog
 
       - name: Prepare Deployment Directory
         run: |

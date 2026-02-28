@@ -20,8 +20,8 @@ const StudentForm: React.FC<StudentFormProps> = ({ onStudentAdded, tenantId }) =
     const newStudent = {
       first_name: firstName,
       last_name: lastName,
-      email: email,
-      cohort: cohort,
+      email,
+      cohort,
       status: 'Active' as const,
     };
 
@@ -31,13 +31,9 @@ const StudentForm: React.FC<StudentFormProps> = ({ onStudentAdded, tenantId }) =
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newStudent),
       });
-
       if (!response.ok) throw new Error('Failed to add student');
-
-      const savedStudent = await response.json();
-      onStudentAdded(savedStudent);
-      
-      // Reset form
+      const saved = await response.json();
+      onStudentAdded(saved);
       setFirstName('');
       setLastName('');
       setEmail('');
@@ -50,62 +46,64 @@ const StudentForm: React.FC<StudentFormProps> = ({ onStudentAdded, tenantId }) =
   };
 
   return (
-    <div className="bg-white shadow rounded-lg p-6 mb-8">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Enroll New Student</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">First Name</label>
-            <input
-              type="text"
-              required
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Last Name</label>
-            <input
-              type="text"
-              required
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
-            />
-          </div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Email Address</label>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="daa-add-grid">
+        <div className="daa-field">
+          <label className="daa-label">First Name</label>
           <input
-            type="email"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+            type="text"
+            className="daa-input"
+            value={firstName}
+            onChange={e => setFirstName(e.target.value)}
+            placeholder="Justin"
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Cohort</label>
-          <select
-            value={cohort}
-            onChange={(e) => setCohort(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
-          >
-            <option>Feb 2026</option>
-            <option>Mar 2026</option>
-            <option>Apr 2026</option>
-          </select>
+        <div className="daa-field">
+          <label className="daa-label">Last Name</label>
+          <input
+            required
+            type="text"
+            className="daa-input"
+            value={lastName}
+            onChange={e => setLastName(e.target.value)}
+            placeholder="Smith"
+          />
         </div>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+      </div>
+      <div className="daa-field">
+        <label className="daa-label">Email Address</label>
+        <input
+          required
+          type="email"
+          className="daa-input"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          placeholder="jsmith@email.com"
+        />
+      </div>
+      <div className="daa-field">
+        <label className="daa-label">Cohort</label>
+        <select
+          className="daa-select"
+          value={cohort}
+          onChange={e => setCohort(e.target.value)}
         >
-          {isSubmitting ? 'Enrolling...' : 'Enroll Student'}
-        </button>
-      </form>
-    </div>
+          <option>Feb 2026</option>
+          <option>Mar 2026</option>
+          <option>Apr 2026</option>
+          <option>May 2026</option>
+        </select>
+      </div>
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="daa-submit"
+        style={{ marginTop: 4, fontSize: 13, padding: '12px 16px' }}
+      >
+        {isSubmitting ? 'Enrolling...' : '+ Enroll Student'}
+      </button>
+    </form>
   );
 };
 
