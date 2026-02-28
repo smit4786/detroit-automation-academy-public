@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Coredata on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/tags/coredata/</link>
+    <description>Recent content in Coredata on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Sat, 28 Feb 2026 04:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/coredata/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>@AT_Diary Спринт 2: Создание дневника с приоритетом конфиденциальности на нативных фреймворках Apple</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/at-diary-sprint-2/</link>
+      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/at-diary-sprint-2/</guid>
+      <description>&lt;p&gt;Спринт 2 проекта &lt;code&gt;@AT_Diary&lt;/code&gt; завершен успешной сборкой. Вот что мы выпустили и как работают наши архитектурные решения.&lt;/p&gt;&#xA;&lt;h2 id=&#34;основная-концепция&#34;&gt;Основная концепция&lt;/h2&gt;&#xA;&lt;p&gt;Большинство приложений для ведения дневников просят вас доверить их серверам ваши самые личные данные. AT_Diary этого не делает. Каждая единица данных, с которой он работает — ваша история музыки, события календаря, контекст местоположения, ваши фотографии — обрабатывается &lt;strong&gt;на устройстве&lt;/strong&gt; и хранится с шифрованием iCloud. Никакие данные не отправляются вовне.&lt;/p&gt;&#xA;&lt;h2 id=&#34;стек-фреймворков&#34;&gt;Стек фреймворков&lt;/h2&gt;&#xA;&lt;table&gt;&#xA;  &lt;thead&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;th&gt;Фреймворк&lt;/th&gt;&#xA;          &lt;th&gt;Домен данных&lt;/th&gt;&#xA;          &lt;th&gt;Подход к конфиденциальности&lt;/th&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/thead&gt;&#xA;  &lt;tbody&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;MusicKit&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Что вы слушаете&lt;/td&gt;&#xA;          &lt;td&gt;Запрашивает разрешение пользователя; данные не покидают устройство&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;EventKit&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Календарь и напоминания&lt;/td&gt;&#xA;          &lt;td&gt;Доступ только для чтения к авторизованным календарям&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;Contacts&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Именованные сущности в вашем дне&lt;/td&gt;&#xA;          &lt;td&gt;Доступ только по идентификатору, без массового импорта&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;CoreLocation&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Где вы находитесь&lt;/td&gt;&#xA;          &lt;td&gt;Только значительные изменения местоположения, хранящиеся в виде геохэша&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;Photos&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Визуальные триггеры памяти&lt;/td&gt;&#xA;          &lt;td&gt;Миниатюры создаются локально, оригиналы никогда не читаются&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/tbody&gt;&#xA;&lt;/table&gt;&#xA;&lt;h2 id=&#34;результаты-спринта-2&#34;&gt;Результаты Спринта 2&lt;/h2&gt;&#xA;&lt;h3 id=&#34;-интеграция-musickit&#34;&gt;✅ Интеграция MusicKit&lt;/h3&gt;&#xA;&lt;p&gt;Процесс авторизации завершен. Приложение фиксирует текущий трек в момент создания записи. Обложка альбома загружается из каталога MusicKit и отображается как контекстная миниатюра.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

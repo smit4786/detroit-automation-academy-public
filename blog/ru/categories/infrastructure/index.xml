@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Infrastructure on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/categories/infrastructure/</link>
+    <description>Recent content in Infrastructure on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Sat, 28 Feb 2026 03:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/categories/infrastructure/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Исправление нашего CI/CD конвейера: подмодули, пустые коммиты и QA-гейт Clawd</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/cicd-pipeline-postmortem/</link>
+      <pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/cicd-pipeline-postmortem/</guid>
+      <description>&lt;p&gt;Блог Automated Insights столкнулся с повторяющейся проблемой CI/CD: развертывания, которые работали локально, незаметно давали сбой в GitHub Actions или завершались успешно, но приводили к поломке сайта. Вот анализ основных причин и внесенные нами изменения.&lt;/p&gt;&#xA;&lt;h2 id=&#34;три-режима-отказа&#34;&gt;Три режима отказа&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;strong&gt;Сборка Hugo успешна, контент сайта отсутствует&lt;/strong&gt; — директория &lt;code&gt;public/&lt;/code&gt; была создана, но шаг git commit завершился неудачей, так как нечего было коммитить. Шаг развертывания все равно запустился и отправил устаревшую сборку.&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;strong&gt;Подмодуль темы не инициализирован&lt;/strong&gt; — тема Ananke является подмодулем git. Новые раннеры GitHub Actions клонируют репозиторий, но не инициализируют подмодули автоматически. Сборка продолжалась с пустой директорией &lt;code&gt;themes/ananke/&lt;/code&gt;, в результате чего получался сайт без стилей, хотя код завершения был 0.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SSO on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/tags/sso/</link>
+    <description>Recent content in SSO on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Sat, 28 Feb 2026 10:15:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/sso/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Эволюция инфраструктуры: SSO, поддомены и укрепление безопасности</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/infrastructure-evolution-2026-02-28/</link>
+      <pubDate>Sat, 28 Feb 2026 10:15:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/infrastructure-evolution-2026-02-28/</guid>
+      <description>&lt;h1 id=&#34;-укрепление-цифровой-экосистемы-daa&#34;&gt;🛡️ Укрепление цифровой экосистемы DAA&lt;/h1&gt;&#xA;&lt;p&gt;Сегодняшний день знаменует собой значительный шаг вперед в обеспечении безопасности и профессионализации инфраструктуры Detroit Automation Academy (DAA). Мы успешно реализовали стратегию обновления по трем направлениям: &lt;strong&gt;Идентификация&lt;/strong&gt;, &lt;strong&gt;Доступность&lt;/strong&gt; и &lt;strong&gt;Стабильность&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h2 id=&#34;-1-революция-идентификации-интеграция-google-sso&#34;&gt;🔐 1. Революция идентификации: интеграция Google SSO&lt;/h2&gt;&#xA;&lt;p&gt;Мы официально отказались от устаревшей аутентификации по PIN-коду для нашей панели администратора CRM. Внедрение &lt;strong&gt;Google SSO (OAuth 2.0)&lt;/strong&gt; позволило нам достичь:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Базовый уровень Zero-Trust&lt;/strong&gt;: доступ теперь строго ограничен авторизованными адресами электронной почты сотрудников DAA, проверенными сервисами Google Identity.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Безопасность на базе JWT&lt;/strong&gt;: каждый административный запрос к API теперь проверяется на бэкенде с использованием криптографически подписанных токенов JSON Web Token.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Улучшенный UX&lt;/strong&gt;: удобный вход в систему через Google для нашей команды.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;-2-профессиональная-доступность-миграция-поддомена-enroll&#34;&gt;🌐 2. Профессиональная доступность: миграция поддомена &lt;code&gt;enroll&lt;/code&gt;&lt;/h2&gt;&#xA;&lt;p&gt;Наш портал регистрации переехал со своего адреса по умолчанию в Cloud Run на выделенный профессиональный поддомен:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

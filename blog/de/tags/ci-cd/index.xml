@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ci-Cd on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/de/tags/ci-cd/</link>
+    <description>Recent content in Ci-Cd on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>de</language>
+    <lastBuildDate>Sat, 28 Feb 2026 03:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/de/tags/ci-cd/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate</title>
+      <link>https://detroitautomationacademy.com/blog/de/posts/cicd-pipeline-postmortem/</link>
+      <pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/posts/cicd-pipeline-postmortem/</guid>
+      <description>&lt;p&gt;Der Automated Insights Blog hatte ein wiederkehrendes CI/CD-Problem: Bereitstellungen, die lokal funktionierten, schlugen in GitHub Actions lautlos fehl oder waren in Actions erfolgreich, produzierten aber eine fehlerhafte Website. Hier ist die Ursachenanalyse und was wir geändert haben.&lt;/p&gt;&#xA;&lt;h2 id=&#34;die-drei-fehlermodi&#34;&gt;Die drei Fehlermodi&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;strong&gt;Hugo-Build erfolgreich, Website-Inhalt fehlt&lt;/strong&gt; — das &lt;code&gt;public/&lt;/code&gt;-Verzeichnis wurde generiert, aber der Git-Commit-Schritt schlug lautlos fehl, weil es nichts Neues zu committen gab. Der Bereitstellungsschritt wurde trotzdem ausgeführt und übertrug einen veralteten Build.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

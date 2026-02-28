@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Golang on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/tags/golang/</link>
+    <description>Recent content in Golang on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Sat, 28 Feb 2026 05:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Запуск регистрации в Detroit Automation Academy: от нуля до Cloud Run за одну сессию</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/daa-crm-cloud-run-deployment/</link>
+      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/daa-crm-cloud-run-deployment/</guid>
+      <description>&lt;p&gt;Сегодня мы перевели систему регистрации Detroit Automation Academy из состояния сломанной сборки в полностью развернутую и доступную систему всего за одну инженерную сессию. Вот как это происходило.&lt;/p&gt;&#xA;&lt;h2 id=&#34;начальная-точка-пять-сбоев-сборки-подряд&#34;&gt;Начальная точка: пять сбоев сборки подряд&lt;/h2&gt;&#xA;&lt;p&gt;Скрипт &lt;code&gt;deploy.sh&lt;/code&gt; был. Образы Docker были. Чего не было, так это работающей сборки.&lt;/p&gt;&#xA;&lt;p&gt;Первой ошибкой была синтаксическая ошибка Go в &lt;code&gt;backend/main.go&lt;/code&gt; — символ новой строки внутри строкового литерала:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// Ошибка&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Detroit Automation Academy Registration Backend starting on port %s...&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;port&lt;/span&gt;)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// Исправлено&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Detroit Automation Academy Registration Backend starting on port %s...&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;port&lt;/span&gt;)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Go не допускает неэкранированных переносов строк внутри строковых литералов. Исправление заняло один символ.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

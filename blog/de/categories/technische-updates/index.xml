@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Technische-Updates on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/de/categories/technische-updates/</link>
+    <description>Recent content in Technische-Updates on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>de</language>
+    <lastBuildDate>Sat, 28 Feb 2026 10:15:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/de/categories/technische-updates/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Infrastruktur-Evolution: SSO, Subdomains und Sicherheits-Härtung</title>
+      <link>https://detroitautomationacademy.com/blog/de/posts/infrastructure-evolution-2026-02-28/</link>
+      <pubDate>Sat, 28 Feb 2026 10:15:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/posts/infrastructure-evolution-2026-02-28/</guid>
+      <description>&lt;h1 id=&#34;-härtung-des-digitalen-daa-ökosystems&#34;&gt;🛡️ Härtung des digitalen DAA-Ökosystems&lt;/h1&gt;&#xA;&lt;p&gt;Der heutige Tag markiert einen bedeutenden Fortschritt in der Sicherheit und Professionalisierung der Infrastruktur der Detroit Automation Academy (DAA). Wir haben erfolgreich eine dreistufige Upgrade-Strategie umgesetzt, die sich auf &lt;strong&gt;Identität&lt;/strong&gt;, &lt;strong&gt;Erreichbarkeit&lt;/strong&gt; und &lt;strong&gt;Stabilität&lt;/strong&gt; konzentriert.&lt;/p&gt;&#xA;&lt;h2 id=&#34;-1-identitätsrevolution-google-sso-integration&#34;&gt;🔐 1. Identitätsrevolution: Google SSO-Integration&lt;/h2&gt;&#xA;&lt;p&gt;Wir haben die veraltete PIN-basierte Authentifizierung für unser CRM-Admin-Dashboard offiziell in den Ruhestand geschickt. Durch die Implementierung von &lt;strong&gt;Google SSO (OAuth 2.0)&lt;/strong&gt; haben wir folgendes erreicht:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
