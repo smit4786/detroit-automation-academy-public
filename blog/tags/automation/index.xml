@@ -2,18 +2,32 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Automation on Automated Insights</title>
-    <link>https://example.org/tags/automation/</link>
+    <link>https://detroitautomationacademy.com/blog/tags/automation/</link>
     <description>Recent content in Automation on Automated Insights</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 21 Feb 2026 21:00:00 -0500</lastBuildDate>
-    <atom:link href="https://example.org/tags/automation/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 28 Feb 2026 10:15:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/tags/automation/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Infrastructure Evolution: SSO, Subdomains, and Security Hardening</title>
+      <link>https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/</link>
+      <pubDate>Sat, 28 Feb 2026 10:15:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/</guid>
+      <description>&lt;h1 id=&#34;-hardening-the-daa-digital-ecosystem&#34;&gt;🛡️ Hardening the DAA Digital Ecosystem&lt;/h1&gt;&#xA;&lt;p&gt;Today marks a significant leap forward in the security and professionalization of the Detroit Automation Academy (DAA) infrastructure. We have successfully executed a three-pronged upgrade strategy focusing on &lt;strong&gt;Identity&lt;/strong&gt;, &lt;strong&gt;Accessibility&lt;/strong&gt;, and &lt;strong&gt;Stability&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h2 id=&#34;-1-identity-revolution-google-sso-integration&#34;&gt;🔐 1. Identity Revolution: Google SSO Integration&lt;/h2&gt;&#xA;&lt;p&gt;We have officially retired the legacy PIN-based authentication for our CRM Admin Dashboard. By implementing &lt;strong&gt;Google SSO (OAuth 2.0)&lt;/strong&gt;, we have achieved:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Zero-Trust Baseline&lt;/strong&gt;: Access is now strictly limited to authorized DAA staff emails verified by Google Identity Services.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;JWT-Backed Security&lt;/strong&gt;: Every administrative API request is now validated on the backend using cryptographically signed JSON Web Tokens.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Enhanced UX&lt;/strong&gt;: A seamless &amp;ldquo;Sign in with Google&amp;rdquo; experience for our team.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;-2-professional-accessibility-enroll-subdomain-migration&#34;&gt;🌐 2. Professional Accessibility: &lt;code&gt;enroll&lt;/code&gt; Subdomain Migration&lt;/h2&gt;&#xA;&lt;p&gt;Our Registration Portal has graduated from its default Cloud Run address to a dedicated, professional subdomain:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>@AT_Diary: Milestone Achieved in Automated Engineering</title>
-      <link>https://example.org/posts/at-diary-milestone/</link>
+      <link>https://detroitautomationacademy.com/blog/posts/at-diary-milestone/</link>
       <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
-      <guid>https://example.org/posts/at-diary-milestone/</guid>
+      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-milestone/</guid>
       <description>&lt;h3 id=&#34;synthesizing-the-future-of-personal-data&#34;&gt;Synthesizing the Future of Personal Data&lt;/h3&gt;&#xA;&lt;p&gt;Today marks a significant milestone for &lt;strong&gt;Automated Technologies&lt;/strong&gt;. We have successfully completed the core build of &lt;strong&gt;@AT_Diary&lt;/strong&gt;, a privacy-first iOS application that bridges the gap between daily life and automated insights.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Key Achievements:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Full Ecosystem Integration:&lt;/strong&gt; Real-time synchronization with MusicKit, EventKit, and CoreLocation.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;On-Device Intelligence:&lt;/strong&gt; Leveraging the NaturalLanguage framework for sentiment analysis without sacrificing user privacy.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Rapid Prototyping:&lt;/strong&gt; Moving from concept to a successful Xcode build in under 4 hours using advanced AI coordination.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This project demonstrates the power of highly-coordinated multi-agent development, a methodology we are also applying to the &lt;strong&gt;Detroit Automation Academy (DAA)&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Project Completion: Detroit Automation Academy Website</title>
+      <link>https://detroitautomationacademy.com/blog/posts/daa-project-completion-report/</link>
+      <pubDate>Mon, 09 Feb 2026 15:15:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/daa-project-completion-report/</guid>
+      <description>&lt;h1 id=&#34;-mission-accomplished-daa-website-initiative&#34;&gt;🎯 Mission Accomplished: DAA Website Initiative&lt;/h1&gt;&#xA;&lt;p&gt;We are proud to announce the successful completion of the &lt;strong&gt;Detroit Automation Academy (DAA) Website Improvement Initiative&lt;/strong&gt;. This project represents a major milestone in our mission to provide accessible automation education for Detroit&amp;rsquo;s future.&lt;/p&gt;&#xA;&lt;h2 id=&#34;-executive-summary&#34;&gt;📊 Executive Summary&lt;/h2&gt;&#xA;&lt;p&gt;The project was delivered with &lt;strong&gt;exemplary performance&lt;/strong&gt;, achieving an &lt;strong&gt;A+ grade (96/100)&lt;/strong&gt;. Key outcomes include:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;✅ &lt;strong&gt;Fixed Critical Issues&lt;/strong&gt;: Outdated event dates were replaced with professional placeholders, restoring site credibility.&lt;/li&gt;&#xA;&lt;li&gt;✅ &lt;strong&gt;Verified Infrastructure&lt;/strong&gt;: The enrollment system was confirmed operational, with 3 active enrollments already logged.&lt;/li&gt;&#xA;&lt;li&gt;✅ &lt;strong&gt;Optimized Performance&lt;/strong&gt;: Achieve a &lt;strong&gt;0.302s load time&lt;/strong&gt;, exceeding our performance targets by 85%.&lt;/li&gt;&#xA;&lt;li&gt;✅ &lt;strong&gt;Professional Documentation&lt;/strong&gt;: Over &lt;strong&gt;118KB of documentation&lt;/strong&gt; was produced to ensure long-term sustainability and knowledge transfer.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;-technical-excellence&#34;&gt;🚀 Technical Excellence&lt;/h2&gt;&#xA;&lt;p&gt;The project leveraged multi-agent coordination to ensure surgical precision in implementation. By utilizing a 6-phase implementation roadmap, the team managed to complete all objectives &lt;strong&gt;7 days ahead of schedule&lt;/strong&gt; and &lt;strong&gt;41% under budget&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
