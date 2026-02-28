@@ -2,50 +2,79 @@ import React, { useEffect, useState } from 'react';
 import { Student } from './types';
 import StudentForm from './StudentForm';
 import EnrollmentForm from './EnrollmentForm';
+import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
-const ADMIN_PIN = process.env.REACT_APP_ADMIN_PIN || 'DAA2026';
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '87748455115-compute@developer.gserviceaccount.com'; // User needs to provide actual Client ID
+const ALLOWED_EMAILS = ['dbkrsmith@gmail.com', 'nicole.yungers@gmail.com'];
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [tenantId, setTenantId] = useState<string>('DAA-CORE');
   const [view, setView] = useState<'enroll' | 'admin'>('enroll');
+  const [userEmail, setUserEmail] = useState<string | null>(
+    sessionStorage.getItem('daa_user_email')
+  );
   const [adminUnlocked, setAdminUnlocked] = useState<boolean>(
     sessionStorage.getItem('daa_admin_auth') === 'true'
   );
-  const [showPinModal, setShowPinModal] = useState<boolean>(false);
-  const [pinInput, setPinInput] = useState<string>('');
-  const [pinError, setPinError] = useState<boolean>(false);
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
 
   const handleAdminTabClick = () => {
     if (adminUnlocked) {
       setView('admin');
     } else {
-      setShowPinModal(true);
+      setShowLoginModal(true);
     }
   };
 
-  const handlePinSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (pinInput === ADMIN_PIN) {
-      sessionStorage.setItem('daa_admin_auth', 'true');
-      setAdminUnlocked(true);
-      setShowPinModal(false);
-      setPinInput('');
-      setPinError(false);
-      setView('admin');
-    } else {
-      setPinError(true);
-      setPinInput('');
+  const handleLoginSuccess = (response: CredentialResponse) => {
+    if (response.credential) {
+      const decoded: any = jwtDecode(response.credential);
+      const email = decoded.email;
+      
+      if (ALLOWED_EMAILS.includes(email)) {
+        sessionStorage.setItem('daa_admin_auth', 'true');
+        sessionStorage.setItem('daa_user_email', email);
+        sessionStorage.setItem('daa_id_token', response.credential);
+        setAdminUnlocked(true);
+        setUserEmail(email);
+        setShowLoginModal(false);
+        setView('admin');
+      } else {
+        alert(`Access Denied: ${email} is not authorized.`);
+      }
     }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('daa_admin_auth');
+    sessionStorage.removeItem('daa_user_email');
+    sessionStorage.removeItem('daa_id_token');
+    setAdminUnlocked(false);
+    setUserEmail(null);
+    setView('enroll');
   };
 
   useEffect(() => {
     if (view === 'admin') {
       setLoading(true);
-      fetch(`/api/students?tenant_id=${tenantId}`)
-        .then(res => { if (!res.ok) throw new Error('Failed to fetch'); return res.json(); })
+      const token = sessionStorage.getItem('daa_id_token');
+      fetch(`/api/students?tenant_id=${tenantId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => { 
+          if (res.status === 401 || res.status === 403) {
+            handleLogout();
+            throw new Error('Session expired or unauthorized');
+          }
+          if (!res.ok) throw new Error('Failed to fetch'); 
+          return res.json(); 
+        })
         .then(data => { setStudents(data); setLoading(false); })
         .catch(err => { setError(err.message); setLoading(false); });
     }
@@ -59,8 +88,8 @@ const App: React.FC = () => {
   return (
     <div id="root">
 
-      {/* ── PIN Gate Modal ── */}
-      {showPinModal && (
+      {/* ── SSO Login Modal ── */}
+      {showLoginModal && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 999,
           background: 'rgba(0,0,0,0.7)',
@@ -77,40 +106,28 @@ const App: React.FC = () => {
             maxWidth: 380,
             textAlign: 'center',
             boxShadow: 'var(--shadow-blue)',
-            animation: 'fadeUp 0.3s ease',
           }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>🔐</div>
             <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 20, fontWeight: 800, color: 'var(--text)', marginBottom: 8 }}>
               Admin Access
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 24 }}>
-              Enter the DAA staff passcode to access the dashboard.
+              Sign in with your DAA Google account to access the dashboard.
             </p>
-            <form onSubmit={handlePinSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <input
-                id="admin-pin-input"
-                type="password"
-                className="daa-input"
-                placeholder="Enter passcode..."
-                value={pinInput}
-                onChange={e => { setPinInput(e.target.value); setPinError(false); }}
-                autoFocus
-                style={{ textAlign: 'center', letterSpacing: '0.3em', fontSize: 18 }}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+              <GoogleLogin
+                onSuccess={handleLoginSuccess}
+                onError={() => console.log('Login Failed')}
+                useOneTap
               />
-              {pinError && (
-                <p style={{ color: '#f85149', fontSize: 12, margin: 0 }}>Incorrect passcode. Try again.</p>
-              )}
-              <button type="submit" className="daa-submit" style={{ padding: '12px 16px', fontSize: 14 }}>
-                Unlock Dashboard
-              </button>
-              <button
-                type="button"
-                className="daa-link-btn"
-                onClick={() => { setShowPinModal(false); setPinInput(''); setPinError(false); }}
-              >
-                Cancel
-              </button>
-            </form>
+            </div>
+            <button
+              type="button"
+              className="daa-link-btn"
+              onClick={() => setShowLoginModal(false)}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
@@ -118,7 +135,6 @@ const App: React.FC = () => {
       {/* ── Navigation ── */}
       <header className="daa-nav">
         <div className="daa-nav-inner">
-          {/* Logo */}
           <a href="https://detroitautomationacademy.com" className="daa-logo" target="_blank" rel="noreferrer">
             <div className="daa-logo-mark">⚙️</div>
             <div className="daa-logo-text">
@@ -127,44 +143,41 @@ const App: React.FC = () => {
             </div>
           </a>
 
-          {/* Tab Switcher */}
           <nav className="daa-nav-tabs">
             <button
-              id="tab-enroll"
               className={`daa-tab${view === 'enroll' ? ' active-green' : ''}`}
               onClick={() => setView('enroll')}
             >
               🎓 Registration Portal
             </button>
             <button
-              id="tab-admin"
               className={`daa-tab${view === 'admin' ? ' active' : ''}`}
               onClick={handleAdminTabClick}
             >
               {adminUnlocked ? '📊' : '🔒'} Admin Dashboard
             </button>
+            {adminUnlocked && (
+              <button className="daa-tab" onClick={handleLogout} style={{ color: '#f85149' }}>
+                Logout
+              </button>
+            )}
           </nav>
         </div>
       </header>
 
-      {/* ── Registration Portal ── */}
       {view === 'enroll' && <EnrollmentForm />}
 
-      {/* ── Admin Dashboard ── */}
       {view === 'admin' && (
         <div style={{ flex: 1, padding: '40px 24px' }}>
           <div className="daa-admin-page" style={{ padding: 0 }}>
-
-            {/* Header */}
             <div className="daa-admin-header">
               <div>
                 <h1 className="daa-admin-title">DAA Multi-Tenant CRM</h1>
-                <p className="daa-admin-subtitle">Managing <strong style={{ color: 'var(--primary)' }}>{tenantId}</strong> environment</p>
+                <p className="daa-admin-subtitle">User: <strong style={{ color: 'var(--primary)' }}>{userEmail}</strong> | Tenant: <strong>{tenantId}</strong></p>
               </div>
               <div className="daa-tenant-select">
                 <span className="daa-tenant-label">Academy:</span>
                 <select
-                  id="tenant-select"
                   className="daa-select"
                   style={{ minWidth: 220, padding: '8px 40px 8px 12px' }}
                   value={tenantId}
@@ -176,7 +189,6 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Stats Row */}
             {!loading && !error && (
               <div className="daa-stats-row">
                 <div className="daa-stat-card">
@@ -194,38 +206,15 @@ const App: React.FC = () => {
               </div>
             )}
 
-            {/* Main Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20, alignItems: 'start' }}>
-
-              {/* Table */}
               <div className="daa-table-card">
-                {loading && (
-                  <div className="daa-empty-state">
-                    <div className="daa-empty-state-icon">⏳</div>
-                    <p>Loading students for {tenantId}...</p>
-                  </div>
-                )}
-                {error && (
-                  <div className="daa-empty-state">
-                    <div className="daa-empty-state-icon">⚠️</div>
-                    <p style={{ color: '#f85149' }}>{error}</p>
-                  </div>
-                )}
-                {!loading && !error && students.length === 0 && (
-                  <div className="daa-empty-state">
-                    <div className="daa-empty-state-icon">🎓</div>
-                    <p>No students in {tenantId} yet. Add one using the panel →</p>
-                  </div>
-                )}
+                {loading && <div className="daa-empty-state"><p>Loading...</p></div>}
+                {error && <div className="daa-empty-state"><p style={{ color: '#f85149' }}>{error}</p></div>}
+                {!loading && !error && students.length === 0 && <div className="daa-empty-state"><p>No students found.</p></div>}
                 {!loading && !error && students.length > 0 && (
                   <table className="daa-table">
                     <thead>
-                      <tr>
-                        <th>Student</th>
-                        <th>Program Interest</th>
-                        <th>Cohort</th>
-                        <th>Status</th>
-                      </tr>
+                      <tr><th>Student</th><th>Interest</th><th>Cohort</th><th>Status</th></tr>
                     </thead>
                     <tbody>
                       {students.map(student => (
@@ -234,37 +223,31 @@ const App: React.FC = () => {
                             <div className="student-name">{student.first_name} {student.last_name}</div>
                             <div className="student-email">{student.email}</div>
                           </td>
-                          <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>
-                            {student.program_interest ? student.program_interest.join(', ') : '—'}
-                          </td>
-                          <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{student.cohort}</td>
-                          <td>
-                            <span className={`daa-badge ${student.status === 'Active' ? 'active' :
-                              student.status === 'Inquiry' ? 'inquiry' : 'other'
-                              }`}>
-                              {student.status}
-                            </span>
-                          </td>
+                          <td style={{ fontSize: 12 }}>{student.program_interest?.join(', ') || '—'}</td>
+                          <td style={{ fontSize: 12 }}>{student.cohort}</td>
+                          <td><span className={`daa-badge ${student.status.toLowerCase()}`}>{student.status}</span></td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 )}
               </div>
-
-              {/* Add Student Panel */}
               <div className="daa-add-card">
                 <h3>➕ Add Student</h3>
                 <StudentForm onStudentAdded={handleStudentAdded} tenantId={tenantId} />
               </div>
-
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };
+
+const App: React.FC = () => (
+  <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    <AppContent />
+  </GoogleOAuthProvider>
+);
 
 export default App;

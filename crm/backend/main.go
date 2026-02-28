@@ -6,10 +6,63 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"cloud.google.com/go/firestore"
 	"github.com/smit4786/detroit-automation-academy-public/crm/backend/handlers"
+	"google.golang.org/api/idtoken"
 )
+
+var (
+	ALLOWED_EMAILS = []string{"dbkrsmith@gmail.com", "nicole.yungers@gmail.com"}
+	// User should set this in environment variables
+	CLIENT_ID = os.Getenv("GOOGLE_CLIENT_ID")
+)
+
+func isAllowed(email string) bool {
+	for _, a := range ALLOWED_EMAILS {
+		if a == email {
+			return true
+		}
+	}
+	return false
+}
+
+func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Bypass auth for non-API or health checks
+		if r.URL.Path == "/health" {
+			next(w, r)
+			return
+		}
+
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Missing Authorization Header", http.StatusUnauthorized)
+			return
+		}
+
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		
+		// Validate Token
+		payload, err := idtoken.Validate(context.Background(), token, CLIENT_ID)
+		if err != nil {
+			log.Printf("Token validation failed: %v", err)
+			http.Error(w, "Unauthorized: Invalid Token", http.StatusUnauthorized)
+			return
+		}
+
+		email := payload.Claims["email"].(string)
+		if !isAllowed(email) {
+			log.Printf("Forbidden access attempt: %s", email)
+			http.Error(w, "Forbidden: Account not authorized", http.StatusForbidden)
+			return
+		}
+
+		// Proceed to next handler
+		next(w, r)
+	}
+}
 
 func main() {
 	port := os.Getenv("PORT")
@@ -42,7 +95,8 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/api/students", handlers.MakeStudentsHandler(fsClient))
+	// Wrap students handler with Auth Middleware
+	http.HandleFunc("/api/students", AuthMiddleware(handlers.MakeStudentsHandler(fsClient)))
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
