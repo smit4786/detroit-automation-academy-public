@@ -4,6 +4,7 @@ theme = 'ananke'
 publishDir = '../blog'
 
 defaultContentLanguage = 'en'
+
 [languages]
   [languages.en]
     contentDir = 'content/en'
@@ -15,5 +16,32 @@ defaultContentLanguage = 'en'
     weight = 2
   [languages.ru]
     contentDir = 'content/ru'
-    languageName = 'Русский'
+    languageName = 'Ruсский'
     weight = 3
+
+[params]
+  author = "Justin Smith"
+  show_reading_time = true
+  recent_posts_number = 5
+  # DAA dark brand alignment
+  background_color_class = "bg-near-black"
+  body_classes = "avenir bg-near-black near-white"
+  post_content_classes = "avenir"
+  cover_dimming_class = "black-50"
+  custom_css = ["custom.css"]
+
+[params.social]
+  github = "https://github.com/AutomatedTechnologies"
+
+# ── Navigation ───────────────────────────────────────────────────────────────
+[[menus.main]]
+  identifier = "posts"
+  name = "Posts"
+  url = "/blog/posts/"
+  weight = 10
+
+[[menus.main]]
+  identifier = "daa"
+  name = "← Detroit Automation Academy"
+  url = "https://detroitautomationacademy.com"
+  weight = 20

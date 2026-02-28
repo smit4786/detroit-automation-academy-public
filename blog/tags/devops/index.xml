@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Devops on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/tags/devops/</link>
+    <description>Recent content in Devops on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 28 Feb 2026 05:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/tags/devops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DAA CRM Live: From Zero to Cloud Run in One Session</title>
+      <link>https://detroitautomationacademy.com/blog/posts/daa-crm-cloud-run-deployment/</link>
+      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/daa-crm-cloud-run-deployment/</guid>
+      <description>&lt;p&gt;Tonight we shipped the DAA CRM from a broken build to a fully deployed, publicly accessible system in a single engineering session. Here&amp;rsquo;s what that actually looked like.&lt;/p&gt;&#xA;&lt;h2 id=&#34;starting-point-five-consecutive-build-failures&#34;&gt;Starting Point: Five Consecutive Build Failures&lt;/h2&gt;&#xA;&lt;p&gt;The &lt;code&gt;deploy.sh&lt;/code&gt; script existed. The Docker images existed. What didn&amp;rsquo;t exist: a working build.&lt;/p&gt;&#xA;&lt;p&gt;The first failure was a Go syntax error in &lt;code&gt;backend/main.go&lt;/code&gt; — a raw newline embedded inside a string literal:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// Broken&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DAA CRM Backend starting on port %s...&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;port&lt;/span&gt;)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// Fixed&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;DAA CRM Backend starting on port %s...\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;port&lt;/span&gt;)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Go doesn&amp;rsquo;t allow unescaped newlines inside string literals. The fix was one character.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Fixing Our CI/CD Pipeline: Submodules, Empty Commits, and the Clawd QA Gate | Automated Insights</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="A post-mortem on recurring deployment failures in our Hugo blog pipeline — and the architectural changes we made to prevent them.">
+    <meta name="generator" content="Hugo 0.156.0">
+    
+    
+    
+      <meta name="robots" content="index, follow">
+    
+    <meta name="author" content="Justin Smith">
+    
+
+    
+<link rel="stylesheet" href="/blog/ananke/css/main.min.6b374321b6b8d16e45157f6d12ae4e9ee21d3e5728264d161012a83af8a3ff4c.css" >
+
+
+
+  
+
+
+    
+
+
+    
+      
+
+    
+
+    
+
+    
+      <link rel="canonical" href="https://detroitautomationacademy.com/blog/posts/cicd-pipeline-postmortem/">
+    
+
+    
+    
+    <meta property="og:url" content="https://detroitautomationacademy.com/blog/posts/cicd-pipeline-postmortem/">
+  <meta property="og:site_name" content="Automated Insights">
+  <meta property="og:title" content="Fixing Our CI/CD Pipeline: Submodules, Empty Commits, and the Clawd QA Gate">
+  <meta property="og:description" content="A post-mortem on recurring deployment failures in our Hugo blog pipeline — and the architectural changes we made to prevent them.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-02-28T03:00:00-05:00">
+    <meta property="article:modified_time" content="2026-02-28T03:00:00-05:00">
+    <meta property="article:tag" content="Ci-Cd">
+    <meta property="article:tag" content="Hugo">
+    <meta property="article:tag" content="Github-Actions">
+    <meta property="article:tag" content="Clawd">
+    <meta property="article:tag" content="Pipeline">
+
+  <meta itemprop="name" content="Fixing Our CI/CD Pipeline: Submodules, Empty Commits, and the Clawd QA Gate">
+  <meta itemprop="description" content="A post-mortem on recurring deployment failures in our Hugo blog pipeline — and the architectural changes we made to prevent them.">
+  <meta itemprop="datePublished" content="2026-02-28T03:00:00-05:00">
+  <meta itemprop="dateModified" content="2026-02-28T03:00:00-05:00">
+  <meta itemprop="wordCount" content="375">
+  <meta itemprop="keywords" content="Ci-Cd,Hugo,Github-Actions,Clawd,Pipeline">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Fixing Our CI/CD Pipeline: Submodules, Empty Commits, and the Clawd QA Gate">
+  <meta name="twitter:description" content="A post-mortem on recurring deployment failures in our Hugo blog pipeline — and the architectural changes we made to prevent them.">
+
+      
+      
+    
+	
+  </head><body class="ma0 avenir bg-near-black near-white production is-page is-page page-cicd-pipeline-postmortem">
+    
+   
+  
+
+  <header>
+    <div class="bg-near-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l center items-center justify-between">
+    <a href="/blog/" class="f3 fw2 hover-white white-90 dib no-underline">
+      
+        Automated Insights
+      
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+        <ul class="pl0 mr3">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white white-90 no-underline" href="/blog/blog/posts/" title="Posts page">
+              Posts
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white white-90 no-underline" href="https://detroitautomationacademy.com" title="← Detroit Automation Academy page">
+              ← Detroit Automation Academy
+            </a>
+          </li>
+          
+        </ul>
+      
+      <div class="ananke-socials"></div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+
+  <article class="page-cicd-pipeline-postmortem flex-l mw7 center ph3 flex-wrap justify-between">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked ttu">
+          
+        Posts
+      </aside><div id="sharing" class="mt3 ananke-socials"></div>
+<h1 class="f1 athelas mt3 mb1">Fixing Our CI/CD Pipeline: Submodules, Empty Commits, and the Clawd QA Gate</h1>
+      
+      <p class="tracked"><strong>Justin Smith</strong>
+      </p>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2026-02-28T03:00:00-05:00">February 28, 2026</time>
+      
+
+      
+      
+        
+        
+        <span class="f6 mv4 dib tracked"> - 2 minutes read </span>
+        <span class="f6 mv4 dib tracked"> - 375 words </span>
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy avenir f4 nested-links mid-gray pr4-l w-100-l"><p>The Automated Insights blog has had a recurring CI/CD problem: deployments that work locally fail silently in GitHub Actions, or succeed in Actions but produce a broken site. Here&rsquo;s the root cause analysis and what we changed.</p>
+<h2 id="the-three-failure-modes">The Three Failure Modes</h2>
+<ol>
+<li>
+<p><strong>Hugo build succeeds, site content missing</strong> — the <code>public/</code> directory was generated but the git commit step failed silently because there was nothing new to commit. The deploy step ran anyway and pushed a stale build.</p>
+</li>
+<li>
+<p><strong>Theme submodule not initialized</strong> — the Ananke theme is a git submodule. Fresh GitHub Actions runners clone the repo but don&rsquo;t automatically initialize submodules. The build proceeded with an empty <code>themes/ananke/</code> directory, producing an unstyled build that nonetheless exited with code 0.</p>
+</li>
+<li>
+<p><strong>Cache invalidation lag</strong> — CDN-cached pages served stale after a new deployment.</p>
+</li>
+</ol>
+<h2 id="fix-1-submodule-initialization">Fix 1: Submodule Initialization</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/checkout@v4</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">with</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">submodules</span>: <span style="color:#66d9ef">true</span>        <span style="color:#75715e"># ← this was missing</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">fetch-depth</span>: <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>Without <code>submodules: true</code>, Hugo finds <code>theme = &quot;ananke&quot;</code>, looks in <code>themes/ananke/layouts/</code>, finds nothing, and falls back to default templates — completely unstyled.</p>
+<h2 id="fix-2-the-empty-commit-guard">Fix 2: The Empty Commit Guard</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Before — always commits, fails when nothing changed</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git add public/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git commit -m &#34;Deploy&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git push</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># After — skips if nothing changed</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git add public/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git diff --staged --quiet || git commit -m &#34;chore: deploy $(date -u +%Y-%m-%dT%H:%M:%SZ)&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git push</span>
+</span></span></code></pre></div><p><code>git diff --staged --quiet</code> exits 0 (no changes) → skip commit. Exits non-zero (changes present) → commit and push.</p>
+<h2 id="the-clawd-qa-gate">The Clawd QA Gate</h2>
+<p>Because the Automated Technologies enterprise runs on the Clawd autonomous agent framework, we set up a <code>qa_gate.py</code> agent to verify deployments automatically:</p>
+<ol>
+<li>Fetches the live site URL after a deploy</li>
+<li>Checks for the presence of the latest post title in the HTML</li>
+<li>Verifies the <code>Last-Modified</code> response header is newer than the previous deploy timestamp</li>
+<li>Fails the pipeline if either check doesn&rsquo;t pass</li>
+</ol>
+<p>This converts deployment verification from a manual check into an automated gate — consistent with how all Clawd agents should operate.</p>
+<h2 id="current-state">Current State</h2>
+<p>The pipeline now runs reliably. Outstanding items:</p>
+<ul>
+<li><strong>Multilingual posts</strong> — German and Russian translations are sparse. English content is authoritative.</li>
+<li><strong>Search</strong> — Evaluating Pagefind (client-side, zero-dependency) for a future sprint.</li>
+</ul>
+<hr>
+<p><em>Clawd is the autonomous AI agent framework powering Automated Technologies enterprise operations.</em></p>
+<ul class="pa0">
+  
+   <li class="list di">
+     <a href="/blog/tags/ci-cd/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Ci-Cd</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/tags/hugo/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Hugo</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/tags/github-actions/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Github-Actions</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/tags/clawd/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Clawd</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/tags/pipeline/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Pipeline</a>
+   </li>
+  
+</ul>
+
+      
+    </div></article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white white-70 dn dib-ns pv2 ph3 no-underline" href="https://detroitautomationacademy.com/blog/" >
+    &copy;  Automated Insights 2026 
+  </a>
+    <div><div class="ananke-socials"></div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>
