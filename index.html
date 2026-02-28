@@ -4,14 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detroit Automation Academy - Automation Skills for Detroit's Future</title>
+    <title>Detroit Automation Academy — Automation Skills for Detroit's Future</title>
+    <meta name="description"
+        content="Detroit Automation Academy teaches robotics, CAD design, and autonomous systems to Detroit youth. Free 12-week program at The Station @ Michigan Central.">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="branding/palette.css"> <!-- Link palette.css -->
+    <link rel="stylesheet" href="branding/palette.css">
     <style>
-        /* General styles, already fine */
-        * {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -21,111 +24,197 @@
             font-family: 'Inter', Arial, sans-serif;
             line-height: 1.6;
             color: var(--daa-fg);
-            /* Use CSS variable */
             background: var(--daa-bg);
-            /* Use CSS variable */
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
         }
 
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* ── Nav ── */
         header {
-            background: var(--daa-card);
-            /* Use CSS variable */
-            box-shadow: 0 2px 8px var(--daa-shadow);
-            /* Use CSS variable */
+            background: rgba(13, 17, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--daa-border);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
+        body.light-mode header {
+            background: rgba(245, 247, 250, 0.92);
+        }
+
         nav {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 16px 32px;
+            padding: 14px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .logo {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 24px;
-            color: var(--daa-primary);
-            /* Use CSS variable */
+        .logo a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Dark-mode logo text */
+        #logo-text-main {
+            fill: var(--daa-fg);
+            transition: fill 0.3s;
+        }
+
+        #logo-text-sub {
+            fill: var(--daa-primary);
+            transition: fill 0.3s;
         }
 
         .nav-links {
             display: flex;
-            gap: 32px;
+            gap: 28px;
             list-style: none;
+            align-items: center;
         }
 
         .nav-links a {
             text-decoration: none;
-            color: var(--daa-fg);
-            /* Use CSS variable */
+            color: var(--daa-fg-muted);
             font-weight: 500;
-            transition: color 0.3s;
+            font-size: 14px;
+            transition: color 0.2s;
+            letter-spacing: 0.01em;
         }
 
         .nav-links a:hover {
-            color: var(--daa-primary);
-            /* Use CSS variable */
+            color: var(--daa-accent);
         }
 
-        .cta-button {
-            background: var(--daa-primary);
-            /* Use CSS variable */
-            color: var(--daa-bg);
-            /* Use CSS variable */
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
+        #theme-toggle {
+            background: var(--daa-bg-raised);
+            color: var(--daa-fg);
+            border: 1px solid var(--daa-border);
+            border-radius: 999px;
+            padding: 7px 16px;
             font-weight: 600;
-            transition: background 0.3s;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #theme-toggle:hover {
+            border-color: var(--daa-accent);
+            color: var(--daa-accent);
+        }
+
+        /* ── CTA Buttons ── */
+        .cta-button {
+            background: linear-gradient(135deg, var(--daa-accent) 0%, #52A300 100%);
+            color: #0D1117;
+            padding: 13px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.25s;
             display: inline-block;
+            position: relative;
+            box-shadow: 0 4px 20px var(--daa-accent-glow);
         }
 
         .cta-button:hover {
-            background: #0052A3;
-            /* Hardcoded hover */
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px var(--daa-accent-glow);
         }
 
         .cta-button-secondary {
-            background: var(--daa-secondary);
-            /* Use CSS variable */
+            background: transparent;
+            color: var(--daa-fg);
+            border: 1px solid var(--daa-border);
+            box-shadow: none;
         }
 
         .cta-button-secondary:hover {
-            background: #A83F1A;
-            /* Hardcoded hover */
+            border-color: var(--daa-primary);
+            color: var(--daa-primary);
+            background: var(--daa-primary-glow);
+            box-shadow: none;
         }
 
+        /* ── Hero ── */
         .hero {
-            background: linear-gradient(135deg, var(--daa-primary) 0%, #004A99 100%);
-            /* Use CSS variable */
-            color: var(--daa-bg);
-            /* Use CSS variable */
-            padding: 80px 32px;
+            position: relative;
+            padding: 100px 32px 90px;
             text-align: center;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0, 102, 204, 0.18) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .hero-content {
-            max-width: 900px;
+            position: relative;
+            max-width: 860px;
             margin: 0 auto;
+        }
+
+        .hero-eyebrow {
+            display: inline-block;
+            background: rgba(102, 204, 0, 0.12);
+            color: var(--daa-accent);
+            border: 1px solid var(--daa-border-green);
+            border-radius: 999px;
+            padding: 5px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 24px;
         }
 
         .hero h1 {
             font-family: 'Poppins', sans-serif;
-            font-size: 48px;
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
             font-weight: 800;
-            margin-bottom: 16px;
-            line-height: 1.2;
+            margin-bottom: 20px;
+            line-height: 1.15;
+            color: var(--daa-fg);
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero p {
             font-size: 18px;
-            margin-bottom: 32px;
-            opacity: 0.95;
+            margin-bottom: 40px;
+            color: var(--daa-fg-muted);
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .hero-buttons {
@@ -133,289 +222,381 @@
             gap: 16px;
             justify-content: center;
             flex-wrap: wrap;
+            margin-bottom: 56px;
         }
 
-        .hero .cta-button {
-            background: var(--daa-accent);
-            /* Use CSS variable */
-            color: var(--daa-fg);
-            /* Use CSS variable */
-        }
-
-        .hero .cta-button:hover {
-            background: #52A300;
-            /* Hardcoded hover */
-        }
-
-        .event-success {
-            background: var(--daa-card);
-            /* Use CSS variable */
-            padding: 48px 32px;
-            margin: 48px 0;
+        /* Hero stat strip */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            padding: 24px 32px;
+            background: var(--daa-bg-card);
+            border: 1px solid var(--daa-border);
             border-radius: 16px;
-            box-shadow: 0 4px 12px var(--daa-shadow);
-            /* Use CSS variable */
+            backdrop-filter: blur(12px);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .hero-stat-num {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--daa-accent);
+        }
+
+        .hero-stat-label {
+            font-size: 12px;
+            color: var(--daa-fg-muted);
+            margin-top: 2px;
+        }
+
+        /* ── Event Success ── */
+        .event-success {
+            position: relative;
+            padding: 60px 32px;
+            margin: 0;
         }
 
         .event-success-content {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
+            background: var(--daa-bg-card);
+            border: 1px solid var(--daa-border);
+            border-radius: 20px;
+            padding: 48px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 48px;
             align-items: center;
+            box-shadow: var(--daa-shadow-blue);
         }
 
         .event-success h2 {
             font-family: 'Poppins', sans-serif;
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 30px;
+            font-weight: 800;
             margin-bottom: 16px;
-            color: var(--daa-primary);
-            /* Use CSS variable */
+            color: var(--daa-fg);
+        }
+
+        .event-success h2 span {
+            color: var(--daa-accent);
         }
 
         .event-success p {
-            font-size: 16px;
+            font-size: 15px;
             margin-bottom: 12px;
             line-height: 1.8;
+            color: var(--daa-fg-muted);
+        }
+
+        .event-success ul {
+            text-align: left;
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .event-success ul li {
+            list-style: none;
+            font-size: 14px;
+            color: var(--daa-fg);
+            padding-left: 4px;
         }
 
         .stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
-            margin-top: 24px;
         }
 
         .stat {
-            background: var(--daa-bg);
-            /* Use CSS variable */
-            padding: 16px;
-            border-radius: 12px;
+            background: var(--daa-bg-raised);
+            border: 1px solid var(--daa-border);
+            padding: 20px;
+            border-radius: 14px;
             text-align: center;
+            transition: border-color 0.2s;
+        }
+
+        .stat:hover {
+            border-color: var(--daa-accent);
         }
 
         .stat-number {
             font-family: 'Poppins', sans-serif;
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--daa-secondary);
-            /* Use CSS variable */
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--daa-accent);
         }
 
         .stat-label {
-            font-size: 14px;
-            color: #666;
+            font-size: 12px;
+            color: var(--daa-fg-muted);
             margin-top: 4px;
+            font-weight: 600;
         }
 
-        .programs {
-            max-width: 1200px;
-            margin: 48px auto;
-            padding: 0 32px;
+        /* ── Section wrapper ── */
+        .section-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 64px 32px;
         }
 
-        .programs h2 {
+        .section-heading {
             font-family: 'Poppins', sans-serif;
-            font-size: 36px;
-            font-weight: 700;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 800;
             text-align: center;
-            margin-bottom: 48px;
+            margin-bottom: 12px;
             color: var(--daa-fg);
-            /* Use CSS variable */
         }
 
+        .section-subheading {
+            text-align: center;
+            color: var(--daa-fg-muted);
+            font-size: 15px;
+            margin-bottom: 48px;
+        }
+
+        /* ── Program Cards ── */
         .program-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 32px;
-            margin-bottom: 48px;
+            gap: 24px;
         }
 
         .program-card {
-            background: var(--daa-card);
-            /* Use CSS variable */
+            background: var(--daa-bg-card);
+            border: 1px solid var(--daa-border);
             padding: 32px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px var(--daa-shadow);
-            /* Use CSS variable */
-            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 16px;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .program-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--daa-primary), var(--daa-accent));
+            opacity: 0;
+            transition: opacity 0.25s;
         }
 
         .program-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 20px var(--daa-shadow);
-            /* Use CSS variable */
+            border-color: rgba(0, 102, 204, 0.4);
+            box-shadow: var(--daa-shadow-blue);
+        }
+
+        .program-card:hover::before {
+            opacity: 1;
+        }
+
+        .phase-badge {
+            display: inline-block;
+            background: var(--daa-bg-raised);
+            border: 1px solid var(--daa-border);
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--daa-primary);
+            margin-bottom: 14px;
         }
 
         .program-card h3 {
             font-family: 'Poppins', sans-serif;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 12px;
-            color: var(--daa-primary);
-            /* Use CSS variable */
+            margin-bottom: 10px;
+            color: var(--daa-fg);
         }
 
         .program-card p {
             font-size: 14px;
             line-height: 1.8;
-            margin-bottom: 16px;
-            color: #666;
+            color: var(--daa-fg-muted);
         }
 
-        .phase-badge {
-            display: inline-block;
-            background: var(--daa-bg);
-            /* Use CSS variable */
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--daa-primary);
-            /* Use CSS variable */
-            margin-bottom: 12px;
-        }
-
-        .roles {
-            max-width: 1200px;
-            margin: 64px auto;
-            padding: 0 32px;
-        }
-
-        .roles h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 36px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 48px;
-            color: var(--daa-fg);
-            /* Use CSS variable */
-        }
-
+        /* ── Role Cards ── */
         .role-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 32px;
+            gap: 24px;
         }
 
         .role-card {
-            background: var(--daa-card);
-            /* Use CSS variable */
-            padding: 40px 32px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px var(--daa-shadow);
-            /* Use CSS variable */
+            background: var(--daa-bg-card);
+            border: 1px solid var(--daa-border);
+            padding: 40px 28px;
+            border-radius: 16px;
             text-align: center;
-            transition: all 0.3s;
+            transition: all 0.25s;
         }
 
         .role-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 20px var(--daa-shadow);
-            /* Use CSS variable */
-            border-top: 4px solid var(--daa-primary);
-            /* Use CSS variable */
+            border-color: var(--daa-border-green);
+            box-shadow: 0 0 32px var(--daa-accent-glow);
         }
 
         .role-icon {
-            font-size: 48px;
+            font-size: 44px;
             margin-bottom: 16px;
+            display: block;
         }
 
         .role-card h3 {
             font-family: 'Poppins', sans-serif;
             font-size: 20px;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             color: var(--daa-fg);
-            /* Use CSS variable */
         }
 
         .role-card p {
             font-size: 14px;
-            color: #666;
+            color: var(--daa-fg-muted);
             margin-bottom: 24px;
+            line-height: 1.7;
         }
 
         .role-card a {
             display: inline-block;
             background: var(--daa-primary);
-            /* Use CSS variable */
-            color: var(--daa-bg);
-            /* Use CSS variable */
+            color: #fff;
             padding: 10px 24px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            transition: background 0.3s;
+            font-size: 14px;
+            transition: all 0.2s;
         }
 
         .role-card a:hover {
             background: #0052A3;
-            /* Hardcoded hover */
+            transform: translateY(-1px);
         }
 
+        /* Students role card — green CTA */
+        .role-card.role-students a {
+            background: linear-gradient(135deg, var(--daa-accent) 0%, #52A300 100%);
+            color: #0D1117;
+            box-shadow: 0 4px 16px var(--daa-accent-glow);
+        }
+
+        .role-card.role-students a:hover {
+            background: #52A300;
+        }
+
+        /* ── CTA Section ── */
         .cta-section {
-            background: linear-gradient(135deg, var(--daa-secondary) 0%, #A83F1A 100%);
-            /* Use CSS variable */
-            color: var(--daa-bg);
-            /* Use CSS variable */
-            padding: 64px 32px;
+            position: relative;
+            padding: 80px 32px;
             text-align: center;
-            margin: 64px 0;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(102, 204, 0, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-inner {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--daa-bg-card);
+            border: 1px solid var(--daa-border-green);
+            border-radius: 24px;
+            padding: 60px 48px;
+            box-shadow: 0 0 60px var(--daa-accent-glow);
         }
 
         .cta-section h2 {
             font-family: 'Poppins', sans-serif;
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 16px;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 800;
+            margin-bottom: 14px;
+            color: var(--daa-fg);
         }
 
         .cta-section p {
-            font-size: 16px;
+            font-size: 15px;
             margin-bottom: 32px;
-            opacity: 0.95;
+            color: var(--daa-fg-muted);
         }
 
+        .seat-note {
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--daa-fg-muted);
+        }
+
+        /* ── Footer ── */
         footer {
-            background: #222;
-            color: white;
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            color: var(--daa-fg-muted);
             padding: 32px;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .footer-links {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .footer-links a {
-            color: var(--daa-accent);
-            /* Use CSS variable */
+            color: var(--daa-fg-muted);
             text-decoration: none;
-            margin: 0 16px;
-            transition: color 0.3s;
+            margin: 0 14px;
+            transition: color 0.2s;
         }
 
         .footer-links a:hover {
-            color: #52A300;
-            /* Hardcoded hover */
+            color: var(--daa-accent);
         }
 
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
 
-            .hero h1 {
-                font-size: 32px;
+            .program-grid,
+            .role-grid {
+                grid-template-columns: 1fr 1fr;
             }
 
             .event-success-content {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                padding: 12px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 72px 20px 60px;
             }
 
             .program-grid,
@@ -423,126 +604,144 @@
                 grid-template-columns: 1fr;
             }
 
-            .programs h2,
-            .roles h2,
-            .cta-section h2 {
-                font-size: 28px;
+            .section-inner {
+                padding: 48px 20px;
+            }
+
+            .event-success-content {
+                padding: 28px 20px;
+            }
+
+            .cta-inner {
+                padding: 40px 24px;
+            }
+
+            .hero-stats {
+                gap: 24px;
             }
         }
     </style>
 </head>
 
-<body class="light-mode"> <!-- Add default class -->
+<body>
     <header>
         <nav>
             <div class="logo">
-                <a href="index.html" style="text-decoration: none; display: flex; align-items: center;">
-                    <span style="display: inline-block; vertical-align: middle; margin-right: 12px;">
-                        <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Logo (Gear + Circuit) -->
-                            <g id="logo" transform="translate(25, 25)">
-                                <g id="gear">
-                                    <circle cx="100" cy="100" r="75" fill="none" stroke="#0066CC" stroke-width="4" />
-                                    <polygon
-                                        points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30"
-                                        fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
-                                </g>
-                                <g id="circuits" stroke="#66CC00" stroke-width="3" fill="none" stroke-linecap="round">
-                                    <path d="M 100 30 L 100 15 L 85 10" />
-                                    <path d="M 130 70 L 155 50 L 170 55" />
-                                    <path d="M 140 130 L 160 155 L 165 170" />
-                                    <path d="M 60 160 L 30 180 L 20 175" />
-                                    <path d="M 60 70 L 35 50 L 25 60" />
-                                </g>
-                                <g id="nodes" fill="#66CC00" opacity="0.9">
-                                    <circle cx="100" cy="15" r="4" />
-                                    <circle cx="170" cy="55" r="4" />
-                                    <circle cx="165" cy="170" r="4" />
-                                    <circle cx="20" cy="175" r="4" />
-                                    <circle cx="25" cy="60" r="4" />
-                                </g>
+                <a href="index.html">
+                    <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
+                        <g transform="translate(25, 25)">
+                            <circle cx="100" cy="100" r="75" fill="none" stroke="#0066CC" stroke-width="4" />
+                            <polygon
+                                points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30"
+                                fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
+                            <g stroke="#66CC00" stroke-width="3" fill="none" stroke-linecap="round">
+                                <path d="M 100 30 L 100 15 L 85 10" />
+                                <path d="M 130 70 L 155 50 L 170 55" />
+                                <path d="M 140 130 L 160 155 L 165 170" />
+                                <path d="M 60 160 L 30 180 L 20 175" />
+                                <path d="M 60 70 L 35 50 L 25 60" />
                             </g>
-                            <g id="text" transform="translate(260, 110)">
-                                <text font-family="'Poppins', sans-serif" font-weight="800" font-size="64"
-                                    fill="#111111">
-                                    <tspan x="0" y="0">DETROIT</tspan>
-                                    <tspan x="0" y="75" font-size="54" font-weight="700" fill="#0066CC">AUTOMATION
-                                        ACADEMY</tspan>
-                                </text>
+                            <g fill="#66CC00" opacity="0.9">
+                                <circle cx="100" cy="15" r="4" />
+                                <circle cx="170" cy="55" r="4" />
+                                <circle cx="165" cy="170" r="4" />
+                                <circle cx="20" cy="175" r="4" />
+                                <circle cx="25" cy="60" r="4" />
                             </g>
-                        </svg>
-                    </span>
+                        </g>
+                        <g transform="translate(260, 110)">
+                            <text font-family="'Poppins', sans-serif" font-weight="800" font-size="64">
+                                <tspan id="logo-text-main" x="0" y="0">DETROIT</tspan>
+                                <tspan id="logo-text-sub" x="0" y="75" font-size="54" font-weight="700">AUTOMATION
+                                    ACADEMY</tspan>
+                            </text>
+                        </g>
+                    </svg>
                 </a>
             </div>
             <ul class="nav-links">
                 <li><a href="blog/">📝 Blog</a></li>
                 <li><a href="dashboard.html">📊 Dashboard</a></li>
-                <li><a href="index.html">🎓 Program (Home)</a></li>
                 <li><a href="students.html">👨‍🎓 Students</a></li>
                 <li><a href="instructors.html">👨‍🏫 Instructors</a></li>
                 <li><a href="partners.html">💼 Partners</a></li>
                 <li><a href="subscriptions.html">💎 Subscriptions</a></li>
             </ul>
-            <button id="theme-toggle" class="cta-button"
-                style="background: #66CC00; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer;">🌙
-                Dark Mode</button>
+            <button id="theme-toggle">☀️ Light Mode</button>
         </nav>
     </header>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Apply theme from localStorage or system preference on load
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                document.body.classList.add('dark-mode');
-                document.getElementById('theme-toggle').textContent = '☀️ Light Mode';
-            } else {
-                document.body.classList.add('light-mode');
-                document.getElementById('theme-toggle').textContent = '🌙 Dark Mode';
+        (function () {
+            const saved = localStorage.getItem('daa-theme');
+            const body = document.body;
+            const btn = document.getElementById('theme-toggle');
+            if (saved === 'light') {
+                body.classList.add('light-mode');
+                if (btn) btn.textContent = '🌙 Dark Mode';
             }
-
-            document.getElementById('theme-toggle').addEventListener('click', function () {
-                if (document.body.classList.contains('dark-mode')) {
-                    document.body.classList.remove('dark-mode');
-                    document.body.classList.add('light-mode');
-                    this.textContent = '🌙 Dark Mode';
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    document.body.classList.remove('light-mode');
-                    document.body.classList.add('dark-mode');
-                    this.textContent = '☀️ Light Mode';
-                    localStorage.setItem('theme', 'dark');
-                }
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggle = document.getElementById('theme-toggle');
+                if (!toggle) return;
+                toggle.addEventListener('click', function () {
+                    const isLight = document.body.classList.toggle('light-mode');
+                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
+                    // Update SVG logo text color
+                    const main = document.getElementById('logo-text-main');
+                    const sub = document.getElementById('logo-text-sub');
+                    if (main) main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
+                    if (sub) sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
+                });
             });
-        });
+        })();
     </script>
 
+    <!-- ── Hero ── -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Automation Skills for Detroit's Future</h1>
-            <p>Learn robotics, CAD design, and autonomous systems. Built by Detroit, for Detroit.</p>
+            <div class="hero-eyebrow">⚙️ Now Enrolling · Spring 2026 Cohort</div>
+            <h1>Automation Skills for<br><span>Detroit's Future</span></h1>
+            <p>Hands-on robotics, CAD design, and autonomous systems. 12 weeks. Free. Built by Detroit, for Detroit.</p>
             <div class="hero-buttons">
                 <a href="https://daa-crm-frontend-87748455115.us-central1.run.app" class="cta-button"
-                    target="_blank">Apply Now</a>
-                <a href="#programs" class="cta-button cta-button-secondary">Learn More</a>
+                    target="_blank">Apply Now →</a>
+                <a href="#programs" class="cta-button cta-button-secondary">Explore Program</a>
+            </div>
+            <div class="hero-stats">
+                <div>
+                    <div class="hero-stat-num">12</div>
+                    <div class="hero-stat-label">Weeks</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num">Free</div>
+                    <div class="hero-stat-label">Cost to Students</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num">3</div>
+                    <div class="hero-stat-label">Phases of Learning</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num">Mar 8</div>
+                    <div class="hero-stat-label">Program Starts</div>
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- ── Launch Event ── -->
     <section class="event-success">
         <div class="event-success-content">
             <div>
-                <h2>🎉 Launch Event Success</h2>
-                <p>Our inaugural event at Boys & Girls Clubs of Greater Detroit's Michigan Central Club opening was a
-                    tremendous success! We excited and inspired the next generation of Detroit engineers.</p>
-                <p><strong>What happened:</strong></p>
-                <ul style="text-align: left; display: inline-block; margin-top: 12px;">
+                <h2>🎉 Launch Event <span>Success</span></h2>
+                <p>Our inaugural event at Boys & Girls Clubs of Greater Detroit's Michigan Central Club opening inspired
+                    the next generation of Detroit engineers.</p>
+                <ul>
                     <li>✅ 50+ attendees from local schools and community</li>
-                    <li>✅ 5+ immediate sign-ups for our program</li>
+                    <li>✅ 5+ immediate sign-ups on the spot</li>
                     <li>✅ Partnership formalized with Michigan Central</li>
-                    <li>✅ Equipment demonstrations showcasing all 3 phases</li>
-                    <li>✅ Student testimonials and parent enthusiasm</li>
+                    <li>✅ Equipment demos showcasing all 3 phases</li>
+                    <li>✅ Overwhelming parent and student enthusiasm</li>
                 </ul>
             </div>
             <div class="stats">
@@ -552,7 +751,7 @@
                 </div>
                 <div class="stat">
                     <div class="stat-number">3</div>
-                    <div class="stat-label">Phases Demonstrated</div>
+                    <div class="stat-label">Phases Shown</div>
                 </div>
                 <div class="stat">
                     <div class="stat-number">5+</div>
@@ -566,74 +765,89 @@
         </div>
     </section>
 
-    <section class="programs" id="programs">
-        <h2>Three Progressive Phases</h2>
-        <div class="program-grid">
-            <div class="program-card">
-                <span class="phase-badge">PHASE 1: GPIO & HARDWARE</span>
-                <h3>🔌 Electronics Control</h3>
-                <p>Learn Raspberry Pi GPIO programming, control LEDs and buttons, understand hardware fundamentals, and
-                    build event-driven applications.</p>
-            </div>
-            <div class="program-card">
-                <span class="phase-badge">PHASE 2: CAD & FABRICATION</span>
-                <h3>🏗️ 3D Design & Laser Cutting</h3>
-                <p>Design parametric 3D models, generate STL files for 3D printing, create G-code for laser cutting, and
-                    fabricate real parts.</p>
-            </div>
-            <div class="program-card">
-                <span class="phase-badge">PHASE 3: AUTONOMOUS SYSTEMS</span>
-                <h3>🤖 Rover Navigation & Autonomy</h3>
-                <p>Program autonomous rover behavior, implement navigation algorithms, test in simulated environments,
-                    and deploy on real hardware.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="roles" id="roles">
-        <h2>Choose Your Path</h2>
-        <div class="role-grid">
-            <div class="role-card">
-                <div class="role-icon">👨‍🎓</div>
-                <h3>Students</h3>
-                <p>Ready to learn automation? Apply to our 12-week program and gain hands-on skills in robotics and
-                    autonomous systems.</p>
-                <a href="https://daa-crm-frontend-87748455115.us-central1.run.app" target="_blank">Apply Today</a>
-            </div>
-            <div class="role-card">
-                <div class="role-icon">👩‍🏫</div>
-                <h3>Instructors</h3>
-                <p>Want to teach? Access our complete curriculum, teaching guides, and resources to deliver world-class
-                    automation education.</p>
-                <a href="instructors.html">Explore Curriculum</a>
-            </div>
-            <div class="role-card">
-                <div class="role-icon">🤝</div>
-                <h3>Partners & Donors</h3>
-                <p>Support Detroit's future. Partner with us to scale automation education to 500+ students annually.
-                </p>
-                <a href="partners.html">Get Involved</a>
+    <!-- ── Programs ── -->
+    <section id="programs">
+        <div class="section-inner">
+            <h2 class="section-heading">Three Progressive Phases</h2>
+            <p class="section-subheading">From first circuit to fully autonomous robot — in 12 weeks.</p>
+            <div class="program-grid">
+                <div class="program-card">
+                    <span class="phase-badge">PHASE 1 · GPIO & HARDWARE</span>
+                    <h3>🔌 Electronics Control</h3>
+                    <p>Learn Raspberry Pi GPIO programming, control LEDs and buttons, understand hardware fundamentals,
+                        and build event-driven Python applications with real peripherals.</p>
+                </div>
+                <div class="program-card">
+                    <span class="phase-badge">PHASE 2 · CAD & FABRICATION</span>
+                    <h3>🏗️ 3D Design & Laser Cutting</h3>
+                    <p>Design parametric 3D models, generate STL files for 3D printing, create G-code for laser cutting,
+                        and fabricate custom parts for your robotics project.</p>
+                </div>
+                <div class="program-card">
+                    <span class="phase-badge">PHASE 3 · AUTONOMOUS SYSTEMS</span>
+                    <h3>🤖 Rover Navigation & Autonomy</h3>
+                    <p>Program autonomous rover behavior, implement navigation algorithms, test in simulated
+                        environments, and deploy your code on real hardware at the final showcase.</p>
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- ── Roles ── -->
+    <section id="roles">
+        <div class="section-inner" style="padding-top: 0;">
+            <h2 class="section-heading">Choose Your Path</h2>
+            <p class="section-subheading">DAA brings together students, educators, and community partners.</p>
+            <div class="role-grid">
+                <div class="role-card role-students">
+                    <span class="role-icon">👨‍🎓</span>
+                    <h3>Students</h3>
+                    <p>Ready to learn automation? Apply to our free 12-week program and gain hands-on skills in robotics
+                        and autonomous systems.</p>
+                    <a href="https://daa-crm-frontend-87748455115.us-central1.run.app" target="_blank">Apply Today →</a>
+                </div>
+                <div class="role-card">
+                    <span class="role-icon">👩‍🏫</span>
+                    <h3>Instructors</h3>
+                    <p>Want to teach? Access our complete curriculum, teaching guides, and resources to deliver
+                        world-class automation education.</p>
+                    <a href="instructors.html">Explore Curriculum</a>
+                </div>
+                <div class="role-card">
+                    <span class="role-icon">🤝</span>
+                    <h3>Partners & Donors</h3>
+                    <p>Support Detroit's future. Partner with us to scale automation education to 500+ students annually
+                        across the city.</p>
+                    <a href="partners.html">Get Involved</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CTA ── -->
     <section class="cta-section">
-        <h2>Ready to Join Detroit Automation Academy?</h2>
-        <p>The next cohort is accepting applications now. Limited seats available.</p>
-        <a href="https://daa-crm-frontend-87748455115.us-central1.run.app" class="cta-button" target="_blank"
-            style="background: #66CC00; color: #222;">Start Your Application</a>
+        <div class="cta-inner">
+            <h2>Ready to Join Detroit Automation Academy?</h2>
+            <p>The Spring 2026 cohort begins March 8 at The Station @ Michigan Central. Limited seats available — apply
+                today.</p>
+            <a href="https://daa-crm-frontend-87748455115.us-central1.run.app" class="cta-button" target="_blank">Start
+                Your Application →</a>
+            <p class="seat-note">📍 Youth STEM Lab · 2001 15th St, Detroit · Free for all students</p>
+        </div>
     </section>
 
+    <!-- ── Footer ── -->
     <footer>
         <div class="footer-links">
+            <a href="blog/">Blog</a>
+            <a href="dashboard.html">Dashboard</a>
             <a href="https://github.com/smit4786/DetroitAutomationAcademy" target="_blank">GitHub</a>
-            <a href="quick_start.md">Quick Start</a>
-            <a href="index.html" target="_blank">Live Dashboard</a>
             <a href="mailto:info@detroitautomationacademy.com">Contact</a>
         </div>
-        <p>&copy; 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built
-            by Detroiters.</p>
+        <p>© 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built by
+            Detroiters.</p>
     </footer>
+
 </body>
 
 </html>
