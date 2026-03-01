@@ -2,15 +2,21 @@
 
 /* ─── Design Tokens ──────────────────────────────────────────── */
 :root {
+  --at-blue:      #0066CC;
+  --at-slate:     #2C3E50;
+  --at-silver:    #BDC3C7;
+  --at-green:     #66CC00;
+
+  /* Default Dark Theme (DAA Original) */
   --bg:           #0D1117;
   --bg-card:      #161B22;
   --bg-glass:     rgba(22, 27, 34, 0.85);
   --bg-input:     rgba(13, 17, 23, 0.9);
   --border:       rgba(0, 102, 204, 0.25);
-  --border-focus: #0066CC;
-  --primary:      #0066CC;
+  --border-focus: var(--at-blue);
+  --primary:      var(--at-blue);
   --primary-dark: #0052A3;
-  --green:        #66CC00;
+  --green:        var(--at-green);
   --green-dark:   #52A300;
   --text:         #E6EDF3;
   --text-muted:   #8B949E;
@@ -20,6 +26,21 @@
   --radius-card:  20px;
   --radius-input: 12px;
   --radius-pill:  999px;
+  --nav-bg:       rgba(13, 17, 23, 0.85);
+}
+
+/* Light Mode Overrides */
+[data-theme='light'] {
+  --bg:           #F6F8FA;
+  --bg-card:      #FFFFFF;
+  --bg-glass:     rgba(255, 255, 255, 0.9);
+  --bg-input:     #FFFFFF;
+  --border:       rgba(0, 102, 204, 0.15);
+  --text:         #1F2328;
+  --text-muted:   #636C76;
+  --text-dim:     #8C959F;
+  --shadow-blue:  0 8px 24px rgba(149, 157, 165, 0.2);
+  --nav-bg:       rgba(255, 255, 255, 0.85);
 }
 
 /* ─── Reset ──────────────────────────────────────────────────── */
@@ -34,6 +55,7 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* ─── Circuit Background ─────────────────────────────────────── */
@@ -68,7 +90,7 @@ body::after {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(13, 17, 23, 0.85);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);

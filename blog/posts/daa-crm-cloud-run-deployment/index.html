@@ -69,7 +69,23 @@
       
       
     
-	
+	<script>
+  (function() {
+    const storageKey = 'at-blog-theme';
+    const currentTheme = localStorage.getItem(storageKey);
+    if (currentTheme) {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.setAttribute('data-theme', currentTheme);
+      });
+    } else {
+      
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+
   </head><body class="ma0 avenir bg-near-black near-white production is-page is-page page-daa-crm-cloud-run-deployment">
     
    
@@ -101,7 +117,7 @@
 
 
       
-        <ul class="pl0 mr3">
+        <ul class="pl0 mr3 flex items-center mb0 mt0">
           
           <li class="list f5 f4-ns fw4 dib pr3">
             <a class="hover-white white-90 no-underline" href="/blog/about/" title="About page">
@@ -123,11 +139,42 @@
           
         </ul>
       
-      <div class="ananke-socials"></div>
+      <div class="flex items-center">
+        <div class="ananke-socials"></div>
 
+        <button id="theme-toggle" aria-label="Toggle Theme" title="Switch Theme">
+          🌙
+        </button>
+      </div>
     </div>
   </div>
 </nav>
+
+<script>
+  (function() {
+    const toggle = document.getElementById('theme-toggle');
+    const storageKey = 'at-blog-theme';
+    const currentTheme = localStorage.getItem(storageKey);
+    
+    const applyTheme = (theme) => {
+      document.body.setAttribute('data-theme', theme);
+      toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem(storageKey, theme);
+    };
+
+    if (currentTheme) {
+      applyTheme(currentTheme);
+    } else {
+      
+      applyTheme('dark');
+    }
+
+    toggle.addEventListener('click', () => {
+      const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(theme);
+    });
+  })();
+</script>
 
     </div>
   </header>

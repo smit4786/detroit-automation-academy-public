@@ -72,6 +72,15 @@ DAA's curriculum and proprietary tools are available under a flexible licensing 
 
 ---
 
+## 🌐 Automated Technologies Ecosystem
+
+The Detroit Automation Academy is a core part of the **@AutomatedTechnologies** ecosystem. We maintain several platforms to support our mission:
+
+*   **[Automated Insights Blog](https://detroitautomationacademy.com/blog/):** Our official technical blog, featuring deep dives into AI, robotics, and the future of work. Now featuring a dynamic **Light/Dark Mode** for enhanced readability.
+*   **[Styling Initiative (ATSI)](./STYLING_INITIATIVE.md):** Our unified design system ensuring a consistent, modern visual experience across all automation-focused platforms.
+
+---
+
 ## 📝 Licensing & Copyright Notice
 
 **© 2026 Detroit Automation Academy. All Rights Reserved.**  

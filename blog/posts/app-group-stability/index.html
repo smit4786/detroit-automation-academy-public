@@ -59,7 +59,7 @@ Shared Model Container: By migrating to group.com.automatedtechnologies.atdiary,
     <meta property="article:section" content="posts">
     <meta property="article:published_time" content="2026-02-21T22:30:00-05:00">
     <meta property="article:modified_time" content="2026-02-21T22:30:00-05:00">
-    <meta property="article:tag" content="IOS">
+    <meta property="article:tag" content="Ios">
     <meta property="article:tag" content="Architecture">
     <meta property="article:tag" content="SwiftData">
     <meta property="article:tag" content="AppGroups">
@@ -71,7 +71,7 @@ Shared Model Container: By migrating to group.com.automatedtechnologies.atdiary,
   <meta itemprop="datePublished" content="2026-02-21T22:30:00-05:00">
   <meta itemprop="dateModified" content="2026-02-21T22:30:00-05:00">
   <meta itemprop="wordCount" content="114">
-  <meta itemprop="keywords" content="IOS,Architecture,SwiftData,AppGroups">
+  <meta itemprop="keywords" content="Ios,Architecture,SwiftData,AppGroups">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Stability through Shared Storage: The App Group Milestone">
   <meta name="twitter:description" content="Engineering Data Consistency across Ecosystems System stability is non-negotiable. Today, we successfully implemented a shared App Group architecture for the @AT_Diary project, ensuring seamless data flow between the main application and its Home Screen widget.
@@ -81,7 +81,23 @@ Shared Model Container: By migrating to group.com.automatedtechnologies.atdiary,
       
       
     
-	
+	<script>
+  (function() {
+    const storageKey = 'at-blog-theme';
+    const currentTheme = localStorage.getItem(storageKey);
+    if (currentTheme) {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.setAttribute('data-theme', currentTheme);
+      });
+    } else {
+      
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+
   </head><body class="ma0 avenir bg-near-black near-white production is-page is-page page-app-group-stability">
     
    
@@ -113,7 +129,7 @@ Shared Model Container: By migrating to group.com.automatedtechnologies.atdiary,
 
 
       
-        <ul class="pl0 mr3">
+        <ul class="pl0 mr3 flex items-center mb0 mt0">
           
           <li class="list f5 f4-ns fw4 dib pr3">
             <a class="hover-white white-90 no-underline" href="/blog/about/" title="About page">
@@ -135,11 +151,42 @@ Shared Model Container: By migrating to group.com.automatedtechnologies.atdiary,
           
         </ul>
       
-      <div class="ananke-socials"></div>
+      <div class="flex items-center">
+        <div class="ananke-socials"></div>
 
+        <button id="theme-toggle" aria-label="Toggle Theme" title="Switch Theme">
+          🌙
+        </button>
+      </div>
     </div>
   </div>
 </nav>
+
+<script>
+  (function() {
+    const toggle = document.getElementById('theme-toggle');
+    const storageKey = 'at-blog-theme';
+    const currentTheme = localStorage.getItem(storageKey);
+    
+    const applyTheme = (theme) => {
+      document.body.setAttribute('data-theme', theme);
+      toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem(storageKey, theme);
+    };
+
+    if (currentTheme) {
+      applyTheme(currentTheme);
+    } else {
+      
+      applyTheme('dark');
+    }
+
+    toggle.addEventListener('click', () => {
+      const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(theme);
+    });
+  })();
+</script>
 
     </div>
   </header>
@@ -186,7 +233,7 @@ Shared Model Container: By migrating to group.com.automatedtechnologies.atdiary,
 <ul class="pa0">
   
    <li class="list di">
-     <a href="/blog/tags/ios/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">IOS</a>
+     <a href="/blog/tags/ios/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Ios</a>
    </li>
   
    <li class="list di">

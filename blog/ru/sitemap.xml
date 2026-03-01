@@ -389,24 +389,6 @@
                 href="https://detroitautomationacademy.com/blog/ru/tags/eventkit/"
                 />
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/ru/categories/ios/</loc>
-    <lastmod>2026-02-28T04:00:00-05:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://detroitautomationacademy.com/blog/categories/ios/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="de"
-                href="https://detroitautomationacademy.com/blog/de/categories/ios/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://detroitautomationacademy.com/blog/ru/categories/ios/"
-                />
-  </url><url>
     <loc>https://detroitautomationacademy.com/blog/ru/tags/ios/</loc>
     <lastmod>2026-02-28T04:00:00-05:00</lastmod>
     <xhtml:link
@@ -423,6 +405,24 @@
                 rel="alternate"
                 hreflang="ru"
                 href="https://detroitautomationacademy.com/blog/ru/tags/ios/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/ru/categories/ios/</loc>
+    <lastmod>2026-02-28T04:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/categories/ios/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/categories/ios/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/categories/ios/"
                 />
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/ru/tags/musickit/</loc>
