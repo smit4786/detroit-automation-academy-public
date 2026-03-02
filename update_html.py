@@ -80,24 +80,34 @@ footer_content = """    <footer>
         <p>© 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built by Detroiters.</p>
     </footer>"""
 
-files_to_update = ["students.html", "instructors.html", "partners.html", "subscriptions.html", "dashboard.html"]
+files_to_update = [
+    "students.html",
+    "instructors.html",
+    "partners.html",
+    "subscriptions.html",
+    "dashboard.html",
+]
+
 
 def update_file(filepath):
-    with open(filepath, 'r') as f:
+    with open(filepath, "r") as f:
         content = f.read()
-    
+
     # Replace header and script
-    header_pattern = re.compile(r'<header>.*?</header>\s*(<script>.*?</script>)?', re.DOTALL)
+    header_pattern = re.compile(
+        r"<header>.*?</header>\s*(<script>.*?</script>)?", re.DOTALL
+    )
     if header_pattern.search(content):
         content = header_pattern.sub(header_content, content, count=1)
-        
+
     # Replace footer
-    footer_pattern = re.compile(r'<footer>.*?</footer>', re.DOTALL)
+    footer_pattern = re.compile(r"<footer>.*?</footer>", re.DOTALL)
     content = footer_pattern.sub(footer_content, content)
-    
-    with open(filepath, 'w') as f:
+
+    with open(filepath, "w") as f:
         f.write(content)
-        
+
+
 for f in files_to_update:
     if os.path.exists(f):
         update_file(f)
