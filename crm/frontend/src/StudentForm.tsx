@@ -11,7 +11,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ onStudentAdded, tenantId }) =
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [cohort, setCohort] = useState('Feb 2026');
+  const [cohort, setCohort] = useState('Mar 2026');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {

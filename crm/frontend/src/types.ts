@@ -16,4 +16,5 @@ export interface Student {
   cohort: string;
   enrollment_date: string;
   status: 'Active' | 'Completed' | 'Withdrawn' | 'Inquiry';
+  attendance?: { date: string, present: boolean, notes?: string }[];
 }

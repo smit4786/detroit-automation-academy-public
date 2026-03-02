@@ -17,29 +17,32 @@ The Detroit Automation Academy (DAA) is a STEM education initiative focused on p
 
 ## 4. Functional Requirements
 - **Curriculum Delivery:** Modular STEM sessions (e.g., Robotics, Coding, Automation).
-- **Registration System:** Google Forms-based registration integrated with the DAA website.
-- **CRM Integration:** MVP CRM to track participant progress, attendance, and stakeholder communications.
+- **Registration System:** Integrated React-based registration portal with real-time Firestore sync.
+- **CRM Integration:** Multi-tenant CRM for managing enrollments across different academies (DAA Core, BGC Metro).
+- **Admin Dashboard:** Secure, authenticated dashboard for staff to view, manage, and delete enrollment records.
+- **Detailed Applicant View:** "Full Records" view displaying comprehensive applicant data (Goals, Experience, Education, etc.).
+- **Data Portability:** Export functionality for both summary and full enrollment data to CSV format.
 - **Public Website:** Informational site with a blog for project updates and community engagement.
 - **Event Management:** Procedures for equipment testing, onsite facilitation, and media publication.
 
 ## 5. Technical Requirements
-- **Website Framework:** Hugo (Static Site Generator) with the Ananke theme.
+- **Website Framework:** HTML/CSS/JS with a tile-based responsive dashboard.
 - **CRM Frontend:** React with TypeScript for enrollment and progress management dashboards.
 - **CRM Backend:** Golang-based microservices for data processing and API integration.
 - **Hosting/Deployment:**
-    - **GitHub Pages:** Static site hosting for the public blog.
-    - **GCP:** Cloud Run for CRM backend; Firestore for student data; BigQuery for cohort analytics.
-    - **Cloudflare:** Edge security, DNS, and Workers for lightweight integrations.
-- **Data Layer:** Clickhouse for high-performance session telemetry; Spanner for global relational data.
-- **Build Tools:** Node.js (PostCSS), Terraform for infrastructure management, Nix for local development.
+    - **GitHub Pages:** Static site hosting for the public blog and main website.
+    - **GCP:** Cloud Run for CRM backend and frontend; Firestore for student data.
+- **Data Layer:** Firestore for real-time student and enrollment data.
+- **Authentication:** Google OAuth 2.0 (SSO) for administrative access.
+- **Build Tools:** Node.js, npm, and gcloud CLI for automated deployments.
 - **Repository:** `detroit-automation-academy-public`.
-- **Integrations:** Google Workspace (Forms, Sheets) for legacy data; OpenTelemetry for system observability.
 
 ## 6. Roadmap & Milestones (2026)
-- **Feb 4:** BGC Event (50 participants, 5 STEM sessions).
-- **Feb 4-10:** P4-P7 Infrastructure and Financial framework setup.
-- **Feb 10 - Mar 15:** CRM Phase 1 development (MVP launch).
-- **Mar 15:** CRM Go-Live.
+- **Feb 4:** BGC Event (50 participants, 5 STEM sessions) - ✅ COMPLETE.
+- **Feb 28:** CRM Go-Live (Infrastructure & Multi-tenant support) - ✅ COMPLETE.
+- **Mar 2:** CRM Enhancement (Detailed Applicant View & CSV Export) - ✅ COMPLETE.
+- **Mar 15:** CRM Phase 2 (Attendance tracking & Instructor portal).
+
 
 ## 7. Agent Coordination & Roles
 - **@CTO:** Oversees technical architecture, GitHub Pages deployment, and Hugo site maintenance.

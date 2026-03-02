@@ -15,8 +15,7 @@ import (
 
 var (
 	ALLOWED_EMAILS = []string{"dbkrsmith@gmail.com", "smit4786@gmail.com"}
-	// User should set this in environment variables
-	CLIENT_ID = os.Getenv("GOOGLE_CLIENT_ID")
+	CLIENT_ID      = os.Getenv("GOOGLE_CLIENT_ID")
 )
 
 func isAllowed(email string) bool {
@@ -30,21 +29,46 @@ func isAllowed(email string) bool {
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Bypass auth for health checks or public registration (POST)
+		// 1. Set robust CORS headers
+		origin := r.Header.Get("Origin")
+		allowedOrigins := map[string]bool{
+			"https://enroll.detroitautomationacademy.com":   true,
+			"https://daa-crm-frontend-ww72p2xhtq-uc.a.run.app": true,
+			"https://detroitautomationacademy.com":          true,
+		}
+
+		if allowedOrigins[origin] {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		} else {
+			// Default to first allowed origin if not specified
+			w.Header().Set("Access-Control-Allow-Origin", "https://enroll.detroitautomationacademy.com")
+		}
+
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// 2. Handle pre-flight (OPTIONS) requests
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		// 3. Bypass auth for health checks or public registration (POST)
 		if r.URL.Path == "/health" || (r.URL.Path == "/api/students" && r.Method == http.MethodPost) {
 			next(w, r)
 			return
 		}
 
+		// 4. Validate Authorization Header
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			http.Error(w, "Missing Authorization Header", http.StatusUnauthorized)
+			http.Error(w, "Unauthorized: Missing Authorization Header", http.StatusUnauthorized)
 			return
 		}
 
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 		
-		// Validate Token
+		// 5. Validate Google ID Token
 		payload, err := idtoken.Validate(context.Background(), token, CLIENT_ID)
 		if err != nil {
 			log.Printf("Token validation failed: %v", err)
@@ -52,6 +76,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		// 6. Check if email is in ALLOWED_EMAILS
 		email := payload.Claims["email"].(string)
 		if !isAllowed(email) {
 			log.Printf("Forbidden access attempt: %s", email)

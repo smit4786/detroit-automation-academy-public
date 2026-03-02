@@ -1,40 +1,21 @@
-# EDUCATIONAL PARTNER LICENSE AGREEMENT
-## Detroit Automation Academy (DAA)
+# Detroit Automation Academy: Educational Partner License (EPL)
+**Status:** DRAFT - For Executive Approval  
+**Owner:** @CRO Agent  
+**Date:** March 2, 2026  
 
-**License Version:** 1.0 (Feb 2026)  
-**Licensor:** Detroit Automation Academy  
-**Licensee:** [Partner Organization Name]
+## 💰 EPL Fee Schedule & Pricing Tiers
 
----
+To fulfill the mission of providing scalable automation education while ensuring DAA's sustainability, the following licensing model is established for external partners (Schools, Non-Profits, Private Labs).
 
-### 1. GRANT OF LICENSE
-Detroit Automation Academy (Licensor) hereby grants [Partner Organization Name] (Licensee) a non-exclusive, non-transferable, revocable license to use the **DAA Curriculum Core** materials for educational, non-commercial purposes.
+| Tier | Name | Target Partner | Annual Fee | Features |
+| :--- | :--- | :--- | :--- | :--- |
+| **Tier 1** | **Educator** | Individual classrooms / Small non-profits | **$2,500** | Full curriculum access, local CRM tenant, 50 student seats. |
+| **Tier 2** | **Box** | School districts / Mid-sized organizations | **$12,500** | Tier 1 + Hardware procurement kits, instructor training, 500 student seats. |
+| **Tier 3** | **Engine** | Enterprise partners / Regional hubs | **$50,000+** | Tier 2 + Custom curriculum development, direct agent integration, unlimited seats. |
 
-### 2. SCOPE OF USE
-*   Licensee may use the materials to deliver STEM and automation training to students under their direct supervision.
-*   Licensee may make a reasonable number of copies for internal student use only.
-*   Licensee shall NOT sell, rent, or lease the materials to third parties.
-
-### 3. ATTRIBUTION & BRANDING
-*   Licensee must maintain all Detroit Automation Academy branding, logos, and copyright notices on all materials.
-*   Any public mention of the curriculum must attribute the source to "Detroit Automation Academy."
-*   Licensee is permitted to use the DAA Logo on their website to indicate their status as an "Official Educational Partner."
-
-### 4. UPDATES & VERSION CONTROL
-*   Licensor will provide updates to the curriculum via the private `daa-curriculum-core` repository.
-*   Licensee agrees to update their local materials to the latest version within 30 days of a major release.
-
-### 5. INTELLECTUAL PROPERTY
-*   All intellectual property rights in the curriculum and associated software remains the sole property of Detroit Automation Academy.
-*   No ownership is transferred under this agreement.
-
-### 6. TERM & TERMINATION
-*   This license is valid for a period of [1 Year] from the date of signature.
-*   Licensor may terminate this agreement with 30 days' notice if Licensee violates any terms.
+## 🚀 Q3 Pilot Target
+- **Goal:** $50,000 – $100,000 in regional pilot revenue.
+- **Strategy:** Target 4 local school districts for Tier 2 enrollment by May 2026.
 
 ---
-
-**Signatures:**
-
-**Licensor:** __________________________ Date: __________  
-**Licensee:** __________________________ Date: __________
+*Prepared by the Chief Revenue Officer Agent.*

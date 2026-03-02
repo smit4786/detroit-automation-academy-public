@@ -20,6 +20,13 @@ type Student struct {
 	Cohort         string    `json:"cohort" firestore:"cohort"`
 	EnrollmentDate time.Time `json:"enrollment_date" firestore:"enrollment_date"`
 	Status         string    `json:"status" firestore:"status"` // e.g., "Active", "Completed", "Withdrawn", "Inquiry"
+	Attendance     []Session `json:"attendance" firestore:"attendance"`
+}
+
+type Session struct {
+	Date    time.Time `json:"date" firestore:"date"`
+	Present bool      `json:"present" firestore:"present"`
+	Notes   string    `json:"notes" firestore:"notes"`
 }
 
 type Tenant struct {

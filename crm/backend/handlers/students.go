@@ -13,7 +13,18 @@ import (
 	"google.golang.org/api/iterator"
 
 	"github.com/smit4786/detroit-automation-academy-public/crm/backend/models"
+	"github.com/smit4786/detroit-automation-academy-public/crm/backend/notifications"
 )
+
+func validateStudent(s models.Student) error {
+	if s.FirstName == "" || s.LastName == "" {
+		return fmt.Errorf("first and last name are required")
+	}
+	if s.Email == "" {
+		return fmt.Errorf("email is required")
+	}
+	return nil
+}
 
 // ── In-memory fallback ────────────────────────────────────────────────────── //
 var (
@@ -27,7 +38,7 @@ var (
 			ProgramInterest: []string{"Automation Technology", "CNC Programming"},
 			ExperienceLevel: "Professional", Language: "English",
 			HearAboutUs: "Website", Goals: "Scale Automated Technologies operations.",
-			Cohort: "Feb 2026", EnrollmentDate: time.Now(), Status: "Active",
+			Cohort: "Mar 2026", EnrollmentDate: time.Now(), Status: "Active",
 		},
 		{
 			ID: "seed-test-1", TenantID: "DAA-CORE",
@@ -47,7 +58,7 @@ var (
 			ProgramInterest: []string{"Automation Technology"},
 			ExperienceLevel: "Expert", Language: "English",
 			HearAboutUs: "System Verification", Goals: "Confirm production-ready status for Registration Portal.",
-			Cohort: "Feb 2026", EnrollmentDate: time.Now(), Status: "Active",
+			Cohort: "Mar 2026", EnrollmentDate: time.Now(), Status: "Active",
 		},
 	}
 )
@@ -68,13 +79,17 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 
 		tenantID := r.URL.Query().Get("tenant_id")
 		if tenantID == "" {
-			http.Error(w, `{"error":"tenant_id required"}`, http.StatusUnauthorized)
-			return
+			tenantID = "ALL" // Default to ALL for admins if not specified
 		}
 
 		switch r.Method {
 		case http.MethodGet:
-			students := listStudents(r.Context(), fsClient, tenantID)
+			var students []models.Student
+			if tenantID == "ALL" {
+				students = listAllStudents(r.Context(), fsClient)
+			} else {
+				students = listStudents(r.Context(), fsClient, tenantID)
+			}
 			if err := json.NewEncoder(w).Encode(students); err != nil {
 				log.Printf("encode error: %v", err)
 			}
@@ -83,6 +98,10 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 			var s models.Student
 			if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
 				http.Error(w, `{"error":"invalid body"}`, http.StatusBadRequest)
+				return
+			}
+			if err := validateStudent(s); err != nil {
+				http.Error(w, fmt.Sprintf(`{"error":"%v"}`, err), http.StatusBadRequest)
 				return
 			}
 			s.TenantID = tenantID
@@ -96,8 +115,46 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 				http.Error(w, `{"error":"failed to save student"}`, http.StatusInternalServerError)
 				return
 			}
+
+			// 🚀 Send Automated Notifications
+			go func(student models.Student) {
+				notifications.SendWelcomeEmail(student)
+				notifications.SendAdminAlert(student)
+			}(s)
+
 			w.WriteHeader(http.StatusCreated)
 			json.NewEncoder(w).Encode(s)
+
+		case http.MethodPut:
+			// Handle updating student (specifically attendance)
+			var s models.Student
+			if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
+				http.Error(w, `{"error":"invalid body"}`, http.StatusBadRequest)
+				return
+			}
+			if s.ID == "" {
+				http.Error(w, `{"error":"student ID required for update"}`, http.StatusBadRequest)
+				return
+			}
+			s.TenantID = tenantID
+			if err := updateStudent(r.Context(), fsClient, &s); err != nil {
+				log.Printf("update error: %v", err)
+				http.Error(w, `{"error":"failed to update student"}`, http.StatusInternalServerError)
+				return
+			}
+			json.NewEncoder(w).Encode(s)
+
+		case http.MethodDelete:
+			id := r.URL.Query().Get("id")
+			if id == "" {
+				http.Error(w, `{"error":"id required"}`, http.StatusBadRequest)
+				return
+			}
+			if err := deleteStudent(r.Context(), fsClient, tenantID, id); err != nil {
+				http.Error(w, `{"error":"failed to delete student"}`, http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusNoContent)
 
 		default:
 			http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
@@ -109,6 +166,18 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 
 func collectionName(tenantID string) string {
 	return fmt.Sprintf("students_%s", tenantID)
+}
+
+func listAllStudents(ctx context.Context, fs *firestore.Client) []models.Student {
+	if fs == nil {
+		return listFromMemory("ALL")
+	}
+	tenants := []string{"DAA-CORE", "BGC-METRO"}
+	var all []models.Student
+	for _, t := range tenants {
+		all = append(all, listStudents(ctx, fs, t)...)
+	}
+	return all
 }
 
 func listStudents(ctx context.Context, fs *firestore.Client, tenantID string) []models.Student {
@@ -144,6 +213,23 @@ func listStudents(ctx context.Context, fs *firestore.Client, tenantID string) []
 	return students
 }
 
+func deleteStudent(ctx context.Context, fs *firestore.Client, tenantID, id string) error {
+	if fs == nil {
+		memMu.Lock()
+		defer memMu.Unlock()
+		for i, s := range memStudents {
+			if s.ID == id && s.TenantID == tenantID {
+				memStudents = append(memStudents[:i], memStudents[i+1:]...)
+				return nil
+			}
+		}
+		return fmt.Errorf("student not found in memory")
+	}
+
+	_, err := fs.Collection(collectionName(tenantID)).Doc(id).Delete(ctx)
+	return err
+}
+
 func saveStudent(ctx context.Context, fs *firestore.Client, s *models.Student) error {
 	if fs == nil {
 		return saveToMemory(s)
@@ -158,6 +244,28 @@ func saveStudent(ctx context.Context, fs *firestore.Client, s *models.Student) e
 	return nil
 }
 
+func updateStudent(ctx context.Context, fs *firestore.Client, s *models.Student) error {
+	if fs == nil {
+		memMu.Lock()
+		defer memMu.Unlock()
+		for i, existing := range memStudents {
+			if existing.ID == s.ID && existing.TenantID == s.TenantID {
+				// Update fields, specifically attendance
+				memStudents[i].Attendance = s.Attendance
+				memStudents[i].Status = s.Status
+				return nil
+			}
+		}
+		return fmt.Errorf("student not found in memory")
+	}
+
+	_, err := fs.Collection(collectionName(s.TenantID)).Doc(s.ID).Set(ctx, map[string]interface{}{
+		"attendance": s.Attendance,
+		"status":     s.Status,
+	}, firestore.MergeAll)
+	return err
+}
+
 // ── In-memory fallback helpers ────────────────────────────────────────────── //
 
 func listFromMemory(tenantID string) []models.Student {
@@ -165,7 +273,7 @@ func listFromMemory(tenantID string) []models.Student {
 	defer memMu.RUnlock()
 	var out []models.Student
 	for _, s := range memStudents {
-		if s.TenantID == tenantID {
+		if tenantID == "ALL" || s.TenantID == tenantID {
 			out = append(out, s)
 		}
 	}
