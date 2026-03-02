@@ -3,23 +3,23 @@ package models
 import "time"
 
 type Student struct {
-	ID             string    `json:"id"`
-	TenantID       string    `json:"tenant_id"`
-	FirstName      string    `json:"first_name"`
-	LastName       string    `json:"last_name"`
-	Email          string    `json:"email"`
-	Phone          string    `json:"phone"`
-	AgeGrade       string    `json:"age_grade"`
-	EducationLevel string    `json:"education_level"`
-	ProgramInterest []string `json:"program_interest"`
-	ExperienceLevel string    `json:"experience_level"`
-	Language       string    `json:"language"`
-	HearAboutUs    string    `json:"hear_about_us"`
-	Goals          string    `json:"goals"`
-	Comments       string    `json:"comments"`
-	Cohort         string    `json:"cohort"`
-	EnrollmentDate time.Time `json:"enrollment_date"`
-	Status         string    `json:"status"` // e.g., "Active", "Completed", "Withdrawn", "Inquiry"
+	ID             string    `json:"id" firestore:"-"`
+	TenantID       string    `json:"tenant_id" firestore:"tenant_id"`
+	FirstName      string    `json:"first_name" firestore:"first_name"`
+	LastName       string    `json:"last_name" firestore:"last_name"`
+	Email          string    `json:"email" firestore:"email"`
+	Phone          string    `json:"phone" firestore:"phone"`
+	AgeGrade       string    `json:"age_grade" firestore:"age_grade"`
+	EducationLevel string    `json:"education_level" firestore:"education_level"`
+	ProgramInterest []string `json:"program_interest" firestore:"program_interest"`
+	ExperienceLevel string    `json:"experience_level" firestore:"experience_level"`
+	Language       string    `json:"language" firestore:"language"`
+	HearAboutUs    string    `json:"hear_about_us" firestore:"hear_about_us"`
+	Goals          string    `json:"goals" firestore:"goals"`
+	Comments       string    `json:"comments" firestore:"comments"`
+	Cohort         string    `json:"cohort" firestore:"cohort"`
+	EnrollmentDate time.Time `json:"enrollment_date" firestore:"enrollment_date"`
+	Status         string    `json:"status" firestore:"status"` // e.g., "Active", "Completed", "Withdrawn", "Inquiry"
 }
 
 type Tenant struct {

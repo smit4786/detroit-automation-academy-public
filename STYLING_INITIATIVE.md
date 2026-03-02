@@ -7,7 +7,7 @@
 ---
 
 ## 🎨 Design Philosophy
-Our goal is to create a unified visual language across all @AutomatedTechnologies platforms (Blog, CRM, Diary, Infrastructure) that conveys:
+Our goal is to create a unified visual language across all @AutomatedTechnologies platforms (Blog, CRM, Diary, Infrastructure, @AT_Wealth) that conveys:
 1. **Precision & Automation:** Clean lines and geometric patterns.
 2. **Trust & Stability:** Deep blues and slate grays.
 3. **Innovation & Clarity:** High-contrast typography and minimalist white space.

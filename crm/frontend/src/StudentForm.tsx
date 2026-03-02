@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Student } from './types';
+import { getApiUrl } from './api-config';
 
 interface StudentFormProps {
   onStudentAdded: (student: Student) => void;
@@ -26,9 +27,13 @@ const StudentForm: React.FC<StudentFormProps> = ({ onStudentAdded, tenantId }) =
     };
 
     try {
-      const response = await fetch(`/api/students?tenant_id=${tenantId}`, {
+      const token = sessionStorage.getItem('daa_id_token');
+      const response = await fetch(getApiUrl(`/api/students?tenant_id=${tenantId}`), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(newStudent),
       });
       if (!response.ok) throw new Error('Failed to add student');

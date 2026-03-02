@@ -30,8 +30,8 @@ func isAllowed(email string) bool {
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Bypass auth for non-API or health checks
-		if r.URL.Path == "/health" {
+		// Bypass auth for health checks or public registration (POST)
+		if r.URL.Path == "/health" || (r.URL.Path == "/api/students" && r.Method == http.MethodPost) {
 			next(w, r)
 			return
 		}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Student } from './types';
 import StudentForm from './StudentForm';
 import EnrollmentForm from './EnrollmentForm';
+import { getApiUrl } from './api-config';
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
@@ -17,7 +18,7 @@ const AppContent: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>(
     (localStorage.getItem('daa_crm_theme') as 'light' | 'dark') || 'dark'
   );
-  
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('daa_crm_theme', theme);
@@ -27,6 +28,9 @@ const AppContent: React.FC = () => {
 
   const [adminUnlocked, setAdminUnlocked] = useState<boolean>(
     sessionStorage.getItem('daa_admin_auth') === 'true'
+  );
+  const [userEmail, setUserEmail] = useState<string | null>(
+    sessionStorage.getItem('daa_user_email')
   );
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
 
@@ -42,7 +46,7 @@ const AppContent: React.FC = () => {
     if (response.credential) {
       const decoded: any = jwtDecode(response.credential);
       const email = decoded.email;
-      
+
       if (ALLOWED_EMAILS.includes(email)) {
         sessionStorage.setItem('daa_admin_auth', 'true');
         sessionStorage.setItem('daa_user_email', email);
@@ -70,18 +74,18 @@ const AppContent: React.FC = () => {
     if (view === 'admin') {
       setLoading(true);
       const token = sessionStorage.getItem('daa_id_token');
-      fetch(`/api/students?tenant_id=${tenantId}`, {
+      fetch(getApiUrl(`/api/students?tenant_id=${tenantId}`), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
-        .then(res => { 
+        .then(res => {
           if (res.status === 401 || res.status === 403) {
             handleLogout();
             throw new Error('Session expired or unauthorized');
           }
-          if (!res.ok) throw new Error('Failed to fetch'); 
-          return res.json(); 
+          if (!res.ok) throw new Error('Failed to fetch');
+          return res.json();
         })
         .then(data => { setStudents(data); setLoading(false); })
         .catch(err => { setError(err.message); setLoading(false); });

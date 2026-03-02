@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getApiUrl } from './api-config';
 
 const programs = [
   { label: 'Automation Technology', icon: '⚙️' },
@@ -43,7 +44,7 @@ const EnrollmentForm: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/students?tenant_id=DAA-CORE', {
+      const response = await fetch(getApiUrl('/api/students?tenant_id=DAA-CORE'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, status: 'Inquiry', cohort: 'TBD' }),
