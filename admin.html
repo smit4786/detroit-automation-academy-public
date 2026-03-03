@@ -8,6 +8,46 @@
     <link rel="stylesheet" href="branding/palette.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
+        /* ── Standardized Header/Footer Styles ── */
+        header {
+            background: rgba(13, 17, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--daa-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        body.light-mode header {
+            background: rgba(245, 247, 250, 0.92);
+        }
+
+        footer {
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            color: var(--daa-fg-muted);
+            padding: 32px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .footer-links {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: var(--daa-fg-muted);
+            text-decoration: none;
+            margin: 0 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
         /* ── Circuit background ── */
         body::before {
             content: '';
@@ -22,9 +62,30 @@
             opacity: 0.6;
         }
 
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Circuit background ── */
+        
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: var(--daa-fg); background: var(--daa-bg); transition: background 0.3s, color 0.3s; min-height: 100vh; }
-        header { background: var(--daa-bg-card); box-shadow: 0 2px 8px var(--daa-shadow); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--daa-border); }
+        
         nav { max-width: 1200px; margin: 0 auto; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
         .logo a { text-decoration: none; display: flex; align-items: center; }
         #logo-text-main { fill: var(--daa-fg); transition: fill 0.3s; }
@@ -37,7 +98,7 @@
         
         .admin-container { max-width: 1200px; margin: 48px auto; padding: 0 32px; }
         .admin-card { background: var(--daa-bg-card); border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px var(--daa-shadow); border: 1px solid var(--daa-border); }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--daa-border); }
+        .admin-
         .admin-title { font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 800; color: var(--daa-primary); }
         
         .cta-button { background: linear-gradient(135deg, var(--daa-accent) 0%, var(--daa-accent-dark, #52A300) 100%); color: #0D1117; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; border: none; cursor: pointer; box-shadow: 0 4px 15px var(--daa-accent-glow); }
@@ -53,22 +114,24 @@
         .auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px); }
         .auth-modal { background: var(--daa-bg-card); padding: 48px; border-radius: 20px; text-align: center; max-width: 400px; border: 1px solid var(--daa-border); }
         
-        footer { background: var(--daa-bg-card); color: var(--daa-fg-muted); padding: 32px; text-align: center; font-size: 14px; margin-top: 64px; border-top: 1px solid var(--daa-border); }
-        .footer-links a { color: var(--daa-fg-muted); text-decoration: none; margin: 0 16px; }
+        
+        
         .footer-links a:hover { color: var(--daa-accent); }
         
         #dashboard-content { display: none; }
     </style>
 </head>
 <body class="light-mode">
-        <header>
+                <header>
         <nav>
             <div class="logo">
                 <a href="index.html">
                     <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
                             <circle cx="100" cy="100" r="75" fill="none" stroke="#0066CC" stroke-width="4" />
-                            <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
+                            <polygon
+                                points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30"
+                                fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
                             <g stroke="#66CC00" stroke-width="3" fill="none" stroke-linecap="round">
                                 <path d="M 100 30 L 100 15 L 85 10" />
                                 <path d="M 130 70 L 155 50 L 170 55" />
@@ -121,6 +184,7 @@
                     const isLight = document.body.classList.toggle('light-mode');
                     this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
                     localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
+                    // Update SVG logo text color
                     const main = document.getElementById('logo-text-main');
                     const sub = document.getElementById('logo-text-sub');
                     if (main) main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
@@ -194,7 +258,7 @@
         </div>
     </section>
 
-        <footer>
+                <footer>
         <div class="footer-links">
             <a href="blog/">Blog</a>
             <a href="dashboard.html">Dashboard</a>

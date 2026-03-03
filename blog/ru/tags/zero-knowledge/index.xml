@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Zero-Knowledge on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/tags/zero-knowledge/</link>
+    <description>Recent content in Zero-Knowledge on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Mon, 02 Mar 2026 20:00:00 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/zero-knowledge/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Повышение организационных стандартов: Инфраструктура лицензирования и учебных программ DAA</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/repository-standards-enhancement/</link>
+      <pubDate>Mon, 02 Mar 2026 20:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/repository-standards-enhancement/</guid>
+      <description>&lt;p&gt;Добро пожаловать в последнее техническое обновление из &lt;strong&gt;Блога Automated Insights&lt;/strong&gt;. По мере того, как Detroit Automation Academy (DAA) масштабирует свою модель лицензирования, поддержание строгих эксплуатационных стандартов и стандартов безопасности в наших репозиториях, приносящих доход, имеет решающее значение. Сегодня мы успешно внедрили улучшение инфраструктуры, которое приводит наши основные системы лицензирования в соответствие с корпоративными стандартами ATSI.&lt;/p&gt;&#xA;&lt;h2 id=&#34;устранение-технического-долга&#34;&gt;Устранение технического долга&lt;/h2&gt;&#xA;&lt;p&gt;В быстро меняющихся средах разработки легко накопить технический долг. Во время нашего последнего спринта координации мы выполнили полную очистку нашего частного репозитория учебных программ и лицензирования, удалив все жестко закодированные пути разработчиков для обеспечения безупречной кроссплатформенной функциональности. Эти изменения гарантируют, что наши конвейеры CI/CD и платформы тестирования останутся высоконадежными и масштабируемыми.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

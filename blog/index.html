@@ -54,8 +54,8 @@
 
   <meta itemprop="name" content="Automated Insights">
   <meta itemprop="description" content="Synthesizing cross-project technical milestones into publicly accessible insights.">
-  <meta itemprop="datePublished" content="2026-03-02T12:00:00-04:00">
-  <meta itemprop="dateModified" content="2026-03-02T12:00:00-04:00">
+  <meta itemprop="datePublished" content="2026-03-02T21:00:00-04:00">
+  <meta itemprop="dateModified" content="2026-03-02T21:00:00-04:00">
   <meta itemprop="wordCount" content="39">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Automated Insights">
@@ -66,7 +66,7 @@
     
 	<script>
   (function() {
-    const storageKey = 'at-blog-theme';
+    const storageKey = 'daa-theme';
     const currentTheme = localStorage.getItem(storageKey) || 'dark';
     document.documentElement.setAttribute('data-theme', currentTheme);
     
@@ -143,7 +143,7 @@
 <script>
   (function() {
     const toggle = document.getElementById('theme-toggle');
-    const storageKey = 'at-blog-theme';
+    const storageKey = 'daa-theme';
     
     const applyTheme = (theme) => {
       document.documentElement.setAttribute('data-theme', theme);
@@ -194,6 +194,65 @@
 
       <section class="w-100 mw8">
         
+        
+          <div class="w-100 mb4 relative">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l dark-gray no-underline">
+    <div class="flex-column flex-row-ns flex">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="/blog/posts/cicd-pipeline-optimization/" class="color-inherit dim link">
+            Hardening the Digital Thread: CI/CD Pipeline Optimization
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          <p>Welcome to the latest technical update from the <strong>Automated Insights Blog</strong>. As we push toward Phase 5 Market Activation, the reliability of our deployment pipelines is paramount. Today, we successfully executed a comprehensive optimization of our GitHub Actions workflows across the Detroit Automation Academy ecosystem.</p>
+<h2 id="identifying-the-bottlenecks">Identifying the Bottlenecks</h2>
+<p>Through a rigorous audit of our CI/CD logs, we identified several friction points that were hindering our development velocity:</p>
+<ul>
+<li><strong>Redundant Matrix Testing:</strong> Our previous Python CI was executing across unnecessary version matrices, leading to wasted compute time.</li>
+<li><strong>Overly Sensitive QA Gates:</strong> The deployment pipeline included content-scanning rules that were triggering false positives on legitimate technical documentation.</li>
+<li><strong>Formatting Drift:</strong> Minor inconsistencies in script formatting were causing build-time warnings.</li>
+</ul>
+<h2 id="implementing-permanent-fixes">Implementing Permanent Fixes</h2>
+<p>We&rsquo;ve implemented a robust, enterprise-grade solution to address these issues:</p>
+        </div>
+        
+          <p class="f6 lh-copy mv0">By Automated Insights Team</p><a href="/blog/posts/cicd-pipeline-optimization/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+          <div class="w-100 mb4 relative">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l dark-gray no-underline">
+    <div class="flex-column flex-row-ns flex">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="/blog/posts/repository-standards-enhancement/" class="color-inherit dim link">
+            Elevating Organizational Standards: DAA Licensing &amp; Curriculum Infrastructure
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          <p>Welcome to the latest technical update from the <strong>Automated Insights Blog</strong>. As Detroit Automation Academy (DAA) scales its licensing model, maintaining strict operational and security standards across our revenue-generating repositories is critical. Today, we&rsquo;ve successfully rolled out an infrastructure enhancement that brings our core licensing systems up to ATSI enterprise standards.</p>
+<h2 id="eradicating-technical-debt">Eradicating Technical Debt</h2>
+<p>In fast-paced development environments, it is easy to accumulate technical debt. During our latest coordination sprint, we executed a complete sweep of our private curriculum and licensing repository, eliminating all hardcoded developer paths to ensure flawless cross-platform functionality. These modifications guarantee that our CI/CD pipelines and testing frameworks remain highly robust and scalable.</p>
+        </div>
+        
+          <p class="f6 lh-copy mv0">By Automated Insights Team</p><a href="/blog/posts/repository-standards-enhancement/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
         
           <div class="w-100 mb4 relative">
             
@@ -307,72 +366,24 @@
 
           </div>
         
-          <div class="w-100 mb4 relative">
-            
-<article class="bb b--black-10">
-  <div class="db pv4 ph3 ph0-l dark-gray no-underline">
-    <div class="flex-column flex-row-ns flex">
-      
-      <div class="blah w-100">
-        <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="/blog/posts/daa-crm-cloud-run-deployment/" class="color-inherit dim link">
-            Detroit Automation Academy Registration Live: From Zero to Cloud Run in One Session
-            </a>
-        </h1>
-        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          <p>Tonight we shipped the Detroit Automation Academy Registration from a broken build to a fully deployed, publicly accessible system in a single engineering session. Here&rsquo;s what that actually looked like.</p>
-<h2 id="starting-point-five-consecutive-build-failures">Starting Point: Five Consecutive Build Failures</h2>
-<p>The <code>deploy.sh</code> script existed. The Docker images existed. What didn&rsquo;t exist: a working build.</p>
-<p>The first failure was a Go syntax error in <code>backend/main.go</code> — a raw newline embedded inside a string literal:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// Broken</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Detroit Automation Academy Registration Backend starting on port %s...
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span>, <span style="color:#a6e22e">port</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// Fixed</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Detroit Automation Academy Registration Backend starting on port %s...\n&#34;</span>, <span style="color:#a6e22e">port</span>)
-</span></span></code></pre></div><p>Go doesn&rsquo;t allow unescaped newlines inside string literals. The fix was one character.</p>
-        </div>
-        
-          <p class="f6 lh-copy mv0">By Justin Smith</p><a href="/blog/posts/daa-crm-cloud-run-deployment/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
-      </div>
-    </div>
-  </div>
-</article>
-
-          </div>
-        
-          <div class="w-100 mb4 relative">
-            
-<article class="bb b--black-10">
-  <div class="db pv4 ph3 ph0-l dark-gray no-underline">
-    <div class="flex-column flex-row-ns flex">
-      
-      <div class="blah w-100">
-        <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="/blog/posts/at-diary-sprint-2/" class="color-inherit dim link">
-            @AT_Diary Sprint 2: Building a Privacy-First Diary on Apple Native Frameworks
-            </a>
-        </h1>
-        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          <p>Sprint 2 of <code>@AT_Diary</code> is complete with a successful build. Here&rsquo;s what we shipped and how the architecture decisions are holding up.</p>
-<h2 id="the-core-premise">The Core Premise</h2>
-<p>Most journaling apps ask you to trust their servers with your most personal data. AT_Diary doesn&rsquo;t. Every piece of data it touches — your music history, your calendar events, your location context, your photos — is processed <strong>on-device</strong> and stored with iCloud encryption. Nothing phones home.</p>
-        </div>
-        
-          <p class="f6 lh-copy mv0">By Justin Smith</p><a href="/blog/posts/at-diary-sprint-2/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
-      </div>
-    </div>
-  </div>
-</article>
-
-          </div>
-        
       </section>
 
       
         <section class="w-100">
           <h1 class="f3">More</h1>
           
+          
+            <h2 class="f5 fw4 mb4 dib mr3">
+              <a href="/blog/posts/daa-crm-cloud-run-deployment/" class="link black dim">
+                Detroit Automation Academy Registration Live: From Zero to Cloud Run in One Session
+              </a>
+            </h2>
+          
+            <h2 class="f5 fw4 mb4 dib mr3">
+              <a href="/blog/posts/at-diary-sprint-2/" class="link black dim">
+                @AT_Diary Sprint 2: Building a Privacy-First Diary on Apple Native Frameworks
+              </a>
+            </h2>
           
             <h2 class="f5 fw4 mb4 dib mr3">
               <a href="/blog/posts/cicd-pipeline-postmortem/" class="link black dim">
@@ -383,18 +394,6 @@
             <h2 class="f5 fw4 mb4 dib mr3">
               <a href="/blog/posts/multi-agent-activation/" class="link black dim">
                 Multi-Agent Activation: Synchronized Execution across AT Ecosystem
-              </a>
-            </h2>
-          
-            <h2 class="f5 fw4 mb4 dib mr3">
-              <a href="/blog/posts/app-group-stability/" class="link black dim">
-                Stability through Shared Storage: The App Group Milestone
-              </a>
-            </h2>
-          
-            <h2 class="f5 fw4 mb4 dib mr3">
-              <a href="/blog/posts/at-music-pivot/" class="link black dim">
-                AT_Music: The $35k Strategic Pivot
               </a>
             </h2>
           

@@ -18,12 +18,12 @@ const AppContent: React.FC = () => {
   const [view, setView] = useState<'enroll' | 'admin' | 'instructor'>('enroll');
   const [adminSubView, setAdminSubView] = useState<'list' | 'details' | 'revenue' | 'instructors'>('list');
   const [theme, setTheme] = useState<'light' | 'dark'>(
-    (localStorage.getItem('daa_crm_theme') as 'light' | 'dark') || 'dark'
+    (localStorage.getItem('daa-theme') as 'light' | 'dark') || 'dark'
   );
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('daa_crm_theme', theme);
+    localStorage.setItem('daa-theme', theme);
   }, [theme]);
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');

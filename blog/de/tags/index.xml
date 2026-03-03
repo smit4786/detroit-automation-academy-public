@@ -6,8 +6,78 @@
     <description>Recent content in Tags on Automated Insights</description>
     <generator>Hugo</generator>
     <language>de</language>
-    <lastBuildDate>Sat, 28 Feb 2026 11:00:00 -0500</lastBuildDate>
+    <lastBuildDate>Mon, 02 Mar 2026 21:00:00 -0400</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/de/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CI/CD</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/ci/cd/</link>
+      <pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/ci/cd/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Devops</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/devops/</link>
+      <pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/devops/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Engineering</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/engineering/</link>
+      <pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/engineering/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Standards</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/standards/</link>
+      <pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/standards/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Infrastruktur</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/infrastruktur/</link>
+      <pubDate>Mon, 02 Mar 2026 20:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/infrastruktur/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Zero-Knowledge</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/zero-knowledge/</link>
+      <pubDate>Mon, 02 Mar 2026 20:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/zero-knowledge/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Architektur</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/architektur/</link>
+      <pubDate>Mon, 02 Mar 2026 12:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/architektur/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Datenschutz</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/datenschutz/</link>
+      <pubDate>Mon, 02 Mar 2026 12:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/datenschutz/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>KI-Agenten</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/ki-agenten/</link>
+      <pubDate>Mon, 02 Mar 2026 12:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/ki-agenten/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ökosystem</title>
+      <link>https://detroitautomationacademy.com/blog/de/tags/%C3%B6kosystem/</link>
+      <pubDate>Mon, 02 Mar 2026 12:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/tags/%C3%B6kosystem/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Digitale-Problemlösung</title>
       <link>https://detroitautomationacademy.com/blog/de/tags/digitale-probleml%C3%B6sung/</link>
@@ -51,13 +121,6 @@
       <description></description>
     </item>
     <item>
-      <title>Infrastruktur</title>
-      <link>https://detroitautomationacademy.com/blog/de/tags/infrastruktur/</link>
-      <pubDate>Sat, 28 Feb 2026 10:15:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/de/tags/infrastruktur/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Sicherheit</title>
       <link>https://detroitautomationacademy.com/blog/de/tags/sicherheit/</link>
       <pubDate>Sat, 28 Feb 2026 10:15:00 -0500</pubDate>
@@ -86,13 +149,6 @@
       <description></description>
     </item>
     <item>
-      <title>Devops</title>
-      <link>https://detroitautomationacademy.com/blog/de/tags/devops/</link>
-      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/de/tags/devops/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Golang</title>
       <link>https://detroitautomationacademy.com/blog/de/tags/golang/</link>
       <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
@@ -114,13 +170,6 @@
       <description></description>
     </item>
     <item>
-      <title>Datenschutz</title>
-      <link>https://detroitautomationacademy.com/blog/de/tags/datenschutz/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/de/tags/datenschutz/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Eventkit</title>
       <link>https://detroitautomationacademy.com/blog/de/tags/eventkit/</link>
       <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
@@ -128,7 +177,7 @@
       <description></description>
     </item>
     <item>
-      <title>Ios</title>
+      <title>IOS</title>
       <link>https://detroitautomationacademy.com/blog/de/tags/ios/</link>
       <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
       <guid>https://detroitautomationacademy.com/blog/de/tags/ios/</guid>
@@ -212,24 +261,10 @@
       <description></description>
     </item>
     <item>
-      <title>Ökosystem</title>
-      <link>https://detroitautomationacademy.com/blog/de/tags/%C3%B6kosystem/</link>
-      <pubDate>Fri, 27 Feb 2026 10:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/de/tags/%C3%B6kosystem/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>AppGroups</title>
       <link>https://detroitautomationacademy.com/blog/de/tags/appgroups/</link>
       <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
       <guid>https://detroitautomationacademy.com/blog/de/tags/appgroups/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Architektur</title>
-      <link>https://detroitautomationacademy.com/blog/de/tags/architektur/</link>
-      <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/de/tags/architektur/</guid>
       <description></description>
     </item>
     <item>

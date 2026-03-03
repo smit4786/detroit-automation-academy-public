@@ -6,8 +6,50 @@
     <description>Recent content in Tags on Automated Insights</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 02 Mar 2026 12:00:00 -0400</lastBuildDate>
+    <lastBuildDate>Mon, 02 Mar 2026 21:00:00 -0400</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CI/CD</title>
+      <link>https://detroitautomationacademy.com/blog/tags/ci/cd/</link>
+      <pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/tags/ci/cd/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Devops</title>
+      <link>https://detroitautomationacademy.com/blog/tags/devops/</link>
+      <pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/tags/devops/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Engineering</title>
+      <link>https://detroitautomationacademy.com/blog/tags/engineering/</link>
+      <pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/tags/engineering/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Standards</title>
+      <link>https://detroitautomationacademy.com/blog/tags/standards/</link>
+      <pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/tags/standards/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Infrastructure</title>
+      <link>https://detroitautomationacademy.com/blog/tags/infrastructure/</link>
+      <pubDate>Mon, 02 Mar 2026 20:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/tags/infrastructure/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Zero-Knowledge</title>
+      <link>https://detroitautomationacademy.com/blog/tags/zero-knowledge/</link>
+      <pubDate>Mon, 02 Mar 2026 20:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/tags/zero-knowledge/</guid>
+      <description></description>
+    </item>
     <item>
       <title>AI Agents</title>
       <link>https://detroitautomationacademy.com/blog/tags/ai-agents/</link>
@@ -79,13 +121,6 @@
       <description></description>
     </item>
     <item>
-      <title>Infrastructure</title>
-      <link>https://detroitautomationacademy.com/blog/tags/infrastructure/</link>
-      <pubDate>Sat, 28 Feb 2026 10:15:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/infrastructure/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>Security</title>
       <link>https://detroitautomationacademy.com/blog/tags/security/</link>
       <pubDate>Sat, 28 Feb 2026 10:15:00 -0500</pubDate>
@@ -111,13 +146,6 @@
       <link>https://detroitautomationacademy.com/blog/tags/crm/</link>
       <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
       <guid>https://detroitautomationacademy.com/blog/tags/crm/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Devops</title>
-      <link>https://detroitautomationacademy.com/blog/tags/devops/</link>
-      <pubDate>Sat, 28 Feb 2026 05:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/tags/devops/</guid>
       <description></description>
     </item>
     <item>
@@ -149,7 +177,7 @@
       <description></description>
     </item>
     <item>
-      <title>Ios</title>
+      <title>IOS</title>
       <link>https://detroitautomationacademy.com/blog/tags/ios/</link>
       <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
       <guid>https://detroitautomationacademy.com/blog/tags/ios/</guid>

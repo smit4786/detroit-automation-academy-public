@@ -8,7 +8,9 @@ header_content = """    <header>
                     <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
                             <circle cx="100" cy="100" r="75" fill="none" stroke="#0066CC" stroke-width="4" />
-                            <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
+                            <polygon
+                                points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30"
+                                fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
                             <g stroke="#66CC00" stroke-width="3" fill="none" stroke-linecap="round">
                                 <path d="M 100 30 L 100 15 L 85 10" />
                                 <path d="M 130 70 L 155 50 L 170 55" />
@@ -61,6 +63,7 @@ header_content = """    <header>
                     const isLight = document.body.classList.toggle('light-mode');
                     this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
                     localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
+                    // Update SVG logo text color
                     const main = document.getElementById('logo-text-main');
                     const sub = document.getElementById('logo-text-sub');
                     if (main) main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
@@ -80,7 +83,47 @@ footer_content = """    <footer>
         <p>© 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built by Detroiters.</p>
     </footer>"""
 
-circuit_bg_style = """
+standard_styles = """
+        /* ── Standardized Header/Footer Styles ── */
+        header {
+            background: rgba(13, 17, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--daa-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        body.light-mode header {
+            background: rgba(245, 247, 250, 0.92);
+        }
+
+        footer {
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            color: var(--daa-fg-muted);
+            padding: 32px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .footer-links {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: var(--daa-fg-muted);
+            text-decoration: none;
+            margin: 0 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
         /* ── Circuit background ── */
         body::before {
             content: '';
@@ -103,48 +146,53 @@ files_to_update = [
     "subscriptions.html",
     "dashboard.html",
     "admin.html",
+    "landing.html",
 ]
 
 
 def update_file(filepath):
+    if not os.path.exists(filepath):
+        return
     with open(filepath, "r") as f:
         content = f.read()
 
-    # Standardize header/footer
+    # Standardize header/script
     header_pattern = re.compile(
         r"<header>.*?</header>\s*(<script>.*?</script>)?", re.DOTALL
     )
     if header_pattern.search(content):
         content = header_pattern.sub(header_content, content, count=1)
 
+    # Standardize footer
     footer_pattern = re.compile(r"<footer>.*?</footer>", re.DOTALL)
-    content = footer_pattern.sub(footer_content, content)
+    if footer_pattern.search(content):
+        content = footer_pattern.sub(footer_content, content)
 
-    # Standardize CSS variables and circuit background
+    # Standardize styles
     style_pattern = re.compile(r"<style>(.*?)</style>", re.DOTALL)
     match = style_pattern.search(content)
     if match:
         style_content = match.group(1)
-        if "body::before" not in style_content:
-            style_content = circuit_bg_style + style_content
+        
+        # Remove old header/footer styles if they exist to avoid duplication
+        style_content = re.sub(r"header\s*\{.*?\}", "", style_content, flags=re.DOTALL)
+        style_content = re.sub(r"footer\s*\{.*?\}", "", style_content, flags=re.DOTALL)
+        style_content = re.sub(r"\.footer-links\s*\{.*?\}", "", style_content, flags=re.DOTALL)
+        style_content = re.sub(r"\.footer-links a\s*\{.*?\}", "", style_content, flags=re.DOTALL)
+        style_content = re.sub(r"body::before\s*\{.*?\}", "", style_content, flags=re.DOTALL)
+        
+        style_content = standard_styles + style_content
+        content = content[:match.start(1)] + style_content + content[match.end(1):]
 
-        # Ensure transitions and body base
-        if "transition: background 0.3s" not in style_content:
-            style_content = style_content.replace(
-                "body {", "body {\n            transition: background 0.3s, color 0.3s;"
-            )
-
-        content = content[: match.start(1)] + style_content + content[match.end(1) :]
-
-    # Standardize body class
-    if '<body class="light-mode">' not in content and "<body>" in content:
+    # Ensure body class
+    if 'body class="light-mode"' not in content and "<body>" in content:
         content = content.replace("<body>", '<body class="light-mode">')
 
     with open(filepath, "w") as f:
         f.write(content)
+    print(f"Standardized {filepath}")
 
 
-for f in files_to_update:
-    if os.path.exists(f):
+if __name__ == "__main__":
+    for f in files_to_update:
         update_file(f)
-        print(f"Standardized {f}")

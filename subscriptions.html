@@ -7,6 +7,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="branding/palette.css">
     <style>
+        /* ── Standardized Header/Footer Styles ── */
+        header {
+            background: rgba(13, 17, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--daa-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        body.light-mode header {
+            background: rgba(245, 247, 250, 0.92);
+        }
+
+        footer {
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            color: var(--daa-fg-muted);
+            padding: 32px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .footer-links {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: var(--daa-fg-muted);
+            text-decoration: none;
+            margin: 0 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
         /* ── Circuit background ── */
         body::before {
             content: '';
@@ -21,11 +61,32 @@
             opacity: 0.6;
         }
 
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Circuit background ── */
+        
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: var(--daa-fg); background: var(--daa-bg); 
             transition: background 0.3s, color 0.3s;
         }
-        header { background: var(--daa-card); box-shadow: 0 2px 8px var(--daa-shadow); position: sticky; top: 0; z-index: 100; }
+        
         nav { max-width: 1200px; margin: 0 auto; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 24px; color: var(--daa-primary); }
         .nav-links { display: flex; gap: 24px; list-style: none; }
@@ -55,21 +116,23 @@
         
         .feature-description { font-size: 14px; color: var(--daa-fg-muted); margin-bottom: 24px; }
 
-        footer { background: var(--daa-fg); color: var(--daa-bg); padding: 32px; text-align: center; font-size: 14px; margin-top: 64px; }
-        .footer-links a { color: var(--daa-accent); text-decoration: none; margin: 0 16px; }
+        
+        
 
         @media (max-width: 992px) { .pricing-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; } }
     </style>
 </head>
 <body class="light-mode">
-                <header>
+                        <header>
         <nav>
             <div class="logo">
                 <a href="index.html">
                     <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
                             <circle cx="100" cy="100" r="75" fill="none" stroke="#0066CC" stroke-width="4" />
-                            <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
+                            <polygon
+                                points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30"
+                                fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
                             <g stroke="#66CC00" stroke-width="3" fill="none" stroke-linecap="round">
                                 <path d="M 100 30 L 100 15 L 85 10" />
                                 <path d="M 130 70 L 155 50 L 170 55" />
@@ -122,6 +185,7 @@
                     const isLight = document.body.classList.toggle('light-mode');
                     this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
                     localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
+                    // Update SVG logo text color
                     const main = document.getElementById('logo-text-main');
                     const sub = document.getElementById('logo-text-sub');
                     if (main) main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
@@ -230,7 +294,7 @@
         });
     </script>
 
-                <footer>
+                        <footer>
         <div class="footer-links">
             <a href="blog/">Blog</a>
             <a href="dashboard.html">Dashboard</a>

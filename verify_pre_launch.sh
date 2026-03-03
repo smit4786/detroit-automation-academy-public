@@ -74,7 +74,7 @@ echo "════════════════════════�
 
 run_check "Main branch exists" "git branch | grep -q main" "Main branch present"
 run_check "Commit history" "git log --oneline | wc -l | grep -qE '[0-9]{1,}'" "Commits present"
-run_check "No large files" "! find . -type f -size +10M 2>/dev/null" "No files > 10MB"
+run_check "No large files" "! find . -type d \( -name node_modules -o -name .git \) -prune -o -type f -size +10M -print | grep -q ." "No files > 10MB"
 run_check "Git remote configured" "git remote -v | grep -q 'origin\\|github'" "Remote repository configured"
 
 echo ""
