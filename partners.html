@@ -196,7 +196,6 @@
             font-weight: 700;
             margin-bottom: 24px;
             color: var(--daa-accent);
-            /* Use CSS variable */
         }
 
         .section h3 {
@@ -206,7 +205,6 @@
             margin-top: 24px;
             margin-bottom: 12px;
             color: var(--daa-fg);
-            /* Use CSS variable */
         }
 
         .impact-grid {
@@ -217,18 +215,23 @@
         }
 
         .impact-card {
-            background: linear-gradient(135deg, var(--daa-accent)15 0%, var(--daa-primary)15 100%);
-            /* Use CSS variable */
+            background: var(--daa-bg-raised);
             padding: 24px;
             border-radius: 12px;
             border-left: 4px solid var(--daa-accent);
-            /* Use CSS variable */
+            border: 1px solid var(--daa-border);
+            border-left: 4px solid var(--daa-accent);
+            transition: transform 0.2s;
+        }
+
+        .impact-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--daa-accent);
         }
 
         .impact-card h4 {
             font-family: 'Poppins', sans-serif;
             color: var(--daa-primary);
-            /* Use CSS variable */
             margin-bottom: 8px;
             font-size: 16px;
         }
@@ -238,14 +241,12 @@
             font-size: 32px;
             font-weight: 800;
             color: var(--daa-accent);
-            /* Use CSS variable */
             margin: 12px 0;
         }
 
         .impact-card p {
             font-size: 13px;
             color: var(--daa-fg-muted);
-            /* Hardcoded gray */
         }
 
         .funding-grid {
@@ -256,17 +257,22 @@
         }
 
         .funding-card {
-            background: var(--daa-bg);
-            /* Use CSS variable */
+            background: var(--daa-bg-card);
             padding: 24px;
             border-radius: 12px;
+            border: 1px solid var(--daa-border);
             border-top: 4px solid var(--daa-primary);
-            /* Use CSS variable */
+            transition: all 0.2s;
+        }
+
+        .funding-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--daa-primary);
+            box-shadow: var(--daa-shadow-blue);
         }
 
         .funding-card h4 {
             color: var(--daa-primary);
-            /* Use CSS variable */
             margin-bottom: 8px;
             font-size: 14px;
             text-transform: uppercase;
@@ -278,67 +284,123 @@
             font-size: 28px;
             font-weight: 700;
             color: var(--daa-accent);
-            /* Use CSS variable */
             margin: 12px 0;
         }
 
         .funding-card p {
             font-size: 13px;
             color: var(--daa-fg-muted);
-            /* Hardcoded gray */
         }
 
         .info-box {
-            background: var(--daa-bg);
-            /* Use CSS variable */
+            background: var(--daa-bg-raised);
             padding: 24px;
             border-radius: 12px;
             margin: 24px 0;
+            border: 1px solid var(--daa-border);
             border-left: 4px solid var(--daa-primary);
-            /* Use CSS variable */
         }
 
         .info-box h3 {
             margin-bottom: 12px;
             color: var(--daa-fg);
-            /* Use CSS variable */
         }
 
-        .info-box p {
+        .info-box p, .info-box li {
             margin-bottom: 8px;
             color: var(--daa-fg-muted);
-            /* Hardcoded gray */
         }
 
         .info-box ul {
             margin-left: 20px;
         }
 
-        .info-box li {
-            margin-bottom: 6px;
-            color: var(--daa-fg-muted);
-            /* Hardcoded gray */
-        }
-
         .button {
             display: inline-block;
             background: linear-gradient(135deg, var(--daa-accent) 0%, #4DA300 100%);
-            /* Use CSS variable */
-            color: var(--daa-bg);
-            /* Use CSS variable */
+            color: #0D1117;
             padding: 12px 24px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
             transition: all 0.3s;
             margin-top: 12px;
+            box-shadow: 0 4px 15px var(--daa-accent-glow);
         }
 
         .button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 204, 0, 0.3);
-            /* Hardcoded hover */
+            box-shadow: 0 8px 20px var(--daa-accent-glow);
+        }
+
+        .role-card a {
+            display: inline-block;
+            background: var(--daa-primary);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .role-card a:hover {
+            background: #0052A3;
+            transform: translateY(-1px);
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin: 48px 0;
+        }
+
+        .role-card {
+            background: var(--daa-bg-card);
+            border: 1px solid var(--daa-border);
+            padding: 40px 28px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.25s;
+        }
+
+        .role-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--daa-border-green);
+            box-shadow: 0 0 32px var(--daa-accent-glow);
+        }
+
+        .role-icon {
+            font-size: 44px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .role-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--daa-fg);
+        }
+
+        .role-card p {
+            font-size: 14px;
+            color: var(--daa-fg-muted);
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+
+        .section-heading {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 12px;
+            color: var(--daa-fg);
         }
 
         
@@ -449,27 +511,24 @@
         </div>
     </section>
     <section class="roles" id="roles" style="margin: 64px auto; padding: 0 32px; max-width: 1200px;">
-        <h2>Choose Your Path</h2>
-        <div class="role-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;">
-            <div class="role-card"
-                style="background: white; padding: 40px 32px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; transition: all 0.3s;">
-                <div class="role-icon" style="font-size: 48px; margin-bottom: 16px;">👨‍🎓</div>
+        <h2 class="section-heading">Choose Your Path</h2>
+        <div class="role-grid">
+            <div class="role-card">
+                <div class="role-icon">👨‍🎓</div>
                 <h3>Students</h3>
                 <p>Ready to learn automation? Apply to our 12-week program and gain hands-on skills in robotics and
                     autonomous systems.</p>
                 <a href="https://enroll.detroitautomationacademy.com" target="_blank">Apply Today</a>
             </div>
-            <div class="role-card"
-                style="background: white; padding: 40px 32px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; transition: all 0.3s;">
-                <div class="role-icon" style="font-size: 48px; margin-bottom: 16px;">👩‍🏫</div>
+            <div class="role-card">
+                <div class="role-icon">👩‍🏫</div>
                 <h3>Instructors</h3>
                 <p>Want to teach? Access our complete curriculum, teaching guides, and resources to deliver world-class
                     automation education.</p>
                 <a href="instructors.html">Explore Curriculum</a>
             </div>
-            <div class="role-card"
-                style="background: white; padding: 40px 32px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; transition: all 0.3s;">
-                <div class="role-icon" style="font-size: 48px; margin-bottom: 16px;">🤝</div>
+            <div class="role-card">
+                <div class="role-icon">🤝</div>
                 <h3>Partners & Donors</h3>
                 <p>Support Detroit's future. Partner with us to scale automation education to 500+ students annually.
                 </p>
@@ -620,7 +679,7 @@
         <section class="section">
             <h2>🎓 Success Stories</h2>
 
-            <p style="margin-bottom: 24px; font-style: italic; color: #666;">Coming soon after our first cohort
+            <p style="margin-bottom: 24px; font-style: italic; color: var(--daa-fg-muted);">Coming soon after our first cohort
                 graduates (May 2026)!</p>
 
             <p>We'll track:</p>
@@ -634,18 +693,18 @@
 
         <div
             style="text-align: center; padding: 32px; background: linear-gradient(135deg, #66CC0015 0%, #0066CC15 100%); border-radius: 12px; margin-bottom: 48px;">
-            <h3 style="margin-bottom: 16px; color: #66CC00;">Ready to partner with us?</h3>
-            <p style="margin-bottom: 16px; color: #666;">Whether you're a corporation, foundation, or community
+            <h3 style="margin-bottom: 16px; color: var(--daa-accent);">Ready to partner with us?</h3>
+            <p style="margin-bottom: 16px; color: var(--daa-fg-muted);">Whether you're a corporation, foundation, or community
                 organization, there's a partnership path for you.</p>
             <a href="mailto:info@detroitautomationacademy.com?subject=Partnership Inquiry" class="button">Start the
                 Conversation</a>
-            <p style="margin-top: 16px; color: #666; font-size: 14px;">Email us at
+            <p style="margin-top: 16px; color: var(--daa-fg-muted); font-size: 14px;">Email us at
                 <strong>info@detroitautomationacademy.com</strong> to get started!
             </p>
         </div>
 
         <section class="section" style="border: 2px solid #66CC00;">
-            <h2 style="color: #0066CC;">📋 Quick Contact Form</h2>
+            <h2 style="color: var(--daa-primary);">📋 Quick Contact Form</h2>
 
             <p style="margin-bottom: 24px;">Fill out this form and we'll follow up within 24 hours:</p>
 
@@ -653,7 +712,7 @@
                 action="https://github.com/smit4786/detroit-automation-academy-public/issues/new?template=partnership-inquiry.md"
                 method="POST" target="_blank" style="display: flex; flex-direction: column; gap: 16px;">
                 <input type="hidden" name="title" value="Partnership Inquiry">
-                <p style="font-size: 13px; color: #666; margin: 0;">* You'll be redirected to GitHub to submit. Click
+                <p style="font-size: 13px; color: var(--daa-fg-muted); margin: 0;">* You'll be redirected to GitHub to submit. Click
                     "Preview" to customize your message.</p>
                 <button type="submit" class="button"
                     style="align-self: flex-start; background: linear-gradient(135deg, #0066CC 0%, #004A99 100%);">Submit
