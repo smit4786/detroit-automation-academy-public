@@ -15,7 +15,7 @@ const AppContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [tenantId, setTenantId] = useState('ALL');
   const [view, setView] = useState<'enroll' | 'admin'>('enroll');
-  const [adminSubView, setAdminSubView] = useState<'list' | 'details'>('list');
+  const [adminSubView, setAdminSubView] = useState<'list' | 'details' | 'revenue'>('list');
   const [theme, setTheme] = useState<'light' | 'dark'>(
     (localStorage.getItem('daa_crm_theme') as 'light' | 'dark') || 'dark'
   );
@@ -228,7 +228,14 @@ const AppContent: React.FC = () => {
                     className={`daa-tab-small ${adminSubView === 'details' ? 'active' : ''}`}
                     style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, background: adminSubView === 'details' ? 'var(--primary)' : 'var(--bg-card)', border: '1px solid var(--border)', color: adminSubView === 'details' ? 'white' : 'var(--text)' }}
                   >
-                    📑 Full Records (Detailed View)
+                    📑 Full Records
+                  </button>
+                  <button 
+                    onClick={() => setAdminSubView('revenue')}
+                    className={`daa-tab-small ${adminSubView === 'revenue' ? 'active' : ''}`}
+                    style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, background: adminSubView === 'revenue' ? 'var(--primary)' : 'var(--bg-card)', border: '1px solid var(--border)', color: adminSubView === 'revenue' ? 'white' : 'var(--text)' }}
+                  >
+                    💰 Revenue Insights
                   </button>
                 </div>
               </div>
@@ -423,6 +430,44 @@ const AppContent: React.FC = () => {
                           </div>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {!loading && !error && adminSubView === 'revenue' && (
+                  <div style={{ padding: 24 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+                      <div style={{ background: 'var(--bg-body)', padding: 24, borderRadius: 16, border: '1px solid var(--border)' }}>
+                        <h3 style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 16 }}>AaaS Pilot Performance</h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                          <div>
+                            <p style={{ fontSize: 32, fontWeight: 800, color: 'var(--primary)' }}>${(students.filter(s => s.tenant_id !== 'DAA-CORE').length * 149).toLocaleString()}</p>
+                            <p style={{ fontSize: 12, opacity: 0.6 }}>Current Monthly Recurring Revenue</p>
+                          </div>
+                          <div style={{ textAlign: 'right', color: '#66CC00', fontSize: 14, fontWeight: 700 }}>
+                            ↑ 12% vs last month
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ background: 'var(--bg-body)', padding: 24, borderRadius: 16, border: '1px solid var(--border)' }}>
+                        <h3 style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 16 }}>Active Licenses</h3>
+                        <p style={{ fontSize: 32, fontWeight: 800 }}>{Array.from(new Set(students.map(s => s.tenant_id))).length}</p>
+                        <p style={{ fontSize: 12, opacity: 0.6 }}>Total Academy Tenants</p>
+                      </div>
+                      <div style={{ background: 'var(--bg-body)', padding: 24, borderRadius: 16, border: '1px solid var(--border)' }}>
+                        <h3 style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 16 }}>2026 Projection</h3>
+                        <p style={{ fontSize: 32, fontWeight: 800, color: 'var(--secondary)' }}>$1.05M</p>
+                        <p style={{ fontSize: 12, opacity: 0.6 }}>Target Ecosystem Revenue</p>
+                      </div>
+                    </div>
+                    
+                    <div style={{ marginTop: 32, background: 'rgba(0, 102, 204, 0.05)', padding: 24, borderRadius: 16, border: '1px dashed var(--primary)' }}>
+                      <h4 style={{ marginBottom: 16 }}>💰 Chief Revenue Officer Directive</h4>
+                      <p style={{ fontSize: 14, lineHeight: 1.6, opacity: 0.8 }}>
+                        Scaling educational partner licenses through the "Academy-in-a-Box" model. 
+                        Targeting 4 local school districts for Tier 2 enrollment by May 2026. 
+                        <strong> Current focus:</strong> Operationalizing the B2B licensing for the MCP compute engine.
+                      </p>
                     </div>
                   </div>
                 )}

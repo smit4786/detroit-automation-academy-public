@@ -17,7 +17,7 @@
     
 
     
-<link rel="stylesheet" href="/blog/ananke/css/main.min.6d9542057a9d2c9ce5c04166fe916543948791b3adc19155dd4a18b6022e74a3.css" >
+<link rel="stylesheet" href="/blog/ananke/css/main.min.e87ffd74a6aa53e0bb953b53c8da26c3631f73006d79ab793e4fe879bec6c313.css" >
 
 
 
@@ -52,8 +52,8 @@
   <meta property="og:type" content="website">
 
   <meta itemprop="name" content="Posts">
-  <meta itemprop="datePublished" content="2026-02-28T11:00:00-05:00">
-  <meta itemprop="dateModified" content="2026-02-28T11:00:00-05:00">
+  <meta itemprop="datePublished" content="2026-03-02T12:00:00-04:00">
+  <meta itemprop="dateModified" content="2026-03-02T12:00:00-04:00">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Posts">
 
@@ -63,17 +63,14 @@
 	<script>
   (function() {
     const storageKey = 'at-blog-theme';
-    const currentTheme = localStorage.getItem(storageKey);
-    if (currentTheme) {
-      document.documentElement.setAttribute('data-theme', currentTheme);
-      
-      document.addEventListener('DOMContentLoaded', () => {
-        document.body.setAttribute('data-theme', currentTheme);
-      });
-    } else {
-      
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+    const currentTheme = localStorage.getItem(storageKey) || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.setAttribute('data-theme', currentTheme);
+      const toggle = document.getElementById('theme-toggle');
+      if (toggle) toggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    });
   })();
 </script>
 
@@ -131,7 +128,7 @@
       <div class="flex items-center">
         <div class="ananke-socials"></div>
 
-        <button id="theme-toggle" aria-label="Toggle Theme" title="Switch Theme">
+        <button id="theme-toggle" aria-label="Toggle Theme" title="Switch Theme" style="background: transparent; border: 1px solid var(--brand-muted); color: var(--brand-primary); cursor: pointer; padding: 4px 8px; border-radius: 4px; margin-left: 12px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
           🌙
         </button>
       </div>
@@ -143,25 +140,20 @@
   (function() {
     const toggle = document.getElementById('theme-toggle');
     const storageKey = 'at-blog-theme';
-    const currentTheme = localStorage.getItem(storageKey);
     
     const applyTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
       document.body.setAttribute('data-theme', theme);
-      toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      if (toggle) toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
       localStorage.setItem(storageKey, theme);
     };
 
-    if (currentTheme) {
-      applyTheme(currentTheme);
-    } else {
-      
-      applyTheme('dark');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(theme);
+      });
     }
-
-    toggle.addEventListener('click', () => {
-      const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(theme);
-    });
   })();
 </script>
 
@@ -180,6 +172,32 @@
   <article class="pa3 pa4-ns nested-copy-line-height">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy nested-links mid-gray"></section>
     <section class="flex-ns mt5 flex-wrap justify-around">
+      
+        <div class="w-100 w-30-l mb4 relative bg-white">
+          <div class="w-100 mb4 nested-copy-line-height relative bg-white">
+  <div class="mb3 pa4 gray overflow-hidden bg-white">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="/blog/posts/ecosystem-synergy-update/" class="link black dim">
+        Ecosystem Synergy: Integrating DAA, Wealth, and Privacy-First Logging
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      <p>Welcome to the latest update from the <strong>Automated Insights Blog</strong>. As our initiatives scale, the true power of automation is revealed not in isolated projects, but in their integration. Today, we are announcing a major architectural shift to bridge the Detroit Automation Academy (DAA) platform, the privacy-first <code>@AT_Diary</code>, and our new financial operating system, <code>@AT_Wealth</code>.</p>
+<h2 id="breaking-down-the-silos">Breaking Down the Silos</h2>
+<p>Historically, our core applications operated independently:</p>
+<ul>
+<li><strong>DAA CRM:</strong> Managing student enrollments and program logistics.</li>
+<li><strong>@AT_Diary:</strong> A zero-effort, strictly on-device life logging tool leveraging Apple frameworks.</li>
+<li><strong>@AT_Wealth:</strong> Our new initiative to automate and execute long-term financial independence strategies.</li>
+</ul>
+<p>While each is powerful, operating them in silos leaves significant value on the table. Enter <strong>AT-Infrastructure</strong>, our centralized agentic orchestration layer.</p>
+    </div>
+    <a href="/blog/posts/ecosystem-synergy-update/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+  </div>
+</div>
+
+        </div>
       
         <div class="w-100 w-30-l mb4 relative bg-white">
           <div class="w-100 mb4 nested-copy-line-height relative bg-white">
@@ -406,32 +424,6 @@
 <p>This documentation ensures that our educational activations remain resilient as we expand our footprint in the Detroit automation ecosystem.</p>
     </div>
     <a href="/blog/posts/daa-resilience/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
-  </div>
-</div>
-
-        </div>
-      
-        <div class="w-100 w-30-l mb4 relative bg-white">
-          <div class="w-100 mb4 nested-copy-line-height relative bg-white">
-  <div class="mb3 pa4 gray overflow-hidden bg-white">
-    <span class="f6 db">Posts</span>
-    <h1 class="f3 near-black">
-      <a href="/blog/posts/at-diary-milestone/" class="link black dim">
-        @AT_Diary: Milestone Achieved in Automated Engineering
-      </a>
-    </h1>
-    <div class="nested-links f5 lh-copy nested-copy-line-height">
-      <h3 id="synthesizing-the-future-of-personal-data">Synthesizing the Future of Personal Data</h3>
-<p>Today marks a significant milestone for <strong>Automated Technologies</strong>. We have successfully completed the core build of <strong>@AT_Diary</strong>, a privacy-first iOS application that bridges the gap between daily life and automated insights.</p>
-<p><strong>Key Achievements:</strong></p>
-<ul>
-<li><strong>Full Ecosystem Integration:</strong> Real-time synchronization with MusicKit, EventKit, and CoreLocation.</li>
-<li><strong>On-Device Intelligence:</strong> Leveraging the NaturalLanguage framework for sentiment analysis without sacrificing user privacy.</li>
-<li><strong>Rapid Prototyping:</strong> Moving from concept to a successful Xcode build in under 4 hours using advanced AI coordination.</li>
-</ul>
-<p>This project demonstrates the power of highly-coordinated multi-agent development, a methodology we are also applying to the <strong>Detroit Automation Academy (DAA)</strong>.</p>
-    </div>
-    <a href="/blog/posts/at-diary-milestone/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
   </div>
 </div>
 

@@ -17,7 +17,7 @@
     
 
     
-<link rel="stylesheet" href="/blog/ananke/css/main.min.6d9542057a9d2c9ce5c04166fe916543948791b3adc19155dd4a18b6022e74a3.css" >
+<link rel="stylesheet" href="/blog/ananke/css/main.min.e87ffd74a6aa53e0bb953b53c8da26c3631f73006d79ab793e4fe879bec6c313.css" >
 
 
 
@@ -54,8 +54,8 @@
 
   <meta itemprop="name" content="Automated Insights">
   <meta itemprop="description" content="Synthesizing cross-project technical milestones into publicly accessible insights.">
-  <meta itemprop="datePublished" content="2026-02-28T11:00:00-05:00">
-  <meta itemprop="dateModified" content="2026-02-28T11:00:00-05:00">
+  <meta itemprop="datePublished" content="2026-03-02T12:00:00-04:00">
+  <meta itemprop="dateModified" content="2026-03-02T12:00:00-04:00">
   <meta itemprop="wordCount" content="39">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Automated Insights">
@@ -67,17 +67,14 @@
 	<script>
   (function() {
     const storageKey = 'at-blog-theme';
-    const currentTheme = localStorage.getItem(storageKey);
-    if (currentTheme) {
-      document.documentElement.setAttribute('data-theme', currentTheme);
-      
-      document.addEventListener('DOMContentLoaded', () => {
-        document.body.setAttribute('data-theme', currentTheme);
-      });
-    } else {
-      
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+    const currentTheme = localStorage.getItem(storageKey) || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.setAttribute('data-theme', currentTheme);
+      const toggle = document.getElementById('theme-toggle');
+      if (toggle) toggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    });
   })();
 </script>
 
@@ -135,7 +132,7 @@
       <div class="flex items-center">
         <div class="ananke-socials"></div>
 
-        <button id="theme-toggle" aria-label="Toggle Theme" title="Switch Theme">
+        <button id="theme-toggle" aria-label="Toggle Theme" title="Switch Theme" style="background: transparent; border: 1px solid var(--brand-muted); color: var(--brand-primary); cursor: pointer; padding: 4px 8px; border-radius: 4px; margin-left: 12px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
           🌙
         </button>
       </div>
@@ -147,25 +144,20 @@
   (function() {
     const toggle = document.getElementById('theme-toggle');
     const storageKey = 'at-blog-theme';
-    const currentTheme = localStorage.getItem(storageKey);
     
     const applyTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
       document.body.setAttribute('data-theme', theme);
-      toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      if (toggle) toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
       localStorage.setItem(storageKey, theme);
     };
 
-    if (currentTheme) {
-      applyTheme(currentTheme);
-    } else {
-      
-      applyTheme('dark');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(theme);
+      });
     }
-
-    toggle.addEventListener('click', () => {
-      const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(theme);
-    });
   })();
 </script>
 
@@ -202,6 +194,38 @@
 
       <section class="w-100 mw8">
         
+        
+          <div class="w-100 mb4 relative">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l dark-gray no-underline">
+    <div class="flex-column flex-row-ns flex">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="/blog/posts/ecosystem-synergy-update/" class="color-inherit dim link">
+            Ecosystem Synergy: Integrating DAA, Wealth, and Privacy-First Logging
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          <p>Welcome to the latest update from the <strong>Automated Insights Blog</strong>. As our initiatives scale, the true power of automation is revealed not in isolated projects, but in their integration. Today, we are announcing a major architectural shift to bridge the Detroit Automation Academy (DAA) platform, the privacy-first <code>@AT_Diary</code>, and our new financial operating system, <code>@AT_Wealth</code>.</p>
+<h2 id="breaking-down-the-silos">Breaking Down the Silos</h2>
+<p>Historically, our core applications operated independently:</p>
+<ul>
+<li><strong>DAA CRM:</strong> Managing student enrollments and program logistics.</li>
+<li><strong>@AT_Diary:</strong> A zero-effort, strictly on-device life logging tool leveraging Apple frameworks.</li>
+<li><strong>@AT_Wealth:</strong> Our new initiative to automate and execute long-term financial independence strategies.</li>
+</ul>
+<p>While each is powerful, operating them in silos leaves significant value on the table. Enter <strong>AT-Infrastructure</strong>, our centralized agentic orchestration layer.</p>
+        </div>
+        
+          <p class="f6 lh-copy mv0">By Automated Insights Team</p><a href="/blog/posts/ecosystem-synergy-update/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
         
           <div class="w-100 mb4 relative">
             
@@ -343,40 +367,18 @@
 
           </div>
         
-          <div class="w-100 mb4 relative">
-            
-<article class="bb b--black-10">
-  <div class="db pv4 ph3 ph0-l dark-gray no-underline">
-    <div class="flex-column flex-row-ns flex">
-      
-      <div class="blah w-100">
-        <h1 class="f3 fw1 athelas mt0 lh-title">
-          <a href="/blog/posts/cicd-pipeline-postmortem/" class="color-inherit dim link">
-            Fixing Our CI/CD Pipeline: Submodules, Empty Commits, and the Clawd QA Gate
-            </a>
-        </h1>
-        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
-          <p>The Automated Insights blog has had a recurring CI/CD problem: deployments that work locally fail silently in GitHub Actions, or succeed in Actions but produce a broken site. Here&rsquo;s the root cause analysis and what we changed.</p>
-<h2 id="the-three-failure-modes">The Three Failure Modes</h2>
-<ol>
-<li>
-<p><strong>Hugo build succeeds, site content missing</strong> — the <code>public/</code> directory was generated but the git commit step failed silently because there was nothing new to commit. The deploy step ran anyway and pushed a stale build.</p>
-        </div>
-        
-          <p class="f6 lh-copy mv0">By Justin Smith</p><a href="/blog/posts/cicd-pipeline-postmortem/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
-      </div>
-    </div>
-  </div>
-</article>
-
-          </div>
-        
       </section>
 
       
         <section class="w-100">
           <h1 class="f3">More</h1>
           
+          
+            <h2 class="f5 fw4 mb4 dib mr3">
+              <a href="/blog/posts/cicd-pipeline-postmortem/" class="link black dim">
+                Fixing Our CI/CD Pipeline: Submodules, Empty Commits, and the Clawd QA Gate
+              </a>
+            </h2>
           
             <h2 class="f5 fw4 mb4 dib mr3">
               <a href="/blog/posts/multi-agent-activation/" class="link black dim">
@@ -393,12 +395,6 @@
             <h2 class="f5 fw4 mb4 dib mr3">
               <a href="/blog/posts/at-music-pivot/" class="link black dim">
                 AT_Music: The $35k Strategic Pivot
-              </a>
-            </h2>
-          
-            <h2 class="f5 fw4 mb4 dib mr3">
-              <a href="/blog/posts/daa-resilience/" class="link black dim">
-                DAA: Engineering Operational Resilience
               </a>
             </h2>
           

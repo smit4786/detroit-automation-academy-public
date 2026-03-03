@@ -34,24 +34,19 @@
   (function() {
     const toggle = document.getElementById('theme-toggle');
     const storageKey = 'at-blog-theme';
-    const currentTheme = localStorage.getItem(storageKey);
     
     const applyTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
       document.body.setAttribute('data-theme', theme);
-      toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      if (toggle) toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
       localStorage.setItem(storageKey, theme);
     };
 
-    if (currentTheme) {
-      applyTheme(currentTheme);
-    } else {
-      // Default to dark for DAA alignment
-      applyTheme('dark');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(theme);
+      });
     }
-
-    toggle.addEventListener('click', () => {
-      const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(theme);
-    });
   })();
 </script>

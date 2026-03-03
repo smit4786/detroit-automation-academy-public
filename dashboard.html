@@ -1,21 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detroit Automation Academy - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="branding/palette.css"> <!-- Link palette.css -->
-</head>
-<script>
-// Redirect www subdomain to home
-if (window.location.hostname === 'www.detroitautomationacademy.com' || window.location.hostname.startsWith('www.')) {
-    window.location.replace('https://detroitautomationacademy.com/');
-}
-</script>
+    <title>Dashboard - Detroit Automation Academy</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="branding/palette.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<body style="margin:0; padding:0;" class="light-mode"> <!-- Add default class -->
-<!-- Navigation Bar -->
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--daa-fg);
+            background: var(--daa-bg);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* ── Nav ── */
+        header {
+            background: rgba(13, 17, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--daa-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        body.light-mode header {
+            background: rgba(245, 247, 250, 0.92);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        #logo-text-main {
+            fill: var(--daa-fg);
+            transition: fill 0.3s;
+        }
+
+        #logo-text-sub {
+            fill: var(--daa-primary);
+            transition: fill 0.3s;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--daa-fg-muted);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s;
+            letter-spacing: 0.01em;
+        }
+
+        .nav-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        #theme-toggle {
+            background: var(--daa-bg-raised);
+            color: var(--daa-fg);
+            border: 1px solid var(--daa-border);
+            border-radius: 999px;
+            padding: 7px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #theme-toggle:hover {
+            border-color: var(--daa-accent);
+            color: var(--daa-accent);
+        }
+
+        /* ── Dashboard Content ── */
+        .hero {
+            position: relative;
+            padding: 60px 32px 40px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--daa-fg);
+        }
+
+        .dashboard-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            padding: 32px;
+        }
+
+        .tile {
+            background: var(--daa-bg-card);
+            border: 1px solid var(--daa-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px var(--daa-shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex: 1 1 320px;
+            min-width: 320px;
+        }
+
+        .tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--daa-shadow);
+            border-color: var(--daa-primary);
+        }
+
+        .tile h2 {
+            font-family: 'Poppins', sans-serif;
+            margin-top: 0;
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--daa-fg);
+        }
+
+        .tile h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--daa-fg-muted);
+            margin-bottom: 16px;
+        }
+
+        .status-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .status-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--daa-border);
+            font-size: 14px;
+        }
+
+        .status-list li:last-child {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        .badge-active { background: rgba(102, 204, 0, 0.1); color: var(--daa-accent); border: 1px solid var(--daa-accent); }
+        .badge-pending { background: rgba(204, 85, 34, 0.1); color: var(--daa-secondary); border: 1px solid var(--daa-secondary); }
+
+        footer {
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            color: var(--daa-fg-muted);
+            padding: 32px;
+            text-align: center;
+            font-size: 13px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-links { margin-bottom: 14px; }
+        .footer-links a { color: var(--daa-fg-muted); text-decoration: none; margin: 0 14px; }
+        .footer-links a:hover { color: var(--daa-accent); }
+    </style>
+</head>
+
+<body>
     <header>
         <nav>
             <div class="logo">
@@ -23,7 +230,9 @@ if (window.location.hostname === 'www.detroitautomationacademy.com' || window.lo
                     <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
                             <circle cx="100" cy="100" r="75" fill="none" stroke="#0066CC" stroke-width="4" />
-                            <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
+                            <polygon
+                                points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30"
+                                fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
                             <g stroke="#66CC00" stroke-width="3" fill="none" stroke-linecap="round">
                                 <path d="M 100 30 L 100 15 L 85 10" />
                                 <path d="M 130 70 L 155 50 L 170 55" />
@@ -42,7 +251,8 @@ if (window.location.hostname === 'www.detroitautomationacademy.com' || window.lo
                         <g transform="translate(260, 110)">
                             <text font-family="'Poppins', sans-serif" font-weight="800" font-size="64">
                                 <tspan id="logo-text-main" x="0" y="0">DETROIT</tspan>
-                                <tspan id="logo-text-sub" x="0" y="75" font-size="54" font-weight="700">AUTOMATION ACADEMY</tspan>
+                                <tspan id="logo-text-sub" x="0" y="75" font-size="54" font-weight="700">AUTOMATION
+                                    ACADEMY</tspan>
                             </text>
                         </g>
                     </svg>
@@ -85,79 +295,83 @@ if (window.location.hostname === 'www.detroitautomationacademy.com' || window.lo
         })();
     </script>
 
-<!-- 🚀 Detroit Automation Academy Event Status Dashboard @ BGC -->
-<div class="dashboard-container" style="display: flex; flex-wrap: wrap; gap: 24px; background: var(--daa-bg); padding: 32px; font-family: 'Inter', Arial, sans-serif;">
-	<!-- Event Status Tile -->
-	<div class="tile event-status" style="flex: 1 1 320px; min-width: 320px; background: var(--daa-primary); color: var(--daa-bg); border-radius: 16px; box-shadow: 0 2px 8px var(--daa-shadow); padding: 24px;">
-		<h2 style="margin-top:0;">🚀 Event Status Dashboard</h2>
-		<h3>Detroit Automation Academy @ BGC<br><span style="font-size:1em; font-weight:500; color:var(--daa-bg);">In partnership with Boys and Girls Club of Greater Detroit & Michigan Central</span></h3>
-		<div style="font-size: 1.1em; margin-bottom: 12px;">Recent Enrollments</div>
-		<div id="enrollment-list" style="background: var(--daa-shadow); border-radius: 8px; padding: 12px; min-height: 48px; color: var(--daa-fg);">
-			<ul style="list-style:none; padding-left:0;">
-				<li><span style="font-weight:600;">Participant #1</span> - Registered</li>
-				<li><span style="font-weight:600;">Participant #2</span> - Registered</li>
-				<li><span style="font-weight:600;">Participant #3</span> - Registered</li>
-				<li><span style="font-weight:600;">Participant #4</span> - Registered</li>
-				<li><span style="font-weight:600;">Participant #5</span> - Registered</li>
-			</ul>
-			<div style="font-size:0.95em; color:var(--daa-fg); margin-top:8px;">5 anonymized signups acknowledged. Students will see their submissions appear here in real-time!</div>
-		</div>
-	</div>
+    <section class="hero">
+        <h1>Event Status Dashboard</h1>
+        <p>Live metrics and synchronization from @AutomatedTechnologies</p>
+    </section>
 
-	<!-- Daily News Tile -->
-	<div class="tile news-tile" style="flex: 1 1 320px; min-width: 320px; background: var(--daa-secondary); color: var(--daa-bg); border-radius: 16px; box-shadow: 0 2px 8px var(--daa-shadow); padding: 24px;">
-		<h2 style="margin-top:0;">📰 Daily News & Updates</h2>
-		<div id="news-list" style="background: var(--daa-shadow); border-radius: 8px; padding: 12px; min-height: 48px; color: var(--daa-fg);">
-			<ul style="list-style:none; padding-left:0;">
-				<li><strong>New Partnership:</strong> Detroit Automation Academy joins Boys and Girls Club of Greater Detroit and Michigan Central.</li>
-				<li><strong>Event Success:</strong> February 4th event completed with 5 new signups.</li>
-				<li><strong>Dashboard Update:</strong> Enhanced tile-based layout and modern branding now live.</li>
-			</ul>
-			<div style="font-size:0.95em; color:var(--daa-fg); margin-top:8px;">Check back for event highlights, announcements, and student stories!</div>
-		</div>
-	</div>
+    <div class="dashboard-container">
+        <!-- Event Status Tile -->
+        <div class="tile">
+            <h2 style="color: var(--daa-primary);">🚀 Live Student Signups</h2>
+            <h3>In partnership with Boys & Girls Clubs of Greater Detroit</h3>
+            <ul class="status-list">
+                <li><span style="font-weight:600;">Participant #1</span> <span class="badge badge-active">Registered</span></li>
+                <li><span style="font-weight:600;">Participant #2</span> <span class="badge badge-active">Registered</span></li>
+                <li><span style="font-weight:600;">Participant #3</span> <span class="badge badge-active">Registered</span></li>
+                <li><span style="font-weight:600;">Participant #4</span> <span class="badge badge-active">Registered</span></li>
+                <li><span style="font-weight:600;">Participant #5</span> <span class="badge badge-active">Registered</span></li>
+            </ul>
+            <p style="font-size:12px; margin-top:12px; opacity:0.7;">5 anonymized signups acknowledged. Real-time updates active.</p>
+        </div>
 
-	<!-- Agent Highlight Tile -->
-	<div class="tile agent-tile" style="flex: 1 1 320px; min-width: 320px; background: var(--daa-accent); color: var(--daa-fg); border-radius: 16px; box-shadow: 0 2px 8px var(--daa-shadow); padding: 24px;">
-		<h2 style="margin-top:0;">🤖 Project Agents</h2>
-		<ul style="list-style:none; padding-left:0; margin-bottom:0;">
-			<li><strong>AI Copilot</strong> <span style="color:var(--daa-primary);">🟢 Active</span> <span style="font-size:0.95em;">(Dashboard Privacy Audit)</span></li>
-			<li><strong>Admin Coordinator</strong> <span style="color:var(--daa-secondary);">🔄 In-progress</span> <span style="font-size:0.95em;">(Event Enrollment Sync)</span></li>
-			<li><strong>Brand Lead</strong> <span style="color:var(--daa-accent);">⭐ Recommended</span> <span style="font-size:0.95em;">(Branding & Design)</span></li>
-			<li><strong>Technical Lead</strong> <span style="color:#333;">🟠 Standby</span> <span style="font-size:0.95em;">(Infrastructure)</span></li>
-		</ul>
-		<div style="font-size:0.95em; color:var(--daa-fg); margin-top:8px;">All agents operate with privacy-first principles.</div>
-	</div>
+        <!-- Daily News Tile -->
+        <div class="tile">
+            <h2 style="color: var(--daa-secondary);">📰 Daily News & Updates</h2>
+            <ul class="status-list">
+                <li><strong>Partnership:</strong> Permanent residency established at BGC Detroit.</li>
+                <li><strong>Success:</strong> Launch event completed with 50+ attendees.</li>
+                <li><strong>System:</strong> UI/UX Revitalization now live across all pillars.</li>
+            </ul>
+        </div>
 
-	<!-- Admin Tile (authentication required) -->
-	<div class="tile admin-tile" style="flex: 1 1 320px; min-width: 320px; background: #333; color: #fff; border-radius: 16px; box-shadow: 0 2px 8px #33333333; padding: 24px;">
-		<h2 style="margin-top:0;">🔒 Admin Portal</h2>
-		<div style="font-size:1.1em;">Staff metrics, partnership management, and secure login required.</div>
-		<div style="font-size:0.95em; color:#fff; margin-top:8px;">Restricted access. Please authenticate to view admin features.</div>
-		<a href="https://enroll.detroitautomationacademy.com" target="_blank" style="display: inline-block; margin-top: 16px; color: #66CC00; text-decoration: none; font-weight: 600;">➡️ Access Enrollment Admin</a>
-	</div>
+        <!-- Agent Highlight Tile -->
+        <div class="tile">
+            <h2 style="color: var(--daa-accent);">🤖 Project Agents</h2>
+            <ul class="status-list">
+                <li><strong>AI Copilot:</strong> <span class="badge badge-active">Active</span></li>
+                <li><strong>Admin Coordinator:</strong> <span class="badge badge-pending">Syncing</span></li>
+                <li><strong>Privacy Auditor:</strong> <span class="badge badge-active">Monitoring</span></li>
+                <li><strong>Social Manager:</strong> <span class="badge badge-active">Drafting</span></li>
+            </ul>
+        </div>
 
-	<!-- Ecosystem Insights Tile -->
-	<div class="tile insights-tile" style="flex: 1 1 100%; min-width: 320px; background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-accent) 100%); color: #fff; border-radius: 16px; box-shadow: 0 4px 12px var(--daa-shadow); padding: 24px;">
-		<h2 style="margin-top:0;">🌐 Ecosystem Insights (MCP Sync)</h2>
-		<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px;">
-			<div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
-				<h4 style="margin-top:0; color: #fff;">@AT_Wealth Velocity</h4>
-				<p style="font-size: 24px; font-weight: 800; margin: 8px 0;">Phase 1 Active</p>
-				<p style="font-size: 0.85em; opacity: 0.9;">Runway tracking online. Offer analysis engine pending external payloads.</p>
-			</div>
-			<div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
-				<h4 style="margin-top:0; color: #fff;">@AT_Diary Sentiment</h4>
-				<p style="font-size: 24px; font-weight: 800; margin: 8px 0;">Baseline Normal</p>
-				<p style="font-size: 0.85em; opacity: 0.9;">Spatial logging enabled. CoreLocation binding active and secure.</p>
-			</div>
-			<div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
-				<h4 style="margin-top:0; color: #fff;">System Audits</h4>
-				<p style="font-size: 24px; font-weight: 800; margin: 8px 0;">0 PII Leaks</p>
-				<p style="font-size: 0.85em; opacity: 0.9;">Continuous privacy auditing enforced across all CI/CD pipelines.</p>
-			</div>
-		</div>
-	</div>
-</div>
+        <!-- Admin Tile -->
+        <div class="tile" style="background: #333; color: #fff;">
+            <h2 style="color: #fff;">🔒 Admin Portal</h2>
+            <p style="font-size: 14px; opacity: 0.9;">Secure access required for staff metrics and management.</p>
+            <a href="admin.html" style="display: inline-block; margin-top: 16px; color: var(--daa-accent); text-decoration: none; font-weight: 600;">➡️ Access CRM Admin</a>
+        </div>
+
+        <!-- Ecosystem Insights Tile -->
+        <div class="tile" style="flex: 1 1 100%; background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-accent) 100%); color: #fff;">
+            <h2 style="color: #fff;">🌐 Ecosystem Insights (MCP Sync)</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px;">
+                <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
+                    <h4 style="margin-top:0; color: #fff;">@AT_Wealth Velocity</h4>
+                    <p style="font-size: 24px; font-weight: 800; margin: 8px 0;">Phase 1 Active</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
+                    <h4 style="margin-top:0; color: #fff;">@AT_Diary Sentiment</h4>
+                    <p style="font-size: 24px; font-weight: 800; margin: 8px 0;">Baseline Normal</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
+                    <h4 style="margin-top:0; color: #fff;">System Audits</h4>
+                    <p style="font-size: 24px; font-weight: 800; margin: 8px 0;">0 PII Leaks</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="blog/">Blog</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="https://github.com/smit4786/DetroitAutomationAcademy" target="_blank">GitHub</a>
+            <a href="mailto:info@detroitautomationacademy.com">Contact</a>
+        </div>
+        <p>© 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future.</p>
+    </footer>
 </body>
+
 </html>

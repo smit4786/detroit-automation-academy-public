@@ -57,13 +57,27 @@ pre, code {
 [data-theme='light'] .white-90, 
 [data-theme='light'] .white-80, 
 [data-theme='light'] .white-70, 
+[data-theme='light'] .white-60, 
+[data-theme='light'] .white-50, 
+[data-theme='light'] .white-40, 
 [data-theme='light'] .near-white,
-[data-theme='light'] .white {
+[data-theme='light'] .white,
+[data-theme='light'] .gray,
+[data-theme='light'] .silver {
   color: var(--brand-primary) !important;
 }
 
 [data-theme='light'] .hover-white:hover {
   color: var(--brand-accent) !important;
+}
+
+[data-theme='light'] .bg-near-black {
+  background-color: var(--brand-bg) !important;
+}
+
+[data-theme='light'] .bg-black-60,
+[data-theme='light'] .bg-black-40 {
+  background-color: rgba(0,0,0,0.05) !important;
 }
 
 .featured-image img {

@@ -48,7 +48,7 @@
     </style>
 </head>
 <body class="light-mode">
-        <header>
+            <header>
         <nav>
             <div class="logo">
                 <a href="index.html">
@@ -133,7 +133,7 @@
                     <li>Equipment Lists & Setup Guides</li>
                     <li>Quality Checklists</li>
                 </ul>
-                <a href="#" class="cta-button">Subscribe Now</a>
+                <button class="cta-button" onclick="openCheckout('Educator Pack', 29)">Subscribe Now</button>
             </div>
 
             <!-- Tier 2 -->
@@ -149,7 +149,7 @@
                     <li>Marketing & Branding Package</li>
                     <li>Stakeholder Comms Templates</li>
                 </ul>
-                <a href="#" class="cta-button">Launch Your Academy</a>
+                <button class="cta-button" onclick="openCheckout('Academy-in-a-Box', 149)">Launch Your Academy</button>
                 <p style="font-size: 11px; margin-top: 12px; text-align: center;"><a href="EDUCATIONAL_PARTNER_LICENSE.md" style="color: #666; text-decoration: underline;">View License Agreement</a></p>
             </div>
 
@@ -165,12 +165,58 @@
                     <li>Multi-tenant Dashboard</li>
                     <li>Monthly Consulting Call</li>
                 </ul>
-                <a href="#" class="cta-button">Go Enterprise</a>
+                <button class="cta-button" onclick="contactSales('Automation Engine')">Go Enterprise</button>
             </div>
         </div>
     </section>
 
-        <footer>
+    <!-- ── Checkout Modal ── -->
+    <div id="checkout-modal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
+        <div style="background: var(--daa-bg-card); padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; border: 1px solid var(--daa-border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">💎</div>
+            <h2 id="modal-tier-name" style="font-family: 'Poppins', sans-serif; font-size: 24px; margin-bottom: 8px;">Checkout</h2>
+            <p id="modal-tier-price" style="font-size: 18px; color: var(--daa-primary); font-weight: 700; margin-bottom: 24px;">$0/mo</p>
+            
+            <form id="checkout-form" style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
+                <label style="font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.7;">Organization Name</label>
+                <input required type="text" placeholder="e.g. Detroit STEM Club" style="padding: 12px; border-radius: 8px; border: 1px solid var(--daa-border); background: var(--daa-bg); color: var(--daa-fg);">
+                
+                <label style="font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.7;">Billing Email</label>
+                <input required type="email" placeholder="billing@org.com" style="padding: 12px; border-radius: 8px; border: 1px solid var(--daa-border); background: var(--daa-bg); color: var(--daa-fg);">
+                
+                <div style="margin-top: 12px; padding: 16px; background: rgba(102, 204, 0, 0.1); border-radius: 8px; font-size: 13px; color: var(--daa-accent); border: 1px solid var(--daa-accent);">
+                    🛡️ Secure payment powered by Automated Technologies.
+                </div>
+                
+                <button type="submit" class="cta-button" style="margin-top: 16px; padding: 16px; background: var(--daa-primary); color: white;">Complete Subscription</button>
+                <button type="button" onclick="closeCheckout()" style="background: transparent; border: none; color: var(--daa-fg-muted); cursor: pointer; font-size: 13px; margin-top: 8px;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openCheckout(tier, price) {
+            document.getElementById('modal-tier-name').innerText = tier;
+            document.getElementById('modal-tier-price').innerText = `$${price}/mo`;
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-modal').style.display = 'none';
+        }
+
+        function contactSales(tier) {
+            window.location.href = `mailto:sales@detroitautomationacademy.com?subject=Enterprise Inquiry: ${tier}`;
+        }
+
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert("Thank you for your interest! In this prototype, subscriptions are recorded but not processed. A representative will contact you shortly.");
+            closeCheckout();
+        });
+    </script>
+
+            <footer>
         <div class="footer-links">
             <a href="blog/">Blog</a>
             <a href="dashboard.html">Dashboard</a>

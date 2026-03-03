@@ -25,7 +25,7 @@
     
 
     
-<link rel="stylesheet" href="/blog/ananke/css/main.min.6d9542057a9d2c9ce5c04166fe916543948791b3adc19155dd4a18b6022e74a3.css" >
+<link rel="stylesheet" href="/blog/ananke/css/main.min.e87ffd74a6aa53e0bb953b53c8da26c3631f73006d79ab793e4fe879bec6c313.css" >
 
 
 
@@ -84,17 +84,14 @@
 	<script>
   (function() {
     const storageKey = 'at-blog-theme';
-    const currentTheme = localStorage.getItem(storageKey);
-    if (currentTheme) {
-      document.documentElement.setAttribute('data-theme', currentTheme);
-      
-      document.addEventListener('DOMContentLoaded', () => {
-        document.body.setAttribute('data-theme', currentTheme);
-      });
-    } else {
-      
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+    const currentTheme = localStorage.getItem(storageKey) || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.setAttribute('data-theme', currentTheme);
+      const toggle = document.getElementById('theme-toggle');
+      if (toggle) toggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    });
   })();
 </script>
 
@@ -154,7 +151,7 @@
       <div class="flex items-center">
         <div class="ananke-socials"></div>
 
-        <button id="theme-toggle" aria-label="Toggle Theme" title="Switch Theme">
+        <button id="theme-toggle" aria-label="Toggle Theme" title="Switch Theme" style="background: transparent; border: 1px solid var(--brand-muted); color: var(--brand-primary); cursor: pointer; padding: 4px 8px; border-radius: 4px; margin-left: 12px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
           🌙
         </button>
       </div>
@@ -166,25 +163,20 @@
   (function() {
     const toggle = document.getElementById('theme-toggle');
     const storageKey = 'at-blog-theme';
-    const currentTheme = localStorage.getItem(storageKey);
     
     const applyTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
       document.body.setAttribute('data-theme', theme);
-      toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      if (toggle) toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
       localStorage.setItem(storageKey, theme);
     };
 
-    if (currentTheme) {
-      applyTheme(currentTheme);
-    } else {
-      
-      applyTheme('dark');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(theme);
+      });
     }
-
-    toggle.addEventListener('click', () => {
-      const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(theme);
-    });
   })();
 </script>
 

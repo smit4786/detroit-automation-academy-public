@@ -1,16 +1,13 @@
 <script>
   (function() {
     const storageKey = 'at-blog-theme';
-    const currentTheme = localStorage.getItem(storageKey);
-    if (currentTheme) {
-      document.documentElement.setAttribute('data-theme', currentTheme);
-      // Also set it on body when it loads
-      document.addEventListener('DOMContentLoaded', () => {
-        document.body.setAttribute('data-theme', currentTheme);
-      });
-    } else {
-      // Default to dark
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+    const currentTheme = localStorage.getItem(storageKey) || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.setAttribute('data-theme', currentTheme);
+      const toggle = document.getElementById('theme-toggle');
+      if (toggle) toggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    });
   })();
 </script>

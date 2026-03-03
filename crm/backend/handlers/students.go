@@ -250,9 +250,10 @@ func updateStudent(ctx context.Context, fs *firestore.Client, s *models.Student)
 		defer memMu.Unlock()
 		for i, existing := range memStudents {
 			if existing.ID == s.ID && existing.TenantID == s.TenantID {
-				// Update fields, specifically attendance
+				// Update fields
 				memStudents[i].Attendance = s.Attendance
 				memStudents[i].Status = s.Status
+				memStudents[i].Cohort = s.Cohort
 				return nil
 			}
 		}
@@ -262,6 +263,7 @@ func updateStudent(ctx context.Context, fs *firestore.Client, s *models.Student)
 	_, err := fs.Collection(collectionName(s.TenantID)).Doc(s.ID).Set(ctx, map[string]interface{}{
 		"attendance": s.Attendance,
 		"status":     s.Status,
+		"cohort":     s.Cohort,
 	}, firestore.MergeAll)
 	return err
 }
