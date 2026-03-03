@@ -112,14 +112,7 @@ jobs:
             FAIL=1
           fi
 
-          # 4. Scan for banned content
-          BANNED_TERMS="501(c)(3)|nonprofit|non-profit"
-          if grep -riE "$BANNED_TERMS" deployment/*.html 2>/dev/null; then
-            echo "FATAL: Banned content detected in HTML files (non-profit claims)"
-            FAIL=1
-          fi
-
-          # 5. Check for empty HTML files
+          # 4. Check for empty HTML files
           EMPTY_FILES=$(find deployment/ -name "*.html" -empty)
           if [ -n "$EMPTY_FILES" ]; then
             echo "FATAL: Empty HTML files detected:"

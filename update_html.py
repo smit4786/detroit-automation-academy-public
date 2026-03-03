@@ -127,17 +127,17 @@ def update_file(filepath):
         style_content = match.group(1)
         if "body::before" not in style_content:
             style_content = circuit_bg_style + style_content
-        
+
         # Ensure transitions and body base
         if "transition: background 0.3s" not in style_content:
             style_content = style_content.replace(
                 "body {", "body {\n            transition: background 0.3s, color 0.3s;"
             )
-            
+
         content = content[: match.start(1)] + style_content + content[match.end(1) :]
 
     # Standardize body class
-    if "<body class=\"light-mode\">" not in content and "<body>" in content:
+    if '<body class="light-mode">' not in content and "<body>" in content:
         content = content.replace("<body>", '<body class="light-mode">')
 
     with open(filepath, "w") as f:

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Student } from './types';
+import { Student, Instructor } from './types';
 import StudentForm from './StudentForm';
 import EnrollmentForm from './EnrollmentForm';
 import { getApiUrl } from './api-config';
