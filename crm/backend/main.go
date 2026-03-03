@@ -18,16 +18,23 @@ var (
 	CLIENT_ID      = os.Getenv("GOOGLE_CLIENT_ID")
 )
 
-func isAllowed(email string) bool {
+func isAllowed(ctx context.Context, fs *firestore.Client, email string) bool {
 	for _, a := range ALLOWED_EMAILS {
 		if a == email {
 			return true
 		}
 	}
-	return false
+	if fs == nil {
+		return email == "instructor@example.com"
+	}
+	// Check instructors collection
+	iter := fs.Collection("instructors").Where("email", "==", email).Where("status", "==", "Active").Limit(1).Documents(ctx)
+	defer iter.Stop()
+	_, err := iter.Next()
+	return err == nil
 }
 
-func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func AuthMiddleware(fsClient *firestore.Client, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// 1. Set robust CORS headers
 		origin := r.Header.Get("Origin")
@@ -35,6 +42,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			"https://enroll.detroitautomationacademy.com":   true,
 			"https://daa-crm-frontend-ww72p2xhtq-uc.a.run.app": true,
 			"https://detroitautomationacademy.com":          true,
+			"http://localhost:3000":                         true,
 		}
 
 		if allowedOrigins[origin] {
@@ -69,16 +77,16 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 		
 		// 5. Validate Google ID Token
-		payload, err := idtoken.Validate(context.Background(), token, CLIENT_ID)
+		payload, err := idtoken.Validate(r.Context(), token, CLIENT_ID)
 		if err != nil {
 			log.Printf("Token validation failed: %v", err)
 			http.Error(w, "Unauthorized: Invalid Token", http.StatusUnauthorized)
 			return
 		}
 
-		// 6. Check if email is in ALLOWED_EMAILS
+		// 6. Check if email is in ALLOWED_EMAILS or instructors
 		email := payload.Claims["email"].(string)
-		if !isAllowed(email) {
+		if !isAllowed(r.Context(), fsClient, email) {
 			log.Printf("Forbidden access attempt: %s", email)
 			http.Error(w, "Forbidden: Account not authorized", http.StatusForbidden)
 			return
@@ -120,8 +128,9 @@ func main() {
 		}
 	})
 
-	// Wrap students handler with Auth Middleware
-	http.HandleFunc("/api/students", AuthMiddleware(handlers.MakeStudentsHandler(fsClient)))
+	// Wrap handlers with Auth Middleware
+	http.HandleFunc("/api/students", AuthMiddleware(fsClient, handlers.MakeStudentsHandler(fsClient)))
+	http.HandleFunc("/api/instructors", AuthMiddleware(fsClient, handlers.MakeInstructorsHandler(fsClient)))
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

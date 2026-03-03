@@ -7,15 +7,16 @@ import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oau
 import { jwtDecode } from 'jwt-decode';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "87748455115-483j472l7c7scjkcm8qpguen8jaa4ie6.apps.googleusercontent.com";
-const ALLOWED_EMAILS = ["dbkrsmith@gmail.com", "smit4786@gmail.com"];
+const ADMIN_EMAILS = ["dbkrsmith@gmail.com", "smit4786@gmail.com"];
 
 const AppContent: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [tenantId, setTenantId] = useState('ALL');
-  const [view, setView] = useState<'enroll' | 'admin'>('enroll');
-  const [adminSubView, setAdminSubView] = useState<'list' | 'details' | 'revenue'>('list');
+  const [view, setView] = useState<'enroll' | 'admin' | 'instructor'>('enroll');
+  const [adminSubView, setAdminSubView] = useState<'list' | 'details' | 'revenue' | 'instructors'>('list');
   const [theme, setTheme] = useState<'light' | 'dark'>(
     (localStorage.getItem('daa_crm_theme') as 'light' | 'dark') || 'dark'
   );
@@ -27,8 +28,11 @@ const AppContent: React.FC = () => {
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  const [adminUnlocked, setAdminUnlocked] = useState<boolean>(
+  const [isUnlocked, setIsUnlocked] = useState<boolean>(
     sessionStorage.getItem('daa_admin_auth') === 'true'
+  );
+  const [userRole, setUserRole] = useState<'admin' | 'instructor' | null>(
+    (sessionStorage.getItem('daa_user_role') as any) || null
   );
   const [userEmail, setUserEmail] = useState<string | null>(
     sessionStorage.getItem('daa_user_email')
@@ -36,8 +40,9 @@ const AppContent: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
 
   const handleAdminTabClick = () => {
-    if (adminUnlocked) {
-      setView('admin');
+    if (isUnlocked) {
+      if (userRole === 'admin') setView('admin');
+      else setView('instructor');
     } else {
       setShowLoginModal(true);
     }
@@ -48,56 +53,102 @@ const AppContent: React.FC = () => {
       const decoded: any = jwtDecode(response.credential);
       const email = decoded.email;
 
-      if (ALLOWED_EMAILS.includes(email)) {
-        sessionStorage.setItem('daa_admin_auth', 'true');
-        sessionStorage.setItem('daa_user_email', email);
-        sessionStorage.setItem('daa_id_token', response.credential);
-        setAdminUnlocked(true);
-        setUserEmail(email);
-        setShowLoginModal(false);
-        setView('admin');
+      let role: 'admin' | 'instructor' | null = null;
+      if (ADMIN_EMAILS.includes(email)) {
+        role = 'admin';
       } else {
-        alert(`Access Denied: ${email} is not authorized.`);
+        role = 'instructor';
       }
+
+      sessionStorage.setItem('daa_admin_auth', 'true');
+      sessionStorage.setItem('daa_user_email', email);
+      sessionStorage.setItem('daa_user_role', role);
+      sessionStorage.setItem('daa_id_token', response.credential);
+      setIsUnlocked(true);
+      setUserEmail(email);
+      setUserRole(role);
+      setShowLoginModal(false);
+      if (role === 'admin') setView('admin');
+      else setView('instructor');
     }
   };
 
   const handleLogout = () => {
     sessionStorage.removeItem('daa_admin_auth');
     sessionStorage.removeItem('daa_user_email');
+    sessionStorage.removeItem('daa_user_role');
     sessionStorage.removeItem('daa_id_token');
-    setAdminUnlocked(false);
+    setIsUnlocked(false);
     setUserEmail(null);
+    setUserRole(null);
     setView('enroll');
   };
 
   useEffect(() => {
-    if (view === 'admin') {
+    if (view === 'admin' || view === 'instructor') {
       setLoading(true);
       const token = sessionStorage.getItem('daa_id_token');
-      const url = tenantId === 'ALL' ? getApiUrl('/api/students') : getApiUrl(`/api/students?tenant_id=${tenantId}`);
-      fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-        .then(res => {
-          if (res.status === 401 || res.status === 403) {
-            handleLogout();
-            throw new Error('Session expired or unauthorized');
-          }
-          if (!res.ok) throw new Error('Failed to fetch');
-          return res.json();
+      const studentUrl = tenantId === 'ALL' ? getApiUrl('/api/students') : getApiUrl(`/api/students?tenant_id=${tenantId}`);
+      
+      const fetchStudents = fetch(studentUrl, { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json());
+      
+      let promises = [fetchStudents];
+      if (view === 'admin' && adminSubView === 'instructors') {
+        const instUrl = tenantId === 'ALL' ? getApiUrl('/api/instructors') : getApiUrl(`/api/instructors?tenant_id=${tenantId}`);
+        promises.push(fetch(instUrl, { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json()));
+      }
+
+      Promise.all(promises)
+        .then(([studentData, instData]) => {
+          setStudents(studentData);
+          if (instData) setInstructors(instData);
+          setLoading(false);
         })
-        .then(data => { setStudents(data); setLoading(false); })
-        .catch(err => { setError(err.message); setLoading(false); });
+        .catch(err => { 
+          setError(err.message); 
+          setLoading(false); 
+          if (err.message.includes('401') || err.message.includes('403')) handleLogout();
+        });
     }
-  }, [tenantId, view]);
+  }, [tenantId, view, adminSubView]);
 
   const handleStudentAdded = (s: Student) => setStudents(prev => [...prev, s]);
 
   const activeCount = students.filter(s => s.status === 'Active').length;
   const inquiryCount = students.filter(s => s.status === 'Inquiry').length;
+
+  const markAttendance = async (studentId: string, present: boolean) => {
+    const student = students.find(s => s.id === studentId);
+    if (!student) return;
+
+    const newAttendance = [...(student.attendance || [])];
+    const today = new Date().toISOString().split('T')[0];
+    
+    const existingIdx = newAttendance.findIndex(a => a.date.startsWith(today));
+    if (existingIdx >= 0) {
+      newAttendance[existingIdx] = { date: today, present };
+    } else {
+      newAttendance.push({ date: today, present });
+    }
+
+    try {
+      const token = sessionStorage.getItem('daa_id_token');
+      const response = await fetch(getApiUrl(`/api/students?tenant_id=${student.tenant_id}`), {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ ...student, attendance: newAttendance })
+      });
+      if (!response.ok) throw new Error('Failed to update attendance');
+      
+      setStudents(prev => prev.map(s => s.id === studentId ? { ...s, attendance: newAttendance } : s));
+    } catch (err) {
+      console.error(err);
+      alert('Error updating attendance');
+    }
+  };
 
   const deleteStudent = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this enrollment?')) return;
@@ -117,10 +168,8 @@ const AppContent: React.FC = () => {
 
   const sortedStudents = [...students].sort((a, b) => (a.cohort || '').localeCompare(b.cohort || ''));
 
-
   return (
     <div id="root">
-
       {/* ── SSO Login Modal ── */}
       {showLoginModal && (
         <div style={{
@@ -142,7 +191,7 @@ const AppContent: React.FC = () => {
           }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>🔐</div>
             <h2 style={{ fontFamily: 'Poppins, sans-serif', fontSize: 20, fontWeight: 800, color: 'var(--text)', marginBottom: 8 }}>
-              Admin Access
+              Portal Access
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 24 }}>
               Sign in with your DAA Google account to access the dashboard.
@@ -192,12 +241,12 @@ const AppContent: React.FC = () => {
               🎓 Registration Portal
             </button>
             <button
-              className={`daa-tab${view === 'admin' ? ' active' : ''}`}
+              className={`daa-tab${(view === 'admin' || view === 'instructor') ? ' active' : ''}`}
               onClick={handleAdminTabClick}
             >
-              {adminUnlocked ? '📊' : '🔒'} Admin Dashboard
+              {isUnlocked ? (userRole === 'admin' ? '📊 Admin Dashboard' : '👨‍🏫 Instructor Portal') : '🔒 Dashboard'}
             </button>
-            {adminUnlocked && (
+            {isUnlocked && (
               <button className="daa-tab" onClick={handleLogout} style={{ color: '#f85149' }}>
                 Logout
               </button>
@@ -236,6 +285,13 @@ const AppContent: React.FC = () => {
                     style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, background: adminSubView === 'revenue' ? 'var(--primary)' : 'var(--bg-card)', border: '1px solid var(--border)', color: adminSubView === 'revenue' ? 'white' : 'var(--text)' }}
                   >
                     💰 Revenue Insights
+                  </button>
+                  <button 
+                    onClick={() => setAdminSubView('instructors')}
+                    className={`daa-tab-small ${adminSubView === 'instructors' ? 'active' : ''}`}
+                    style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, background: adminSubView === 'instructors' ? 'var(--primary)' : 'var(--bg-card)', border: '1px solid var(--border)', color: adminSubView === 'instructors' ? 'white' : 'var(--text)' }}
+                  >
+                    👨‍🏫 Manage Instructors
                   </button>
                 </div>
               </div>
@@ -471,6 +527,62 @@ const AppContent: React.FC = () => {
                     </div>
                   </div>
                 )}
+
+                {!loading && !error && adminSubView === 'instructors' && (
+                  <div style={{ padding: 24 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                      <h3 style={{ margin: 0 }}>Active Instructors</h3>
+                      <p style={{ fontSize: 12, opacity: 0.7 }}>Instructors can mark attendance for their assigned Academy.</p>
+                    </div>
+                    
+                    <table className="daa-table">
+                      <thead>
+                        <tr>
+                          <th>Instructor</th>
+                          <th>Email</th>
+                          <th>Academy</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {instructors.map(inst => (
+                          <tr key={inst.id}>
+                            <td>{inst.first_name} {inst.last_name}</td>
+                            <td>{inst.email}</td>
+                            <td>{inst.tenant_id}</td>
+                            <td><span className={`daa-badge ${inst.status.toLowerCase()}`}>{inst.status}</span></td>
+                            <td>
+                              <button className="daa-link-btn" style={{ color: '#f85149' }}>Remove</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    <div style={{ marginTop: 32, padding: 24, background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border)' }}>
+                      <h4 style={{ margin: '0 0 16px' }}>Add New Instructor</h4>
+                      <form style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 12, alignItems: 'end' }} onSubmit={(e) => {
+                        e.preventDefault();
+                        alert('Instructor added (Simulation)');
+                      }}>
+                        <div className="daa-input-group">
+                          <label className="daa-label">First Name</label>
+                          <input className="daa-input" required />
+                        </div>
+                        <div className="daa-input-group">
+                          <label className="daa-label">Last Name</label>
+                          <input className="daa-input" required />
+                        </div>
+                        <div className="daa-input-group">
+                          <label className="daa-label">Google Email</label>
+                          <input className="daa-input" type="email" required />
+                        </div>
+                        <button className="daa-submit" style={{ padding: '10px 24px' }}>Add Instructor</button>
+                      </form>
+                    </div>
+                  </div>
+                )}
               </div>
               {adminSubView === 'list' && (
                 <div className="daa-add-card">
@@ -484,6 +596,87 @@ const AppContent: React.FC = () => {
                     <StudentForm tenantId={tenantId} onStudentAdded={handleStudentAdded} />
                   )}
                 </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {view === 'instructor' && (
+        <div style={{ flex: 1, padding: '40px 24px' }}>
+          <div className="daa-admin-page" style={{ padding: 0 }}>
+            <div className="daa-admin-header">
+              <div>
+                <h1 className="daa-admin-title">Instructor Portal</h1>
+                <p className="daa-admin-subtitle">Welcome, <strong>{userEmail}</strong></p>
+              </div>
+              <div className="daa-tenant-select">
+                <span className="daa-tenant-label">Mark Attendance for:</span>
+                <select
+                  className="daa-select"
+                  value={tenantId}
+                  onChange={e => { setTenantId(e.target.value); setLoading(true); }}
+                >
+                  <option value="ALL">All Academies</option>
+                  <option value="DAA-CORE">DAA Core</option>
+                  <option value="BGC-METRO">BGC Metro</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="daa-table-card">
+              {loading ? (
+                <div className="daa-empty-state"><p>Loading students...</p></div>
+              ) : (
+                <table className="daa-table">
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>Cohort</th>
+                      <th>Today's Attendance ({new Date().toLocaleDateString()})</th>
+                      <th>History</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedStudents.filter(s => s.status === 'Active').map(student => {
+                      const today = new Date().toISOString().split('T')[0];
+                      const attendanceToday = student.attendance?.find(a => a.date.startsWith(today));
+                      
+                      return (
+                        <tr key={student.id}>
+                          <td>
+                            <div className="student-name">{student.first_name} {student.last_name}</div>
+                            <div className="student-email">{student.email}</div>
+                          </td>
+                          <td style={{ fontSize: 12 }}>{student.cohort}</td>
+                          <td>
+                            <div style={{ display: 'flex', gap: 12 }}>
+                              <button 
+                                onClick={() => markAttendance(student.id, true)}
+                                className={`daa-badge active ${attendanceToday?.present === true ? '' : 'inactive'}`}
+                                style={{ cursor: 'pointer', border: 'none', opacity: attendanceToday?.present === true ? 1 : 0.4 }}
+                              >
+                                Present ✅
+                              </button>
+                              <button 
+                                onClick={() => markAttendance(student.id, false)}
+                                className={`daa-badge withdrawn ${attendanceToday?.present === false ? '' : 'inactive'}`}
+                                style={{ cursor: 'pointer', border: 'none', opacity: attendanceToday?.present === false ? 1 : 0.4 }}
+                              >
+                                Absent ❌
+                              </button>
+                            </div>
+                          </td>
+                          <td style={{ fontSize: 11 }}>
+                            {student.attendance ? (
+                              <span>{student.attendance.filter(a => a.present).length} / {student.attendance.length} sessions</span>
+                            ) : '—'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               )}
             </div>
           </div>

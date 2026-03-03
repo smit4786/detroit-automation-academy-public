@@ -18,3 +18,13 @@ export interface Student {
   status: 'Active' | 'Completed' | 'Withdrawn' | 'Inquiry';
   attendance?: { date: string, present: boolean, notes?: string }[];
 }
+
+export interface Instructor {
+  id: string;
+  tenant_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  status: 'Active' | 'Inactive';
+  created_at: string;
+}
