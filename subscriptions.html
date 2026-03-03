@@ -7,6 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="branding/palette.css">
     <style>
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: var(--daa-fg); background: var(--daa-bg); 
             transition: background 0.3s, color 0.3s;
@@ -48,7 +62,7 @@
     </style>
 </head>
 <body class="light-mode">
-            <header>
+                <header>
         <nav>
             <div class="logo">
                 <a href="index.html">
@@ -216,7 +230,7 @@
         });
     </script>
 
-            <footer>
+                <footer>
         <div class="footer-links">
             <a href="blog/">Blog</a>
             <a href="dashboard.html">Dashboard</a>

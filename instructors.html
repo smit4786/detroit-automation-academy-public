@@ -10,6 +10,20 @@
         rel="stylesheet">
     <link rel="stylesheet" href="branding/palette.css"> <!-- Link palette.css -->
     <style>
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
         /* General styles, already fine */
         * {
             margin: 0;
@@ -274,7 +288,7 @@
 </head>
 
 <body class="light-mode"> <!-- Add default class -->
-            <header>
+                <header>
         <nav>
             <div class="logo">
                 <a href="index.html">
@@ -420,7 +434,7 @@
         </section>
     </section>
 
-            <footer>
+                <footer>
         <div class="footer-links">
             <a href="blog/">Blog</a>
             <a href="dashboard.html">Dashboard</a>

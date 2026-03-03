@@ -8,6 +8,20 @@
     <link rel="stylesheet" href="branding/palette.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: var(--daa-fg); background: var(--daa-bg); transition: background 0.3s, color 0.3s; min-height: 100vh; }
         header { background: var(--daa-bg-card); box-shadow: 0 2px 8px var(--daa-shadow); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--daa-border); }
@@ -47,7 +61,7 @@
     </style>
 </head>
 <body class="light-mode">
-    <header>
+        <header>
         <nav>
             <div class="logo">
                 <a href="index.html">
@@ -84,14 +98,37 @@
                 <li><a href="dashboard.html">📊 Dashboard</a></li>
                 <li><a href="students.html">👨‍🎓 Students</a></li>
                 <li><a href="instructors.html">👨‍🏫 Instructors</a></li>
+                <li><a href="partners.html">💼 Partners</a></li>
                 <li><a href="subscriptions.html">💎 Subscriptions</a></li>
-                <li><a href="admin.html" style="color: var(--daa-primary); font-weight: 700;">🔒 Admin</a></li>
             </ul>
             <button id="theme-toggle">☀️ Light Mode</button>
         </nav>
     </header>
 
-    <div id="auth-modal" class="auth-overlay">
+    <script>
+        (function () {
+            const saved = localStorage.getItem('daa-theme');
+            const body = document.body;
+            const btn = document.getElementById('theme-toggle');
+            if (saved === 'light') {
+                body.classList.add('light-mode');
+                if (btn) btn.textContent = '🌙 Dark Mode';
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggle = document.getElementById('theme-toggle');
+                if (!toggle) return;
+                toggle.addEventListener('click', function () {
+                    const isLight = document.body.classList.toggle('light-mode');
+                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
+                    const main = document.getElementById('logo-text-main');
+                    const sub = document.getElementById('logo-text-sub');
+                    if (main) main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
+                    if (sub) sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
+                });
+            });
+        })();
+    </script><div id="auth-modal" class="auth-overlay">
         <div class="auth-modal">
             <h2 style="font-family: 'Poppins', sans-serif; font-size: 24px; margin-bottom: 16px;">Admin Access</h2>
             <p style="color: var(--daa-fg-muted); margin-bottom: 24px; font-size: 14px;">Please authenticate with your authorized DAA Google account.</p>
@@ -157,14 +194,14 @@
         </div>
     </section>
 
-    <footer>
+        <footer>
         <div class="footer-links">
-            <a href="index.html">Home</a>
             <a href="blog/">Blog</a>
+            <a href="dashboard.html">Dashboard</a>
             <a href="https://github.com/smit4786/DetroitAutomationAcademy" target="_blank">GitHub</a>
             <a href="mailto:info@detroitautomationacademy.com">Contact</a>
         </div>
-        <p>© 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future.</p>
+        <p>© 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built by Detroiters.</p>
     </footer>
 
     <script>

@@ -80,12 +80,29 @@ footer_content = """    <footer>
         <p>© 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built by Detroiters.</p>
     </footer>"""
 
+circuit_bg_style = """
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+"""
+
 files_to_update = [
     "students.html",
     "instructors.html",
     "partners.html",
     "subscriptions.html",
     "dashboard.html",
+    "admin.html",
 ]
 
 
@@ -93,16 +110,35 @@ def update_file(filepath):
     with open(filepath, "r") as f:
         content = f.read()
 
-    # Replace header and script
+    # Standardize header/footer
     header_pattern = re.compile(
         r"<header>.*?</header>\s*(<script>.*?</script>)?", re.DOTALL
     )
     if header_pattern.search(content):
         content = header_pattern.sub(header_content, content, count=1)
 
-    # Replace footer
     footer_pattern = re.compile(r"<footer>.*?</footer>", re.DOTALL)
     content = footer_pattern.sub(footer_content, content)
+
+    # Standardize CSS variables and circuit background
+    style_pattern = re.compile(r"<style>(.*?)</style>", re.DOTALL)
+    match = style_pattern.search(content)
+    if match:
+        style_content = match.group(1)
+        if "body::before" not in style_content:
+            style_content = circuit_bg_style + style_content
+        
+        # Ensure transitions and body base
+        if "transition: background 0.3s" not in style_content:
+            style_content = style_content.replace(
+                "body {", "body {\n            transition: background 0.3s, color 0.3s;"
+            )
+            
+        content = content[: match.start(1)] + style_content + content[match.end(1) :]
+
+    # Standardize body class
+    if "<body class=\"light-mode\">" not in content and "<body>" in content:
+        content = content.replace("<body>", '<body class="light-mode">')
 
     with open(filepath, "w") as f:
         f.write(content)
@@ -111,4 +147,4 @@ def update_file(filepath):
 for f in files_to_update:
     if os.path.exists(f):
         update_file(f)
-        print(f"Updated {f}")
+        print(f"Standardized {f}")
