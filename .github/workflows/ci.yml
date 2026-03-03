@@ -53,7 +53,9 @@ jobs:
 
       - name: Build Backend
         working-directory: crm/backend
-        run: go build -v ./...
+        run: |
+          go mod tidy
+          go build -v ./...
 
   hugo-frontend-check:
     runs-on: ubuntu-latest
