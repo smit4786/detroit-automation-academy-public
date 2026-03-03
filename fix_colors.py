@@ -52,7 +52,8 @@ def update_file(filepath):
         f.write(content)
 
 
-for f in files_to_update:
-    if os.path.exists(f):
-        update_file(f)
-        print(f"Fixed colors in {f}")
+if __name__ == "__main__":
+    for f in files_to_update:
+        if os.path.exists(f):
+            update_file(f)
+            print(f"Fixed colors in {f}")

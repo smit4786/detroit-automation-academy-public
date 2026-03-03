@@ -173,16 +173,22 @@ def update_file(filepath):
     match = style_pattern.search(content)
     if match:
         style_content = match.group(1)
-        
+
         # Remove old header/footer styles if they exist to avoid duplication
         style_content = re.sub(r"header\s*\{.*?\}", "", style_content, flags=re.DOTALL)
         style_content = re.sub(r"footer\s*\{.*?\}", "", style_content, flags=re.DOTALL)
-        style_content = re.sub(r"\.footer-links\s*\{.*?\}", "", style_content, flags=re.DOTALL)
-        style_content = re.sub(r"\.footer-links a\s*\{.*?\}", "", style_content, flags=re.DOTALL)
-        style_content = re.sub(r"body::before\s*\{.*?\}", "", style_content, flags=re.DOTALL)
-        
+        style_content = re.sub(
+            r"\.footer-links\s*\{.*?\}", "", style_content, flags=re.DOTALL
+        )
+        style_content = re.sub(
+            r"\.footer-links a\s*\{.*?\}", "", style_content, flags=re.DOTALL
+        )
+        style_content = re.sub(
+            r"body::before\s*\{.*?\}", "", style_content, flags=re.DOTALL
+        )
+
         style_content = standard_styles + style_content
-        content = content[:match.start(1)] + style_content + content[match.end(1):]
+        content = content[: match.start(1)] + style_content + content[match.end(1) :]
 
     # Ensure body class
     if 'body class="light-mode"' not in content and "<body>" in content:

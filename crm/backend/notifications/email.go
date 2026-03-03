@@ -34,6 +34,7 @@ func SendWelcomeEmail(s models.Student) {
 		return
 	}
 
+	interests := strings.Join(s.ProgramInterest, ", ")
 	body := fmt.Sprintf(`
 		<div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background-color: #0d1117; color: #e6edf3; border: 1px solid #30363d; border-radius: 12px; overflow: hidden;">
 			<div style="background: linear-gradient(135deg, #238636 0%%, #2ea043 100%%); padding: 32px 24px; text-align: center;">
@@ -61,7 +62,7 @@ func SendWelcomeEmail(s models.Student) {
 				</p>
 			</div>
 		</div>
-	`, s.FirstName, s.Cohort, s.ProgramInterest, s.Goals)
+	`, s.FirstName, s.Cohort, interests, s.Goals)
 
 	email := PostmarkEmail{
 		From:     FromEmail,
