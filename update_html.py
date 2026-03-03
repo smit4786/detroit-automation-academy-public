@@ -5,13 +5,18 @@ header_content = """    <header>
         <nav>
             <div class="logo">
                 <a href="index.html">
-                    <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
+                    <svg viewBox="0 0 1000 250" width="180" height="45"
+                         xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
-                            <circle cx="100" cy="100" r="75" fill="none" stroke="#0066CC" stroke-width="4" />
-                            <polygon
-                                points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30"
-                                fill="none" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
-                            <g stroke="#66CC00" stroke-width="3" fill="none" stroke-linecap="round">
+                            <circle cx="100" cy="100" r="75" fill="none"
+                                    stroke="#0066CC" stroke-width="4" />
+                            <polygon points="100,30 130,40 140,70 130,100 140,130
+                                            100,170 70,160 60,130 70,100 60,70
+                                            100,30"
+                                     fill="none" stroke="#0066CC" stroke-width="3"
+                                     stroke-linejoin="round" />
+                            <g stroke="#66CC00" stroke-width="3" fill="none"
+                               stroke-linecap="round">
                                 <path d="M 100 30 L 100 15 L 85 10" />
                                 <path d="M 130 70 L 155 50 L 170 55" />
                                 <path d="M 140 130 L 160 155 L 165 170" />
@@ -27,9 +32,15 @@ header_content = """    <header>
                             </g>
                         </g>
                         <g transform="translate(260, 110)">
-                            <text font-family="'Poppins', sans-serif" font-weight="800" font-size="64">
-                                <tspan id="logo-text-main" x="0" y="0">DETROIT</tspan>
-                                <tspan id="logo-text-sub" x="0" y="75" font-size="54" font-weight="700">AUTOMATION ACADEMY</tspan>
+                            <text font-family="'Poppins', sans-serif"
+                                  font-weight="800" font-size="64">
+                                <tspan id="logo-text-main" x="0" y="0">
+                                    DETROIT
+                                </tspan>
+                                <tspan id="logo-text-sub" x="0" y="75"
+                                       font-size="54" font-weight="700">
+                                    AUTOMATION ACADEMY
+                                </tspan>
                             </text>
                         </g>
                     </svg>
@@ -66,8 +77,12 @@ header_content = """    <header>
                     // Update SVG logo text color
                     const main = document.getElementById('logo-text-main');
                     const sub = document.getElementById('logo-text-sub');
-                    if (main) main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
-                    if (sub) sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
+                    if (main) {
+                        main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
+                    }
+                    if (sub) {
+                        sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
+                    }
                 });
             });
         })();
@@ -77,10 +92,12 @@ footer_content = """    <footer>
         <div class="footer-links">
             <a href="blog/">Blog</a>
             <a href="dashboard.html">Dashboard</a>
-            <a href="https://github.com/smit4786/DetroitAutomationAcademy" target="_blank">GitHub</a>
+            <a href="https://github.com/smit4786/DetroitAutomationAcademy"
+               target="_blank">GitHub</a>
             <a href="mailto:info@detroitautomationacademy.com">Contact</a>
         </div>
-        <p>© 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built by Detroiters.</p>
+        <p>© 2026 Detroit Automation Academy. All rights reserved. |
+           Automation skills for Detroit's future, built by Detroiters.</p>
     </footer>"""
 
 standard_styles = """
