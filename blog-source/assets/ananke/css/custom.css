@@ -53,6 +53,19 @@ pre, code {
   color: #222;
 }
 
+/* Override Tachyons utility classes for light mode readability */
+[data-theme='light'] .white-90, 
+[data-theme='light'] .white-80, 
+[data-theme='light'] .white-70, 
+[data-theme='light'] .near-white,
+[data-theme='light'] .white {
+  color: var(--brand-primary) !important;
+}
+
+[data-theme='light'] .hover-white:hover {
+  color: var(--brand-accent) !important;
+}
+
 .featured-image img {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.5);
