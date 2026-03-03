@@ -46,7 +46,8 @@ The Detroit Automation Academy (DAA) is a STEM education initiative focused on p
 
 
 ## 7. Agent Coordination & Roles
-- **@CTO:** Oversees technical architecture, GitHub Pages deployment, and Hugo site maintenance.
+- **@CTO:** Oversees technical architecture, GitHub Pages deployment, and backend maintenance.
+- **@WebsiteAdminAgent:** Responsible for maintaining the standard ATSI theme, CSS variables, and frontend deployments across `detroitautomationacademy.com` and `enroll.detroitautomationacademy.com`. Reports to @CTO.
 - **@COO:** Manages project timelines, daily operations, and coordination between DAA and @AutomatedTechnologies.
 - **@ADMIN:** Handles registration coordination, communication templates, and administrative support.
 - **@Documentation-Auditor:** Ensures all project documentation meets quality standards.
