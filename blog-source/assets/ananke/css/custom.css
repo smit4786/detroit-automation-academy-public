@@ -5,12 +5,21 @@
   --brand-primary: #f8f9fa; /* Near white */
   --brand-bg: #111111;      /* Near black */
   --brand-accent: #007bff;  /* Blue accent for links/highlights */
+  --brand-muted: #888;
+}
+
+[data-theme='light'] {
+  --brand-primary: #111111;
+  --brand-bg: #f8f9fa;
+  --brand-accent: #0056b3;
+  --brand-muted: #666;
 }
 
 body {
   background-color: var(--brand-bg);
   color: var(--brand-primary);
   font-family: 'Avenir', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .near-black { color: var(--brand-bg); }
@@ -29,13 +38,19 @@ a:hover {
 
 .post-content h1, .post-content h2, .post-content h3 {
   color: var(--brand-primary);
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--brand-muted);
   padding-bottom: 0.5rem;
 }
 
 pre, code {
   background-color: #222;
+  color: #eee;
   border-radius: 4px;
+}
+
+[data-theme='light'] pre, [data-theme='light'] code {
+  background-color: #eee;
+  color: #222;
 }
 
 .featured-image img {
