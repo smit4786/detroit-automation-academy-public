@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Student, Instructor } from './types';
 import StudentForm from './StudentForm';
+import InstructorForm from './InstructorForm';
 import EnrollmentForm from './EnrollmentForm';
 import { getApiUrl } from './api-config';
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
@@ -113,6 +114,23 @@ const AppContent: React.FC = () => {
   }, [tenantId, view, adminSubView]);
 
   const handleStudentAdded = (s: Student) => setStudents(prev => [...prev, s]);
+  const handleInstructorAdded = (i: Instructor) => setInstructors(prev => [...prev, i]);
+
+  const deleteInstructor = async (id: string) => {
+    if (!window.confirm('Are you sure you want to remove this instructor?')) return;
+    try {
+      const token = sessionStorage.getItem('daa_id_token');
+      const response = await fetch(getApiUrl(`/api/instructors?id=${id}&tenant_id=${tenantId}`), {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to delete');
+      setInstructors(prev => prev.filter(i => i.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert('Error removing instructor');
+    }
+  };
 
   const activeCount = students.filter(s => s.status === 'Active').length;
   const inquiryCount = students.filter(s => s.status === 'Inquiry').length;
@@ -553,33 +571,29 @@ const AppContent: React.FC = () => {
                             <td>{inst.tenant_id}</td>
                             <td><span className={`daa-badge ${inst.status.toLowerCase()}`}>{inst.status}</span></td>
                             <td>
-                              <button className="daa-link-btn" style={{ color: '#f85149' }}>Remove</button>
+                              <button 
+                                className="daa-link-btn" 
+                                style={{ color: '#f85149' }}
+                                onClick={() => deleteInstructor(inst.id)}
+                              >
+                                Remove
+                              </button>
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
 
-                    <div style={{ marginTop: 32, padding: 24, background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border)' }}>
-                      <h4 style={{ margin: '0 0 16px' }}>Add New Instructor</h4>
-                      <form style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 12, alignItems: 'end' }} onSubmit={(e) => {
-                        e.preventDefault();
-                        alert('Instructor added (Simulation)');
-                      }}>
-                        <div className="daa-input-group">
-                          <label className="daa-label">First Name</label>
-                          <input className="daa-input" required />
+                    <div className="daa-add-card" style={{ marginTop: 32 }}>
+                      {tenantId === 'ALL' ? (
+                        <div className="daa-empty-state" style={{ padding: '24px 0' }}>
+                          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                            Select a specific Academy to manually add instructors.
+                          </p>
                         </div>
-                        <div className="daa-input-group">
-                          <label className="daa-label">Last Name</label>
-                          <input className="daa-input" required />
-                        </div>
-                        <div className="daa-input-group">
-                          <label className="daa-label">Google Email</label>
-                          <input className="daa-input" type="email" required />
-                        </div>
-                        <button className="daa-submit" style={{ padding: '10px 24px' }}>Add Instructor</button>
-                      </form>
+                      ) : (
+                        <InstructorForm tenantId={tenantId} onInstructorAdded={handleInstructorAdded} />
+                      )}
                     </div>
                   </div>
                 )}

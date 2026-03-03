@@ -284,7 +284,7 @@
         function handleCredentialResponse(response) {
             const token = response.credential;
             const payload = parseJwt(token);
-            const allowed = ["dbkrsmith@gmail.com", "smit4786@gmail.com"];
+            const allowed = ["contact@detroitautomationacademy.com", "smit4786@gmail.com"];
             
             if (allowed.includes(payload.email)) {
                 sessionStorage.setItem('daa_admin_token', token);
