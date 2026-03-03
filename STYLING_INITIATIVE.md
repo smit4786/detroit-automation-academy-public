@@ -52,7 +52,9 @@ We are introducing a dynamic light/dark mode for the **Automated Insights Blog**
 ---
 
 ## 📑 Next Steps
-1. [ ] Implement `custom.css` in `blog-source/static/css/`.
-2. [ ] Add Theme Toggle to Hugo `site-navigation.html`.
-3. [ ] Audit CRM and `@AT_Diary` for alignment with AT Blue.
-4. [ ] Create reusable React/Swift UI components for the AT Design System.
+1. [x] Implement `custom.css` in `blog-source/static/css/`.
+2. [x] Add Theme Toggle to Hugo `site-navigation.html`.
+3. [x] Audit CRM and `@AT_Diary` for alignment with AT Blue.
+4. [x] Unify ecosystem theme tracking with `daa-theme` local storage key.
+5. [x] Standardize header/footer across all DAA public pages (Site Parity).
+6. [ ] Create reusable React/Swift UI components for the AT Design System.
