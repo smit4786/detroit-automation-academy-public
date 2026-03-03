@@ -22,11 +22,14 @@ The Detroit Automation Academy (DAA) is a STEM education initiative focused on p
 - **Admin Dashboard:** Secure, authenticated dashboard for staff to view, manage, and delete enrollment records.
 - **Detailed Applicant View:** "Full Records" view displaying comprehensive applicant data (Goals, Experience, Education, etc.).
 - **Data Portability:** Export functionality for both summary and full enrollment data to CSV format.
-- **Public Website:** Informational site with a blog for project updates and community engagement.
-- **Event Management:** Procedures for equipment testing, onsite facilitation, and media publication.
+- **Public Website:** Informational site with a multi-language blog (English, German, Russian) for project updates and community engagement.
+- **Enterprise SEO:** Advanced SEO metadata and social graph integration across all public pages.
+- **Campaign Tracking:** Standardized UTM tracking for all external enrollment links.
 
 ## 5. Technical Requirements
 - **Website Framework:** HTML/CSS/JS with a tile-based responsive dashboard.
+- **Blog Engine:** Hugo with multi-language support (i18n).
+- **Branding:** ATSI (Focused Styling Initiative) compliant design.
 - **CRM Frontend:** React with TypeScript for enrollment and progress management dashboards.
 - **CRM Backend:** Golang-based microservices for data processing and API integration.
 - **Hosting/Deployment:**
@@ -42,12 +45,15 @@ The Detroit Automation Academy (DAA) is a STEM education initiative focused on p
 - **Feb 28:** CRM Go-Live (Infrastructure & Multi-tenant support) - ✅ COMPLETE.
 - **Mar 2:** CRM Enhancement (Detailed Applicant View & CSV Export) - ✅ COMPLETE.
 - **Mar 2:** UI/UX Revitalization (ATSI Branding, Global Nav, Light/Dark Modes) - ✅ COMPLETE.
+- **Mar 3:** CMO Activation & Digital Optimization (SEO, UTM, Multi-language) - ✅ COMPLETE.
 - **Mar 15:** CRM Phase 2 (Attendance tracking & Instructor portal).
 
 
 ## 7. Agent Coordination & Roles
 - **@CTO:** Oversees technical architecture, GitHub Pages deployment, and backend maintenance.
+- **@CMO:** Responsible for ecosystem growth, brand parity, and data-driven marketing strategies.
 - **@WebsiteAdminAgent:** Responsible for maintaining the standard ATSI theme, CSS variables, and frontend deployments across `detroitautomationacademy.com` and `enroll.detroitautomationacademy.com`. Reports to @CTO.
+- **@SocialMediaAgent:** Manages multi-language blog distributions, social media engagement, and campaign tracking.
 - **@COO:** Manages project timelines, daily operations, and coordination between DAA and @AutomatedTechnologies.
 - **@ADMIN:** Handles registration coordination, communication templates, and administrative support.
 - **@Documentation-Auditor:** Ensures all project documentation meets quality standards.
