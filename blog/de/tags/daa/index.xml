@@ -6,8 +6,22 @@
     <description>Recent content in DAA on Automated Insights</description>
     <generator>Hugo</generator>
     <language>de</language>
-    <lastBuildDate>Fri, 27 Feb 2026 10:00:00 -0500</lastBuildDate>
+    <lastBuildDate>Tue, 03 Mar 2026 16:00:00 -0500</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/de/tags/daa/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ökosystem-Synergie: Der Aufstieg spezialisierter Agenten</title>
+      <link>https://detroitautomationacademy.com/blog/de/posts/ecosystem-synergy-specialized-agents/</link>
+      <pubDate>Tue, 03 Mar 2026 16:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/posts/ecosystem-synergy-specialized-agents/</guid>
+      <description>&lt;h2 id=&#34;phase-6-von-silos-zur-synergie&#34;&gt;Phase 6: Von Silos zur Synergie&lt;/h2&gt;&#xA;&lt;p&gt;Monatelang haben wir die technischen Grundlagen für unsere drei Kernsäulen geschaffen: &lt;strong&gt;Detroit Automation Academy (DAA)&lt;/strong&gt;, &lt;strong&gt;@AT_Diary&lt;/strong&gt; und &lt;strong&gt;@AT_Wealth&lt;/strong&gt;. Jedes Projekt hat die technische Reife erreicht, aber die wahre Stärke liegt in ihrer Synergie.&lt;/p&gt;&#xA;&lt;p&gt;Heute treten wir offiziell in &lt;strong&gt;Phase 6: Umfassender autonomer Betrieb&lt;/strong&gt; ein.&lt;/p&gt;&#xA;&lt;h3 id=&#34;lernen-sie-ihre-neuen-spezialisierten-agenten-kennen&#34;&gt;Lernen Sie Ihre neuen spezialisierten Agenten kennen&lt;/h3&gt;&#xA;&lt;p&gt;Wir haben uns von der zentralisierten Verwaltung zugunsten eines dezentralen, agentengesteuerten Koordinationsmodells entfernt. Wir haben drei neue spezialisierte Fähigkeiten in unserem agentischen Kern eingesetzt:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Skalierung durch Simulation: DAA Phase 4-7 Lehrplan-Einsatz</title>
+      <link>https://detroitautomationacademy.com/blog/de/posts/daa-curriculum-scaling/</link>
+      <pubDate>Tue, 03 Mar 2026 12:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/posts/daa-curriculum-scaling/</guid>
+      <description>&lt;h2 id=&#34;die-hardware-barriere-durchbrechen&#34;&gt;Die Hardware-Barriere durchbrechen&lt;/h2&gt;&#xA;&lt;p&gt;Ein wesentlicher Engpass in der STEM-Ausbildung ist die Abhängigkeit von spezialisierter Hardware. Ob es sich um einen Raspberry Pi, einen Ultraschallsensor oder ein Kameramodul handelt – Schüler, die keinen Zugang zu diesen physischen Komponenten haben, bleiben oft zurück.&lt;/p&gt;&#xA;&lt;p&gt;Heute haben wir diesen Weg erfolgreich freigemacht. Durch den Einsatz einer umfassenden &lt;strong&gt;Hardware-Emulationsschicht&lt;/strong&gt; in den Phasen 4-7 des Lehrplans der Detroit Automation Academy haben wir das Programm in ein vollständig autonomes &lt;strong&gt;Academy-as-a-Service (AaaS)&lt;/strong&gt;-Modell überführt.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Multi-Agenten-Aktivierung: Synchronisierte Ausführung im AT-Ökosystem</title>
       <link>https://detroitautomationacademy.com/blog/de/posts/multi-agent-activation/</link>

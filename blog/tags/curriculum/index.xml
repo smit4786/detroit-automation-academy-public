@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Curriculum on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/tags/curriculum/</link>
+    <description>Recent content in Curriculum on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 03 Mar 2026 12:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/tags/curriculum/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Scaling through Simulation: DAA Phase 4-7 Curriculum Deployment</title>
+      <link>https://detroitautomationacademy.com/blog/posts/daa-curriculum-scaling/</link>
+      <pubDate>Tue, 03 Mar 2026 12:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/daa-curriculum-scaling/</guid>
+      <description>&lt;h2 id=&#34;breaking-the-hardware-barrier&#34;&gt;Breaking the Hardware Barrier&lt;/h2&gt;&#xA;&lt;p&gt;A major bottleneck in STEM education is the dependency on specialized hardware. Whether it&amp;rsquo;s a Raspberry Pi, an ultrasonic sensor, or a camera module, students who cannot access these physical components often fall behind.&lt;/p&gt;&#xA;&lt;p&gt;Today, we&amp;rsquo;ve successfully unblocked that path. By deploying a comprehensive &lt;strong&gt;Hardware Emulation Layer&lt;/strong&gt; across Phases 4-7 of the Detroit Automation Academy curriculum, we have moved the program into a fully autonomous, &lt;strong&gt;Academy-as-a-Service (AaaS)&lt;/strong&gt; model.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

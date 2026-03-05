@@ -116,6 +116,51 @@ func SendAdminAlert(s models.Student) {
 	send(email)
 }
 
+func SendOnboardingNextSteps(s models.Student) {
+	if PostmarkServerToken == "" || FromEmail == "" {
+		return
+	}
+
+	body := fmt.Sprintf(`
+		<div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #1a1f26; border: 1px solid #d0d7de; border-radius: 12px; overflow: hidden;">
+			<div style="background-color: #0066cc; padding: 32px 24px; text-align: center;">
+				<h1 style="margin: 0; font-size: 22px; color: #ffffff;">Your Automation Journey Starts Now</h1>
+			</div>
+			<div style="padding: 32px 24px;">
+				<p>Hi %s,</p>
+				<p>Welcome aboard! You have been officially assigned to <strong>Phase 1: Electronics & GPIO</strong>.</p>
+				
+				<div style="margin: 24px 0; padding: 20px; background-color: #f6f8fa; border-radius: 8px; border-left: 4px solid #0066cc;">
+					<h3 style="margin: 0 0 10px 0;">Next Step: Intro Call</h3>
+					<p>Before we dive into the hardware, we'd like to have a quick 15-minute intro call to meet you and discuss your goals.</p>
+					<a href="https://calendly.com/detroit-automation-academy/intro" style="display: inline-block; padding: 12px 20px; background-color: #0066cc; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 10px;">Schedule Your Call</a>
+				</div>
+
+				<h3>Phase 1 Overview:</h3>
+				<ul style="padding-left: 20px;">
+					<li>Breadboard basics and circuit logic</li>
+					<li>Python GPIO control (LEDs, Buttons, Sensors)</li>
+					<li>Building your first event-driven hardware app</li>
+				</ul>
+
+				<p style="margin-top: 32px; font-size: 14px; color: #57606a;">
+					We'll see you soon at The Station @ Michigan Central!
+				</p>
+			</div>
+		</div>
+	`, s.FirstName)
+
+	email := PostmarkEmail{
+		From:     FromEmail,
+		To:       s.Email,
+		Subject:  "Next Steps: Your DAA Curriculum Assignment",
+		HtmlBody: body,
+		Tag:      "onboarding-next-steps",
+	}
+
+	send(email)
+}
+
 func send(email PostmarkEmail) {
 	payload, _ := json.Marshal(email)
 	req, _ := http.NewRequest("POST", "https://api.postmarkapp.com/email", bytes.NewBuffer(payload))

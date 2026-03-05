@@ -1,0 +1,67 @@
+<div class="newsletter-signup bg-light-gray pa4 border-box br3 mv4 shadow-2">
+  <h3 class="mt0 f3 dark-gray">Subscribe to Automated Insights</h3>
+  <p class="f5 gray lh-copy mb4">Get the latest updates on Detroit Automation Academy and the @AutomatedTechnologies ecosystem delivered to your inbox.</p>
+  
+  <form id="newsletter-form" class="flex flex-column flex-row-ns items-center-ns">
+    <div class="w-100 w-70-ns pr2-ns mb3 mb0-ns">
+      <input 
+        type="email" 
+        id="subscriber-email"
+        placeholder="your@email.com" 
+        class="input-reset ba b--black-20 pa3 br2 w-100 f5 focus-outline"
+        required
+      >
+    </div>
+    <div class="w-100 w-30-ns">
+      <button 
+        type="submit" 
+        class="button-reset bg-blue white bn pa3 br2 w-100 f5 fw6 hover-bg-dark-blue pointer focus-outline transition-all"
+      >
+        Subscribe
+      </button>
+    </div>
+  </form>
+  <div id="newsletter-message" class="mt3 dn f5 fw6"></div>
+
+  <script>
+    document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('subscriber-email').value;
+      const messageEl = document.getElementById('newsletter-message');
+      const submitBtn = e.target.querySelector('button');
+      
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Subscribing...';
+      
+      try {
+        const response = await fetch('https://daa-crm-backend-ww72p2xhtq-uc.a.run.app/api/students?tenant_id=DAA-CORE', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            first_name: 'Subscriber',
+            last_name: 'Pending',
+            status: 'Inquiry',
+            hear_about_us: 'Newsletter'
+          })
+        });
+
+        if (response.ok) {
+          messageEl.innerText = 'Welcome! Please check your inbox for a confirmation.';
+          messageEl.classList.remove('dn', 'red');
+          messageEl.classList.add('green');
+          e.target.reset();
+        } else {
+          throw new Error('Subscription failed.');
+        }
+      } catch (err) {
+        messageEl.innerText = 'Oops! Something went wrong. Please try again.';
+        messageEl.classList.remove('dn', 'green');
+        messageEl.classList.add('red');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Subscribe';
+      }
+    });
+  </script>
+</div>

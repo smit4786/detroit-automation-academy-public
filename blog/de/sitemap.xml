@@ -2,8 +2,44 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/@at_diary/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/@at_diary/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/tags/@at_diary/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/@at_diary/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/@at_wealth/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/@at_wealth/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/tags/@at_wealth/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/@at_wealth/"
+                />
+  </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/</loc>
-    <lastmod>2026-03-02T21:00:00-04:00</lastmod>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -20,8 +56,11 @@
                 href="https://detroitautomationacademy.com/blog/de/"
                 />
   </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/autonome-agenten/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+  </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/categories/</loc>
-    <lastmod>2026-03-02T21:00:00-04:00</lastmod>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -36,6 +75,290 @@
                 rel="alternate"
                 hreflang="de"
                 href="https://detroitautomationacademy.com/blog/de/categories/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/posts/cmo-activation/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/posts/cmo-activation/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/posts/cmo-activation/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/posts/cmo-activation/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/daa/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/daa/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/tags/daa/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/daa/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/categories/engineering-updates/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/categories/engineering-updates/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/categories/engineering-updates/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/categories/engineering-updates/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/ki-agenten/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/marketing/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/marketing/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/marketing/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/%C3%B6kosystem/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/posts/ecosystem-synergy-specialized-agents/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/posts/ecosystem-synergy-specialized-agents/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/posts/ecosystem-synergy-specialized-agents/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/posts/ecosystem-synergy-specialized-agents/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/posts/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/posts/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/posts/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/posts/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/strategie/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/synergie/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/wachstum/</loc>
+    <lastmod>2026-03-03T16:00:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/posts/at-diary-sprint-3/</loc>
+    <lastmod>2026-03-03T14:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/posts/at-diary-sprint-3/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/posts/at-diary-sprint-3/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/posts/at-diary-sprint-3/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/corelocation/</loc>
+    <lastmod>2026-03-03T14:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/corelocation/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/tags/corelocation/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/corelocation/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/datenschutz/</loc>
+    <lastmod>2026-03-03T14:00:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/ios/</loc>
+    <lastmod>2026-03-03T14:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/ios/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/tags/ios/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/ios/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/mapkit/</loc>
+    <lastmod>2026-03-03T14:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/mapkit/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/tags/mapkit/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/mapkit/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/swiftdata/</loc>
+    <lastmod>2026-03-03T14:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/swiftdata/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/tags/swiftdata/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/swiftdata/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/aaas/</loc>
+    <lastmod>2026-03-03T12:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/aaas/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/tags/aaas/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/aaas/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/automatisierung/</loc>
+    <lastmod>2026-03-03T12:00:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/hardware-emulation/</loc>
+    <lastmod>2026-03-03T12:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/tags/hardware-emulation/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/tags/hardware-emulation/"
+                />
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/tags/lehrplan/</loc>
+    <lastmod>2026-03-03T12:00:00-05:00</lastmod>
+  </url><url>
+    <loc>https://detroitautomationacademy.com/blog/de/posts/daa-curriculum-scaling/</loc>
+    <lastmod>2026-03-03T12:00:00-05:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://detroitautomationacademy.com/blog/posts/daa-curriculum-scaling/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://detroitautomationacademy.com/blog/ru/posts/daa-curriculum-scaling/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="de"
+                href="https://detroitautomationacademy.com/blog/de/posts/daa-curriculum-scaling/"
                 />
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/tags/ci/cd/</loc>
@@ -92,24 +415,6 @@
                 href="https://detroitautomationacademy.com/blog/de/tags/engineering/"
                 />
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/categories/engineering-updates/</loc>
-    <lastmod>2026-03-02T21:00:00-04:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://detroitautomationacademy.com/blog/categories/engineering-updates/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://detroitautomationacademy.com/blog/ru/categories/engineering-updates/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="de"
-                href="https://detroitautomationacademy.com/blog/de/categories/engineering-updates/"
-                />
-  </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/posts/cicd-pipeline-optimization/</loc>
     <lastmod>2026-03-02T21:00:00-04:00</lastmod>
     <xhtml:link
@@ -128,24 +433,6 @@
                 href="https://detroitautomationacademy.com/blog/de/posts/cicd-pipeline-optimization/"
                 />
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/posts/</loc>
-    <lastmod>2026-03-02T21:00:00-04:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://detroitautomationacademy.com/blog/posts/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://detroitautomationacademy.com/blog/ru/posts/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="de"
-                href="https://detroitautomationacademy.com/blog/de/posts/"
-                />
-  </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/tags/standards/</loc>
     <lastmod>2026-03-02T21:00:00-04:00</lastmod>
     <xhtml:link
@@ -162,24 +449,6 @@
                 rel="alternate"
                 hreflang="de"
                 href="https://detroitautomationacademy.com/blog/de/tags/standards/"
-                />
-  </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/tags/</loc>
-    <lastmod>2026-03-02T21:00:00-04:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://detroitautomationacademy.com/blog/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://detroitautomationacademy.com/blog/ru/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="de"
-                href="https://detroitautomationacademy.com/blog/de/tags/"
                 />
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/posts/repository-standards-enhancement/</loc>
@@ -222,15 +491,6 @@
                 />
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/tags/architektur/</loc>
-    <lastmod>2026-03-02T12:00:00-04:00</lastmod>
-  </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/tags/datenschutz/</loc>
-    <lastmod>2026-03-02T12:00:00-04:00</lastmod>
-  </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/tags/ki-agenten/</loc>
-    <lastmod>2026-03-02T12:00:00-04:00</lastmod>
-  </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/tags/%C3%B6kosystem/</loc>
     <lastmod>2026-03-02T12:00:00-04:00</lastmod>
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/posts/ecosystem-synergy-update/</loc>
@@ -283,9 +543,6 @@
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/categories/strategien/</loc>
     <lastmod>2026-02-28T11:00:00-05:00</lastmod>
-  </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/tags/automatisierung/</loc>
-    <lastmod>2026-02-28T10:15:00-05:00</lastmod>
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/tags/gcp/</loc>
     <lastmod>2026-02-28T10:15:00-05:00</lastmod>
@@ -563,24 +820,6 @@
                 href="https://detroitautomationacademy.com/blog/de/categories/ios/"
                 />
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/tags/ios/</loc>
-    <lastmod>2026-02-28T04:00:00-05:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://detroitautomationacademy.com/blog/tags/ios/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://detroitautomationacademy.com/blog/ru/tags/ios/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="de"
-                href="https://detroitautomationacademy.com/blog/de/tags/ios/"
-                />
-  </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/tags/musickit/</loc>
     <lastmod>2026-02-28T04:00:00-05:00</lastmod>
     <xhtml:link
@@ -782,24 +1021,6 @@
                 href="https://detroitautomationacademy.com/blog/de/tags/at_music/"
                 />
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/tags/daa/</loc>
-    <lastmod>2026-02-27T10:00:00-05:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://detroitautomationacademy.com/blog/tags/daa/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://detroitautomationacademy.com/blog/ru/tags/daa/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="de"
-                href="https://detroitautomationacademy.com/blog/de/tags/daa/"
-                />
-  </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/tags/multi-agent/</loc>
     <lastmod>2026-02-27T10:00:00-05:00</lastmod>
     <xhtml:link
@@ -872,24 +1093,6 @@
                 href="https://detroitautomationacademy.com/blog/de/posts/app-group-stability/"
                 />
   </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/tags/swiftdata/</loc>
-    <lastmod>2026-02-21T22:30:00-05:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://detroitautomationacademy.com/blog/tags/swiftdata/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://detroitautomationacademy.com/blog/ru/tags/swiftdata/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="de"
-                href="https://detroitautomationacademy.com/blog/de/tags/swiftdata/"
-                />
-  </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/posts/at-music-pivot/</loc>
     <lastmod>2026-02-21T22:00:00-05:00</lastmod>
     <xhtml:link
@@ -912,9 +1115,6 @@
     <lastmod>2026-02-21T22:00:00-05:00</lastmod>
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/tags/ki-gesteuert/</loc>
-    <lastmod>2026-02-21T22:00:00-05:00</lastmod>
-  </url><url>
-    <loc>https://detroitautomationacademy.com/blog/de/tags/strategie/</loc>
     <lastmod>2026-02-21T22:00:00-05:00</lastmod>
   </url><url>
     <loc>https://detroitautomationacademy.com/blog/de/tags/betrieb/</loc>

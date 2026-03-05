@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -100,6 +101,10 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 			if s.Status == "" {
 				s.Status = "Inquiry"
 			}
+			
+			// 🎓 Auto-Assign First Curriculum Module
+			s.AssignedModules = []string{"phase-1"}
+			s.OnboardingStatus = "WelcomeSent"
 
 			if err := saveStudent(r.Context(), fsClient, &s); err != nil {
 				log.Printf("save error: %v", err)
@@ -111,6 +116,10 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 			go func(student models.Student) {
 				notifications.SendWelcomeEmail(student)
 				notifications.SendAdminAlert(student)
+				notifications.SendOnboardingNextSteps(student)
+				
+				// 📧 Newsletter Opt-in Trigger
+				triggerNewsletterOptIn(student.Email)
 			}(s)
 
 			w.WriteHeader(http.StatusCreated)
@@ -282,4 +291,19 @@ func saveToMemory(s *models.Student) error {
 	s.ID = fmt.Sprintf("mem-%d", len(memStudents)+1)
 	memStudents = append(memStudents, *s)
 	return nil
+}
+
+func triggerNewsletterOptIn(email string) {
+	// CRM Newsletter Registration endpoint (AT-Infrastructure)
+	url := "http://localhost:3001/api/newsletter/register"
+	payload := map[string]string{"email": email}
+	data, _ := json.Marshal(payload)
+	
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	if err != nil {
+		log.Printf("⚠️ Newsletter opt-in trigger failed (is port 3001 open?): %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	log.Printf("✅ Newsletter opt-in triggered for %s (Status: %d)", email, resp.StatusCode)
 }

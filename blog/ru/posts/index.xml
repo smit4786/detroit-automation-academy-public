@@ -6,8 +6,36 @@
     <description>Recent content in Posts on Automated Insights</description>
     <generator>Hugo</generator>
     <language>ru</language>
-    <lastBuildDate>Mon, 02 Mar 2026 21:00:00 -0400</lastBuildDate>
+    <lastBuildDate>Tue, 03 Mar 2026 16:00:00 -0500</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/ru/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Активация CMO: Рост экосистемы AT на основе данных</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/cmo-activation/</link>
+      <pubDate>Tue, 03 Mar 2026 16:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/cmo-activation/</guid>
+      <description>&lt;h3 id=&#34;расширение-возможностей-маркетингового-двигателя&#34;&gt;Расширение возможностей маркетингового двигателя&lt;/h3&gt;&#xA;&lt;p&gt;Сегодня мы объявляем об официальной активации &lt;strong&gt;автономного агента Главного директора по маркетингу (CMO)&lt;/strong&gt; в экосистеме Automated Technologies. Это знаменует наш переход от технической стабилизации к агрессивному росту рынка и выравниванию бренда.&lt;/p&gt;&#xA;&lt;h4 id=&#34;устав-cmo&#34;&gt;Устав CMO&lt;/h4&gt;&#xA;&lt;p&gt;Агенту CMO были предоставлены исполнительные полномочия по надзору за цифровым присутствием Детройтской академии автоматизации и ее дочерних инициатив. Основные цели включают:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Паритет бренда:&lt;/strong&gt; Обеспечение 100% единообразия дизайна на всех публичных веб-ресурсах с использованием стандарта ATSI (Focused Styling Initiative).&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Решения на основе KPI:&lt;/strong&gt; Внедрение надежной системы отслеживания для мониторинга охвата, вовлеченности и эффективности конверсии.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Маркетинг с нулевым разглашением:&lt;/strong&gt; Развертывание конфиденциального отслеживания кампаний, которое уважает данные пользователей, обеспечивая при этом высокоточную атрибуцию.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h4 id=&#34;достижения-спринта&#34;&gt;Достижения спринта&lt;/h4&gt;&#xA;&lt;p&gt;За свой первый активный цикл агент CMO уже обеспечил:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Синергия экосистемы: появление специализированных агентов</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/ecosystem-synergy-specialized-agents/</link>
+      <pubDate>Tue, 03 Mar 2026 16:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/ecosystem-synergy-specialized-agents/</guid>
+      <description>&lt;h2 id=&#34;фаза-6-от-разрозненности-к-синергии&#34;&gt;Фаза 6: От разрозненности к синергии&lt;/h2&gt;&#xA;&lt;p&gt;В течение нескольких месяцев мы закладывали технический фундамент для трех наших основных столпов: &lt;strong&gt;Детройтской академии автоматизации (DAA)&lt;/strong&gt;, &lt;strong&gt;@AT_Diary&lt;/strong&gt; и &lt;strong&gt;@AT_Wealth&lt;/strong&gt;. Каждый проект достиг технической зрелости, но настоящая сила заключается в их синергии.&lt;/p&gt;&#xA;&lt;p&gt;Сегодня мы официально вступаем в &lt;strong&gt;фазу 6: полномасштабные автономные операции&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h3 id=&#34;познакомьтесь-с-вашими-новыми-специализированными-агентами&#34;&gt;Познакомьтесь с вашими новыми специализированными агентами&lt;/h3&gt;&#xA;&lt;p&gt;Мы отошли от централизованного управления в пользу децентрализованной модели координации под руководством агентов. Мы развернули три новых специализированных навыка в нашем агентском ядре:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>@AT_Diary Sprint 3: Пространственный интеллект с приоритетом конфиденциальности</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/at-diary-sprint-3/</link>
+      <pubDate>Tue, 03 Mar 2026 14:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/at-diary-sprint-3/</guid>
+      <description>&lt;h2 id=&#34;где-и-что&#34;&gt;&amp;ldquo;Где&amp;rdquo; и &amp;ldquo;Что&amp;rdquo;&lt;/h2&gt;&#xA;&lt;p&gt;Дневник — это не просто список событий; это повествование о пространстве и времени. В рамках Sprint 3 проекта &lt;code&gt;@AT_Diary&lt;/code&gt; мы успешно преодолели разрыв между необработанными данными и визуальным сторителлингом, интегрировав &lt;strong&gt;CoreLocation&lt;/strong&gt;, &lt;strong&gt;MapKit&lt;/strong&gt; и &lt;strong&gt;Photos Framework&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h3 id=&#34;пространственный-контекст-больше-чем-просто-координаты&#34;&gt;Пространственный контекст: больше, чем просто координаты&lt;/h3&gt;&#xA;&lt;p&gt;Мы внедрили настраиваемый &lt;code&gt;AppleLocationProvider&lt;/code&gt;, который идентифицирует значимые места, посещенные в течение дня. Вместо простой регистрации GPS-координат наш локальный сервер MCP преобразует их в значимые «Значимые местоположения» (например, «Michigan Central Station» вместо «2001 15th St»).&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Масштабирование через симуляцию: развертывание учебной программы DAA фазы 4-7</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/daa-curriculum-scaling/</link>
+      <pubDate>Tue, 03 Mar 2026 12:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/daa-curriculum-scaling/</guid>
+      <description>&lt;h2 id=&#34;преодоление-аппаратного-барьера&#34;&gt;Преодоление аппаратного барьера&lt;/h2&gt;&#xA;&lt;p&gt;Основным узким местом в STEM-образовании является зависимость от специализированного оборудования. Будь то Raspberry Pi, ультразвуковой датчик или модуль камеры, студенты, которые не имеют доступа к этим физическим компонентам, часто отстают.&lt;/p&gt;&#xA;&lt;p&gt;Сегодня мы успешно разблокировали этот путь. Развернув комплексный &lt;strong&gt;уровень эмуляции оборудования&lt;/strong&gt; в фазах 4-7 учебной программы Детройтской академии автоматизации, мы перевели программу на полностью автономную модель &lt;strong&gt;«Академия как услуга» (AaaS)&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h2 id=&#34;что-нового-фазы-4-7&#34;&gt;Что нового: фазы 4-7&lt;/h2&gt;&#xA;&lt;p&gt;Используя нашего нового агента &lt;code&gt;Curriculum-Developer&lt;/code&gt;, мы подготовили и внедрили следующие модули:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Укрепление цифровой нити: Оптимизация конвейера CI/CD</title>
       <link>https://detroitautomationacademy.com/blog/ru/posts/cicd-pipeline-optimization/</link>

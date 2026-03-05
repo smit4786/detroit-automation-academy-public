@@ -20,6 +20,9 @@ type Student struct {
 	Cohort         string    `json:"cohort" firestore:"cohort"`
 	EnrollmentDate time.Time `json:"enrollment_date" firestore:"enrollment_date"`
 	Status         string    `json:"status" firestore:"status"` // e.g., "Active", "Completed", "Withdrawn", "Inquiry"
+	OnboardingStatus string  `json:"onboarding_status" firestore:"onboarding_status"` // e.g., "WelcomeSent", "IntroCallScheduled", "Complete"
+	AssignedModules []string `json:"assigned_modules" firestore:"assigned_modules"`
+	NewsletterSubscribed bool `json:"newsletter_subscribed" firestore:"newsletter_subscribed"`
 	Attendance     []Session `json:"attendance" firestore:"attendance"`
 }
 

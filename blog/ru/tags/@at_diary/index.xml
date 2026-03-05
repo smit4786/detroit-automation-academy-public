@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>@AT_Diary on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/tags/@at_diary/</link>
+    <description>Recent content in @AT_Diary on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Tue, 03 Mar 2026 16:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/@at_diary/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Синергия экосистемы: появление специализированных агентов</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/ecosystem-synergy-specialized-agents/</link>
+      <pubDate>Tue, 03 Mar 2026 16:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/ecosystem-synergy-specialized-agents/</guid>
+      <description>&lt;h2 id=&#34;фаза-6-от-разрозненности-к-синергии&#34;&gt;Фаза 6: От разрозненности к синергии&lt;/h2&gt;&#xA;&lt;p&gt;В течение нескольких месяцев мы закладывали технический фундамент для трех наших основных столпов: &lt;strong&gt;Детройтской академии автоматизации (DAA)&lt;/strong&gt;, &lt;strong&gt;@AT_Diary&lt;/strong&gt; и &lt;strong&gt;@AT_Wealth&lt;/strong&gt;. Каждый проект достиг технической зрелости, но настоящая сила заключается в их синергии.&lt;/p&gt;&#xA;&lt;p&gt;Сегодня мы официально вступаем в &lt;strong&gt;фазу 6: полномасштабные автономные операции&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h3 id=&#34;познакомьтесь-с-вашими-новыми-специализированными-агентами&#34;&gt;Познакомьтесь с вашими новыми специализированными агентами&lt;/h3&gt;&#xA;&lt;p&gt;Мы отошли от централизованного управления в пользу децентрализованной модели координации под руководством агентов. Мы развернули три новых специализированных навыка в нашем агентском ядре:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>@AT_Diary Sprint 3: Пространственный интеллект с приоритетом конфиденциальности</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/at-diary-sprint-3/</link>
+      <pubDate>Tue, 03 Mar 2026 14:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/at-diary-sprint-3/</guid>
+      <description>&lt;h2 id=&#34;где-и-что&#34;&gt;&amp;ldquo;Где&amp;rdquo; и &amp;ldquo;Что&amp;rdquo;&lt;/h2&gt;&#xA;&lt;p&gt;Дневник — это не просто список событий; это повествование о пространстве и времени. В рамках Sprint 3 проекта &lt;code&gt;@AT_Diary&lt;/code&gt; мы успешно преодолели разрыв между необработанными данными и визуальным сторителлингом, интегрировав &lt;strong&gt;CoreLocation&lt;/strong&gt;, &lt;strong&gt;MapKit&lt;/strong&gt; и &lt;strong&gt;Photos Framework&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h3 id=&#34;пространственный-контекст-больше-чем-просто-координаты&#34;&gt;Пространственный контекст: больше, чем просто координаты&lt;/h3&gt;&#xA;&lt;p&gt;Мы внедрили настраиваемый &lt;code&gt;AppleLocationProvider&lt;/code&gt;, который идентифицирует значимые места, посещенные в течение дня. Вместо простой регистрации GPS-координат наш локальный сервер MCP преобразует их в значимые «Значимые местоположения» (например, «Michigan Central Station» вместо «2001 15th St»).&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
