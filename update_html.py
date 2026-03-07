@@ -1,10 +1,14 @@
 import os
 import re
+import datetime
 
-header_content = """    <header>
+# Generate cache-busting version string (Hourly)
+version = datetime.datetime.now().strftime("%Y%m%d%H")
+
+header_content = f"""    <header>
         <nav>
             <div class="logo">
-                <a href="index.html">
+                <a href="index.html?v={version}">
                     <svg viewBox="0 0 1000 250" width="180" height="45"
                          xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
@@ -48,50 +52,50 @@ header_content = """    <header>
             </div>
             <ul class="nav-links">
                 <li><a href="blog/">📝 Blog</a></li>
-                <li><a href="dashboard.html">📊 Dashboard</a></li>
-                <li><a href="students.html">👨‍🎓 Students</a></li>
-                <li><a href="instructors.html">👨‍🏫 Instructors</a></li>
-                <li><a href="partners.html">💼 Partners</a></li>
-                <li><a href="subscriptions.html">💎 Subscriptions</a></li>
+                <li><a href="dashboard.html?v={version}">📊 Dashboard</a></li>
+                <li><a href="students.html?v={version}">👨‍🎓 Students</a></li>
+                <li><a href="instructors.html?v={version}">👨‍🏫 Instructors</a></li>
+                <li><a href="partners.html?v={version}">💼 Partners</a></li>
+                <li><a href="subscriptions.html?v={version}">💎 Subscriptions</a></li>
             </ul>
             <button id="theme-toggle">☀️ Light Mode</button>
         </nav>
     </header>
 
     <script>
-        (function () {
+        (function () {{
             const saved = localStorage.getItem('daa-theme');
             const body = document.body;
             const btn = document.getElementById('theme-toggle');
-            if (saved === 'light') {
+            if (saved === 'light') {{
                 body.classList.add('light-mode');
                 if (btn) btn.textContent = '🌙 Dark Mode';
-            }
-            document.addEventListener('DOMContentLoaded', function () {
+            }}
+            document.addEventListener('DOMContentLoaded', function () {{
                 const toggle = document.getElementById('theme-toggle');
                 if (!toggle) return;
-                toggle.addEventListener('click', function () {
+                toggle.addEventListener('click', function () {{
                     const isLight = document.body.classList.toggle('light-mode');
                     this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
                     localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
                     // Update SVG logo text color
                     const main = document.getElementById('logo-text-main');
                     const sub = document.getElementById('logo-text-sub');
-                    if (main) {
+                    if (main) {{
                         main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
-                    }
-                    if (sub) {
+                    }}
+                    if (sub) {{
                         sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
-                    }
-                });
-            });
-        })();
+                    }}
+                }});
+            }});
+        }})();
     </script>"""
 
-footer_content = """    <footer>
+footer_content = f"""    <footer>
         <div class="footer-links">
             <a href="blog/">Blog</a>
-            <a href="dashboard.html">Dashboard</a>
+            <a href="dashboard.html?v={version}">Dashboard</a>
             <a href="https://github.com/smit4786/DetroitAutomationAcademy"
                target="_blank">GitHub</a>
             <a href="mailto:info@detroitautomationacademy.com">Contact</a>

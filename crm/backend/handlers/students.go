@@ -112,7 +112,7 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 				return
 			}
 
-			// 🚀 Send Automated Notifications
+			// 🚀 Send Automated Notifications & Push Telemetry
 			go func(student models.Student) {
 				notifications.SendWelcomeEmail(student)
 				notifications.SendAdminAlert(student)
@@ -120,6 +120,9 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 				
 				// 📧 Newsletter Opt-in Trigger
 				triggerNewsletterOptIn(student.Email)
+
+				// 📊 Real-time Telemetry Push
+				pushTelemetryToInfra(r.Context(), fsClient)
 			}(s)
 
 			w.WriteHeader(http.StatusCreated)
@@ -142,6 +145,10 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 				http.Error(w, `{"error":"failed to update student"}`, http.StatusInternalServerError)
 				return
 			}
+			
+			// 📊 Real-time Telemetry Push
+			go pushTelemetryToInfra(r.Context(), fsClient)
+
 			json.NewEncoder(w).Encode(s)
 
 		case http.MethodDelete:
@@ -154,6 +161,10 @@ func MakeStudentsHandler(fsClient *firestore.Client) http.HandlerFunc {
 				http.Error(w, `{"error":"failed to delete student"}`, http.StatusInternalServerError)
 				return
 			}
+			
+			// 📊 Real-time Telemetry Push
+			go pushTelemetryToInfra(r.Context(), fsClient)
+
 			w.WriteHeader(http.StatusNoContent)
 
 		default:
@@ -306,4 +317,41 @@ func triggerNewsletterOptIn(email string) {
 	}
 	defer resp.Body.Close()
 	log.Printf("✅ Newsletter opt-in triggered for %s (Status: %d)", email, resp.StatusCode)
+}
+
+func pushTelemetryToInfra(ctx context.Context, fsClient *firestore.Client) {
+	students := listAllStudents(ctx, fsClient)
+	
+	active := 0
+	inquiries := 0
+	for _, s := range students {
+		if s.Status == "Active" {
+			active++
+		} else {
+			inquiries++
+		}
+	}
+
+	stats := map[string]interface{}{
+		"enrollments":     len(students),
+		"active_students": active,
+		"total_inquiries": inquiries,
+	}
+
+	payload := map[string]interface{}{
+		"stats":     stats,
+		"source":    "DAA-CRM-GO",
+		"timestamp": time.Now().Format(time.RFC3339),
+	}
+
+	data, _ := json.Marshal(payload)
+	url := "http://localhost:3001/api/crm/sync"
+	
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	if err != nil {
+		log.Printf("⚠️ CRM Telemetry push failed: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	log.Printf("📊 CRM Telemetry pushed to Infrastructure (Status: %d)", resp.StatusCode)
 }
