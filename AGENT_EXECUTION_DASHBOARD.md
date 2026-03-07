@@ -485,7 +485,25 @@ Status: [ ] ON TRACK / [ ] AT RISK / [ ] BLOCKED
 
 ---
 
-**Dashboard Updated:** March 3, 2026  
+**Dashboard Updated:** March 7, 2026  
 **Last Update By:** Chief Marketing Officer Agent  
 **Next Update:** Monitor growth KPIs for Spring 2026 cohort.
+
+---
+
+## **✅ CRM UPDATE — MARCH 7, 2026**
+
+| Component | Status | Deliverable |
+|-----------|--------|-------------|
+| Age Group Specification | ✅ COMPLETE | EnrollmentForm.tsx, students.html |
+| Cohort Identification | ✅ UPDATED | Default: Spring 2026 |
+| Stakeholder Verification | ✅ VERIFIED | CMO & CTO Charter Compliance |
+
+**Changes Implemented:**
+- Updated **`EnrollmentForm.tsx`** to specify the **14–18 age group** requirement for the first cohort.
+- Set the default cohort to **"Spring 2026"** in the enrollment submission logic.
+- Updated the **`Age / Grade`** field to be required and added a clarifying sub-text.
+- Synchronized **`students.html`** with the new age group requirement in the Program Overview section.
+- Confirmed alignment with **CMO Charter** (Tier 1 Content Execution) and **CTO Charter** (Technical Implementation).
+
 

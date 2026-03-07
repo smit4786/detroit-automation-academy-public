@@ -47,7 +47,7 @@ const EnrollmentForm: React.FC = () => {
       const response = await fetch(getApiUrl('/api/students?tenant_id=DAA-CORE'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, status: 'Inquiry', cohort: 'TBD' }),
+        body: JSON.stringify({ ...formData, status: 'Inquiry', cohort: 'Spring 2026' }),
       });
       if (!response.ok) throw new Error('Failed to submit enrollment');
       setIsSubmitted(true);
@@ -137,8 +137,11 @@ const EnrollmentForm: React.FC = () => {
                 <input required className="daa-input" type="tel" placeholder="(313) 555-1234" value={formData.phone} onChange={set('phone')} />
               </div>
               <div className="daa-field">
-                <label className="daa-label">Age / Grade</label>
-                <input className="daa-input" type="text" placeholder="e.g. 17 / 11th Grade" value={formData.age_grade} onChange={set('age_grade')} />
+                <label className="daa-label">Age / Grade (14–18 only) *</label>
+                <input required className="daa-input" type="text" placeholder="e.g. 16 / 10th Grade" value={formData.age_grade} onChange={set('age_grade')} />
+                <p style={{ fontSize: '11px', color: 'var(--daa-fg-muted)', marginTop: '4px' }}>
+                  The first cohort is open to students aged 14–18.
+                </p>
               </div>
               <div className="daa-field">
                 <label className="daa-label">Education Level</label>
