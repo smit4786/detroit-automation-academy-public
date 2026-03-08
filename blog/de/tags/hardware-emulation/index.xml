@@ -1,19 +1,3 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Hardware-Emulation on Automated Insights</title>
-    <link>https://detroitautomationacademy.com/blog/de/tags/hardware-emulation/</link>
-    <description>Recent content in Hardware-Emulation on Automated Insights</description>
-    <generator>Hugo</generator>
-    <language>de</language>
-    <lastBuildDate>Tue, 03 Mar 2026 12:00:00 -0500</lastBuildDate>
-    <atom:link href="https://detroitautomationacademy.com/blog/de/tags/hardware-emulation/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Skalierung durch Simulation: DAA Phase 4-7 Lehrplan-Einsatz</title>
-      <link>https://detroitautomationacademy.com/blog/de/posts/daa-curriculum-scaling/</link>
-      <pubDate>Tue, 03 Mar 2026 12:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/de/posts/daa-curriculum-scaling/</guid>
-      <description>&lt;h2 id=&#34;die-hardware-barriere-durchbrechen&#34;&gt;Die Hardware-Barriere durchbrechen&lt;/h2&gt;&#xA;&lt;p&gt;Ein wesentlicher Engpass in der STEM-Ausbildung ist die Abhängigkeit von spezialisierter Hardware. Ob es sich um einen Raspberry Pi, einen Ultraschallsensor oder ein Kameramodul handelt – Schüler, die keinen Zugang zu diesen physischen Komponenten haben, bleiben oft zurück.&lt;/p&gt;&#xA;&lt;p&gt;Heute haben wir diesen Weg erfolgreich freigemacht. Durch den Einsatz einer umfassenden &lt;strong&gt;Hardware-Emulationsschicht&lt;/strong&gt; in den Phasen 4-7 des Lehrplans der Detroit Automation Academy haben wir das Programm in ein vollständig autonomes &lt;strong&gt;Academy-as-a-Service (AaaS)&lt;/strong&gt;-Modell überführt.&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hardware-Emulation on Automated Insights</title><link>https://detroitautomationacademy.com/blog/de/tags/hardware-emulation/</link><description>Recent content in Hardware-Emulation on Automated Insights</description><generator>Hugo</generator><language>de</language><lastBuildDate>Tue, 03 Mar 2026 12:00:00 -0500</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/de/tags/hardware-emulation/index.xml" rel="self" type="application/rss+xml"/><item><title>Skalierung durch Simulation: DAA Phase 4-7 Lehrplan-Einsatz</title><link>https://detroitautomationacademy.com/blog/de/posts/daa-curriculum-scaling/</link><pubDate>Tue, 03 Mar 2026 12:00:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/de/posts/daa-curriculum-scaling/</guid><description>&lt;h2 id="die-hardware-barriere-durchbrechen"&gt;Die Hardware-Barriere durchbrechen&lt;/h2&gt;
+&lt;p&gt;Ein wesentlicher Engpass in der STEM-Ausbildung ist die Abhängigkeit von spezialisierter Hardware. Ob es sich um einen Raspberry Pi, einen Ultraschallsensor oder ein Kameramodul handelt – Schüler, die keinen Zugang zu diesen physischen Komponenten haben, bleiben oft zurück.&lt;/p&gt;
+&lt;p&gt;Heute haben wir diesen Weg erfolgreich freigemacht. Durch den Einsatz einer umfassenden &lt;strong&gt;Hardware-Emulationsschicht&lt;/strong&gt; in den Phasen 4-7 des Lehrplans der Detroit Automation Academy haben wir das Programm in ein vollständig autonomes &lt;strong&gt;Academy-as-a-Service (AaaS)&lt;/strong&gt;-Modell überführt.&lt;/p&gt;</description></item></channel></rss>

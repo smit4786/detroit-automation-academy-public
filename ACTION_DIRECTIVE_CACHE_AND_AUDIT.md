@@ -16,7 +16,7 @@ Resolve the caching issue on `detroitautomationacademy.com` and conduct a comple
 
 ### 1. Admin Agent
 *   **Action:** Checkout a new `staging` branch. Execute a comprehensive audit of all public-facing text on the DAA website on that branch only.
-*   **Constraint:** Identify and prepare PRs to remove all erroneous "non-profit" status claims. Do **not** merge — open PRs for human review.
+*   **Constraint:** Identify and prepare PRs to remove all erroneous status claims. Do **not** merge — open PRs for human review.
 *   **Deliverable:** Text audit report + open PRs targeting `staging`, not `main`.
 
 ### 2. CTO

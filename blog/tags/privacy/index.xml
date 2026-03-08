@@ -1,33 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Privacy on Automated Insights</title>
-    <link>https://detroitautomationacademy.com/blog/tags/privacy/</link>
-    <description>Recent content in Privacy on Automated Insights</description>
-    <generator>Hugo</generator>
-    <language>en</language>
-    <lastBuildDate>Tue, 03 Mar 2026 14:00:00 -0500</lastBuildDate>
-    <atom:link href="https://detroitautomationacademy.com/blog/tags/privacy/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>@AT_Diary Sprint 3: Privacy-First Spatial Intelligence</title>
-      <link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-3/</link>
-      <pubDate>Tue, 03 Mar 2026 14:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-3/</guid>
-      <description>&lt;h2 id=&#34;the-where-and-the-what&#34;&gt;The &amp;ldquo;Where&amp;rdquo; and the &amp;ldquo;What&amp;rdquo;&lt;/h2&gt;&#xA;&lt;p&gt;A diary isn&amp;rsquo;t just a list of events; it&amp;rsquo;s a narrative of space and time. In Sprint 3 of &lt;code&gt;@AT_Diary&lt;/code&gt;, we&amp;rsquo;ve successfully bridged the gap between raw data and visual storytelling by integrating &lt;strong&gt;CoreLocation&lt;/strong&gt;, &lt;strong&gt;MapKit&lt;/strong&gt;, and the &lt;strong&gt;Photos Framework&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h3 id=&#34;spatial-context-more-than-just-coordinates&#34;&gt;Spatial Context: More Than Just Coordinates&lt;/h3&gt;&#xA;&lt;p&gt;We&amp;rsquo;ve implemented a custom &lt;code&gt;AppleLocationProvider&lt;/code&gt; that identifies significant locations visited throughout the day. Instead of just logging GPS coordinates, our local MCP Server processes these into meaningful &amp;ldquo;Significant Locations&amp;rdquo; (e.g., &amp;ldquo;Michigan Central Station&amp;rdquo; vs. &amp;ldquo;2001 15th St&amp;rdquo;).&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Ecosystem Synergy: Integrating DAA, Wealth, and Privacy-First Logging</title>
-      <link>https://detroitautomationacademy.com/blog/posts/ecosystem-synergy-update/</link>
-      <pubDate>Mon, 02 Mar 2026 12:00:00 -0400</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/ecosystem-synergy-update/</guid>
-      <description>&lt;p&gt;Welcome to the latest update from the &lt;strong&gt;Automated Insights Blog&lt;/strong&gt;. As our initiatives scale, the true power of automation is revealed not in isolated projects, but in their integration. Today, we are announcing a major architectural shift to bridge the Detroit Automation Academy (DAA) platform, the privacy-first &lt;code&gt;@AT_Diary&lt;/code&gt;, and our new financial operating system, &lt;code&gt;@AT_Wealth&lt;/code&gt;.&lt;/p&gt;&#xA;&lt;h2 id=&#34;breaking-down-the-silos&#34;&gt;Breaking Down the Silos&lt;/h2&gt;&#xA;&lt;p&gt;Historically, our core applications operated independently:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;DAA CRM:&lt;/strong&gt; Managing student enrollments and program logistics.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;@AT_Diary:&lt;/strong&gt; A zero-effort, strictly on-device life logging tool leveraging Apple frameworks.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;@AT_Wealth:&lt;/strong&gt; Our new initiative to automate and execute long-term financial independence strategies.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;While each is powerful, operating them in silos leaves significant value on the table. Enter &lt;strong&gt;AT-Infrastructure&lt;/strong&gt;, our centralized agentic orchestration layer.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>@AT_Diary Sprint 2: Building a Privacy-First Diary on Apple Native Frameworks</title>
-      <link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2/</guid>
-      <description>&lt;p&gt;Sprint 2 of &lt;code&gt;@AT_Diary&lt;/code&gt; is complete with a successful build. Here&amp;rsquo;s what we shipped and how the architecture decisions are holding up.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-core-premise&#34;&gt;The Core Premise&lt;/h2&gt;&#xA;&lt;p&gt;Most journaling apps ask you to trust their servers with your most personal data. AT_Diary doesn&amp;rsquo;t. Every piece of data it touches — your music history, your calendar events, your location context, your photos — is processed &lt;strong&gt;on-device&lt;/strong&gt; and stored with iCloud encryption. Nothing phones home.&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Privacy on Automated Insights</title><link>https://detroitautomationacademy.com/blog/tags/privacy/</link><description>Recent content in Privacy on Automated Insights</description><generator>Hugo</generator><language>en</language><lastBuildDate>Tue, 03 Mar 2026 14:00:00 -0500</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/tags/privacy/index.xml" rel="self" type="application/rss+xml"/><item><title>@AT_Diary Sprint 3: Privacy-First Spatial Intelligence</title><link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-3/</link><pubDate>Tue, 03 Mar 2026 14:00:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-3/</guid><description>&lt;h2 id="the-where-and-the-what"&gt;The &amp;ldquo;Where&amp;rdquo; and the &amp;ldquo;What&amp;rdquo;&lt;/h2&gt;
+&lt;p&gt;A diary isn&amp;rsquo;t just a list of events; it&amp;rsquo;s a narrative of space and time. In Sprint 3 of &lt;code&gt;@AT_Diary&lt;/code&gt;, we&amp;rsquo;ve successfully bridged the gap between raw data and visual storytelling by integrating &lt;strong&gt;CoreLocation&lt;/strong&gt;, &lt;strong&gt;MapKit&lt;/strong&gt;, and the &lt;strong&gt;Photos Framework&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3 id="spatial-context-more-than-just-coordinates"&gt;Spatial Context: More Than Just Coordinates&lt;/h3&gt;
+&lt;p&gt;We&amp;rsquo;ve implemented a custom &lt;code&gt;AppleLocationProvider&lt;/code&gt; that identifies significant locations visited throughout the day. Instead of just logging GPS coordinates, our local MCP Server processes these into meaningful &amp;ldquo;Significant Locations&amp;rdquo; (e.g., &amp;ldquo;Michigan Central Station&amp;rdquo; vs. &amp;ldquo;2001 15th St&amp;rdquo;).&lt;/p&gt;</description></item><item><title>Ecosystem Synergy: Integrating DAA, Wealth, and Privacy-First Logging</title><link>https://detroitautomationacademy.com/blog/posts/ecosystem-synergy-update/</link><pubDate>Mon, 02 Mar 2026 12:00:00 -0400</pubDate><guid>https://detroitautomationacademy.com/blog/posts/ecosystem-synergy-update/</guid><description>&lt;p&gt;Welcome to the latest update from the &lt;strong&gt;Automated Insights Blog&lt;/strong&gt;. As our initiatives scale, the true power of automation is revealed not in isolated projects, but in their integration. Today, we are announcing a major architectural shift to bridge the Detroit Automation Academy (DAA) platform, the privacy-first &lt;code&gt;@AT_Diary&lt;/code&gt;, and our new financial operating system, &lt;code&gt;@AT_Wealth&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id="breaking-down-the-silos"&gt;Breaking Down the Silos&lt;/h2&gt;
+&lt;p&gt;Historically, our core applications operated independently:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;DAA CRM:&lt;/strong&gt; Managing student enrollments and program logistics.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;@AT_Diary:&lt;/strong&gt; A zero-effort, strictly on-device life logging tool leveraging Apple frameworks.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;@AT_Wealth:&lt;/strong&gt; Our new initiative to automate and execute long-term financial independence strategies.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;While each is powerful, operating them in silos leaves significant value on the table. Enter &lt;strong&gt;AT-Infrastructure&lt;/strong&gt;, our centralized agentic orchestration layer.&lt;/p&gt;</description></item><item><title>@AT_Diary Sprint 2: Building a Privacy-First Diary on Apple Native Frameworks</title><link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2/</link><pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2/</guid><description>&lt;p&gt;Sprint 2 of &lt;code&gt;@AT_Diary&lt;/code&gt; is complete with a successful build. Here&amp;rsquo;s what we shipped and how the architecture decisions are holding up.&lt;/p&gt;
+&lt;h2 id="the-core-premise"&gt;The Core Premise&lt;/h2&gt;
+&lt;p&gt;Most journaling apps ask you to trust their servers with your most personal data. AT_Diary doesn&amp;rsquo;t. Every piece of data it touches — your music history, your calendar events, your location context, your photos — is processed &lt;strong&gt;on-device&lt;/strong&gt; and stored with iCloud encryption. Nothing phones home.&lt;/p&gt;</description></item></channel></rss>

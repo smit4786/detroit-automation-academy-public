@@ -55,7 +55,7 @@ ls -la qr_codes/
 1. Open your smartphone camera
 2. Point at ANY QR code image (from qr_codes/ folder)
 3. Tap the notification that appears
-4. Verify it opens: https://github.com/smit4786/DetroitAutomationAcademy/issues/new?template=enrollment-inquiry.md
+4. Verify it opens: https://github.com/smit4786/detroit-automation-academy-public/issues/new?template=enrollment-inquiry.md
 ```
 
 ### Step 3: Prepare for Printing
@@ -224,7 +224,7 @@ For Print Shop:
 - [Zone Scripts](../instructor_resources/zone_scripts/) - Staff talking points
 - [Event Guide](../docs/bgc_event_guide.md) - Event format & logistics
 - [Enrollment Inquiry Form](../ISSUE_TEMPLATE/enrollment-inquiry.md) - What students see
-- [GitHub Repo](https://github.com/smit4786/DetroitAutomationAcademy) - Main source
+- [GitHub Repo](https://github.com/smit4786/detroit-automation-academy-public) - Main source
 
 ---
 

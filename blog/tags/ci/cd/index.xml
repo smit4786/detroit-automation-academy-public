@@ -1,19 +1,10 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>CI/CD on Automated Insights</title>
-    <link>https://detroitautomationacademy.com/blog/tags/ci/cd/</link>
-    <description>Recent content in CI/CD on Automated Insights</description>
-    <generator>Hugo</generator>
-    <language>en</language>
-    <lastBuildDate>Mon, 02 Mar 2026 21:00:00 -0400</lastBuildDate>
-    <atom:link href="https://detroitautomationacademy.com/blog/tags/ci/cd/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Hardening the Digital Thread: CI/CD Pipeline Optimization</title>
-      <link>https://detroitautomationacademy.com/blog/posts/cicd-pipeline-optimization/</link>
-      <pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/cicd-pipeline-optimization/</guid>
-      <description>&lt;p&gt;Welcome to the latest technical update from the &lt;strong&gt;Automated Insights Blog&lt;/strong&gt;. As we push toward Phase 5 Market Activation, the reliability of our deployment pipelines is paramount. Today, we successfully executed a comprehensive optimization of our GitHub Actions workflows across the Detroit Automation Academy ecosystem.&lt;/p&gt;&#xA;&lt;h2 id=&#34;identifying-the-bottlenecks&#34;&gt;Identifying the Bottlenecks&lt;/h2&gt;&#xA;&lt;p&gt;Through a rigorous audit of our CI/CD logs, we identified several friction points that were hindering our development velocity:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Redundant Matrix Testing:&lt;/strong&gt; Our previous Python CI was executing across unnecessary version matrices, leading to wasted compute time.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Overly Sensitive QA Gates:&lt;/strong&gt; The deployment pipeline included content-scanning rules that were triggering false positives on legitimate technical documentation.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Formatting Drift:&lt;/strong&gt; Minor inconsistencies in script formatting were causing build-time warnings.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;implementing-permanent-fixes&#34;&gt;Implementing Permanent Fixes&lt;/h2&gt;&#xA;&lt;p&gt;We&amp;rsquo;ve implemented a robust, enterprise-grade solution to address these issues:&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CI/CD on Automated Insights</title><link>https://detroitautomationacademy.com/blog/tags/ci/cd/</link><description>Recent content in CI/CD on Automated Insights</description><generator>Hugo</generator><language>en</language><lastBuildDate>Mon, 02 Mar 2026 21:00:00 -0400</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/tags/ci/cd/index.xml" rel="self" type="application/rss+xml"/><item><title>Hardening the Digital Thread: CI/CD Pipeline Optimization</title><link>https://detroitautomationacademy.com/blog/posts/cicd-pipeline-optimization/</link><pubDate>Mon, 02 Mar 2026 21:00:00 -0400</pubDate><guid>https://detroitautomationacademy.com/blog/posts/cicd-pipeline-optimization/</guid><description>&lt;p&gt;Welcome to the latest technical update from the &lt;strong&gt;Automated Insights Blog&lt;/strong&gt;. As we push toward Phase 5 Market Activation, the reliability of our deployment pipelines is paramount. Today, we successfully executed a comprehensive optimization of our GitHub Actions workflows across the Detroit Automation Academy ecosystem.&lt;/p&gt;
+&lt;h2 id="identifying-the-bottlenecks"&gt;Identifying the Bottlenecks&lt;/h2&gt;
+&lt;p&gt;Through a rigorous audit of our CI/CD logs, we identified several friction points that were hindering our development velocity:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Redundant Matrix Testing:&lt;/strong&gt; Our previous Python CI was executing across unnecessary version matrices, leading to wasted compute time.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Overly Sensitive QA Gates:&lt;/strong&gt; The deployment pipeline included content-scanning rules that were triggering false positives on legitimate technical documentation.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Formatting Drift:&lt;/strong&gt; Minor inconsistencies in script formatting were causing build-time warnings.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="implementing-permanent-fixes"&gt;Implementing Permanent Fixes&lt;/h2&gt;
+&lt;p&gt;We&amp;rsquo;ve implemented a robust, enterprise-grade solution to address these issues:&lt;/p&gt;</description></item></channel></rss>

@@ -370,7 +370,7 @@ Ensuring brand integrity, data privacy in marketing, and accurate multi-language
   - Cultural sensitivity audit for regional blog distributions.
 
 - [ ] **Educational Venture Status**
-  - No claims of "non-profit" or "501(c)(3)" unless legally verified.
+  - No claims of standalone status unless legally verified.
   - Standardized "Academy-as-a-Service" (AaaS) terminology used in all outreach.
 
 ---

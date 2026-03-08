@@ -62,6 +62,7 @@ jobs:
 
           # Copy root HTML files
           cp index.html deployment/          || echo "index.html not found"
+          cp admin.html deployment/          || echo "admin.html not found"
           cp dashboard.html deployment/      || echo "dashboard.html not found"
           cp students.html deployment/       || echo "students.html not found"
           cp instructors.html deployment/    || echo "instructors.html not found"
@@ -103,7 +104,7 @@ jobs:
             if [ ! -f "deployment/$page" ]; then
               echo "FATAL: Missing critical page: $page"
               FAIL=1
-            fi
+          fi
           done
 
           # 3. Verify blog output

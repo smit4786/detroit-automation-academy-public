@@ -1,19 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Announcements on Automated Insights</title>
-    <link>https://detroitautomationacademy.com/blog/categories/announcements/</link>
-    <description>Recent content in Announcements on Automated Insights</description>
-    <generator>Hugo</generator>
-    <language>en</language>
-    <lastBuildDate>Thu, 05 Mar 2026 14:30:00 +0000</lastBuildDate>
-    <atom:link href="https://detroitautomationacademy.com/blog/categories/announcements/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Update: Spring 2026 Orientation Postponed</title>
-      <link>https://detroitautomationacademy.com/blog/posts/orientation-postponed/</link>
-      <pubDate>Thu, 05 Mar 2026 14:30:00 +0000</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/orientation-postponed/</guid>
-      <description>&lt;h1 id=&#34;important-update-student-orientation--program-launch&#34;&gt;Important Update: Student Orientation &amp;amp; Program Launch&lt;/h1&gt;&#xA;&lt;p&gt;To our valued students, parents, and partners,&lt;/p&gt;&#xA;&lt;p&gt;We are writing to announce that the &lt;strong&gt;Student Orientation&lt;/strong&gt; previously scheduled for today, March 5, 2026, has been &lt;strong&gt;postponed&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h3 id=&#34;why-the-postponement&#34;&gt;Why the Postponement?&lt;/h3&gt;&#xA;&lt;p&gt;At Detroit Automation Academy, we are committed to providing a world-class, high-fidelity instructional experience. We are currently &lt;strong&gt;improving our offering&lt;/strong&gt; by integrating new advanced robotics modules and enhancing our local-first digital infrastructure.&lt;/p&gt;&#xA;&lt;p&gt;To ensure that our first cohort has access to the absolute best tools and curriculum from Day 1, we have decided to push back the orientation and program start dates.&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Announcements on Automated Insights</title><link>https://detroitautomationacademy.com/blog/categories/announcements/</link><description>Recent content in Announcements on Automated Insights</description><generator>Hugo</generator><language>en</language><lastBuildDate>Thu, 05 Mar 2026 14:30:00 +0000</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/categories/announcements/index.xml" rel="self" type="application/rss+xml"/><item><title>Update: Spring 2026 Orientation Postponed</title><link>https://detroitautomationacademy.com/blog/posts/orientation-postponed/</link><pubDate>Thu, 05 Mar 2026 14:30:00 +0000</pubDate><guid>https://detroitautomationacademy.com/blog/posts/orientation-postponed/</guid><description>&lt;h1 id="important-update-student-orientation--program-launch"&gt;Important Update: Student Orientation &amp;amp; Program Launch&lt;/h1&gt;
+&lt;p&gt;To our valued students, parents, and partners,&lt;/p&gt;
+&lt;p&gt;We are writing to announce that the &lt;strong&gt;Student Orientation&lt;/strong&gt; previously scheduled for today, March 5, 2026, has been &lt;strong&gt;postponed&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3 id="why-the-postponement"&gt;Why the Postponement?&lt;/h3&gt;
+&lt;p&gt;At Detroit Automation Academy, we are committed to providing a world-class, high-fidelity instructional experience. We are currently &lt;strong&gt;improving our offering&lt;/strong&gt; by integrating new advanced robotics modules and enhancing our local-first digital infrastructure.&lt;/p&gt;
+&lt;p&gt;To ensure that our first cohort has access to the absolute best tools and curriculum from Day 1, we have decided to push back the orientation and program start dates.&lt;/p&gt;</description></item></channel></rss>

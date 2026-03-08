@@ -15,7 +15,7 @@ Before you begin, ensure you have:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/smit4786/DetroitAutomationAcademy.git
+   git clone https://github.com/smit4786/detroit-automation-academy-public.git
    cd DetroitAutomationAcademy
    ```
 

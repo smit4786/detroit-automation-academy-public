@@ -1,19 +1,17 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Newsletter on Automated Insights</title>
-    <link>https://detroitautomationacademy.com/blog/tags/newsletter/</link>
-    <description>Recent content in Newsletter on Automated Insights</description>
-    <generator>Hugo</generator>
-    <language>en</language>
-    <lastBuildDate>Wed, 04 Mar 2026 09:00:00 -0500</lastBuildDate>
-    <atom:link href="https://detroitautomationacademy.com/blog/tags/newsletter/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Automation Insights: March 2026 Edition</title>
-      <link>https://detroitautomationacademy.com/blog/newsletters/march-2026/</link>
-      <pubDate>Wed, 04 Mar 2026 09:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/newsletters/march-2026/</guid>
-      <description>&lt;h3 id=&#34;-synergy-phase-activated&#34;&gt;🚀 Synergy Phase: Activated&lt;/h3&gt;&#xA;&lt;p&gt;In this month&amp;rsquo;s edition, we recap the formal activation of the &lt;strong&gt;CMO Agent&lt;/strong&gt; and the major synchronization of our ecosystem pillars.&lt;/p&gt;&#xA;&lt;h4 id=&#34;-daa-milestones&#34;&gt;🎓 DAA Milestones&lt;/h4&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Challenge-Based Learning:&lt;/strong&gt; We&amp;rsquo;ve introduced new hands-on challenges for securing IoT telemetry.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Scaling:&lt;/strong&gt; Our &amp;ldquo;Academy-as-a-Service&amp;rdquo; model is now tracking for Q3 growth milestones.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h4 id=&#34;-diary--wealth-integration&#34;&gt;📓 Diary &amp;amp; Wealth Integration&lt;/h4&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Data Fluidity:&lt;/strong&gt; We&amp;rsquo;ve enabled protocols that allow your daily sentiment to inform long-term wealth projections, ensuring your financial plan remains human-centric.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h4 id=&#34;-wealth-optimization&#34;&gt;💰 Wealth Optimization&lt;/h4&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Active Tracking:&lt;/strong&gt; We are now tracking 10+ high-quality job applications per week via the automated financial engine.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;hr&gt;&#xA;&lt;p&gt;&lt;em&gt;Stay tuned for our Q4 &amp;ldquo;Market Activation&amp;rdquo; roadmap in next month&amp;rsquo;s edition.&lt;/em&gt;&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Newsletter on Automated Insights</title><link>https://detroitautomationacademy.com/blog/tags/newsletter/</link><description>Recent content in Newsletter on Automated Insights</description><generator>Hugo</generator><language>en</language><lastBuildDate>Wed, 04 Mar 2026 09:00:00 -0500</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/tags/newsletter/index.xml" rel="self" type="application/rss+xml"/><item><title>Automation Insights: March 2026 Edition</title><link>https://detroitautomationacademy.com/blog/newsletters/march-2026/</link><pubDate>Wed, 04 Mar 2026 09:00:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/newsletters/march-2026/</guid><description>&lt;h3 id="-synergy-phase-activated"&gt;🚀 Synergy Phase: Activated&lt;/h3&gt;
+&lt;p&gt;In this month&amp;rsquo;s edition, we recap the formal activation of the &lt;strong&gt;CMO Agent&lt;/strong&gt; and the major synchronization of our ecosystem pillars.&lt;/p&gt;
+&lt;h4 id="-daa-milestones"&gt;🎓 DAA Milestones&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Challenge-Based Learning:&lt;/strong&gt; We&amp;rsquo;ve introduced new hands-on challenges for securing IoT telemetry.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Scaling:&lt;/strong&gt; Our &amp;ldquo;Academy-as-a-Service&amp;rdquo; model is now tracking for Q3 growth milestones.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="-diary--wealth-integration"&gt;📓 Diary &amp;amp; Wealth Integration&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Data Fluidity:&lt;/strong&gt; We&amp;rsquo;ve enabled protocols that allow your daily sentiment to inform long-term wealth projections, ensuring your financial plan remains human-centric.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="-wealth-optimization"&gt;💰 Wealth Optimization&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Active Tracking:&lt;/strong&gt; We are now tracking 10+ high-quality job applications per week via the automated financial engine.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;em&gt;Stay tuned for our Q4 &amp;ldquo;Market Activation&amp;rdquo; roadmap in next month&amp;rsquo;s edition.&lt;/em&gt;&lt;/p&gt;</description></item></channel></rss>

@@ -33,7 +33,7 @@ Form Fields:
   - Tell Us About Your Interest (essay)
 ```
 
-**URL:** `https://github.com/smit4786/DetroitAutomationAcademy/issues/new?template=enrollment-inquiry.md`
+**URL:** `https://github.com/smit4786/detroit-automation-academy-public/issues/new?template=enrollment-inquiry.md`
 
 ---
 
@@ -109,7 +109,7 @@ Form Fields:
 **For guests who can't scan:** Point them to text link below or write it down:
 
 ```
-https://github.com/smit4786/DetroitAutomationAcademy/issues/new?template=enrollment-inquiry.md
+https://github.com/smit4786/detroit-automation-academy-public/issues/new?template=enrollment-inquiry.md
 ```
 
 Or: **Search "Detroit Automation Academy enrollment" on GitHub**

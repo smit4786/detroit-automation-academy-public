@@ -1,19 +1,3 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Zero-Knowledge on Automated Insights</title>
-    <link>https://detroitautomationacademy.com/blog/de/tags/zero-knowledge/</link>
-    <description>Recent content in Zero-Knowledge on Automated Insights</description>
-    <generator>Hugo</generator>
-    <language>de</language>
-    <lastBuildDate>Mon, 02 Mar 2026 20:00:00 -0400</lastBuildDate>
-    <atom:link href="https://detroitautomationacademy.com/blog/de/tags/zero-knowledge/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Erhöhung der Organisationsstandards: DAA-Lizenzierungs- &amp; Lehrplan-Infrastruktur</title>
-      <link>https://detroitautomationacademy.com/blog/de/posts/repository-standards-enhancement/</link>
-      <pubDate>Mon, 02 Mar 2026 20:00:00 -0400</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/de/posts/repository-standards-enhancement/</guid>
-      <description>&lt;p&gt;Willkommen zum neuesten technischen Update aus dem &lt;strong&gt;Automated Insights Blog&lt;/strong&gt;. Da die Detroit Automation Academy (DAA) ihr Lizenzierungsmodell skaliert, ist die Aufrechterhaltung strenger Betriebs- und Sicherheitsstandards in unseren umsatzgenerierenden Repositories von entscheidender Bedeutung. Heute haben wir erfolgreich eine Infrastrukturverbesserung eingeführt, die unsere Kern-Lizenzierungssysteme auf ATSI-Unternehmensstandards bringt.&lt;/p&gt;&#xA;&lt;h2 id=&#34;beseitigung-technischer-schulden&#34;&gt;Beseitigung technischer Schulden&lt;/h2&gt;&#xA;&lt;p&gt;In schnelllebigen Entwicklungsumgebungen sammeln sich leicht technische Schulden an. Während unseres letzten Koordinierungs-Sprints haben wir unser privates Lehrplan- und Lizenzierungs-Repository komplett bereinigt und alle fest codierten Entwicklerpfade entfernt, um eine fehlerfreie plattformübergreifende Funktionalität sicherzustellen. Diese Änderungen garantieren, dass unsere CI/CD-Pipelines und Test-Frameworks äußerst robust und skalierbar bleiben.&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Zero-Knowledge on Automated Insights</title><link>https://detroitautomationacademy.com/blog/de/tags/zero-knowledge/</link><description>Recent content in Zero-Knowledge on Automated Insights</description><generator>Hugo</generator><language>de</language><lastBuildDate>Mon, 02 Mar 2026 20:00:00 -0400</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/de/tags/zero-knowledge/index.xml" rel="self" type="application/rss+xml"/><item><title>Erhöhung der Organisationsstandards: DAA-Lizenzierungs- &amp; Lehrplan-Infrastruktur</title><link>https://detroitautomationacademy.com/blog/de/posts/repository-standards-enhancement/</link><pubDate>Mon, 02 Mar 2026 20:00:00 -0400</pubDate><guid>https://detroitautomationacademy.com/blog/de/posts/repository-standards-enhancement/</guid><description>&lt;p&gt;Willkommen zum neuesten technischen Update aus dem &lt;strong&gt;Automated Insights Blog&lt;/strong&gt;. Da die Detroit Automation Academy (DAA) ihr Lizenzierungsmodell skaliert, ist die Aufrechterhaltung strenger Betriebs- und Sicherheitsstandards in unseren umsatzgenerierenden Repositories von entscheidender Bedeutung. Heute haben wir erfolgreich eine Infrastrukturverbesserung eingeführt, die unsere Kern-Lizenzierungssysteme auf ATSI-Unternehmensstandards bringt.&lt;/p&gt;
+&lt;h2 id="beseitigung-technischer-schulden"&gt;Beseitigung technischer Schulden&lt;/h2&gt;
+&lt;p&gt;In schnelllebigen Entwicklungsumgebungen sammeln sich leicht technische Schulden an. Während unseres letzten Koordinierungs-Sprints haben wir unser privates Lehrplan- und Lizenzierungs-Repository komplett bereinigt und alle fest codierten Entwicklerpfade entfernt, um eine fehlerfreie plattformübergreifende Funktionalität sicherzustellen. Diese Änderungen garantieren, dass unsere CI/CD-Pipelines und Test-Frameworks äußerst robust und skalierbar bleiben.&lt;/p&gt;</description></item></channel></rss>
