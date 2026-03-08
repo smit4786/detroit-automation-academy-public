@@ -1,4 +1,4 @@
-name: Deploy Hugo site to gh-pages branch
+name: Deploy Hugo site to GitHub Pages
 
 on:
   push:
@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: "pages"
@@ -17,7 +19,7 @@ defaults:
     shell: bash
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -53,7 +55,6 @@ jobs:
             --baseURL "https://detroitautomationacademy.com/blog/" \
             --destination "../public-blog"
           echo "Hugo build complete."
-          ls ../public-blog
 
       - name: Prepare Deployment Directory
         run: |
@@ -85,54 +86,18 @@ jobs:
             exit 1
           fi
 
-          echo "Deployment directory prepared."
-          ls deployment/
-
-      - name: QA Gate - Pre-Deploy Validation
-        run: |
-          echo "=== QA Gate: Pre-Deploy Validation ==="
-          FAIL=0
-
-          # 1. Verify deployment directory exists and is non-empty
-          if [ ! -d "deployment" ] || [ -z "$(ls -A deployment)" ]; then
-            echo "FATAL: Deployment directory is missing or empty"
-            FAIL=1
-          fi
-
-          # 2. Verify critical HTML pages exist
-          for page in index.html partners.html students.html; do
-            if [ ! -f "deployment/$page" ]; then
-              echo "FATAL: Missing critical page: $page"
-              FAIL=1
-          fi
-          done
-
-          # 3. Verify blog output
-          if [ ! -f "deployment/blog/index.html" ]; then
-            echo "FATAL: Blog index.html missing from deployment"
-            FAIL=1
-          fi
-
-          # 4. Check for empty HTML files
-          EMPTY_FILES=$(find deployment/ -name "*.html" -empty)
-          if [ -n "$EMPTY_FILES" ]; then
-            echo "FATAL: Empty HTML files detected:"
-            echo "$EMPTY_FILES"
-            FAIL=1
-          fi
-
-          if [ $FAIL -ne 0 ]; then
-            echo "❌ QA Gate FAILED — deployment blocked"
-            exit 1
-          fi
-
-          echo "✅ QA Gate passed — all checks clean"
-
-      - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./deployment
-          publish_branch: gh-pages
-          cname: detroitautomationacademy.com
-          force_orphan: true
+          path: ./deployment
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
