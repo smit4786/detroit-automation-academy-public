@@ -167,13 +167,13 @@
                          xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
                             <circle cx="100" cy="100" r="75" fill="none"
-                                    stroke="#0066CC" stroke-width="4" />
+                                    stroke="var(--daa-primary)" stroke-width="4" />
                             <polygon points="100,30 130,40 140,70 130,100 140,130
                                             100,170 70,160 60,130 70,100 60,70
                                             100,30"
-                                     fill="none" stroke="#0066CC" stroke-width="3"
+                                     fill="none" stroke="var(--daa-primary)" stroke-width="3"
                                      stroke-linejoin="round" />
-                            <g stroke="#66CC00" stroke-width="3" fill="none"
+                            <g stroke="var(--daa-accent)" stroke-width="3" fill="none"
                                stroke-linecap="round">
                                 <path d="M 100 30 L 100 15 L 85 10" />
                                 <path d="M 130 70 L 155 50 L 170 55" />
@@ -181,7 +181,7 @@
                                 <path d="M 60 160 L 30 180 L 20 175" />
                                 <path d="M 60 70 L 35 50 L 25 60" />
                             </g>
-                            <g fill="#66CC00" opacity="0.9">
+                            <g fill="var(--daa-accent)" opacity="0.9">
                                 <circle cx="100" cy="15" r="4" />
                                 <circle cx="170" cy="55" r="4" />
                                 <circle cx="165" cy="170" r="4" />
@@ -236,10 +236,10 @@
                     const main = document.getElementById('logo-text-main');
                     const sub = document.getElementById('logo-text-sub');
                     if (main) {
-                        main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
+                        main.setAttribute('fill', isLight ? '#1A1F2E' : 'var(--daa-fg)');
                     }
                     if (sub) {
-                        sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
+                        sub.setAttribute('fill', isLight ? '#0055BB' : 'var(--daa-primary)');
                     }
                 });
             });
