@@ -1,0 +1,86 @@
+/* 🌐 Automated Technologies - Blog Styling (Light/Dark Mode) */
+
+:root {
+  --at-primary: #0066CC;
+  --at-slate: #2C3E50;
+  --at-silver: #BDC3C7;
+  
+  --bg-color: #FFFFFF;
+  --text-color: #111111;
+  --text-muted: #555555;
+  --link-color: #0066CC;
+  --border-color: #EEEEEE;
+  --header-bg: #2C3E50; /* AT Slate Header */
+}
+
+/* Dark Mode Overrides */
+[data-theme='dark'],
+body.bg-near-black[data-theme='dark'] {
+  --bg-color: #111111;
+  --text-color: #F4F4F4;
+  --text-muted: #AAAAAA;
+  --link-color: #3895FF;
+  --border-color: #333333;
+  --header-bg: #111111;
+}
+
+/* Force Dark Mode when no theme set if DAA default is dark */
+body.bg-near-black:not([data-theme]) {
+  --bg-color: #111111;
+  --text-color: #F4F4F4;
+}
+
+/* Global Styles */
+body {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.near-white, .white-90 {
+  color: var(--text-color) !important;
+}
+
+.bg-near-black {
+  background-color: var(--bg-color) !important;
+}
+
+.link {
+  color: var(--link-color) !important;
+}
+
+.link:hover {
+  opacity: 0.8;
+}
+
+/* Header Adjustments */
+header.bg-near-black {
+  background-color: var(--header-bg) !important;
+}
+
+/* Navigation Links */
+nav .link {
+  color: #FFFFFF !important; /* Always white on AT Slate header */
+}
+
+/* Theme Toggle Button Styles */
+#theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-left: 1rem;
+  transition: all 0.2s ease;
+}
+
+#theme-toggle:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+[data-theme='light'] #theme-toggle {
+  color: #FFFFFF;
+  border-color: rgba(255,255,255,0.5);
+}

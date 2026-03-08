@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Now - Detroit Automation Academy</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="branding/palette.css"> <!-- Link palette.css -->
+    <style>
+        /* ── Standardized Header/Footer Styles ── */
+        header {
+            background: rgba(13, 17, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--daa-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        body.light-mode header {
+            background: rgba(245, 247, 250, 0.92);
+        }
+
+        footer {
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            color: var(--daa-fg-muted);
+            padding: 32px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .footer-links {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: var(--daa-fg-muted);
+            text-decoration: none;
+            margin: 0 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Circuit background ── */
+        
+
+        /* General styles, already fine */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--daa-fg);
+            /* Use CSS variable */
+            background: var(--daa-bg);
+            /* Use CSS variable */
+        
+            transition: background 0.3s, color 0.3s;
+        }
+
+        
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--daa-primary);
+            /* Use CSS variable */
+        }
+
+        .logo a {
+            color: var(--daa-primary);
+            /* Use CSS variable */
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--daa-fg);
+            /* Use CSS variable */
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--daa-primary);
+            /* Use CSS variable */
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-primary-dark, #0052A3) 100%);
+            /* Use CSS variable */
+            color: var(--daa-bg);
+            /* Use CSS variable */
+            padding: 60px 32px;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        .content {
+            max-width: 900px;
+            margin: 48px auto;
+            padding: 0 32px;
+        }
+
+        .application-section {
+            background: var(--daa-card);
+            /* Use CSS variable */
+            padding: 48px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px var(--daa-shadow);
+            /* Use CSS variable */
+            margin-bottom: 32px;
+        }
+
+        .application-section h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--daa-primary);
+            /* Use CSS variable */
+        }
+
+        .info-box {
+            background: var(--daa-bg);
+            /* Use CSS variable */
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 4px solid var(--daa-secondary);
+            /* Use CSS variable */
+        }
+
+        .info-box h3 {
+            margin-bottom: 12px;
+            color: var(--daa-fg);
+            /* Use CSS variable */
+        }
+
+        .info-box p {
+            margin-bottom: 8px;
+            color: var(--daa-fg-muted);
+            /* Hardcoded gray */
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--daa-border);
+            /* Use CSS variable */
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .checklist li::before {
+            content: '✓';
+            color: var(--daa-accent);
+            /* Use CSS variable */
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .apply-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-primary-dark, #0052A3) 100%);
+            /* Use CSS variable */
+            color: var(--daa-bg);
+            /* Use CSS variable */
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-top: 24px;
+        }
+
+        .apply-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
+            /* Hardcoded hover */
+        }
+
+        .faq {
+            display: grid;
+            gap: 16px;
+        }
+
+        .faq-item {
+            background: var(--daa-card);
+            /* Use CSS variable */
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--daa-shadow);
+            /* Use CSS variable */
+        }
+
+        .faq-item h4 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--daa-primary);
+            /* Use CSS variable */
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .faq-item p {
+            color: var(--daa-fg-muted);
+            /* Hardcoded gray */
+            font-size: 14px;
+        }
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent-dark, #52A300);
+            /* Hardcoded hover */
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .application-section {
+                padding: 32px 16px;
+            }
+        }
+    </style>
+</head>
+
+<body class="light-mode"> <!-- Add default class -->
+                                <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html?v=2026030713">
+                    <svg viewBox="0 0 1000 250" width="180" height="45"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <g transform="translate(25, 25)">
+                            <circle cx="100" cy="100" r="75" fill="none"
+                                    stroke="#0066CC" stroke-width="4" />
+                            <polygon points="100,30 130,40 140,70 130,100 140,130
+                                            100,170 70,160 60,130 70,100 60,70
+                                            100,30"
+                                     fill="none" stroke="#0066CC" stroke-width="3"
+                                     stroke-linejoin="round" />
+                            <g stroke="#66CC00" stroke-width="3" fill="none"
+                               stroke-linecap="round">
+                                <path d="M 100 30 L 100 15 L 85 10" />
+                                <path d="M 130 70 L 155 50 L 170 55" />
+                                <path d="M 140 130 L 160 155 L 165 170" />
+                                <path d="M 60 160 L 30 180 L 20 175" />
+                                <path d="M 60 70 L 35 50 L 25 60" />
+                            </g>
+                            <g fill="#66CC00" opacity="0.9">
+                                <circle cx="100" cy="15" r="4" />
+                                <circle cx="170" cy="55" r="4" />
+                                <circle cx="165" cy="170" r="4" />
+                                <circle cx="20" cy="175" r="4" />
+                                <circle cx="25" cy="60" r="4" />
+                            </g>
+                        </g>
+                        <g transform="translate(260, 110)">
+                            <text font-family="'Poppins', sans-serif"
+                                  font-weight="800" font-size="64">
+                                <tspan id="logo-text-main" x="0" y="0">
+                                    DETROIT
+                                </tspan>
+                                <tspan id="logo-text-sub" x="0" y="75"
+                                       font-size="54" font-weight="700">
+                                    AUTOMATION ACADEMY
+                                </tspan>
+                            </text>
+                        </g>
+                    </svg>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="blog/">📝 Blog</a></li>
+                <li><a href="dashboard.html?v=2026030713">📊 Dashboard</a></li>
+                <li><a href="students.html?v=2026030713">👨‍🎓 Students</a></li>
+                <li><a href="instructors.html?v=2026030713">👨‍🏫 Instructors</a></li>
+                <li><a href="partners.html?v=2026030713">💼 Partners</a></li>
+                <li><a href="subscriptions.html?v=2026030713">💎 Subscriptions</a></li>
+            </ul>
+            <button id="theme-toggle">☀️ Light Mode</button>
+        </nav>
+    </header>
+
+    <script>
+        (function () {
+            const saved = localStorage.getItem('daa-theme');
+            const body = document.body;
+            const btn = document.getElementById('theme-toggle');
+            if (saved === 'light') {
+                body.classList.add('light-mode');
+                if (btn) btn.textContent = '🌙 Dark Mode';
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggle = document.getElementById('theme-toggle');
+                if (!toggle) return;
+                toggle.addEventListener('click', function () {
+                    const isLight = document.body.classList.toggle('light-mode');
+                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
+                    // Update SVG logo text color
+                    const main = document.getElementById('logo-text-main');
+                    const sub = document.getElementById('logo-text-sub');
+                    if (main) {
+                        main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
+                    }
+                    if (sub) {
+                        sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
+                    }
+                });
+            });
+        })();
+    </script>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Instructor Resources & Curriculum</h1>
+            <p>Access the tools, guides, and materials to deliver world-class automation education.</p>
+        </div>
+    </section>
+
+    <section class="content">
+        <section class="application-section">
+            <h2>📚 Curriculum Overview</h2>
+            <p>Our 12-week curriculum is designed to be modular and hands-on, taking students from foundational GPIO
+                control to fully autonomous robotics.</p>
+
+            <div class="info-box">
+                <h3>Phase 1: GPIO & Hardware Integration</h3>
+                <p>Focuses on foundational Python programming and microcontroller interfacing. Students learn to control
+                    physical hardware using event-driven logic.</p>
+                <a href="phase1_guide.md" class="apply-button"
+                    style="padding: 8px 20px; font-size: 14px; margin-top: 12px;">View Phase 1 Guide</a>
+            </div>
+
+            <div class="info-box">
+                <h3>Phase 2: Parametric CAD & Digital Fabrication</h3>
+                <p>Introduces algorithmic geometry generation and rapid prototyping. Students design parts in code and
+                    fabricate them using laser cutters and 3D printers.</p>
+                <a href="phase2_guide.md" class="apply-button"
+                    style="padding: 8px 20px; font-size: 14px; margin-top: 12px;">View Phase 2 Guide</a>
+            </div>
+
+            <div class="info-box">
+                <h3>Phase 3: Autonomous Systems & Sensor Fusion</h3>
+                <p>The capstone phase where students program mobile rovers to navigate autonomously using sensor data
+                    and advanced algorithms.</p>
+                <a href="phase3_guide.md" class="apply-button"
+                    style="padding: 8px 20px; font-size: 14px; margin-top: 12px;">View Phase 3 Guide</a>
+            </div>
+
+            <div class="info-box">
+                <h3>Phase 4: Online Safety & Apple Ecosystem</h3>
+                <p>A specialized curriculum focused on responsible digital citizenship, privacy sovereignty, and secure
+                    creation within the Apple ecosystem.</p>
+                <a href="curriculum/online-safety/README.md" class="apply-button"
+                    style="padding: 8px 20px; font-size: 14px; margin-top: 12px;">View Online Safety Guide</a>
+            </div>
+        </section>
+
+        <section class="application-section">
+            <h2>🛠️ Teaching Resources</h2>
+            <ul class="checklist">
+                <li><strong>Zone Scripts</strong> - Detailed talking points and demo guides for each workshop area.</li>
+                <li><strong>Event Checklists</strong> - Step-by-step logistics for coordinating launch events and
+                    workshops.</li>
+                <li><strong>Troubleshooting Guides</strong> - Quick fixes for common hardware and software issues.</li>
+                <li><strong>Safety Protocols</strong> - Essential guidelines for laser cutting and robotics operation.
+                </li>
+                <li><strong>Assessment Rubrics</strong> - Tools to evaluate student progress and project quality.</li>
+            </ul>
+            <p style="margin-top: 24px;">All resources are hosted in our private repository. Instructors can request
+                access by contacting the lead technologist.</p>
+            <a href="mailto:info@detroitautomationacademy.com?subject=Instructor Resource Access Request"
+                class="apply-button">Request Resource Access</a>
+        </section>
+
+        <section class="application-section">
+            <h2>❓ Instructor FAQ</h2>
+            <div class="faq">
+                <div class="faq-item">
+                    <h4>Do I need to be a robotics expert?</h4>
+                    <p>While technical background helps, our "Instructor Guides" are designed to walk you through each
+                        phase. We also provide "Train the Trainer" sessions.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>What is the "Design-by-Code" methodology?</h4>
+                    <p>It's our proprietary approach to CAD where students use Python to generate geometry. This bridges
+                        the gap between software engineering and mechanical design.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Can I use DAA curriculum in my school?</h4>
+                    <p>Yes! We offer licensing for educational partners. Check our <a href="partners.html">Partners
+                            page</a> for details.</p>
+                </div>
+            </div>
+        </section>
+    </section>
+
+                                <footer>
+        <div class="footer-links">
+            <a href="blog/">Blog</a>
+            <a href="dashboard.html?v=2026030713">Dashboard</a>
+            <a href="https://github.com/smit4786/detroit-automation-academy-public"
+               target="_blank">GitHub</a>
+            <a href="mailto:info@detroitautomationacademy.com">Contact</a>
+        </div>
+        <p>© 2026 Detroit Automation Academy. All rights reserved. |
+           Automation skills for Detroit's future, built by Detroiters.</p>
+    </footer>
+</body>
+
+</html>

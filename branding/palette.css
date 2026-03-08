@@ -1,0 +1,43 @@
+/* ── Detroit Automation Academy — Brand Palette ──────────────────────────────
+   Dark-first design. Light mode available via .light-mode body class.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── Dark (Default) ─────────────────────────────────────────────────────── */
+:root {
+  --daa-bg: #0D1117;
+  --daa-bg-card: #161B22;
+  --daa-bg-raised: #1C2333;
+  --daa-fg: #E6EDF3;
+  --daa-fg-muted: #8B949E;
+  --daa-primary: #0066CC;
+  --daa-primary-glow: rgba(0, 102, 204, 0.25);
+  --daa-secondary: #CC5522;
+  --daa-accent: #66CC00;
+  --daa-accent-glow: rgba(102, 204, 0, 0.2);
+  --daa-card: #161B22;
+  --daa-border: rgba(0, 102, 204, 0.18);
+  --daa-border-green: rgba(102, 204, 0, 0.25);
+  --daa-link: #0066CC;
+  --daa-shadow: rgba(0, 0, 0, 0.4);
+  --daa-shadow-blue: 0 0 32px rgba(0, 102, 204, 0.15);
+}
+
+/* ── Light Mode Override ─────────────────────────────────────────────────── */
+body.light-mode {
+  --daa-bg: #F5F7FA;
+  --daa-bg-card: #FFFFFF;
+  --daa-bg-raised: #EDF0F5;
+  --daa-fg: #1A1F2E;
+  --daa-fg-muted: #6B7280;
+  --daa-primary: #0055BB;
+  --daa-primary-glow: rgba(0, 85, 187, 0.12);
+  --daa-secondary: #CC5522;
+  --daa-accent: #4DAA00;
+  --daa-accent-glow: rgba(77, 170, 0, 0.12);
+  --daa-card: #FFFFFF;
+  --daa-border: #DDE3EE;
+  --daa-border-green: rgba(77, 170, 0, 0.2);
+  --daa-link: #0055BB;
+  --daa-shadow: rgba(0, 0, 0, 0.08);
+  --daa-shadow-blue: 0 4px 20px rgba(0, 85, 187, 0.1);
+}

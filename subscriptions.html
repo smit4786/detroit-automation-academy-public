@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscriptions - Detroit Automation Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="branding/palette.css">
+    <style>
+        /* ── Standardized Header/Footer Styles ── */
+        header {
+            background: rgba(13, 17, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--daa-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        body.light-mode header {
+            background: rgba(245, 247, 250, 0.92);
+        }
+
+        footer {
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            color: var(--daa-fg-muted);
+            padding: 32px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .footer-links {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: var(--daa-fg-muted);
+            text-decoration: none;
+            margin: 0 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Circuit background ── */
+        
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: var(--daa-fg); background: var(--daa-bg); 
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        nav { max-width: 1200px; margin: 0 auto; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 24px; color: var(--daa-primary); }
+        .nav-links { display: flex; gap: 24px; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--daa-fg); font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--daa-primary); }
+        .cta-button { background: var(--daa-primary); color: var(--daa-bg); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background 0.3s; display: inline-block; border: none; cursor: pointer; }
+        .cta-button:hover { background: #0052A3; }
+        
+        .hero { background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-primary-dark, #0052A3) 100%); color: var(--daa-bg); padding: 60px 32px; text-align: center; }
+        .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 800; margin-bottom: 16px; }
+        .hero p { font-size: 18px; max-width: 800px; margin: 0 auto 32px; opacity: 0.9; }
+
+        .pricing-section { max-width: 1200px; margin: 64px auto; padding: 0 32px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+        .pricing-card { background: var(--daa-card); border-radius: 16px; padding: 40px; box-shadow: 0 4px 20px var(--daa-shadow); display: flex; flex-direction: column; position: relative; transition: transform 0.3s; border: 1px solid var(--daa-bg); }
+        .pricing-card:hover { transform: translateY(-8px); }
+        .pricing-card.popular { border: 2px solid var(--daa-primary); }
+        .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--daa-primary); color: var(--daa-bg); padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        
+        .tier-name { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--daa-fg); }
+        .price { font-family: 'Poppins', sans-serif; font-size: 48px; font-weight: 800; margin-bottom: 24px; color: var(--daa-primary); }
+        .price span { font-size: 18px; font-weight: 500; color: var(--daa-fg-muted); }
+        
+        .features { list-style: none; margin-bottom: 32px; flex-grow: 1; }
+        .features li { margin-bottom: 12px; font-size: 15px; display: flex; align-items: flex-start; }
+        .features li::before { content: "✅"; margin-right: 12px; font-size: 14px; }
+        
+        .feature-description { font-size: 14px; color: var(--daa-fg-muted); margin-bottom: 24px; }
+
+        
+        
+
+        @media (max-width: 992px) { .pricing-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; } }
+    </style>
+</head>
+<body class="light-mode">
+                                <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html?v=2026030713">
+                    <svg viewBox="0 0 1000 250" width="180" height="45"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <g transform="translate(25, 25)">
+                            <circle cx="100" cy="100" r="75" fill="none"
+                                    stroke="#0066CC" stroke-width="4" />
+                            <polygon points="100,30 130,40 140,70 130,100 140,130
+                                            100,170 70,160 60,130 70,100 60,70
+                                            100,30"
+                                     fill="none" stroke="#0066CC" stroke-width="3"
+                                     stroke-linejoin="round" />
+                            <g stroke="#66CC00" stroke-width="3" fill="none"
+                               stroke-linecap="round">
+                                <path d="M 100 30 L 100 15 L 85 10" />
+                                <path d="M 130 70 L 155 50 L 170 55" />
+                                <path d="M 140 130 L 160 155 L 165 170" />
+                                <path d="M 60 160 L 30 180 L 20 175" />
+                                <path d="M 60 70 L 35 50 L 25 60" />
+                            </g>
+                            <g fill="#66CC00" opacity="0.9">
+                                <circle cx="100" cy="15" r="4" />
+                                <circle cx="170" cy="55" r="4" />
+                                <circle cx="165" cy="170" r="4" />
+                                <circle cx="20" cy="175" r="4" />
+                                <circle cx="25" cy="60" r="4" />
+                            </g>
+                        </g>
+                        <g transform="translate(260, 110)">
+                            <text font-family="'Poppins', sans-serif"
+                                  font-weight="800" font-size="64">
+                                <tspan id="logo-text-main" x="0" y="0">
+                                    DETROIT
+                                </tspan>
+                                <tspan id="logo-text-sub" x="0" y="75"
+                                       font-size="54" font-weight="700">
+                                    AUTOMATION ACADEMY
+                                </tspan>
+                            </text>
+                        </g>
+                    </svg>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="blog/">📝 Blog</a></li>
+                <li><a href="dashboard.html?v=2026030713">📊 Dashboard</a></li>
+                <li><a href="students.html?v=2026030713">👨‍🎓 Students</a></li>
+                <li><a href="instructors.html?v=2026030713">👨‍🏫 Instructors</a></li>
+                <li><a href="partners.html?v=2026030713">💼 Partners</a></li>
+                <li><a href="subscriptions.html?v=2026030713">💎 Subscriptions</a></li>
+            </ul>
+            <button id="theme-toggle">☀️ Light Mode</button>
+        </nav>
+    </header>
+
+    <script>
+        (function () {
+            const saved = localStorage.getItem('daa-theme');
+            const body = document.body;
+            const btn = document.getElementById('theme-toggle');
+            if (saved === 'light') {
+                body.classList.add('light-mode');
+                if (btn) btn.textContent = '🌙 Dark Mode';
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggle = document.getElementById('theme-toggle');
+                if (!toggle) return;
+                toggle.addEventListener('click', function () {
+                    const isLight = document.body.classList.toggle('light-mode');
+                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
+                    // Update SVG logo text color
+                    const main = document.getElementById('logo-text-main');
+                    const sub = document.getElementById('logo-text-sub');
+                    if (main) {
+                        main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
+                    }
+                    if (sub) {
+                        sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
+                    }
+                });
+            });
+        })();
+    </script><section class="hero">
+        <h1>Empower Your Organization with DAA</h1>
+        <p>Scale automation education with our proven curriculum, operational framework, and AI-driven platform.</p>
+    </section>
+
+    <section class="pricing-section">
+        <div class="pricing-grid">
+            <!-- Tier 1 -->
+            <div class="pricing-card">
+                <h3 class="tier-name">Educator Pack</h3>
+                <p class="feature-description">Perfect for individual teachers and small youth clubs.</p>
+                <div class="price">$29<span>/mo</span></div>
+                <ul class="features">
+                    <li>Full STEM Session Curriculum</li>
+                    <li>Detailed Lesson Plans</li>
+                    <li>Equipment Lists & Setup Guides</li>
+                    <li>Quality Checklists</li>
+                </ul>
+                <button class="cta-button" onclick="openCheckout('Educator Pack', 29)">Subscribe Now</button>
+            </div>
+
+            <!-- Tier 2 -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">Most Scalable</div>
+                <h3 class="tier-name">Academy-in-a-Box</h3>
+                <p class="feature-description">Everything you need to run a local DAA chapter.</p>
+                <div class="price">$149<span>/mo</span></div>
+                <ul class="features">
+                    <li>Everything in Educator Pack</li>
+                    <li>18-Doc Execution Framework</li>
+                    <li>Delegation & Task Matrices</li>
+                    <li>Marketing & Branding Package</li>
+                    <li>Stakeholder Comms Templates</li>
+                </ul>
+                <button class="cta-button" onclick="openCheckout('Academy-in-a-Box', 149)">Launch Your Academy</button>
+                <p style="font-size: 11px; margin-top: 12px; text-align: center;"><a href="EDUCATIONAL_PARTNER_LICENSE.md" style="color: var(--daa-fg-muted); text-decoration: underline;">View License Agreement</a></p>
+            </div>
+
+            <!-- Tier 3 -->
+            <div class="pricing-card">
+                <h3 class="tier-name">Automation Engine</h3>
+                <p class="feature-description">Enterprise-grade platform for large organizations.</p>
+                <div class="price">$499<span>/mo</span></div>
+                <ul class="features">
+                    <li>Everything in Academy-in-a-Box</li>
+                    <li>Detroit Automation Academy Registration Enterprise License</li>
+                    <li>AI Agent Integration (CTO/COO)</li>
+                    <li>Multi-tenant Dashboard</li>
+                    <li>Monthly Consulting Call</li>
+                </ul>
+                <button class="cta-button" onclick="contactSales('Automation Engine')">Go Enterprise</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Checkout Modal ── -->
+    <div id="checkout-modal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
+        <div style="background: var(--daa-bg-card); padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; border: 1px solid var(--daa-border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">💎</div>
+            <h2 id="modal-tier-name" style="font-family: 'Poppins', sans-serif; font-size: 24px; margin-bottom: 8px;">Checkout</h2>
+            <p id="modal-tier-price" style="font-size: 18px; color: var(--daa-primary); font-weight: 700; margin-bottom: 24px;">$0/mo</p>
+            
+            <form id="checkout-form" style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
+                <label style="font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.7;">Organization Name</label>
+                <input required type="text" placeholder="e.g. Detroit STEM Club" style="padding: 12px; border-radius: 8px; border: 1px solid var(--daa-border); background: var(--daa-bg); color: var(--daa-fg);">
+                
+                <label style="font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.7;">Billing Email</label>
+                <input required type="email" placeholder="billing@org.com" style="padding: 12px; border-radius: 8px; border: 1px solid var(--daa-border); background: var(--daa-bg); color: var(--daa-fg);">
+                
+                <div style="margin-top: 12px; padding: 16px; background: rgba(102, 204, 0, 0.1); border-radius: 8px; font-size: 13px; color: var(--daa-accent); border: 1px solid var(--daa-accent);">
+                    🛡️ Secure payment powered by Automated Technologies.
+                </div>
+                
+                <button type="submit" class="cta-button" style="margin-top: 16px; padding: 16px; background: var(--daa-primary); color: white;">Complete Subscription</button>
+                <button type="button" onclick="closeCheckout()" style="background: transparent; border: none; color: var(--daa-fg-muted); cursor: pointer; font-size: 13px; margin-top: 8px;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openCheckout(tier, price) {
+            document.getElementById('modal-tier-name').innerText = tier;
+            document.getElementById('modal-tier-price').innerText = `$${price}/mo`;
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-modal').style.display = 'none';
+        }
+
+        function contactSales(tier) {
+            window.location.href = `mailto:info@detroitautomationacademy.com?subject=Enterprise Inquiry: ${tier}`;
+        }
+
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert("Thank you for your interest! In this prototype, subscriptions are recorded but not processed. A representative will contact you shortly.");
+            closeCheckout();
+        });
+    </script>
+
+                                <footer>
+        <div class="footer-links">
+            <a href="blog/">Blog</a>
+            <a href="dashboard.html?v=2026030713">Dashboard</a>
+            <a href="https://github.com/smit4786/detroit-automation-academy-public"
+               target="_blank">GitHub</a>
+            <a href="mailto:info@detroitautomationacademy.com">Contact</a>
+        </div>
+        <p>© 2026 Detroit Automation Academy. All rights reserved. |
+           Automation skills for Detroit's future, built by Detroiters.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Detroit Automation Academy</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="branding/palette.css">
+    <style>
+        /* ── Standardized Header/Footer Styles ── */
+        header {
+            background: rgba(13, 17, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--daa-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        body.light-mode header {
+            background: rgba(245, 247, 250, 0.92);
+        }
+
+        footer {
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            color: var(--daa-fg-muted);
+            padding: 32px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .footer-links {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: var(--daa-fg-muted);
+            text-decoration: none;
+            margin: 0 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Standardized Header/Footer Styles ── */
+        
+
+        body.light-mode 
+
+        
+
+        
+
+        
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        /* ── Circuit background ── */
+        
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--daa-fg);
+            background: var(--daa-bg);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ── Circuit background ── */
+        
+
+        /* ── Nav ── */
+        
+
+        body.light-mode 
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        #logo-text-main {
+            fill: var(--daa-fg);
+            transition: fill 0.3s;
+        }
+
+        #logo-text-sub {
+            fill: var(--daa-primary);
+            transition: fill 0.3s;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--daa-fg-muted);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s;
+            letter-spacing: 0.01em;
+        }
+
+        .nav-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        #theme-toggle {
+            background: var(--daa-bg-raised);
+            color: var(--daa-fg);
+            border: 1px solid var(--daa-border);
+            border-radius: 999px;
+            padding: 7px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #theme-toggle:hover {
+            border-color: var(--daa-accent);
+            color: var(--daa-accent);
+        }
+
+        /* ── Dashboard Content ── */
+        .hero {
+            position: relative;
+            padding: 60px 32px 40px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--daa-fg);
+        }
+
+        .dashboard-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            padding: 32px;
+        }
+
+        .tile {
+            background: var(--daa-bg-card);
+            border: 1px solid var(--daa-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px var(--daa-shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex: 1 1 320px;
+            min-width: 320px;
+        }
+
+        .tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--daa-shadow);
+            border-color: var(--daa-primary);
+        }
+
+        .tile h2 {
+            font-family: 'Poppins', sans-serif;
+            margin-top: 0;
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--daa-fg);
+        }
+
+        .tile h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--daa-fg-muted);
+            margin-bottom: 16px;
+        }
+
+        .status-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .status-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--daa-border);
+            font-size: 14px;
+        }
+
+        .status-list li:last-child {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        .badge-active { background: rgba(102, 204, 0, 0.1); color: var(--daa-accent); border: 1px solid var(--daa-accent); }
+        .badge-pending { background: rgba(204, 85, 34, 0.1); color: var(--daa-secondary); border: 1px solid var(--daa-secondary); }
+
+        
+
+        
+        
+        .footer-links a:hover { color: var(--daa-accent); }
+    </style>
+</head>
+
+<body class="light-mode">
+                        <header>
+        <nav>
+            <div class="logo">
+                <a href="index.html?v=2026030713">
+                    <svg viewBox="0 0 1000 250" width="180" height="45"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <g transform="translate(25, 25)">
+                            <circle cx="100" cy="100" r="75" fill="none"
+                                    stroke="#0066CC" stroke-width="4" />
+                            <polygon points="100,30 130,40 140,70 130,100 140,130
+                                            100,170 70,160 60,130 70,100 60,70
+                                            100,30"
+                                     fill="none" stroke="#0066CC" stroke-width="3"
+                                     stroke-linejoin="round" />
+                            <g stroke="#66CC00" stroke-width="3" fill="none"
+                               stroke-linecap="round">
+                                <path d="M 100 30 L 100 15 L 85 10" />
+                                <path d="M 130 70 L 155 50 L 170 55" />
+                                <path d="M 140 130 L 160 155 L 165 170" />
+                                <path d="M 60 160 L 30 180 L 20 175" />
+                                <path d="M 60 70 L 35 50 L 25 60" />
+                            </g>
+                            <g fill="#66CC00" opacity="0.9">
+                                <circle cx="100" cy="15" r="4" />
+                                <circle cx="170" cy="55" r="4" />
+                                <circle cx="165" cy="170" r="4" />
+                                <circle cx="20" cy="175" r="4" />
+                                <circle cx="25" cy="60" r="4" />
+                            </g>
+                        </g>
+                        <g transform="translate(260, 110)">
+                            <text font-family="'Poppins', sans-serif"
+                                  font-weight="800" font-size="64">
+                                <tspan id="logo-text-main" x="0" y="0">
+                                    DETROIT
+                                </tspan>
+                                <tspan id="logo-text-sub" x="0" y="75"
+                                       font-size="54" font-weight="700">
+                                    AUTOMATION ACADEMY
+                                </tspan>
+                            </text>
+                        </g>
+                    </svg>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="blog/">📝 Blog</a></li>
+                <li><a href="dashboard.html?v=2026030713">📊 Dashboard</a></li>
+                <li><a href="students.html?v=2026030713">👨‍🎓 Students</a></li>
+                <li><a href="instructors.html?v=2026030713">👨‍🏫 Instructors</a></li>
+                <li><a href="partners.html?v=2026030713">💼 Partners</a></li>
+                <li><a href="subscriptions.html?v=2026030713">💎 Subscriptions</a></li>
+            </ul>
+            <button id="theme-toggle">☀️ Light Mode</button>
+        </nav>
+    </header>
+
+    <script>
+        (function () {
+            const saved = localStorage.getItem('daa-theme');
+            const body = document.body;
+            const btn = document.getElementById('theme-toggle');
+            if (saved === 'light') {
+                body.classList.add('light-mode');
+                if (btn) btn.textContent = '🌙 Dark Mode';
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggle = document.getElementById('theme-toggle');
+                if (!toggle) return;
+                toggle.addEventListener('click', function () {
+                    const isLight = document.body.classList.toggle('light-mode');
+                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
+                    // Update SVG logo text color
+                    const main = document.getElementById('logo-text-main');
+                    const sub = document.getElementById('logo-text-sub');
+                    if (main) {
+                        main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
+                    }
+                    if (sub) {
+                        sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
+                    }
+                });
+            });
+        })();
+    </script>
+
+    <section class="hero">
+        <h1>Event Status Dashboard</h1>
+        <p>Live metrics and synchronization from @AutomatedTechnologies</p>
+    </section>
+
+    <div class="dashboard-container">
+        <!-- Event Status Tile -->
+        <div class="tile">
+            <h2 style="color: var(--daa-primary);">🚀 Live Student Signups</h2>
+            <h3>In partnership with Boys & Girls Clubs of Greater Detroit</h3>
+            <ul class="status-list">
+                <li><span style="font-weight:600;">Participant #1</span> <span class="badge badge-active">Registered</span></li>
+                <li><span style="font-weight:600;">Participant #2</span> <span class="badge badge-active">Registered</span></li>
+                <li><span style="font-weight:600;">Participant #3</span> <span class="badge badge-active">Registered</span></li>
+                <li><span style="font-weight:600;">Participant #4</span> <span class="badge badge-active">Registered</span></li>
+                <li><span style="font-weight:600;">Participant #5</span> <span class="badge badge-active">Registered</span></li>
+            </ul>
+            <p style="font-size:12px; margin-top:12px; opacity:0.7;">5 anonymized signups acknowledged. Real-time updates active.</p>
+        </div>
+
+        <!-- Daily News Tile -->
+        <div class="tile">
+            <h2 style="color: var(--daa-secondary);">📰 Daily News & Updates</h2>
+            <ul class="status-list">
+                <li><strong>Partnership:</strong> Permanent residency established at BGC Detroit.</li>
+                <li><strong>Success:</strong> Launch event completed with 50+ attendees.</li>
+                <li><strong>System:</strong> UI/UX Revitalization now live across all pillars.</li>
+            </ul>
+        </div>
+
+        <!-- Agent Highlight Tile -->
+        <div class="tile">
+            <h2 style="color: var(--daa-accent);">🤖 Project Agents</h2>
+            <ul class="status-list">
+                <li><strong>AI Copilot:</strong> <span class="badge badge-active">Active</span></li>
+                <li><strong>Growth Lead (CMO):</strong> <span class="badge badge-active">Active</span></li>
+                <li><strong>Admin Coordinator:</strong> <span class="badge badge-pending">Syncing</span></li>
+                <li><strong>Privacy Auditor:</strong> <span class="badge badge-active">Monitoring</span></li>
+                <li><strong>Social Manager:</strong> <span class="badge badge-active">Drafting</span></li>
+            </ul>
+        </div>
+
+        <!-- Admin Tile -->
+        <div class="tile" style="background: var(--daa-bg-raised); border-color: var(--daa-secondary);">
+            <h2>🔒 Admin Portal</h2>
+            <p style="font-size: 14px; color: var(--daa-fg-muted);">Secure access required for staff metrics and management.</p>
+            <a href="admin.html" style="display: inline-block; margin-top: 16px; color: var(--daa-accent); text-decoration: none; font-weight: 600;">➡️ Access CRM Admin</a>
+        </div>
+
+        <!-- Ecosystem Insights Tile -->
+        <div class="tile" style="flex: 1 1 100%; background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-accent) 100%); color: #fff;">
+            <h2 style="color: #fff;">🌐 Ecosystem Insights (MCP Sync)</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px;">
+                <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
+                    <h4 style="margin-top:0; color: #fff;">@AT_Wealth Velocity</h4>
+                    <p style="font-size: 24px; font-weight: 800; margin: 8px 0;">Phase 1 Active</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
+                    <h4 style="margin-top:0; color: #fff;">@AT_Diary Sentiment</h4>
+                    <p style="font-size: 24px; font-weight: 800; margin: 8px 0;">Baseline Normal</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
+                    <h4 style="margin-top:0; color: #fff;">System Audits</h4>
+                    <p style="font-size: 24px; font-weight: 800; margin: 8px 0;">0 PII Leaks</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                        <footer>
+        <div class="footer-links">
+            <a href="blog/">Blog</a>
+            <a href="dashboard.html?v=2026030713">Dashboard</a>
+            <a href="https://github.com/smit4786/detroit-automation-academy-public"
+               target="_blank">GitHub</a>
+            <a href="mailto:info@detroitautomationacademy.com">Contact</a>
+        </div>
+        <p>© 2026 Detroit Automation Academy. All rights reserved. |
+           Automation skills for Detroit's future, built by Detroiters.</p>
+    </footer>
+</body>
+
+</html>
