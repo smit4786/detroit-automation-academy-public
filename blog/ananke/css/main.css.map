@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "main.css",
-	"sourceRoot": "/Users/jsmith34/Gemini-Workspace/github/detroit-automation-academy-public/blog-source",
+	"sourceRoot": "/Users/jsmith34/Documents/github/detroit-automation-academy-public/blog-source",
 	"sources": [
 		"ananke/css/main.css"
 	],
