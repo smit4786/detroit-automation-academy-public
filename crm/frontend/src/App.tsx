@@ -18,16 +18,6 @@ const AppContent: React.FC = () => {
   const [tenantId, setTenantId] = useState('ALL');
   const [view, setView] = useState<'enroll' | 'admin' | 'instructor'>('enroll');
   const [adminSubView, setAdminSubView] = useState<'list' | 'details' | 'revenue' | 'instructors'>('list');
-  const [theme, setTheme] = useState<'light' | 'dark'>(
-    (localStorage.getItem('daa-theme') as 'light' | 'dark') || 'dark'
-  );
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('daa-theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   const [isUnlocked, setIsUnlocked] = useState<boolean>(
     sessionStorage.getItem('daa_admin_auth') === 'true'
@@ -244,14 +234,6 @@ const AppContent: React.FC = () => {
           </a>
 
           <nav className="daa-nav-tabs">
-            <button
-              className="daa-tab"
-              onClick={toggleTheme}
-              style={{ fontSize: '16px' }}
-              title="Toggle Theme"
-            >
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
             <button
               className={`daa-tab${view === 'enroll' ? ' active-green' : ''}`}
               onClick={() => setView('enroll')}

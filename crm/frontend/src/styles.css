@@ -1,78 +1,81 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
 
-/* ─── Design Tokens ──────────────────────────────────────────── */
+/* ─── Design Tokens (AEAM Sentient Rebrand V14.2) ────────────── */
 :root {
-  --daa-bg: #0D1117;
-  --daa-bg-card: #161B22;
-  --daa-bg-raised: #1C2333;
+  /* Sentient V10 Palette (Default Dark) */
+  --daa-bg: #020b18; /* Deep Space Blue */
+  --daa-bg-card: rgba(255, 255, 255, 0.05);
+  --daa-bg-raised: #051937;
   --daa-fg: #E6EDF3;
-  --daa-fg-muted: #8B949E;
-  --daa-primary: #0066CC;
-  --daa-primary-glow: rgba(0, 102, 204, 0.25);
-  --daa-secondary: #CC5522;
-  --daa-accent: #66CC00;
-  --daa-accent-glow: rgba(102, 204, 0, 0.2);
-  --daa-card: #161B22;
-  --daa-border: rgba(0, 102, 204, 0.18);
-  --daa-border-green: rgba(102, 204, 0, 0.25);
-  --daa-link: #0066CC;
-  --daa-shadow: rgba(0, 0, 0, 0.4);
-  --daa-shadow-blue: 0 0 32px rgba(0, 102, 204, 0.15);
+  --daa-fg-muted: rgba(255, 255, 255, 0.6);
+  --daa-primary: #00ff41; /* Sentient Matrix Green */
+  --daa-primary-glow: rgba(0, 255, 65, 0.25);
+  --daa-secondary: #ffb700; /* Matrix Amber */
+  --daa-accent: #00F2FF; /* Chrome DevBlue */
+  --daa-accent-glow: rgba(0, 242, 255, 0.2);
+  --daa-card: rgba(255, 255, 255, 0.05);
+  --daa-border: rgba(0, 255, 65, 0.3);
+  --daa-border-green: rgba(0, 255, 65, 0.4);
+  --daa-link: #00ff41;
+  --daa-shadow: rgba(0, 0, 0, 0.6);
+  --daa-shadow-blue: 0 0 32px rgba(0, 255, 65, 0.15);
 
   /* Legacy variable mapping to prevent breaking existing components */
   --bg: var(--daa-bg);
   --bg-card: var(--daa-bg-card);
-  --bg-glass: rgba(13, 17, 23, 0.75);
+  --bg-glass: rgba(2, 11, 24, 0.75);
   --bg-input: var(--daa-bg-raised);
   --glass-border: var(--daa-border);
   --border: var(--daa-border);
   --border-focus: var(--daa-primary);
   --primary: var(--daa-primary);
-  --primary-dark: #0052A3;
-  --green: var(--daa-accent);
-  --green-dark: #52A300;
+  --primary-dark: #008f23;
+  --green: var(--daa-primary);
+  --green-dark: #008f23;
   --secondary: var(--daa-secondary);
   --text: var(--daa-fg);
   --text-muted: var(--daa-fg-muted);
-  --text-dim: #4D5566;
+  --text-dim: rgba(255, 255, 255, 0.4);
   --shadow-blue: var(--daa-shadow-blue);
-  --shadow-green: 0 0 30px var(--daa-accent-glow);
+  --shadow-green: 0 0 30px var(--daa-primary-glow);
   --radius-card: 20px;
   --radius-input: 12px;
   --radius-pill: 999px;
-  --nav-bg: rgba(13, 17, 23, 0.88);
+  --nav-bg: rgba(2, 11, 24, 0.88);
 }
 
 /* Light Mode Overrides */
-[data-theme='light'] {
-  --daa-bg: #F5F7FA;
-  --daa-bg-card: #FFFFFF;
-  --daa-bg-raised: #EDF0F5;
-  --daa-fg: #1A1F2E;
-  --daa-fg-muted: #6B7280;
-  --daa-primary: #0055BB;
-  --daa-primary-glow: rgba(0, 85, 187, 0.12);
-  --daa-secondary: #CC5522;
-  --daa-accent: #4DAA00;
-  --daa-accent-glow: rgba(77, 170, 0, 0.12);
-  --daa-card: #FFFFFF;
-  --daa-border: #DDE3EE;
-  --daa-border-green: rgba(77, 170, 0, 0.2);
-  --daa-link: #0055BB;
-  --daa-shadow: rgba(0, 0, 0, 0.08);
-  --daa-shadow-blue: 0 4px 20px rgba(0, 85, 187, 0.1);
+@media (prefers-color-scheme: light) {
+  :root {
+    --daa-bg: #f0f4f8;
+    --daa-bg-card: #ffffff;
+    --daa-bg-raised: #e1e8ed;
+    --daa-fg: #020b18;
+    --daa-fg-muted: #4a5568;
+    --daa-primary: #008f23;
+    --daa-primary-glow: rgba(0, 143, 35, 0.12);
+    --daa-secondary: #cc8e00;
+    --daa-accent: #007a8a;
+    --daa-accent-glow: rgba(0, 122, 138, 0.12);
+    --daa-card: #ffffff;
+    --daa-border: #cbd5e0;
+    --daa-border-green: rgba(0, 143, 35, 0.2);
+    --daa-link: #008f23;
+    --daa-shadow: rgba(0, 0, 0, 0.08);
+    --daa-shadow-blue: 0 4px 20px rgba(0, 143, 35, 0.1);
 
-  /* Legacy mapping */
-  --bg: var(--daa-bg);
-  --bg-card: var(--daa-bg-card);
-  --bg-glass: rgba(245, 247, 250, 0.92);
-  --bg-input: #FFFFFF;
-  --border: var(--daa-border);
-  --text: var(--daa-fg);
-  --text-muted: var(--daa-fg-muted);
-  --text-dim: #8C959F;
-  --shadow-blue: var(--daa-shadow-blue);
-  --nav-bg: rgba(245, 247, 250, 0.92);
+    /* Legacy mapping */
+    --bg: var(--daa-bg);
+    --bg-card: var(--daa-bg-card);
+    --bg-glass: rgba(240, 244, 248, 0.92);
+    --bg-input: #FFFFFF;
+    --border: var(--daa-border);
+    --text: var(--daa-fg);
+    --text-muted: var(--daa-fg-muted);
+    --text-dim: #8C959F;
+    --shadow-blue: var(--daa-shadow-blue);
+    --nav-bg: rgba(240, 244, 248, 0.92);
+  }
 }
 
 /* ─── Reset ──────────────────────────────────────────────────── */
@@ -95,7 +98,7 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   overflow-x: hidden;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ─── Circuit Background ─────────────────────────────────────── */
@@ -104,8 +107,8 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0, 102, 204, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 102, 204, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(0, 255, 65, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.04) 1px, transparent 1px);
   background-size: 48px 48px;
   pointer-events: none;
   z-index: 0;
@@ -118,7 +121,7 @@ body::after {
   left: -20%;
   width: 60%;
   height: 80%;
-  background: radial-gradient(ellipse, rgba(0, 102, 204, 0.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(0, 255, 65, 0.06) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -163,7 +166,7 @@ body::after {
 .daa-logo-mark {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, var(--primary), var(--green));
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -224,13 +227,13 @@ body::after {
 .daa-tab.active {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #fff;
-  box-shadow: 0 2px 12px rgba(0, 102, 204, 0.4);
+  box-shadow: 0 2px 12px rgba(0, 255, 65, 0.4);
 }
 
 .daa-tab.active-green {
-  background: linear-gradient(135deg, var(--green), var(--green-dark));
-  color: #0D1117;
-  box-shadow: 0 2px 12px rgba(102, 204, 0, 0.35);
+  background: linear-gradient(135deg, var(--secondary), #cc8e00);
+  color: #020b18;
+  box-shadow: 0 2px 12px rgba(255, 183, 0, 0.35);
 }
 
 /* ─── Page Shell ─────────────────────────────────────────────── */
@@ -257,7 +260,7 @@ body::after {
 
 /* Card header band */
 .daa-form-header {
-  background: linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(102, 204, 0, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(0, 255, 65, 0.15) 0%, rgba(255, 183, 0, 0.08) 100%);
   border-bottom: 1px solid var(--border);
   padding: 36px 40px 28px;
   text-align: center;
@@ -273,7 +276,7 @@ body::after {
 }
 
 .daa-form-header h1 span {
-  color: var(--green);
+  color: var(--primary);
 }
 
 .daa-form-header p {
@@ -367,7 +370,7 @@ body::after {
 .daa-textarea:focus,
 .daa-select:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+  box-shadow: 0 0 0 3px rgba(0, 255, 65, 0.15);
 }
 
 .daa-textarea {
@@ -378,14 +381,14 @@ body::after {
 
 .daa-select {
   cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B949E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300ff41' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
   padding-right: 40px;
 }
 
 .daa-select option {
-  background: #1C2333;
+  background: #051937;
   color: var(--text);
 }
 
@@ -410,14 +413,14 @@ body::after {
 }
 
 .daa-program-chip:hover {
-  border-color: rgba(0, 102, 204, 0.4);
-  background: rgba(0, 102, 204, 0.06);
+  border-color: rgba(0, 255, 65, 0.4);
+  background: rgba(0, 255, 65, 0.06);
 }
 
 .daa-program-chip.selected {
-  border-color: var(--green);
-  background: rgba(102, 204, 0, 0.08);
-  box-shadow: 0 0 0 1px rgba(102, 204, 0, 0.2);
+  border-color: var(--daa-primary);
+  background: rgba(0, 255, 65, 0.08);
+  box-shadow: 0 0 0 1px rgba(0, 255, 65, 0.2);
 }
 
 .daa-program-check {
@@ -434,8 +437,8 @@ body::after {
 }
 
 .daa-program-chip.selected .daa-program-check {
-  background: var(--green);
-  border-color: var(--green);
+  background: var(--daa-primary);
+  border-color: var(--daa-primary);
 }
 
 .daa-program-check-icon {
@@ -444,7 +447,7 @@ body::after {
   opacity: 0;
   transition: opacity 0.15s ease;
   fill: none;
-  stroke: #0D1117;
+  stroke: #020b18;
   stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -473,22 +476,22 @@ body::after {
 .daa-submit {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+  background: linear-gradient(135deg, var(--daa-primary) 0%, var(--primary-dark) 100%);
   border: none;
   border-radius: 14px;
-  color: #0D1117;
+  color: #020b18;
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s ease;
   letter-spacing: 0.02em;
-  box-shadow: 0 4px 20px rgba(102, 204, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 255, 65, 0.3);
 }
 
 .daa-submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(102, 204, 0, 0.4);
+  box-shadow: 0 8px 28px rgba(0, 255, 65, 0.4);
 }
 
 .daa-submit:active:not(:disabled) {
@@ -535,33 +538,33 @@ body::after {
   border-radius: 50%;
   background: var(--primary);
   box-shadow: 0 0 10px var(--primary);
-  animation: pulse-blue 2s infinite;
+  animation: pulse-green 2s infinite;
 }
 
-@keyframes pulse-blue {
+@keyframes pulse-green {
   0% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 102, 204, 0.7);
+    box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.7);
   }
 
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 8px rgba(0, 102, 204, 0);
+    box-shadow: 0 0 0 8px rgba(0, 255, 65, 0);
   }
 
   100% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 102, 204, 0);
+    box-shadow: 0 0 0 0 rgba(0, 255, 65, 0);
   }
 }
 
 .daa-progress-step.active .daa-progress-dot {
-  background: var(--green);
-  box-shadow: 0 0 8px rgba(102, 204, 0, 0.6);
+  background: var(--secondary);
+  box-shadow: 0 0 8px rgba(255, 183, 0, 0.6);
 }
 
 .daa-progress-step.done .daa-progress-dot {
-  background: var(--green);
+  background: var(--primary);
 }
 
 .daa-progress-line {
@@ -576,7 +579,7 @@ body::after {
   width: 100%;
   max-width: 520px;
   background: var(--bg-glass);
-  border: 1px solid rgba(102, 204, 0, 0.25);
+  border: 1px solid var(--border-green);
   border-radius: var(--radius-card);
   backdrop-filter: blur(12px);
   padding: 56px 40px;
@@ -588,8 +591,8 @@ body::after {
 .daa-success-icon {
   width: 72px;
   height: 72px;
-  background: rgba(102, 204, 0, 0.12);
-  border: 2px solid rgba(102, 204, 0, 0.4);
+  background: rgba(0, 255, 65, 0.12);
+  border: 2px solid var(--border-green);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -626,7 +629,7 @@ body::after {
 
 .daa-link-btn:hover {
   border-color: var(--primary);
-  background: rgba(0, 102, 204, 0.08);
+  background: rgba(0, 255, 65, 0.08);
 }
 
 /* ─── Admin Dashboard ────────────────────────────────────────── */
@@ -697,7 +700,7 @@ body::after {
 .daa-stat-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-blue);
-  border-color: rgba(0, 102, 204, 0.4);
+  border-color: rgba(0, 255, 65, 0.4);
 }
 
 .daa-stat-card-label {
@@ -717,11 +720,11 @@ body::after {
 }
 
 .daa-stat-card-value.green {
-  color: var(--green);
+  color: var(--primary);
 }
 
 .daa-stat-card-value.blue {
-  color: var(--primary);
+  color: var(--secondary);
 }
 
 /* ─── Student Table ──────────────────────────────────────────── */
@@ -739,7 +742,7 @@ body::after {
 
 .daa-table thead tr {
   border-bottom: 1px solid var(--border);
-  background: rgba(0, 102, 204, 0.06);
+  background: rgba(0, 255, 65, 0.06);
 }
 
 .daa-table th {
@@ -762,7 +765,7 @@ body::after {
 }
 
 .daa-table tbody tr:hover {
-  background: rgba(0, 102, 204, 0.04);
+  background: rgba(0, 255, 65, 0.04);
 }
 
 .daa-table td {
@@ -792,21 +795,21 @@ body::after {
 }
 
 .daa-badge.active {
-  background: rgba(102, 204, 0, 0.12);
-  color: var(--green);
-  border: 1px solid rgba(102, 204, 0, 0.25);
+  background: rgba(0, 255, 65, 0.12);
+  color: var(--primary);
+  border: 1px solid var(--border-green);
 }
 
 .daa-badge.inquiry {
-  background: rgba(0, 102, 204, 0.12);
-  color: var(--primary);
-  border: 1px solid rgba(0, 102, 204, 0.25);
+  background: rgba(255, 183, 0, 0.12);
+  color: var(--secondary);
+  border: 1px solid rgba(255, 183, 0, 0.25);
 }
 
 .daa-badge.graduated {
-  background: rgba(0, 204, 255, 0.12);
-  color: #00ccff;
-  border: 1px solid rgba(0, 204, 255, 0.25);
+  background: rgba(0, 242, 255, 0.12);
+  color: var(--accent);
+  border: 1px solid var(--daa-accent-glow);
 }
 
 .daa-badge.waitlist {

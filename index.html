@@ -69,10 +69,6 @@
             z-index: 100;
         }
 
-        body.light-mode header {
-            background: rgba(245, 247, 250, 0.92);
-        }
-
         nav {
             max-width: 1200px;
             margin: 0 auto;
@@ -116,24 +112,6 @@
         }
 
         .nav-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        #theme-toggle {
-            background: var(--daa-bg-raised);
-            color: var(--daa-fg);
-            border: 1px solid var(--daa-border);
-            border-radius: 999px;
-            padding: 7px 16px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
-
-        #theme-toggle:hover {
-            border-color: var(--daa-accent);
             color: var(--daa-accent);
         }
 
@@ -690,35 +668,8 @@
                 <li><a href="partners.html">💼 Partners</a></li>
                 <li><a href="subscriptions.html">💎 Subscriptions</a></li>
             </ul>
-            <button id="theme-toggle">☀️ Light Mode</button>
         </nav>
     </header>
-
-    <script>
-        (function () {
-            const saved = localStorage.getItem('daa-theme');
-            const body = document.body;
-            const btn = document.getElementById('theme-toggle');
-            if (saved === 'light') {
-                body.classList.add('light-mode');
-                if (btn) btn.textContent = '🌙 Dark Mode';
-            }
-            document.addEventListener('DOMContentLoaded', function () {
-                const toggle = document.getElementById('theme-toggle');
-                if (!toggle) return;
-                toggle.addEventListener('click', function () {
-                    const isLight = document.body.classList.toggle('light-mode');
-                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
-                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
-                    // Update SVG logo text color
-                    const main = document.getElementById('logo-text-main');
-                    const sub = document.getElementById('logo-text-sub');
-                    if (main) main.setAttribute('fill', isLight ? '#1A1F2E' : 'var(--daa-fg)');
-                    if (sub) sub.setAttribute('fill', isLight ? '#0055BB' : 'var(--daa-primary)');
-                });
-            });
-        })();
-    </script>
 
     <!-- ── Hero ── -->
     <section class="hero">

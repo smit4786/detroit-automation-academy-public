@@ -1,4 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sonic on Automated Insights</title><link>https://detroitautomationacademy.com/blog/ru/tags/sonic/</link><description>Recent content in Sonic on Automated Insights</description><generator>Hugo</generator><language>ru</language><lastBuildDate>Mon, 09 Mar 2026 10:00:00 -0500</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/ru/tags/sonic/index.xml" rel="self" type="application/rss+xml"/><item><title>Представляем Project Sonic: Будущее нейронной аудио-координации</title><link>https://detroitautomationacademy.com/blog/ru/posts/proyekt-sonic-vvedeniye/</link><pubDate>Mon, 09 Mar 2026 10:00:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/ru/posts/proyekt-sonic-vvedeniye/</guid><description>&lt;h1 id="project-sonic-оркестровка-акустической-сети"&gt;Project Sonic: Оркестровка акустической сети&lt;/h1&gt;
-&lt;p&gt;Сегодня &lt;strong&gt;@AutomatedTechnologies&lt;/strong&gt; с гордостью объявляет об официальном запуске &lt;strong&gt;Project Sonic&lt;/strong&gt;, высокотехнологичной эволюции нашей аудиоэкосистемы. В соответствии с исполнительным мандатом &lt;strong&gt;Фазы 9&lt;/strong&gt;, Project Sonic переводит нашу музыкальную инфраструктуру с устаревших сервисов Spotify на передовую платформу &lt;strong&gt;Apple MusicKit&lt;/strong&gt;, обеспечивая телеметрию с нулевой задержкой и кураторство на основе анализа настроений.&lt;/p&gt;
-&lt;h2 id="sonic-hud-v18"&gt;Sonic HUD (v1.8)&lt;/h2&gt;
-&lt;p&gt;Центральное место в этой трансформации занимает &lt;strong&gt;Sonic HUD (Фаза 20)&lt;/strong&gt; — протокол управления нейронным оборудованием, интегрированный в координационный центр &lt;strong&gt;Oculus v5&lt;/strong&gt;. HUD предоставляет операторам визуализацию «Sonic Mesh» (звуковой сети) в реальном времени — нашей глобальной сети акустических узлов.&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sonic on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/tags/sonic/</link>
+    <description>Recent content in Sonic on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Mon, 09 Mar 2026 10:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/sonic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Представляем Project Sonic: Будущее нейронной аудио-координации</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/proyekt-sonic-vvedeniye/</link>
+      <pubDate>Mon, 09 Mar 2026 10:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/proyekt-sonic-vvedeniye/</guid>
+      <description>&lt;h1 id=&#34;project-sonic-оркестровка-акустической-сети&#34;&gt;Project Sonic: Оркестровка акустической сети&lt;/h1&gt;&#xA;&lt;p&gt;Сегодня &lt;strong&gt;@AutomatedTechnologies&lt;/strong&gt; с гордостью объявляет об официальном запуске &lt;strong&gt;Project Sonic&lt;/strong&gt;, высокотехнологичной эволюции нашей аудиоэкосистемы. В соответствии с исполнительным мандатом &lt;strong&gt;Фазы 9&lt;/strong&gt;, Project Sonic переводит нашу музыкальную инфраструктуру с устаревших сервисов Spotify на передовую платформу &lt;strong&gt;Apple MusicKit&lt;/strong&gt;, обеспечивая телеметрию с нулевой задержкой и кураторство на основе анализа настроений.&lt;/p&gt;&#xA;&lt;h2 id=&#34;sonic-hud-v18&#34;&gt;Sonic HUD (v1.8)&lt;/h2&gt;&#xA;&lt;p&gt;Центральное место в этой трансформации занимает &lt;strong&gt;Sonic HUD (Фаза 20)&lt;/strong&gt; — протокол управления нейронным оборудованием, интегрированный в координационный центр &lt;strong&gt;Oculus v5&lt;/strong&gt;. HUD предоставляет операторам визуализацию «Sonic Mesh» (звуковой сети) в реальном времени — нашей глобальной сети акустических узлов.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

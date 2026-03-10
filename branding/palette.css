@@ -1,43 +1,45 @@
-/* ── Detroit Automation Academy — Brand Palette ──────────────────────────────
-   Dark-first design. Light mode available via .light-mode body class.
+/* ── Detroit Automation Academy — AEAM Sentient Rebrand ───────────────────────
+   V14.2: Triple-Cloud Unified Identity.
+   Dynamic theme switching based on system preference (prefers-color-scheme).
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* ── Dark (Default) ─────────────────────────────────────────────────────── */
 :root {
-  --daa-bg: #0D1117;
-  --daa-bg-card: #161B22;
-  --daa-bg-raised: #1C2333;
+  /* Sentient V10 Palette (Default Dark) */
+  --daa-bg: #020b18; /* Deep Space Blue */
+  --daa-bg-card: rgba(255, 255, 255, 0.05);
+  --daa-bg-raised: #051937;
   --daa-fg: #E6EDF3;
-  --daa-fg-muted: #8B949E;
-  --daa-primary: #0066CC;
-  --daa-primary-glow: rgba(0, 102, 204, 0.25);
-  --daa-secondary: #CC5522;
-  --daa-accent: #66CC00;
-  --daa-accent-glow: rgba(102, 204, 0, 0.2);
-  --daa-card: #161B22;
-  --daa-border: rgba(0, 102, 204, 0.18);
-  --daa-border-green: rgba(102, 204, 0, 0.25);
-  --daa-link: #0066CC;
-  --daa-shadow: rgba(0, 0, 0, 0.4);
-  --daa-shadow-blue: 0 0 32px rgba(0, 102, 204, 0.15);
+  --daa-fg-muted: rgba(255, 255, 255, 0.6);
+  --daa-primary: #00ff41; /* Sentient Matrix Green */
+  --daa-primary-glow: rgba(0, 255, 65, 0.25);
+  --daa-secondary: #ffb700; /* Matrix Amber */
+  --daa-accent: #00F2FF; /* Chrome DevBlue */
+  --daa-accent-glow: rgba(0, 242, 255, 0.2);
+  --daa-card: rgba(255, 255, 255, 0.05);
+  --daa-border: rgba(0, 255, 65, 0.3);
+  --daa-border-green: rgba(0, 255, 65, 0.4);
+  --daa-link: #00ff41;
+  --daa-shadow: rgba(0, 0, 0, 0.6);
+  --daa-shadow-blue: 0 0 32px rgba(0, 255, 65, 0.15);
 }
 
-/* ── Light Mode Override ─────────────────────────────────────────────────── */
-body.light-mode {
-  --daa-bg: #F5F7FA;
-  --daa-bg-card: #FFFFFF;
-  --daa-bg-raised: #EDF0F5;
-  --daa-fg: #1A1F2E;
-  --daa-fg-muted: #6B7280;
-  --daa-primary: #0055BB;
-  --daa-primary-glow: rgba(0, 85, 187, 0.12);
-  --daa-secondary: #CC5522;
-  --daa-accent: #4DAA00;
-  --daa-accent-glow: rgba(77, 170, 0, 0.12);
-  --daa-card: #FFFFFF;
-  --daa-border: #DDE3EE;
-  --daa-border-green: rgba(77, 170, 0, 0.2);
-  --daa-link: #0055BB;
-  --daa-shadow: rgba(0, 0, 0, 0.08);
-  --daa-shadow-blue: 0 4px 20px rgba(0, 85, 187, 0.1);
+@media (prefers-color-scheme: light) {
+  :root {
+    --daa-bg: #f0f4f8;
+    --daa-bg-card: #ffffff;
+    --daa-bg-raised: #e1e8ed;
+    --daa-fg: #020b18;
+    --daa-fg-muted: #4a5568;
+    --daa-primary: #008f23;
+    --daa-primary-glow: rgba(0, 143, 35, 0.12);
+    --daa-secondary: #cc8e00;
+    --daa-accent: #007a8a;
+    --daa-accent-glow: rgba(0, 122, 138, 0.12);
+    --daa-card: #ffffff;
+    --daa-border: #cbd5e0;
+    --daa-border-green: rgba(0, 143, 35, 0.2);
+    --daa-link: #008f23;
+    --daa-shadow: rgba(0, 0, 0, 0.08);
+    --daa-shadow-blue: 0 4px 20px rgba(0, 143, 35, 0.1);
+  }
 }

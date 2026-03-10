@@ -1,3 +1,245 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>Infrastructure Evolution: SSO, Subdomains, and Security Hardening | Automated Insights</title><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="A deep dive into today's major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization."><meta name=generator content="Hugo 0.156.0"><meta name=robots content="index, follow"><meta name=author content="Justin Smith"><link rel=stylesheet href=/blog/ananke/css/main.min.e87ffd74a6aa53e0bb953b53c8da26c3631f73006d79ab793e4fe879bec6c313.css><link rel=canonical href=https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/><meta property="og:url" content="https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/"><meta property="og:site_name" content="Automated Insights"><meta property="og:title" content="Infrastructure Evolution: SSO, Subdomains, and Security Hardening"><meta property="og:description" content="A deep dive into today's major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization."><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2026-02-28T10:15:00-05:00"><meta property="article:modified_time" content="2026-02-28T10:15:00-05:00"><meta property="article:tag" content="Security"><meta property="article:tag" content="Infrastructure"><meta property="article:tag" content="SSO"><meta property="article:tag" content="Gcp"><meta property="article:tag" content="Automation"><meta itemprop=name content="Infrastructure Evolution: SSO, Subdomains, and Security Hardening"><meta itemprop=description content="A deep dive into today's major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization."><meta itemprop=datePublished content="2026-02-28T10:15:00-05:00"><meta itemprop=dateModified content="2026-02-28T10:15:00-05:00"><meta itemprop=wordCount content="284"><meta itemprop=keywords content="Security,Infrastructure,SSO,Gcp,Automation"><meta name=twitter:card content="summary"><meta name=twitter:title content="Infrastructure Evolution: SSO, Subdomains, and Security Hardening"><meta name=twitter:description content="A deep dive into today's major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization."><script>(function(){const t="daa-theme",e=localStorage.getItem(t)||"dark";document.documentElement.setAttribute("data-theme",e),document.addEventListener("DOMContentLoaded",()=>{document.body.setAttribute("data-theme",e);const t=document.getElementById("theme-toggle");t&&(t.textContent=e==="dark"?"☀️":"🌙")})})()</script></head><body class="ma0 avenir bg-near-black near-white production is-page is-page page-infrastructure-evolution-2026-02-28"><header class="cover bg-center" style=background-image:url(https://detroitautomationacademy.com/blog/images/daa-logo.svg)><div class=bg-black-60><nav class="pv3 ph3 ph4-ns" role=navigation><div class="flex-l center items-center justify-between"><a href=/blog/ class="f3 fw2 hover-white white-90 dib no-underline">Automated Insights</a><div class="flex-l items-center"><h4></h4><ul class="pl0 mr3"><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=/blog/de/posts/infrastructure-evolution-2026-02-28/>de</a></li><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=/blog/ru/posts/infrastructure-evolution-2026-02-28/>ru</a></li></ul><ul class="pl0 mr3 flex items-center mb0 mt0"><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=/blog/about/ title="About page">About</a></li><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=/blog/posts/ title="Posts page">Posts</a></li><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=https://detroitautomationacademy.com title="← Detroit Automation Academy page">← Detroit Automation Academy</a></li></ul><div class="flex items-center"><div class=ananke-socials></div><button id=theme-toggle aria-label="Toggle Theme" title="Switch Theme" style="background:0 0;border:1px solid var(--brand-muted);color:var(--brand-primary);cursor:pointer;padding:4px 8px;border-radius:4px;margin-left:12px;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .3s ease">
-🌙</button></div></div></div></nav><script>(function(){const e=document.getElementById("theme-toggle"),t="daa-theme",n=n=>{document.documentElement.setAttribute("data-theme",n),document.body.setAttribute("data-theme",n),e&&(e.textContent=n==="dark"?"☀️":"🌙"),localStorage.setItem(t,n)};e&&e.addEventListener("click",()=>{const e=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";n(e)})})()</script><div class="tc-l pv6 ph3 ph4-ns"><div class="f2 f1-l fw2 white-90 mb0 lh-title">Infrastructure Evolution: SSO, Subdomains, and Security Hardening</div><div class="fw1 f5 f3-l white-80 measure-wide-l center lh-copy mt3 mb4">A deep dive into today's major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization.</div></div></div></header><main class=pb7 role=main><article class="page-infrastructure-evolution-2026-02-28 flex-l mw7 center ph3 flex-wrap justify-between"><header class="mt4 w-100"><aside class="instapaper_ignoref b helvetica tracked ttu">Posts</aside><div id=sharing class="mt3 ananke-socials"></div><h1 class="f1 athelas mt3 mb1">Infrastructure Evolution: SSO, Subdomains, and Security Hardening</h1><p class=tracked><strong>Justin Smith</strong></p><time class="f6 mv4 dib tracked" datetime=2026-02-28T10:15:00-05:00>February 28, 2026</time>
-<span class="f6 mv4 dib tracked">- 2 minutes read </span><span class="f6 mv4 dib tracked">- 284 words</span></header><div class="nested-copy-line-height lh-copy avenir f4 nested-links mid-gray pr4-l w-100-l"><h1 id=-hardening-the-daa-digital-ecosystem>🛡️ Hardening the DAA Digital Ecosystem</h1><p>Today marks a significant leap forward in the security and professionalization of the Detroit Automation Academy (DAA) infrastructure. We have successfully executed a three-pronged upgrade strategy focusing on <strong>Identity</strong>, <strong>Accessibility</strong>, and <strong>Stability</strong>.</p><h2 id=-1-identity-revolution-google-sso-integration>🔐 1. Identity Revolution: Google SSO Integration</h2><p>We have officially retired the legacy PIN-based authentication for our CRM Admin Dashboard. By implementing <strong>Google SSO (OAuth 2.0)</strong>, we have achieved:</p><ul><li><strong>Zero-Trust Baseline</strong>: Access is now strictly limited to authorized DAA staff emails verified by Google Identity Services.</li><li><strong>JWT-Backed Security</strong>: Every administrative API request is now validated on the backend using cryptographically signed JSON Web Tokens.</li><li><strong>Enhanced UX</strong>: A seamless &ldquo;Sign in with Google&rdquo; experience for our team.</li></ul><h2 id=-2-professional-accessibility-enroll-subdomain-migration>🌐 2. Professional Accessibility: <code>enroll</code> Subdomain Migration</h2><p>Our Registration Portal has graduated from its default Cloud Run address to a dedicated, professional subdomain:</p><ul><li><strong>New URL</strong>: <a href=https://enroll.detroitautomationacademy.com>enroll.detroitautomationacademy.com</a></li><li><strong>Technical Implementation</strong>: Leveraged GCP Managed SSL certificates and CNAME mapping to ensure a secure, branded experience from the first click.</li></ul><h2 id=-3-ecosystem-stabilization>🛠️ 3. Ecosystem Stabilization</h2><p>We have synchronized our multilingual blog and public website to ensure a unified brand presence:</p><ul><li><strong>Link Integrity</strong>: Resolved double-nested URL issues and broken asset paths.</li><li><strong>Multilingual Continuity</strong>: English, German, and Russian versions of the blog are now perfectly synchronized with our latest dark-mode branding.</li><li><strong>Automated Insights</strong>: Our blog is now fully integrated into the main repository source, enabling rapid publication of technical milestones.</li></ul><h2 id=-the-road-ahead>🚀 The Road Ahead</h2><p>These upgrades provide the secure foundation necessary for our next major initiative: <strong>Project GMO (Gemini Mobile Ops)</strong>—a native iOS application designed to deploy widespread codebase modifications securely from the palm of your hand.</p><h2 id=the-future-of-detroit-><strong>The future of Detroit&rsquo;s automation is secure, professional, and accelerating.</strong> ⚙️</h2><p><em>Stay tuned for the first project GMO architectural reveal.</em></p><ul class=pa0><li class="list di"><a href=/blog/tags/security/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Security</a></li><li class="list di"><a href=/blog/tags/infrastructure/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Infrastructure</a></li><li class="list di"><a href=/blog/tags/sso/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">SSO</a></li><li class="list di"><a href=/blog/tags/gcp/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Gcp</a></li><li class="list di"><a href=/blog/tags/automation/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Automation</a></li></ul></div></article></main><footer class="bg-near-black bottom-0 w-100 pa3" role=contentinfo><div class="flex justify-between"><a class="f4 fw4 hover-white white-70 dn dib-ns pv2 ph3 no-underline" href=https://detroitautomationacademy.com/blog/>&copy; Automated Insights 2026</a><div><div class=ananke-socials></div></div></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Infrastructure Evolution: SSO, Subdomains, and Security Hardening | Automated Insights</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="A deep dive into today&#39;s major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization.">
+    <meta name="generator" content="Hugo 0.156.0">
+    
+    
+    
+      <meta name="robots" content="index, follow">
+    
+    <meta name="author" content="Justin Smith">
+    
+
+    
+<link rel="stylesheet" href="/blog/ananke/css/main.min.8ff33cb28b604579e32699b3886ace277b398ae33e9d32471dfee3b53f84c850.css" >
+
+
+
+  
+
+
+    
+
+
+    
+      
+
+    
+
+    
+
+    
+      <link rel="canonical" href="https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/">
+    
+
+    
+    
+    <meta property="og:url" content="https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/">
+  <meta property="og:site_name" content="Automated Insights">
+  <meta property="og:title" content="Infrastructure Evolution: SSO, Subdomains, and Security Hardening">
+  <meta property="og:description" content="A deep dive into today&#39;s major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-02-28T10:15:00-05:00">
+    <meta property="article:modified_time" content="2026-02-28T10:15:00-05:00">
+    <meta property="article:tag" content="Security">
+    <meta property="article:tag" content="Infrastructure">
+    <meta property="article:tag" content="SSO">
+    <meta property="article:tag" content="Gcp">
+    <meta property="article:tag" content="Automation">
+
+  <meta itemprop="name" content="Infrastructure Evolution: SSO, Subdomains, and Security Hardening">
+  <meta itemprop="description" content="A deep dive into today&#39;s major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization.">
+  <meta itemprop="datePublished" content="2026-02-28T10:15:00-05:00">
+  <meta itemprop="dateModified" content="2026-02-28T10:15:00-05:00">
+  <meta itemprop="wordCount" content="284">
+  <meta itemprop="keywords" content="Security,Infrastructure,SSO,Gcp,Automation">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Infrastructure Evolution: SSO, Subdomains, and Security Hardening">
+  <meta name="twitter:description" content="A deep dive into today&#39;s major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization.">
+
+      
+      
+    
+	
+
+  </head><body class="ma0 avenir bg-near-black near-white production is-page is-page page-infrastructure-evolution-2026-02-28">
+    
+   
+  
+
+  
+  
+  
+  <header class="cover bg-center" style="background-image: url('https://detroitautomationacademy.com/blog/images/daa-logo.svg');">
+    <div class="bg-black-60">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l center items-center justify-between">
+    <a href="/blog/" class="f3 fw2 hover-white white-90 dib no-underline">
+      
+        Automated Insights
+      
+    </a>
+    <div class="flex-l items-center">
+      
+<h4></h4>
+<ul class="pl0 mr3">
+    
+    <li class="list f5 f4-ns fw4 dib pr3">
+        <a class="hover-white white-90 no-underline" href="/blog/de/posts/infrastructure-evolution-2026-02-28/">de</a>
+    </li>
+    
+    <li class="list f5 f4-ns fw4 dib pr3">
+        <a class="hover-white white-90 no-underline" href="/blog/ru/posts/infrastructure-evolution-2026-02-28/">ru</a>
+    </li>
+    
+</ul>
+
+
+      
+        <ul class="pl0 mr3 flex items-center mb0 mt0">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white white-90 no-underline" href="/blog/about/" title="About page">
+              About
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white white-90 no-underline" href="/blog/posts/" title="Posts page">
+              Posts
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white white-90 no-underline" href="https://detroitautomationacademy.com" title="← Detroit Automation Academy page">
+              ← Detroit Automation Academy
+            </a>
+          </li>
+          
+        </ul>
+      
+      <div class="flex items-center">
+        <div class="ananke-socials"></div>
+
+      </div>
+    </div>
+  </div>
+</nav>
+
+      <div class="tc-l pv6 ph3 ph4-ns">
+        
+          <div class="f2 f1-l fw2 white-90 mb0 lh-title">Infrastructure Evolution: SSO, Subdomains, and Security Hardening</div>
+          
+            <div class="fw1 f5 f3-l white-80 measure-wide-l center lh-copy mt3 mb4">
+              A deep dive into today&#39;s major infrastructure upgrades, including Google SSO integration, CRM subdomain migration, and blog ecosystem stabilization.
+            </div>
+          
+        
+      </div>
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+
+  <article class="page-infrastructure-evolution-2026-02-28 flex-l mw7 center ph3 flex-wrap justify-between">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked ttu">
+          
+        Posts
+      </aside><div id="sharing" class="mt3 ananke-socials"></div>
+<h1 class="f1 athelas mt3 mb1">Infrastructure Evolution: SSO, Subdomains, and Security Hardening</h1>
+      
+      <p class="tracked"><strong>Justin Smith</strong>
+      </p>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2026-02-28T10:15:00-05:00">February 28, 2026</time>
+      
+
+      
+      
+        
+        
+        <span class="f6 mv4 dib tracked"> - 2 minutes read </span>
+        <span class="f6 mv4 dib tracked"> - 284 words </span>
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy avenir f4 nested-links mid-gray pr4-l w-100-l"><h1 id="-hardening-the-daa-digital-ecosystem">🛡️ Hardening the DAA Digital Ecosystem</h1>
+<p>Today marks a significant leap forward in the security and professionalization of the Detroit Automation Academy (DAA) infrastructure. We have successfully executed a three-pronged upgrade strategy focusing on <strong>Identity</strong>, <strong>Accessibility</strong>, and <strong>Stability</strong>.</p>
+<h2 id="-1-identity-revolution-google-sso-integration">🔐 1. Identity Revolution: Google SSO Integration</h2>
+<p>We have officially retired the legacy PIN-based authentication for our CRM Admin Dashboard. By implementing <strong>Google SSO (OAuth 2.0)</strong>, we have achieved:</p>
+<ul>
+<li><strong>Zero-Trust Baseline</strong>: Access is now strictly limited to authorized DAA staff emails verified by Google Identity Services.</li>
+<li><strong>JWT-Backed Security</strong>: Every administrative API request is now validated on the backend using cryptographically signed JSON Web Tokens.</li>
+<li><strong>Enhanced UX</strong>: A seamless &ldquo;Sign in with Google&rdquo; experience for our team.</li>
+</ul>
+<h2 id="-2-professional-accessibility-enroll-subdomain-migration">🌐 2. Professional Accessibility: <code>enroll</code> Subdomain Migration</h2>
+<p>Our Registration Portal has graduated from its default Cloud Run address to a dedicated, professional subdomain:</p>
+<ul>
+<li><strong>New URL</strong>: <a href="https://enroll.detroitautomationacademy.com">enroll.detroitautomationacademy.com</a></li>
+<li><strong>Technical Implementation</strong>: Leveraged GCP Managed SSL certificates and CNAME mapping to ensure a secure, branded experience from the first click.</li>
+</ul>
+<h2 id="-3-ecosystem-stabilization">🛠️ 3. Ecosystem Stabilization</h2>
+<p>We have synchronized our multilingual blog and public website to ensure a unified brand presence:</p>
+<ul>
+<li><strong>Link Integrity</strong>: Resolved double-nested URL issues and broken asset paths.</li>
+<li><strong>Multilingual Continuity</strong>: English, German, and Russian versions of the blog are now perfectly synchronized with our latest dark-mode branding.</li>
+<li><strong>Automated Insights</strong>: Our blog is now fully integrated into the main repository source, enabling rapid publication of technical milestones.</li>
+</ul>
+<h2 id="-the-road-ahead">🚀 The Road Ahead</h2>
+<p>These upgrades provide the secure foundation necessary for our next major initiative: <strong>Project GMO (Gemini Mobile Ops)</strong>—a native iOS application designed to deploy widespread codebase modifications securely from the palm of your hand.</p>
+<h2 id="the-future-of-detroit-"><strong>The future of Detroit&rsquo;s automation is secure, professional, and accelerating.</strong> ⚙️</h2>
+<p><em>Stay tuned for the first project GMO architectural reveal.</em></p>
+<ul class="pa0">
+  
+   <li class="list di">
+     <a href="/blog/tags/security/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Security</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/tags/infrastructure/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Infrastructure</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/tags/sso/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">SSO</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/tags/gcp/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Gcp</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/tags/automation/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Automation</a>
+   </li>
+  
+</ul>
+
+      
+    </div></article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white white-70 dn dib-ns pv2 ph3 no-underline" href="https://detroitautomationacademy.com/blog/" >
+    &copy;  Automated Insights 2026 
+  </a>
+    <div><div class="ananke-socials"></div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

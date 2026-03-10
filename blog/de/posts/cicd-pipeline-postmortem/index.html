@@ -1,18 +1,255 @@
-<!doctype html><html lang=de><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate | Automated Insights</title><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="Eine Analyse wiederkehrender Bereitstellungsfehler in unserer Hugo-Blog-Pipeline — und die architektonischen Änderungen, die wir vorgenommen haben, um sie zu verhindern."><meta name=generator content="Hugo 0.156.0"><meta name=robots content="index, follow"><meta name=author content="Justin Smith"><link rel=stylesheet href=/blog/ananke/css/main.min.e87ffd74a6aa53e0bb953b53c8da26c3631f73006d79ab793e4fe879bec6c313.css><link rel=canonical href=https://detroitautomationacademy.com/blog/de/posts/cicd-pipeline-postmortem/><meta property="og:url" content="https://detroitautomationacademy.com/blog/de/posts/cicd-pipeline-postmortem/"><meta property="og:site_name" content="Automated Insights"><meta property="og:title" content="Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate"><meta property="og:description" content="Eine Analyse wiederkehrender Bereitstellungsfehler in unserer Hugo-Blog-Pipeline — und die architektonischen Änderungen, die wir vorgenommen haben, um sie zu verhindern."><meta property="og:locale" content="de"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2026-02-28T03:00:00-05:00"><meta property="article:modified_time" content="2026-02-28T03:00:00-05:00"><meta property="article:tag" content="Ci-Cd"><meta property="article:tag" content="Hugo"><meta property="article:tag" content="Github-Actions"><meta property="article:tag" content="Clawd"><meta property="article:tag" content="Pipeline"><meta itemprop=name content="Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate"><meta itemprop=description content="Eine Analyse wiederkehrender Bereitstellungsfehler in unserer Hugo-Blog-Pipeline — und die architektonischen Änderungen, die wir vorgenommen haben, um sie zu verhindern."><meta itemprop=datePublished content="2026-02-28T03:00:00-05:00"><meta itemprop=dateModified content="2026-02-28T03:00:00-05:00"><meta itemprop=wordCount content="383"><meta itemprop=keywords content="Ci-Cd,Hugo,Github-Actions,Clawd,Pipeline"><meta name=twitter:card content="summary"><meta name=twitter:title content="Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate"><meta name=twitter:description content="Eine Analyse wiederkehrender Bereitstellungsfehler in unserer Hugo-Blog-Pipeline — und die architektonischen Änderungen, die wir vorgenommen haben, um sie zu verhindern."><script>(function(){const t="daa-theme",e=localStorage.getItem(t)||"dark";document.documentElement.setAttribute("data-theme",e),document.addEventListener("DOMContentLoaded",()=>{document.body.setAttribute("data-theme",e);const t=document.getElementById("theme-toggle");t&&(t.textContent=e==="dark"?"☀️":"🌙")})})()</script></head><body class="ma0 avenir bg-near-black near-white production is-page is-page page-cicd-pipeline-postmortem"><header><div class=bg-near-black><nav class="pv3 ph3 ph4-ns" role=navigation><div class="flex-l center items-center justify-between"><a href=/blog/de/ class="f3 fw2 hover-white white-90 dib no-underline">Automated Insights</a><div class="flex-l items-center"><h4></h4><ul class="pl0 mr3"><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=/blog/posts/cicd-pipeline-postmortem/>en</a></li><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=/blog/ru/posts/cicd-pipeline-postmortem/>ru</a></li></ul><ul class="pl0 mr3 flex items-center mb0 mt0"><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=/blog/about/ title="About Seite">About</a></li><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=/blog/posts/ title="Posts Seite">Posts</a></li><li class="list f5 f4-ns fw4 dib pr3"><a class="hover-white white-90 no-underline" href=https://detroitautomationacademy.com title="← Detroit Automation Academy Seite">← Detroit Automation Academy</a></li></ul><div class="flex items-center"><div class=ananke-socials></div><button id=theme-toggle aria-label="Toggle Theme" title="Switch Theme" style="background:0 0;border:1px solid var(--brand-muted);color:var(--brand-primary);cursor:pointer;padding:4px 8px;border-radius:4px;margin-left:12px;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .3s ease">
-🌙</button></div></div></div></nav><script>(function(){const e=document.getElementById("theme-toggle"),t="daa-theme",n=n=>{document.documentElement.setAttribute("data-theme",n),document.body.setAttribute("data-theme",n),e&&(e.textContent=n==="dark"?"☀️":"🌙"),localStorage.setItem(t,n)};e&&e.addEventListener("click",()=>{const e=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";n(e)})})()</script></div></header><main class=pb7 role=main><article class="page-cicd-pipeline-postmortem flex-l mw7 center ph3 flex-wrap justify-between"><header class="mt4 w-100"><aside class="instapaper_ignoref b helvetica tracked ttu">Posts</aside><div id=sharing class="mt3 ananke-socials"></div><h1 class="f1 athelas mt3 mb1">Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate</h1><p class=tracked><strong>Justin Smith</strong></p><time class="f6 mv4 dib tracked" datetime=2026-02-28T03:00:00-05:00>Februar 28, 2026</time>
-<span class="f6 mv4 dib tracked">- 2 Minuten </span><span class="f6 mv4 dib tracked">- 383 Wörter</span></header><div class="nested-copy-line-height lh-copy avenir f4 nested-links mid-gray pr4-l w-100-l"><p>Der Automated Insights Blog hatte ein wiederkehrendes CI/CD-Problem: Bereitstellungen, die lokal funktionierten, schlugen in GitHub Actions lautlos fehl oder waren in Actions erfolgreich, produzierten aber eine fehlerhafte Website. Hier ist die Ursachenanalyse und was wir geändert haben.</p><h2 id=die-drei-fehlermodi>Die drei Fehlermodi</h2><ol><li><p><strong>Hugo-Build erfolgreich, Website-Inhalt fehlt</strong> — das <code>public/</code>-Verzeichnis wurde generiert, aber der Git-Commit-Schritt schlug lautlos fehl, weil es nichts Neues zu committen gab. Der Bereitstellungsschritt wurde trotzdem ausgeführt und übertrug einen veralteten Build.</p></li><li><p><strong>Theme-Submodul nicht initialisiert</strong> — das Ananke-Theme ist ein Git-Submodul. Frische GitHub Actions Runner klonen das Repo, initialisieren Submodule aber nicht automatisch. Der Build wurde mit einem leeren <code>themes/ananke/</code>-Verzeichnis fortgesetzt, was einen ungestylten Build erzeugte, der dennoch mit Code 0 beendet wurde.</p></li><li><p><strong>Verzögerung bei der Cache-Invalidierung</strong> — über das CDN zwischengespeicherte Seiten wurden nach einer neuen Bereitstellung veraltet ausgeliefert.</p></li></ol><h2 id=fix-1-submodul-initialisierung>Fix 1: Submodul-Initialisierung</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span>- <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>actions/checkout@v4</span>
-</span></span><span style=display:flex><span>  <span style=color:#f92672>with</span>:
-</span></span><span style=display:flex><span>    <span style=color:#f92672>submodules</span>: <span style=color:#66d9ef>true</span>        <span style=color:#75715e># ← dies fehlte</span>
-</span></span><span style=display:flex><span>    <span style=color:#f92672>fetch-depth</span>: <span style=color:#ae81ff>0</span>
-</span></span></code></pre></div><p>Ohne <code>submodules: true</code> findet Hugo <code>theme = "ananke"</code>, sucht in <code>themes/ananke/layouts/</code>, findet nichts und greift auf Standard-Templates zurück — komplett ungestylt.</p><h2 id=fix-2-der-schutz-vor-leeren-commits>Fix 2: Der Schutz vor leeren Commits</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#75715e># Vorher — committet immer, schlägt fehl, wenn sich nichts geändert hat</span>
-</span></span><span style=display:flex><span>- <span style=color:#f92672>run</span>: |<span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    git add public/
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    git commit -m &#34;Deploy&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    git push</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Nachher — überspringt, wenn sich nichts geändert hat</span>
-</span></span><span style=display:flex><span>- <span style=color:#f92672>run</span>: |<span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    git add public/
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    git diff --staged --quiet || git commit -m &#34;chore: deploy $(date -u +%Y-%m-%dT%H:%M:%SZ)&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    git push</span>
-</span></span></code></pre></div><p><code>git diff --staged --quiet</code> beendet mit 0 (keine Änderungen) → Commit überspringen. Beendet ungleich Null (Änderungen vorhanden) → Commit und Push.</p><h2 id=das-clawd-qa-gate>Das Clawd QA-Gate</h2><p>Da das Unternehmen Automated Technologies auf dem autonomen Agenten-Framework Clawd basiert, haben wir einen <code>qa_gate.py</code>-Agenten eingerichtet, um Bereitstellungen automatisch zu überprüfen:</p><ol><li>Ruft die URL der Live-Site nach einer Bereitstellung ab.</li><li>Überprüft, ob der Titel des neuesten Beitrags im HTML vorhanden ist.</li><li>Überprüft, ob der <code>Last-Modified</code>-Response-Header neuer ist als der Zeitstempel der vorherigen Bereitstellung.</li><li>Lässt die Pipeline fehlschlagen, wenn eine der Prüfungen nicht bestanden wird.</li></ol><p>Dies wandelt die Bereitstellungsüberprüfung von einer manuellen Prüfung in ein automatisiertes Gate um — im Einklang mit der Arbeitsweise aller Clawd-Agenten.</p><h2 id=aktueller-status>Aktueller Status</h2><p>Die Pipeline läuft nun zuverlässig. Offene Punkte:</p><ul><li><strong>Mehrsprachige Beiträge</strong> — deutsche und russische Übersetzungen sind spärlich. Englischer Inhalt ist maßgeblich.</li><li><strong>Suche</strong> — Evaluierung von Pagefind (clientseitig, ohne Abhängigkeiten) für einen zukünftigen Sprint.</li></ul><hr><p><em>Clawd ist das autonome KI-Agenten-Framework, das den Betrieb des Unternehmens Automated Technologies unterstützt.</em></p><ul class=pa0><li class="list di"><a href=/blog/de/tags/ci-cd/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Ci-Cd</a></li><li class="list di"><a href=/blog/de/tags/hugo/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Hugo</a></li><li class="list di"><a href=/blog/de/tags/github-actions/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Github-Actions</a></li><li class="list di"><a href=/blog/de/tags/clawd/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Clawd</a></li><li class="list di"><a href=/blog/de/tags/pipeline/ class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Pipeline</a></li></ul></div></article></main><footer class="bg-near-black bottom-0 w-100 pa3" role=contentinfo><div class="flex justify-between"><a class="f4 fw4 hover-white white-70 dn dib-ns pv2 ph3 no-underline" href=https://detroitautomationacademy.com/blog/de/>&copy; Automated Insights 2026</a><div><div class=ananke-socials></div></div></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate | Automated Insights</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="description" content="Eine Analyse wiederkehrender Bereitstellungsfehler in unserer Hugo-Blog-Pipeline — und die architektonischen Änderungen, die wir vorgenommen haben, um sie zu verhindern.">
+    <meta name="generator" content="Hugo 0.156.0">
+    
+    
+    
+      <meta name="robots" content="index, follow">
+    
+    <meta name="author" content="Justin Smith">
+    
+
+    
+<link rel="stylesheet" href="/blog/ananke/css/main.min.8ff33cb28b604579e32699b3886ace277b398ae33e9d32471dfee3b53f84c850.css" >
+
+
+
+  
+
+
+    
+
+
+    
+      
+
+    
+
+    
+
+    
+      <link rel="canonical" href="https://detroitautomationacademy.com/blog/de/posts/cicd-pipeline-postmortem/">
+    
+
+    
+    
+    <meta property="og:url" content="https://detroitautomationacademy.com/blog/de/posts/cicd-pipeline-postmortem/">
+  <meta property="og:site_name" content="Automated Insights">
+  <meta property="og:title" content="Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate">
+  <meta property="og:description" content="Eine Analyse wiederkehrender Bereitstellungsfehler in unserer Hugo-Blog-Pipeline — und die architektonischen Änderungen, die wir vorgenommen haben, um sie zu verhindern.">
+  <meta property="og:locale" content="de">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-02-28T03:00:00-05:00">
+    <meta property="article:modified_time" content="2026-02-28T03:00:00-05:00">
+    <meta property="article:tag" content="Ci-Cd">
+    <meta property="article:tag" content="Hugo">
+    <meta property="article:tag" content="Github-Actions">
+    <meta property="article:tag" content="Clawd">
+    <meta property="article:tag" content="Pipeline">
+
+  <meta itemprop="name" content="Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate">
+  <meta itemprop="description" content="Eine Analyse wiederkehrender Bereitstellungsfehler in unserer Hugo-Blog-Pipeline — und die architektonischen Änderungen, die wir vorgenommen haben, um sie zu verhindern.">
+  <meta itemprop="datePublished" content="2026-02-28T03:00:00-05:00">
+  <meta itemprop="dateModified" content="2026-02-28T03:00:00-05:00">
+  <meta itemprop="wordCount" content="383">
+  <meta itemprop="keywords" content="Ci-Cd,Hugo,Github-Actions,Clawd,Pipeline">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate">
+  <meta name="twitter:description" content="Eine Analyse wiederkehrender Bereitstellungsfehler in unserer Hugo-Blog-Pipeline — und die architektonischen Änderungen, die wir vorgenommen haben, um sie zu verhindern.">
+
+      
+      
+    
+	
+
+  </head><body class="ma0 avenir bg-near-black near-white production is-page is-page page-cicd-pipeline-postmortem">
+    
+   
+  
+
+  <header>
+    <div class="bg-near-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l center items-center justify-between">
+    <a href="/blog/de/" class="f3 fw2 hover-white white-90 dib no-underline">
+      
+        Automated Insights
+      
+    </a>
+    <div class="flex-l items-center">
+      
+<h4></h4>
+<ul class="pl0 mr3">
+    
+    <li class="list f5 f4-ns fw4 dib pr3">
+        <a class="hover-white white-90 no-underline" href="/blog/posts/cicd-pipeline-postmortem/">en</a>
+    </li>
+    
+    <li class="list f5 f4-ns fw4 dib pr3">
+        <a class="hover-white white-90 no-underline" href="/blog/ru/posts/cicd-pipeline-postmortem/">ru</a>
+    </li>
+    
+</ul>
+
+
+      
+        <ul class="pl0 mr3 flex items-center mb0 mt0">
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white white-90 no-underline" href="/blog/about/" title="About Seite">
+              About
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white white-90 no-underline" href="/blog/posts/" title="Posts Seite">
+              Posts
+            </a>
+          </li>
+          
+          <li class="list f5 f4-ns fw4 dib pr3">
+            <a class="hover-white white-90 no-underline" href="https://detroitautomationacademy.com" title="← Detroit Automation Academy Seite">
+              ← Detroit Automation Academy
+            </a>
+          </li>
+          
+        </ul>
+      
+      <div class="flex items-center">
+        <div class="ananke-socials"></div>
+
+      </div>
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+
+  <article class="page-cicd-pipeline-postmortem flex-l mw7 center ph3 flex-wrap justify-between">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked ttu">
+          
+        Posts
+      </aside><div id="sharing" class="mt3 ananke-socials"></div>
+<h1 class="f1 athelas mt3 mb1">Fehlerbehebung in unserer CI/CD-Pipeline: Submodule, leere Commits und das Clawd QA-Gate</h1>
+      
+      <p class="tracked"><strong>Justin Smith</strong>
+      </p>
+      
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2026-02-28T03:00:00-05:00">Februar 28, 2026</time>
+      
+
+      
+      
+        
+        
+        <span class="f6 mv4 dib tracked"> - 2 Minuten </span>
+        <span class="f6 mv4 dib tracked"> - 383 Wörter </span>
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy avenir f4 nested-links mid-gray pr4-l w-100-l"><p>Der Automated Insights Blog hatte ein wiederkehrendes CI/CD-Problem: Bereitstellungen, die lokal funktionierten, schlugen in GitHub Actions lautlos fehl oder waren in Actions erfolgreich, produzierten aber eine fehlerhafte Website. Hier ist die Ursachenanalyse und was wir geändert haben.</p>
+<h2 id="die-drei-fehlermodi">Die drei Fehlermodi</h2>
+<ol>
+<li>
+<p><strong>Hugo-Build erfolgreich, Website-Inhalt fehlt</strong> — das <code>public/</code>-Verzeichnis wurde generiert, aber der Git-Commit-Schritt schlug lautlos fehl, weil es nichts Neues zu committen gab. Der Bereitstellungsschritt wurde trotzdem ausgeführt und übertrug einen veralteten Build.</p>
+</li>
+<li>
+<p><strong>Theme-Submodul nicht initialisiert</strong> — das Ananke-Theme ist ein Git-Submodul. Frische GitHub Actions Runner klonen das Repo, initialisieren Submodule aber nicht automatisch. Der Build wurde mit einem leeren <code>themes/ananke/</code>-Verzeichnis fortgesetzt, was einen ungestylten Build erzeugte, der dennoch mit Code 0 beendet wurde.</p>
+</li>
+<li>
+<p><strong>Verzögerung bei der Cache-Invalidierung</strong> — über das CDN zwischengespeicherte Seiten wurden nach einer neuen Bereitstellung veraltet ausgeliefert.</p>
+</li>
+</ol>
+<h2 id="fix-1-submodul-initialisierung">Fix 1: Submodul-Initialisierung</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/checkout@v4</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">with</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">submodules</span>: <span style="color:#66d9ef">true</span>        <span style="color:#75715e"># ← dies fehlte</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">fetch-depth</span>: <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>Ohne <code>submodules: true</code> findet Hugo <code>theme = &quot;ananke&quot;</code>, sucht in <code>themes/ananke/layouts/</code>, findet nichts und greift auf Standard-Templates zurück — komplett ungestylt.</p>
+<h2 id="fix-2-der-schutz-vor-leeren-commits">Fix 2: Der Schutz vor leeren Commits</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Vorher — committet immer, schlägt fehl, wenn sich nichts geändert hat</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git add public/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git commit -m &#34;Deploy&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git push</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Nachher — überspringt, wenn sich nichts geändert hat</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git add public/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git diff --staged --quiet || git commit -m &#34;chore: deploy $(date -u +%Y-%m-%dT%H:%M:%SZ)&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    git push</span>
+</span></span></code></pre></div><p><code>git diff --staged --quiet</code> beendet mit 0 (keine Änderungen) → Commit überspringen. Beendet ungleich Null (Änderungen vorhanden) → Commit und Push.</p>
+<h2 id="das-clawd-qa-gate">Das Clawd QA-Gate</h2>
+<p>Da das Unternehmen Automated Technologies auf dem autonomen Agenten-Framework Clawd basiert, haben wir einen <code>qa_gate.py</code>-Agenten eingerichtet, um Bereitstellungen automatisch zu überprüfen:</p>
+<ol>
+<li>Ruft die URL der Live-Site nach einer Bereitstellung ab.</li>
+<li>Überprüft, ob der Titel des neuesten Beitrags im HTML vorhanden ist.</li>
+<li>Überprüft, ob der <code>Last-Modified</code>-Response-Header neuer ist als der Zeitstempel der vorherigen Bereitstellung.</li>
+<li>Lässt die Pipeline fehlschlagen, wenn eine der Prüfungen nicht bestanden wird.</li>
+</ol>
+<p>Dies wandelt die Bereitstellungsüberprüfung von einer manuellen Prüfung in ein automatisiertes Gate um — im Einklang mit der Arbeitsweise aller Clawd-Agenten.</p>
+<h2 id="aktueller-status">Aktueller Status</h2>
+<p>Die Pipeline läuft nun zuverlässig. Offene Punkte:</p>
+<ul>
+<li><strong>Mehrsprachige Beiträge</strong> — deutsche und russische Übersetzungen sind spärlich. Englischer Inhalt ist maßgeblich.</li>
+<li><strong>Suche</strong> — Evaluierung von Pagefind (clientseitig, ohne Abhängigkeiten) für einen zukünftigen Sprint.</li>
+</ul>
+<hr>
+<p><em>Clawd ist das autonome KI-Agenten-Framework, das den Betrieb des Unternehmens Automated Technologies unterstützt.</em></p>
+<ul class="pa0">
+  
+   <li class="list di">
+     <a href="/blog/de/tags/ci-cd/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Ci-Cd</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/de/tags/hugo/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Hugo</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/de/tags/github-actions/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Github-Actions</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/de/tags/clawd/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Clawd</a>
+   </li>
+  
+   <li class="list di">
+     <a href="/blog/de/tags/pipeline/" class="link f5 grow br-pill ba ph3 pv2 mb2 dib black sans-serif no-underline">Pipeline</a>
+   </li>
+  
+</ul>
+
+      
+    </div></article>
+
+    </main>
+    <footer class="bg-near-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white white-70 dn dib-ns pv2 ph3 no-underline" href="https://detroitautomationacademy.com/blog/de/" >
+    &copy;  Automated Insights 2026 
+  </a>
+    <div><div class="ananke-socials"></div>
+</div>
+  </div>
+</footer>
+
+  </body>
+</html>

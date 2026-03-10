@@ -1,11 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SSO on Automated Insights</title><link>https://detroitautomationacademy.com/blog/tags/sso/</link><description>Recent content in SSO on Automated Insights</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sat, 28 Feb 2026 10:15:00 -0500</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/tags/sso/index.xml" rel="self" type="application/rss+xml"/><item><title>Infrastructure Evolution: SSO, Subdomains, and Security Hardening</title><link>https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/</link><pubDate>Sat, 28 Feb 2026 10:15:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/</guid><description>&lt;h1 id="-hardening-the-daa-digital-ecosystem"&gt;🛡️ Hardening the DAA Digital Ecosystem&lt;/h1&gt;
-&lt;p&gt;Today marks a significant leap forward in the security and professionalization of the Detroit Automation Academy (DAA) infrastructure. We have successfully executed a three-pronged upgrade strategy focusing on &lt;strong&gt;Identity&lt;/strong&gt;, &lt;strong&gt;Accessibility&lt;/strong&gt;, and &lt;strong&gt;Stability&lt;/strong&gt;.&lt;/p&gt;
-&lt;h2 id="-1-identity-revolution-google-sso-integration"&gt;🔐 1. Identity Revolution: Google SSO Integration&lt;/h2&gt;
-&lt;p&gt;We have officially retired the legacy PIN-based authentication for our CRM Admin Dashboard. By implementing &lt;strong&gt;Google SSO (OAuth 2.0)&lt;/strong&gt;, we have achieved:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Zero-Trust Baseline&lt;/strong&gt;: Access is now strictly limited to authorized DAA staff emails verified by Google Identity Services.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;JWT-Backed Security&lt;/strong&gt;: Every administrative API request is now validated on the backend using cryptographically signed JSON Web Tokens.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Enhanced UX&lt;/strong&gt;: A seamless &amp;ldquo;Sign in with Google&amp;rdquo; experience for our team.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id="-2-professional-accessibility-enroll-subdomain-migration"&gt;🌐 2. Professional Accessibility: &lt;code&gt;enroll&lt;/code&gt; Subdomain Migration&lt;/h2&gt;
-&lt;p&gt;Our Registration Portal has graduated from its default Cloud Run address to a dedicated, professional subdomain:&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SSO on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/tags/sso/</link>
+    <description>Recent content in SSO on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 28 Feb 2026 10:15:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/tags/sso/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Infrastructure Evolution: SSO, Subdomains, and Security Hardening</title>
+      <link>https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/</link>
+      <pubDate>Sat, 28 Feb 2026 10:15:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/infrastructure-evolution-2026-02-28/</guid>
+      <description>&lt;h1 id=&#34;-hardening-the-daa-digital-ecosystem&#34;&gt;🛡️ Hardening the DAA Digital Ecosystem&lt;/h1&gt;&#xA;&lt;p&gt;Today marks a significant leap forward in the security and professionalization of the Detroit Automation Academy (DAA) infrastructure. We have successfully executed a three-pronged upgrade strategy focusing on &lt;strong&gt;Identity&lt;/strong&gt;, &lt;strong&gt;Accessibility&lt;/strong&gt;, and &lt;strong&gt;Stability&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h2 id=&#34;-1-identity-revolution-google-sso-integration&#34;&gt;🔐 1. Identity Revolution: Google SSO Integration&lt;/h2&gt;&#xA;&lt;p&gt;We have officially retired the legacy PIN-based authentication for our CRM Admin Dashboard. By implementing &lt;strong&gt;Google SSO (OAuth 2.0)&lt;/strong&gt;, we have achieved:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Zero-Trust Baseline&lt;/strong&gt;: Access is now strictly limited to authorized DAA staff emails verified by Google Identity Services.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;JWT-Backed Security&lt;/strong&gt;: Every administrative API request is now validated on the backend using cryptographically signed JSON Web Tokens.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Enhanced UX&lt;/strong&gt;: A seamless &amp;ldquo;Sign in with Google&amp;rdquo; experience for our team.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;-2-professional-accessibility-enroll-subdomain-migration&#34;&gt;🌐 2. Professional Accessibility: &lt;code&gt;enroll&lt;/code&gt; Subdomain Migration&lt;/h2&gt;&#xA;&lt;p&gt;Our Registration Portal has graduated from its default Cloud Run address to a dedicated, professional subdomain:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

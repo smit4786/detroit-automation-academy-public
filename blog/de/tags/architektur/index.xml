@@ -1,10 +1,26 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Architektur on Automated Insights</title><link>https://detroitautomationacademy.com/blog/de/tags/architektur/</link><description>Recent content in Architektur on Automated Insights</description><generator>Hugo</generator><language>de</language><lastBuildDate>Mon, 02 Mar 2026 12:00:00 -0400</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/de/tags/architektur/index.xml" rel="self" type="application/rss+xml"/><item><title>Ökosystem-Synergie: Integration von DAA, Wealth und datenschutzfreundlicher Protokollierung</title><link>https://detroitautomationacademy.com/blog/de/posts/ecosystem-synergy-update/</link><pubDate>Mon, 02 Mar 2026 12:00:00 -0400</pubDate><guid>https://detroitautomationacademy.com/blog/de/posts/ecosystem-synergy-update/</guid><description>&lt;p&gt;Willkommen zum neuesten Update aus dem &lt;strong&gt;Automated Insights Blog&lt;/strong&gt;. Da unsere Initiativen wachsen, zeigt sich die wahre Kraft der Automatisierung nicht in isolierten Projekten, sondern in deren Integration. Heute kündigen wir einen großen Architekturwechsel an, um die Plattform der Detroit Automation Academy (DAA), das datenschutzfreundliche &lt;code&gt;@AT_Diary&lt;/code&gt; und unser neues finanzielles Betriebssystem &lt;code&gt;@AT_Wealth&lt;/code&gt; zu verbinden.&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Gebaut von Detroit, für Detroit. Angetrieben von Automated Technologies.&lt;/em&gt;&lt;/p&gt;</description></item><item><title>Stabilität durch gemeinsamen Speicher: Der App-Group-Meilenstein</title><link>https://detroitautomationacademy.com/blog/de/posts/app-group-stability/</link><pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/de/posts/app-group-stability/</guid><description>&lt;h3 id="datenkonsistenz-über-ökosysteme-hinweg-entwickeln"&gt;Datenkonsistenz über Ökosysteme hinweg entwickeln&lt;/h3&gt;
-&lt;p&gt;Systemstabilität ist nicht verhandelbar. Heute haben wir erfolgreich eine gemeinsame &lt;strong&gt;App-Group&lt;/strong&gt;-Architektur für das Projekt &lt;strong&gt;@AT_Diary&lt;/strong&gt; implementiert, die einen nahtlosen Datenfluss zwischen der Hauptanwendung und ihrem Home-Screen-Widget gewährleistet.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Technische Synthese:&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Gemeinsamer Modell-Container:&lt;/strong&gt; Durch die Migration zu &lt;code&gt;group.com.automatedtechnologies.atdiary&lt;/code&gt; haben wir Datenlatenzen zwischen Systemzielen eliminiert.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Entitlement-Abgleich:&lt;/strong&gt; Die Sicherheitsstruktur von App und Widget wurde vereinheitlicht, um Echtzeit-Lese-/Schreibzugriff auf den Kern-SwiftData-Speicher zu ermöglichen.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Zuverlässigkeit:&lt;/strong&gt; Dieser Meilenstein verhindert das „Leere-Widget-Syndrom“ und stellt sicher, dass die „Story des Tages“ des Nutzers immer mit seinen neuesten Erlebnissen synchronisiert ist.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Diese Grundlagenarbeit bereitet @AT_Diary auf fortgeschrittene Funktionen wie Live-Standortverfolgung und Hintergrund-Fotoverarbeitung vor.&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Architektur on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/de/tags/architektur/</link>
+    <description>Recent content in Architektur on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>de</language>
+    <lastBuildDate>Mon, 02 Mar 2026 12:00:00 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/de/tags/architektur/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ökosystem-Synergie: Integration von DAA, Wealth und datenschutzfreundlicher Protokollierung</title>
+      <link>https://detroitautomationacademy.com/blog/de/posts/ecosystem-synergy-update/</link>
+      <pubDate>Mon, 02 Mar 2026 12:00:00 -0400</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/posts/ecosystem-synergy-update/</guid>
+      <description>&lt;p&gt;Willkommen zum neuesten Update aus dem &lt;strong&gt;Automated Insights Blog&lt;/strong&gt;. Da unsere Initiativen wachsen, zeigt sich die wahre Kraft der Automatisierung nicht in isolierten Projekten, sondern in deren Integration. Heute kündigen wir einen großen Architekturwechsel an, um die Plattform der Detroit Automation Academy (DAA), das datenschutzfreundliche &lt;code&gt;@AT_Diary&lt;/code&gt; und unser neues finanzielles Betriebssystem &lt;code&gt;@AT_Wealth&lt;/code&gt; zu verbinden.&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;Gebaut von Detroit, für Detroit. Angetrieben von Automated Technologies.&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Stabilität durch gemeinsamen Speicher: Der App-Group-Meilenstein</title>
+      <link>https://detroitautomationacademy.com/blog/de/posts/app-group-stability/</link>
+      <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/posts/app-group-stability/</guid>
+      <description>&lt;h3 id=&#34;datenkonsistenz-über-ökosysteme-hinweg-entwickeln&#34;&gt;Datenkonsistenz über Ökosysteme hinweg entwickeln&lt;/h3&gt;&#xA;&lt;p&gt;Systemstabilität ist nicht verhandelbar. Heute haben wir erfolgreich eine gemeinsame &lt;strong&gt;App-Group&lt;/strong&gt;-Architektur für das Projekt &lt;strong&gt;@AT_Diary&lt;/strong&gt; implementiert, die einen nahtlosen Datenfluss zwischen der Hauptanwendung und ihrem Home-Screen-Widget gewährleistet.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Technische Synthese:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Gemeinsamer Modell-Container:&lt;/strong&gt; Durch die Migration zu &lt;code&gt;group.com.automatedtechnologies.atdiary&lt;/code&gt; haben wir Datenlatenzen zwischen Systemzielen eliminiert.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Entitlement-Abgleich:&lt;/strong&gt; Die Sicherheitsstruktur von App und Widget wurde vereinheitlicht, um Echtzeit-Lese-/Schreibzugriff auf den Kern-SwiftData-Speicher zu ermöglichen.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Zuverlässigkeit:&lt;/strong&gt; Dieser Meilenstein verhindert das „Leere-Widget-Syndrom“ und stellt sicher, dass die „Story des Tages“ des Nutzers immer mit seinen neuesten Erlebnissen synchronisiert ist.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Diese Grundlagenarbeit bereitet @AT_Diary auf fortgeschrittene Funktionen wie Live-Standortverfolgung und Hintergrund-Fotoverarbeitung vor.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

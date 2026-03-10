@@ -1,8 +1,26 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Infrastructure on Automated Insights</title><link>https://detroitautomationacademy.com/blog/categories/infrastructure/</link><description>Recent content in Infrastructure on Automated Insights</description><generator>Hugo</generator><language>en</language><lastBuildDate>Mon, 09 Mar 2026 10:00:00 -0500</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/categories/infrastructure/index.xml" rel="self" type="application/rss+xml"/><item><title>Introducing Project Sonic: The Future of Neural Audio Coordination</title><link>https://detroitautomationacademy.com/blog/posts/introducing-project-sonic/</link><pubDate>Mon, 09 Mar 2026 10:00:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/posts/introducing-project-sonic/</guid><description>&lt;h1 id="project-sonic-orchestrating-the-acoustic-mesh"&gt;Project Sonic: Orchestrating the Acoustic Mesh&lt;/h1&gt;
-&lt;p&gt;Today, &lt;strong&gt;@AutomatedTechnologies&lt;/strong&gt; is proud to announce the formal launch of &lt;strong&gt;Project Sonic&lt;/strong&gt;, a high-fidelity evolution of our audio ecosystem. Driven by the &lt;strong&gt;Phase 9 Executive Mandate&lt;/strong&gt;, Project Sonic transitions our music infrastructure from legacy Spotify services to the cutting-edge &lt;strong&gt;Apple MusicKit&lt;/strong&gt; framework, delivering zero-latency telemetry and sentiment-based curation.&lt;/p&gt;
-&lt;h2 id="the-sonic-hud-v18"&gt;The Sonic HUD (v1.8)&lt;/h2&gt;
-&lt;p&gt;Central to this transformation is the &lt;strong&gt;Sonic HUD (Phase 20)&lt;/strong&gt;, a neural hardware pilot protocol integrated into the &lt;strong&gt;Oculus v5&lt;/strong&gt; coordination hub. The HUD provides operators with a real-time visualization of the &amp;ldquo;Sonic Mesh&amp;rdquo;—our global network of acoustic nodes.&lt;/p&gt;</description></item><item><title>Fixing Our CI/CD Pipeline: Submodules, Empty Commits, and the Clawd QA Gate</title><link>https://detroitautomationacademy.com/blog/posts/cicd-pipeline-postmortem/</link><pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/posts/cicd-pipeline-postmortem/</guid><description>&lt;p&gt;The Automated Insights blog has had a recurring CI/CD problem: deployments that work locally fail silently in GitHub Actions, or succeed in Actions but produce a broken site. Here&amp;rsquo;s the root cause analysis and what we changed.&lt;/p&gt;
-&lt;h2 id="the-three-failure-modes"&gt;The Three Failure Modes&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Hugo build succeeds, site content missing&lt;/strong&gt; — the &lt;code&gt;public/&lt;/code&gt; directory was generated but the git commit step failed silently because there was nothing new to commit. The deploy step ran anyway and pushed a stale build.&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Infrastructure on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/categories/infrastructure/</link>
+    <description>Recent content in Infrastructure on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 09 Mar 2026 10:00:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/categories/infrastructure/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Introducing Project Sonic: The Future of Neural Audio Coordination</title>
+      <link>https://detroitautomationacademy.com/blog/posts/introducing-project-sonic/</link>
+      <pubDate>Mon, 09 Mar 2026 10:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/introducing-project-sonic/</guid>
+      <description>&lt;h1 id=&#34;project-sonic-orchestrating-the-acoustic-mesh&#34;&gt;Project Sonic: Orchestrating the Acoustic Mesh&lt;/h1&gt;&#xA;&lt;p&gt;Today, &lt;strong&gt;@AutomatedTechnologies&lt;/strong&gt; is proud to announce the formal launch of &lt;strong&gt;Project Sonic&lt;/strong&gt;, a high-fidelity evolution of our audio ecosystem. Driven by the &lt;strong&gt;Phase 9 Executive Mandate&lt;/strong&gt;, Project Sonic transitions our music infrastructure from legacy Spotify services to the cutting-edge &lt;strong&gt;Apple MusicKit&lt;/strong&gt; framework, delivering zero-latency telemetry and sentiment-based curation.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-sonic-hud-v18&#34;&gt;The Sonic HUD (v1.8)&lt;/h2&gt;&#xA;&lt;p&gt;Central to this transformation is the &lt;strong&gt;Sonic HUD (Phase 20)&lt;/strong&gt;, a neural hardware pilot protocol integrated into the &lt;strong&gt;Oculus v5&lt;/strong&gt; coordination hub. The HUD provides operators with a real-time visualization of the &amp;ldquo;Sonic Mesh&amp;rdquo;—our global network of acoustic nodes.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Fixing Our CI/CD Pipeline: Submodules, Empty Commits, and the Clawd QA Gate</title>
+      <link>https://detroitautomationacademy.com/blog/posts/cicd-pipeline-postmortem/</link>
+      <pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/cicd-pipeline-postmortem/</guid>
+      <description>&lt;p&gt;The Automated Insights blog has had a recurring CI/CD problem: deployments that work locally fail silently in GitHub Actions, or succeed in Actions but produce a broken site. Here&amp;rsquo;s the root cause analysis and what we changed.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-three-failure-modes&#34;&gt;The Three Failure Modes&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;&lt;strong&gt;Hugo build succeeds, site content missing&lt;/strong&gt; — the &lt;code&gt;public/&lt;/code&gt; directory was generated but the git commit step failed silently because there was nothing new to commit. The deploy step ran anyway and pushed a stale build.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

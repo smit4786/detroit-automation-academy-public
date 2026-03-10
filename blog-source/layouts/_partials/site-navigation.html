@@ -22,31 +22,7 @@
       {{ end }}
       <div class="flex items-center">
         {{ partials.IncludeCached "social/follow.html" . }}
-        <button id="theme-toggle" aria-label="Toggle Theme" title="Switch Theme" style="background: transparent; border: 1px solid var(--brand-muted); color: var(--brand-primary); cursor: pointer; padding: 4px 8px; border-radius: 4px; margin-left: 12px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
-          🌙
-        </button>
       </div>
     </div>
   </div>
 </nav>
-
-<script>
-  (function() {
-    const toggle = document.getElementById('theme-toggle');
-    const storageKey = 'daa-theme';
-    
-    const applyTheme = (theme) => {
-      document.documentElement.setAttribute('data-theme', theme);
-      document.body.setAttribute('data-theme', theme);
-      if (toggle) toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
-      localStorage.setItem(storageKey, theme);
-    };
-
-    if (toggle) {
-      toggle.addEventListener('click', () => {
-        const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        applyTheme(theme);
-      });
-    }
-  })();
-</script>

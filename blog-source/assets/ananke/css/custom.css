@@ -1,39 +1,43 @@
-/* Brand-compliant styles for Automated Insights */
-/* Based on Detroit Automation Academy (DAA) dark theme */
+/* AEAM Sentient Rebrand - Automated Insights Blog */
+/* Based on Detroit Automation Academy (DAA) V10 palette */
 
 :root {
-  --brand-primary: #f8f9fa; /* Near white */
-  --brand-bg: #111111;      /* Near black */
-  --brand-accent: #007bff;  /* Blue accent for links/highlights */
-  --brand-muted: #888;
+  --brand-primary: #00ff41; /* Sentient Matrix Green */
+  --brand-bg: #020b18;      /* Deep Space Blue */
+  --brand-accent: #ffb700;  /* Matrix Amber */
+  --brand-fg: #E6EDF3;
+  --brand-muted: rgba(255, 255, 255, 0.4);
 }
 
-[data-theme='light'] {
-  --brand-primary: #111111;
-  --brand-bg: #f8f9fa;
-  --brand-accent: #0056b3;
-  --brand-muted: #666;
+@media (prefers-color-scheme: light) {
+  :root {
+    --brand-primary: #008f23;
+    --brand-bg: #f0f4f8;
+    --brand-accent: #cc8e00;
+    --brand-fg: #020b18;
+    --brand-muted: rgba(0, 0, 0, 0.4);
+  }
 }
 
 body {
   background-color: var(--brand-bg);
-  color: var(--brand-primary);
+  color: var(--brand-fg);
   font-family: 'Avenir', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .near-black { color: var(--brand-bg); }
 .bg-near-black { background-color: var(--brand-bg); }
-.near-white { color: var(--brand-primary); }
+.near-white { color: var(--brand-fg); }
 
 a {
-  color: var(--brand-accent);
+  color: var(--brand-primary);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 a:hover {
-  color: #0056b3;
+  color: var(--brand-accent);
 }
 
 .post-content h1, .post-content h2, .post-content h3 {
@@ -43,41 +47,32 @@ a:hover {
 }
 
 pre, code {
-  background-color: #222;
+  background-color: rgba(255, 255, 255, 0.05);
   color: #eee;
   border-radius: 4px;
 }
 
-[data-theme='light'] pre, [data-theme='light'] code {
-  background-color: #eee;
-  color: #222;
-}
+@media (prefers-color-scheme: light) {
+  pre, code {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #222;
+  }
+  
+  .white-90, .white-80, .white-70, .white-60, .white-50, .white-40, .near-white, .white, .gray, .silver {
+    color: var(--brand-fg) !important;
+  }
 
-/* Override Tachyons utility classes for light mode readability */
-[data-theme='light'] .white-90, 
-[data-theme='light'] .white-80, 
-[data-theme='light'] .white-70, 
-[data-theme='light'] .white-60, 
-[data-theme='light'] .white-50, 
-[data-theme='light'] .white-40, 
-[data-theme='light'] .near-white,
-[data-theme='light'] .white,
-[data-theme='light'] .gray,
-[data-theme='light'] .silver {
-  color: var(--brand-primary) !important;
-}
+  .hover-white:hover {
+    color: var(--brand-primary) !important;
+  }
 
-[data-theme='light'] .hover-white:hover {
-  color: var(--brand-accent) !important;
-}
+  .bg-near-black {
+    background-color: var(--brand-bg) !important;
+  }
 
-[data-theme='light'] .bg-near-black {
-  background-color: var(--brand-bg) !important;
-}
-
-[data-theme='light'] .bg-black-60,
-[data-theme='light'] .bg-black-40 {
-  background-color: rgba(0,0,0,0.05) !important;
+  .bg-black-60, .bg-black-40 {
+    background-color: rgba(0,0,0,0.05) !important;
+  }
 }
 
 .featured-image img {

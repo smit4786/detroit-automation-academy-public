@@ -1,12 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Вехи-Проекта on Automated Insights</title><link>https://detroitautomationacademy.com/blog/ru/categories/%D0%B2%D0%B5%D1%85%D0%B8-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0/</link><description>Recent content in Вехи-Проекта on Automated Insights</description><generator>Hugo</generator><language>ru</language><lastBuildDate>Mon, 09 Feb 2026 15:15:00 -0500</lastBuildDate><atom:link href="https://detroitautomationacademy.com/blog/ru/categories/%D0%B2%D0%B5%D1%85%D0%B8-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0/index.xml" rel="self" type="application/rss+xml"/><item><title>Завершение проекта: Веб-сайт Detroit Automation Academy</title><link>https://detroitautomationacademy.com/blog/ru/posts/daa-project-completion-report/</link><pubDate>Mon, 09 Feb 2026 15:15:00 -0500</pubDate><guid>https://detroitautomationacademy.com/blog/ru/posts/daa-project-completion-report/</guid><description>&lt;h1 id="-миссия-выполнена-инициатива-по-веб-сайту-daa"&gt;🎯 Миссия выполнена: Инициатива по веб-сайту DAA&lt;/h1&gt;
-&lt;p&gt;Мы с гордостью объявляем об успешном завершении &lt;strong&gt;инициативы по улучшению веб-сайта Detroit Automation Academy (DAA)&lt;/strong&gt;. Этот проект является важной вехой в нашей миссии по предоставлению доступного образования в области автоматизации для будущего Детройта.&lt;/p&gt;
-&lt;h2 id="-резюме"&gt;📊 Резюме&lt;/h2&gt;
-&lt;p&gt;Проект был выполнен с &lt;strong&gt;образцовыми показателями&lt;/strong&gt;, получив &lt;strong&gt;оценку A+ (96/100)&lt;/strong&gt;. Ключевые результаты включают:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;✅ &lt;strong&gt;Исправлены критические проблемы&lt;/strong&gt;: устаревшие даты мероприятий заменены профессиональными заглушками, что восстановило доверие к сайту.&lt;/li&gt;
-&lt;li&gt;✅ &lt;strong&gt;Проверена инфраструктура&lt;/strong&gt;: подтверждена работоспособность системы регистрации, в которой уже зафиксировано 3 активных заявки.&lt;/li&gt;
-&lt;li&gt;✅ &lt;strong&gt;Оптимизирована производительность&lt;/strong&gt;: достигнуто время загрузки &lt;strong&gt;0,302 с&lt;/strong&gt;, что на 85% лучше наших целевых показателей.&lt;/li&gt;
-&lt;li&gt;✅ &lt;strong&gt;Профессиональная документация&lt;/strong&gt;: создано более &lt;strong&gt;118 КБ документации&lt;/strong&gt; для обеспечения долгосрочной устойчивости и передачи знаний.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id="-техническое-совершенство"&gt;🚀 Техническое совершенство&lt;/h2&gt;
-&lt;p&gt;В проекте использовалась мультиагентная координация для обеспечения хирургической точности внедрения. Используя 6-этапную дорожную карту реализации, команде удалось завершить все задачи на &lt;strong&gt;7 дней раньше срока&lt;/strong&gt; и на &lt;strong&gt;41% меньше бюджета&lt;/strong&gt;.&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Вехи-Проекта on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/categories/%D0%B2%D0%B5%D1%85%D0%B8-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0/</link>
+    <description>Recent content in Вехи-Проекта on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Mon, 09 Feb 2026 15:15:00 -0500</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/categories/%D0%B2%D0%B5%D1%85%D0%B8-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Завершение проекта: Веб-сайт Detroit Automation Academy</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/daa-project-completion-report/</link>
+      <pubDate>Mon, 09 Feb 2026 15:15:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/daa-project-completion-report/</guid>
+      <description>&lt;h1 id=&#34;-миссия-выполнена-инициатива-по-веб-сайту-daa&#34;&gt;🎯 Миссия выполнена: Инициатива по веб-сайту DAA&lt;/h1&gt;&#xA;&lt;p&gt;Мы с гордостью объявляем об успешном завершении &lt;strong&gt;инициативы по улучшению веб-сайта Detroit Automation Academy (DAA)&lt;/strong&gt;. Этот проект является важной вехой в нашей миссии по предоставлению доступного образования в области автоматизации для будущего Детройта.&lt;/p&gt;&#xA;&lt;h2 id=&#34;-резюме&#34;&gt;📊 Резюме&lt;/h2&gt;&#xA;&lt;p&gt;Проект был выполнен с &lt;strong&gt;образцовыми показателями&lt;/strong&gt;, получив &lt;strong&gt;оценку A+ (96/100)&lt;/strong&gt;. Ключевые результаты включают:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;✅ &lt;strong&gt;Исправлены критические проблемы&lt;/strong&gt;: устаревшие даты мероприятий заменены профессиональными заглушками, что восстановило доверие к сайту.&lt;/li&gt;&#xA;&lt;li&gt;✅ &lt;strong&gt;Проверена инфраструктура&lt;/strong&gt;: подтверждена работоспособность системы регистрации, в которой уже зафиксировано 3 активных заявки.&lt;/li&gt;&#xA;&lt;li&gt;✅ &lt;strong&gt;Оптимизирована производительность&lt;/strong&gt;: достигнуто время загрузки &lt;strong&gt;0,302 с&lt;/strong&gt;, что на 85% лучше наших целевых показателей.&lt;/li&gt;&#xA;&lt;li&gt;✅ &lt;strong&gt;Профессиональная документация&lt;/strong&gt;: создано более &lt;strong&gt;118 КБ документации&lt;/strong&gt; для обеспечения долгосрочной устойчивости и передачи знаний.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;-техническое-совершенство&#34;&gt;🚀 Техническое совершенство&lt;/h2&gt;&#xA;&lt;p&gt;В проекте использовалась мультиагентная координация для обеспечения хирургической точности внедрения. Используя 6-этапную дорожную карту реализации, команде удалось завершить все задачи на &lt;strong&gt;7 дней раньше срока&lt;/strong&gt; и на &lt;strong&gt;41% меньше бюджета&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

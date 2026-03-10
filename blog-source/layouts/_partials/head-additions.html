@@ -1,13 +1,1 @@
-<script>
-  (function() {
-    const storageKey = 'daa-theme';
-    const currentTheme = localStorage.getItem(storageKey) || 'dark';
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      document.body.setAttribute('data-theme', currentTheme);
-      const toggle = document.getElementById('theme-toggle');
-      if (toggle) toggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
-    });
-  })();
-</script>
+<!-- AEAM Sentient Rebrand: Removed legacy theme toggle logic -->
