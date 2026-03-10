@@ -132,5 +132,10 @@ func main() {
 	http.HandleFunc("/api/students", AuthMiddleware(fsClient, handlers.MakeStudentsHandler(fsClient)))
 	http.HandleFunc("/api/instructors", AuthMiddleware(fsClient, handlers.MakeInstructorsHandler(fsClient)))
 
+	// OCULUS CORE: Academy-as-a-Service Remote API
+	http.HandleFunc("/api/v1/academy/agent/chat", handlers.AcademyInstructorChat)
+	http.HandleFunc("/api/v1/academy/validate-hardware", handlers.ValidateHardware)
+	http.HandleFunc("/api/v1/academy/telemetry/pulse", handlers.GetTelemetryPulse)
+
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

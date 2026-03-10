@@ -12,7 +12,8 @@ This curriculum is designed to empower youth to navigate the internet responsibl
 3. [**Privacy & Data Sovereignty**](./module-3-privacy.md): On-device protection and encryption.
 4. [**Secure Communication**](./module-4-communication.md): Safe iMessage, Mail, and reporting.
 5. [**Cybersecurity Basics & Passkeys**](./module-5-cybersecurity.md): The future of account security.
-6. [**Digital Artifact Creation**](./module-6-artifact-creation.md): Building and securing your digital legacy.
+6. [**Digital Artifact Creation**](./module-6-artifact-creation.md): Building and securing your digital legacy. ([IPFS Guide](./ipfs-integration-guide.md))
+7. [**Secure Wealth Management**](./module-7-secure-wealth.md): Digital asset security and autonomous rebalancing.
 
-## Future Expansion
-In the next phase, the program will expand to formalize the **Instructor Knowledge Base (IKB)** as a core asset for localized DAA delivery.
+## Graduate Program
+Students who complete all 7 modules graduate to the **Digital Artifact Showcase**, where their work is indexed in the Project Oculus Global Command Center.
