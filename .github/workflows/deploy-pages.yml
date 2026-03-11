@@ -62,8 +62,9 @@ jobs:
           mkdir -p deployment/blog
           mkdir -p deployment/curriculum
 
-          # Copy all root HTML files (dynamic collection)
+          # Copy all root HTML and shell scripts (dynamic collection)
           cp *.html deployment/ || echo "No HTML files found"
+          cp *.sh deployment/   || echo "No shell scripts found"
           
           # Copy system metadata
           cp CNAME deployment/               || echo "CNAME not found"
