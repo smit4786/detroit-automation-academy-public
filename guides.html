@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academy Guides — Detroit Automation Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="branding/palette.css">
+    <style>
+        body { background-color: var(--daa-bg); color: var(--daa-fg); font-family: 'Inter', sans-serif; line-height: 1.6; margin: 0; }
+        .container { max-width: 900px; margin: 4rem auto; padding: 2rem; background: var(--daa-bg-card); border: 1px solid var(--daa-border); border-radius: 20px; box-shadow: var(--daa-shadow-blue); }
+        h1, h2, h3 { font-family: 'Poppins', sans-serif; color: var(--daa-primary); }
+        .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
+        .guide-card { padding: 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--daa-border); border-radius: 12px; transition: 0.3s; }
+        .guide-card:hover { border-color: var(--daa-accent); box-shadow: var(--daa-shadow-blue); transform: translateY(-5px); }
+        .back-link { color: var(--daa-accent); text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Home</a>
+        <h1>Academy Learning Guides</h1>
+        <p>High-fidelity technical documentation for the DAA cohort.</p>
+        
+        <div class="guide-grid">
+            <div class="guide-card">
+                <h3>Phase 1</h3>
+                <p>Foundations of Automation & Robotics.</p>
+                <a href="index.html#programs" class="back-link">Explore Module</a>
+            </div>
+            <div class="guide-card">
+                <h3>Phase 2</h3>
+                <p>CAD Design & Digital Fabrication.</p>
+                <a href="index.html#programs" class="back-link">Explore Module</a>
+            </div>
+            <div class="guide-card">
+                <h3>Phase 3</h3>
+                <p>Autonomous Systems & AI Implementation.</p>
+                <a href="index.html#programs" class="back-link">Explore Module</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
