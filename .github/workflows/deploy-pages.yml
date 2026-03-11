@@ -60,18 +60,19 @@ jobs:
         run: |
           echo "Preparing deployment directory..."
           mkdir -p deployment/blog
+          mkdir -p deployment/curriculum
 
-          # Copy root HTML files
-          cp index.html deployment/          || echo "index.html not found"
-          cp admin.html deployment/          || echo "admin.html not found"
-          cp dashboard.html deployment/      || echo "dashboard.html not found"
-          cp students.html deployment/       || echo "students.html not found"
-          cp instructors.html deployment/    || echo "instructors.html not found"
-          cp partners.html deployment/       || echo "partners.html not found"
-          cp landing.html deployment/        || echo "landing.html not found"
-          cp subscriptions.html deployment/  || echo "subscriptions.html not found"
+          # Copy all root HTML files (dynamic collection)
+          cp *.html deployment/ || echo "No HTML files found"
+          
+          # Copy system metadata
           cp CNAME deployment/               || echo "CNAME not found"
           cp .nojekyll deployment/           || echo ".nojekyll not found"
+
+          # Copy curriculum silo
+          if [ -d "curriculum" ]; then
+            cp -r curriculum/* deployment/curriculum/
+          fi
 
           # Copy asset directories
           cp -r assets deployment/   || (mkdir -p deployment/assets   && echo "assets dir created empty")
