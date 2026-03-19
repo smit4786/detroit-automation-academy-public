@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hub-and-Spoke on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/de/tags/hub-and-spoke/</link>
+    <description>Recent content in Hub-and-Spoke on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>de</language>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/de/tags/hub-and-spoke/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Automated Insights: Unser Technisches Wissens-Hub ist live</title>
+      <link>https://detroitautomationacademy.com/blog/de/posts/launching-automated-insights/</link>
+      <pubDate>Fri, 27 Feb 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/posts/launching-automated-insights/</guid>
+      <description>&lt;p&gt;Heute startet &lt;strong&gt;Automated Insights&lt;/strong&gt;, der technische Wissens-Hub des Automated Technologies Unternehmens.&lt;/p&gt;&#xA;&lt;h2 id=&#34;was-ist-automated-insights&#34;&gt;Was ist Automated Insights?&lt;/h2&gt;&#xA;&lt;p&gt;Dieser Blog übersetzt die internen technischen Meilensteine unserer Projekte in klare, öffentlich zugängliche Einblicke. Statt unsere Erkenntnisse in internen Sprint-Logs zu belassen, veröffentlichen wir sie hier — auf Englisch, Deutsch und Russisch — zum Nutzen der globalen Entwickler-Community.&lt;/p&gt;&#xA;&lt;h2 id=&#34;unsere-projekte&#34;&gt;Unsere Projekte&lt;/h2&gt;&#xA;&lt;h3 id=&#34;-at_diary&#34;&gt;🍎 @AT_Diary&lt;/h3&gt;&#xA;&lt;p&gt;Eine datenschutzorientierte iOS-Tagebuch-App, gebaut vollständig auf nativen Apple-Frameworks. Sprint 2 ist abgeschlossen. Die App synthetisiert täglich Lebenskontext aus MusicKit, EventKit, CoreLocation und Fotos — vollständig auf dem Gerät. Keine Daten verlassen das iPhone.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

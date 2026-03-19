@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Enterprise on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/tags/enterprise/</link>
+    <description>Recent content in Enterprise on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/tags/enterprise/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Announcing Project Oculus v5.0: The Enterprise Agent Coordination Era</title>
+      <link>https://detroitautomationacademy.com/blog/posts/announcing-oculus-v5-enterprise-coordination/</link>
+      <pubDate>Sat, 07 Mar 2026 20:30:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/announcing-oculus-v5-enterprise-coordination/</guid>
+      <description>&lt;h1 id=&#34;the-evolution-of-command-v50&#34;&gt;The Evolution of Command: v5.0&lt;/h1&gt;&#xA;&lt;p&gt;Today marks a major architectural milestone for Automated Technologies. We have formally successfully transitioned from &lt;strong&gt;Project Oculus v4.0&lt;/strong&gt; to &lt;strong&gt;Oculus v5.0&lt;/strong&gt;, evolving our centralized dashboard from a telemetry-passive HUD into a high-fidelity &lt;strong&gt;Enterprise Agent Coordination Hub&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-63-agent-fleet&#34;&gt;The 63-Agent Fleet&lt;/h2&gt;&#xA;&lt;p&gt;As our ecosystem expanded across the DAA, AT_Music, AT_Wealth, AT_Diary, and Oculus domains, the need for unified fleet management became critical. Oculus v5.0 now tracks and orchestrates &lt;strong&gt;63 specialized agents&lt;/strong&gt;, incorporating both our core global team and the newly registered domain-specific fleet from the &lt;code&gt;clawd&lt;/code&gt; framework.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

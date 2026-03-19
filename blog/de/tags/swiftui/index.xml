@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Swiftui on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/de/tags/swiftui/</link>
+    <description>Recent content in Swiftui on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>de</language>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/de/tags/swiftui/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Neue Projektankündigung: Automated Insights iOS (Mobile HUD)</title>
+      <link>https://detroitautomationacademy.com/blog/de/posts/ankundigung-ios-app-mobile-hud/</link>
+      <pubDate>Fri, 06 Mar 2026 15:15:00 +0000</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/de/posts/ankundigung-ios-app-mobile-hud/</guid>
+      <description>Wir beginnen offiziell mit der Entwicklung der Automated Insights iOS-App, einer High-Fidelity-Erweiterung unseres Ökosystems.</description>
+    </item>
+  </channel>
+</rss>

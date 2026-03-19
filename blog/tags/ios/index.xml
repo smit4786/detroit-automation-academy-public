@@ -6,35 +6,28 @@
     <description>Recent content in Ios on Automated Insights</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 03 Mar 2026 14:00:00 -0500</lastBuildDate>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/tags/ios/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>@AT_Diary Sprint 3: Privacy-First Spatial Intelligence</title>
-      <link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-3/</link>
-      <pubDate>Tue, 03 Mar 2026 14:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-3/</guid>
-      <description>&lt;h2 id=&#34;the-where-and-the-what&#34;&gt;The &amp;ldquo;Where&amp;rdquo; and the &amp;ldquo;What&amp;rdquo;&lt;/h2&gt;&#xA;&lt;p&gt;A diary isn&amp;rsquo;t just a list of events; it&amp;rsquo;s a narrative of space and time. In Sprint 3 of &lt;code&gt;@AT_Diary&lt;/code&gt;, we&amp;rsquo;ve successfully bridged the gap between raw data and visual storytelling by integrating &lt;strong&gt;CoreLocation&lt;/strong&gt;, &lt;strong&gt;MapKit&lt;/strong&gt;, and the &lt;strong&gt;Photos Framework&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h3 id=&#34;spatial-context-more-than-just-coordinates&#34;&gt;Spatial Context: More Than Just Coordinates&lt;/h3&gt;&#xA;&lt;p&gt;We&amp;rsquo;ve implemented a custom &lt;code&gt;AppleLocationProvider&lt;/code&gt; that identifies significant locations visited throughout the day. Instead of just logging GPS coordinates, our local MCP Server processes these into meaningful &amp;ldquo;Significant Locations&amp;rdquo; (e.g., &amp;ldquo;Michigan Central Station&amp;rdquo; vs. &amp;ldquo;2001 15th St&amp;rdquo;).&lt;/p&gt;</description>
+      <title>New Project Announcement: Automated Insights iOS (Mobile HUD)</title>
+      <link>https://detroitautomationacademy.com/blog/posts/announcing-ios-app-mobile-hud/</link>
+      <pubDate>Fri, 06 Mar 2026 15:15:00 +0000</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/announcing-ios-app-mobile-hud/</guid>
+      <description>We are officially beginning development on the Automated Insights iOS app, a high-fidelity mobile extension of our executive ecosystem.</description>
+    </item>
+    <item>
+      <title>@AT_Diary Sprint 2 Complete: On-Device Intelligence with Apple Frameworks</title>
+      <link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2-retrospective/</link>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2-retrospective/</guid>
+      <description>&lt;p&gt;Sprint 2 of &lt;strong&gt;@AT_Diary&lt;/strong&gt; is complete — build successful. Here&amp;rsquo;s what we shipped.&lt;/p&gt;&#xA;&lt;h2 id=&#34;what-is-at_diary&#34;&gt;What Is @AT_Diary?&lt;/h2&gt;&#xA;&lt;p&gt;&lt;code&gt;@AT_Diary&lt;/code&gt; is a privacy-first iOS journaling application that automatically synthesizes your daily life into a structured diary. No servers. No cloud storage. No data leaves your device.&lt;/p&gt;&#xA;&lt;p&gt;The application pulls context from four native Apple frameworks and weaves them into a coherent daily narrative — entirely on-device.&lt;/p&gt;&#xA;&lt;h2 id=&#34;what-we-built-in-sprint-2&#34;&gt;What We Built in Sprint 2&lt;/h2&gt;&#xA;&lt;h3 id=&#34;apple-framework-integration&#34;&gt;Apple Framework Integration&lt;/h3&gt;&#xA;&lt;table&gt;&#xA;  &lt;thead&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;th&gt;Framework&lt;/th&gt;&#xA;          &lt;th&gt;Data Synthesized&lt;/th&gt;&#xA;          &lt;th&gt;Status&lt;/th&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/thead&gt;&#xA;  &lt;tbody&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;MusicKit&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;What you listened to, when, how long&lt;/td&gt;&#xA;          &lt;td&gt;✅ Sprint 2&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;EventKit&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Calendar events attended, scheduled meetings&lt;/td&gt;&#xA;          &lt;td&gt;✅ Sprint 2&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;CoreLocation&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Significant locations visited throughout the day&lt;/td&gt;&#xA;          &lt;td&gt;✅ Sprint 2&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;Photos&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Photos captured during the day (metadata only, on-device)&lt;/td&gt;&#xA;          &lt;td&gt;✅ Sprint 2&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/tbody&gt;&#xA;&lt;/table&gt;&#xA;&lt;h3 id=&#34;key-technical-decisions&#34;&gt;Key Technical Decisions&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;Why native frameworks only?&lt;/strong&gt;&lt;br&gt;&#xA;The moment data touches a network, you need a privacy policy, a server to secure, and a trust relationship with the user that&amp;rsquo;s easy to destroy. Native-only means the diary is as private as the iPhone itself.&lt;/p&gt;</description>
     </item>
     <item>
       <title>@AT_Diary Sprint 2: Building a Privacy-First Diary on Apple Native Frameworks</title>
-      <link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2/</link>
+      <link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2-native-apple-frameworks/</link>
       <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2/</guid>
+      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2-native-apple-frameworks/</guid>
       <description>&lt;p&gt;Sprint 2 of &lt;code&gt;@AT_Diary&lt;/code&gt; is complete with a successful build. Here&amp;rsquo;s what we shipped and how the architecture decisions are holding up.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-core-premise&#34;&gt;The Core Premise&lt;/h2&gt;&#xA;&lt;p&gt;Most journaling apps ask you to trust their servers with your most personal data. AT_Diary doesn&amp;rsquo;t. Every piece of data it touches — your music history, your calendar events, your location context, your photos — is processed &lt;strong&gt;on-device&lt;/strong&gt; and stored with iCloud encryption. Nothing phones home.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Stability through Shared Storage: The App Group Milestone</title>
-      <link>https://detroitautomationacademy.com/blog/posts/app-group-stability/</link>
-      <pubDate>Sat, 21 Feb 2026 22:30:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/app-group-stability/</guid>
-      <description>&lt;h3 id=&#34;engineering-data-consistency-across-ecosystems&#34;&gt;Engineering Data Consistency across Ecosystems&lt;/h3&gt;&#xA;&lt;p&gt;System stability is non-negotiable. Today, we successfully implemented a shared &lt;strong&gt;App Group&lt;/strong&gt; architecture for the &lt;strong&gt;@AT_Diary&lt;/strong&gt; project, ensuring seamless data flow between the main application and its Home Screen widget.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Technical Synthesis:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Shared Model Container:&lt;/strong&gt; By migrating to &lt;code&gt;group.com.automatedtechnologies.atdiary&lt;/code&gt;, we eliminated data latency between system targets.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Entitlement Alignment:&lt;/strong&gt; Unified the security posture of both the App and the Widget to permit real-time read/write access to the core SwiftData store.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Reliability:&lt;/strong&gt; This milestone prevents the &amp;ldquo;Empty Widget&amp;rdquo; syndrome and ensures that the user&amp;rsquo;s &amp;ldquo;Story of the Day&amp;rdquo; is always synchronized with their latest experiences.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This foundational work prepares @AT_Diary for advanced features like live location tracking and background photo processing.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>@AT_Diary: Milestone Achieved in Automated Engineering</title>
-      <link>https://detroitautomationacademy.com/blog/posts/at-diary-milestone/</link>
-      <pubDate>Sat, 21 Feb 2026 21:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-milestone/</guid>
-      <description>&lt;h3 id=&#34;synthesizing-the-future-of-personal-data&#34;&gt;Synthesizing the Future of Personal Data&lt;/h3&gt;&#xA;&lt;p&gt;Today marks a significant milestone for &lt;strong&gt;Automated Technologies&lt;/strong&gt;. We have successfully completed the core build of &lt;strong&gt;@AT_Diary&lt;/strong&gt;, a privacy-first iOS application that bridges the gap between daily life and automated insights.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Key Achievements:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Full Ecosystem Integration:&lt;/strong&gt; Real-time synchronization with MusicKit, EventKit, and CoreLocation.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;On-Device Intelligence:&lt;/strong&gt; Leveraging the NaturalLanguage framework for sentiment analysis without sacrificing user privacy.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Rapid Prototyping:&lt;/strong&gt; Moving from concept to a successful Xcode build in under 4 hours using advanced AI coordination.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This project demonstrates the power of highly-coordinated multi-agent development, a methodology we are also applying to the &lt;strong&gt;Detroit Automation Academy (DAA)&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

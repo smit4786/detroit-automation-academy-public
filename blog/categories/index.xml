@@ -6,7 +6,7 @@
     <description>Recent content in Categories on Automated Insights</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 09 Mar 2026 10:00:00 -0500</lastBuildDate>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Announcements</title>
@@ -23,24 +23,38 @@
       <description></description>
     </item>
     <item>
-      <title>Technical Updates</title>
-      <link>https://detroitautomationacademy.com/blog/categories/technical-updates/</link>
-      <pubDate>Thu, 05 Mar 2026 18:30:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/categories/technical-updates/</guid>
+      <title>Product Roadmap</title>
+      <link>https://detroitautomationacademy.com/blog/categories/product-roadmap/</link>
+      <pubDate>Fri, 06 Mar 2026 15:15:00 +0000</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/categories/product-roadmap/</guid>
       <description></description>
     </item>
     <item>
-      <title>Engineering Updates</title>
-      <link>https://detroitautomationacademy.com/blog/categories/engineering-updates/</link>
-      <pubDate>Tue, 03 Mar 2026 16:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/categories/engineering-updates/</guid>
+      <title>Technical Operations</title>
+      <link>https://detroitautomationacademy.com/blog/categories/technical-operations/</link>
+      <pubDate>Fri, 06 Mar 2026 15:00:00 +0000</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/categories/technical-operations/</guid>
       <description></description>
     </item>
     <item>
-      <title>Strategies</title>
-      <link>https://detroitautomationacademy.com/blog/categories/strategies/</link>
-      <pubDate>Sat, 28 Feb 2026 11:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/categories/strategies/</guid>
+      <title>@AT_Diary</title>
+      <link>https://detroitautomationacademy.com/blog/categories/@at_diary/</link>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/categories/@at_diary/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>IOS</title>
+      <link>https://detroitautomationacademy.com/blog/categories/ios/</link>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/categories/ios/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Sprint Retrospective</title>
+      <link>https://detroitautomationacademy.com/blog/categories/sprint-retrospective/</link>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/categories/sprint-retrospective/</guid>
       <description></description>
     </item>
     <item>
@@ -58,24 +72,17 @@
       <description></description>
     </item>
     <item>
-      <title>@AT_Diary</title>
-      <link>https://detroitautomationacademy.com/blog/categories/@at_diary/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/categories/@at_diary/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>IOS</title>
-      <link>https://detroitautomationacademy.com/blog/categories/ios/</link>
-      <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/categories/ios/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>DevOps</title>
       <link>https://detroitautomationacademy.com/blog/categories/devops/</link>
       <pubDate>Sat, 28 Feb 2026 03:00:00 -0500</pubDate>
       <guid>https://detroitautomationacademy.com/blog/categories/devops/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Enterprise</title>
+      <link>https://detroitautomationacademy.com/blog/categories/enterprise/</link>
+      <pubDate>Fri, 27 Feb 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/categories/enterprise/</guid>
       <description></description>
     </item>
     <item>

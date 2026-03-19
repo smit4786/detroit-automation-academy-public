@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hub-and-Spoke on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/tags/hub-and-spoke/</link>
+    <description>Recent content in Hub-and-Spoke on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/hub-and-spoke/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Запуск Automated Insights: наш технический хаб знаний</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/launching-automated-insights/</link>
+      <pubDate>Fri, 27 Feb 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/launching-automated-insights/</guid>
+      <description>&lt;p&gt;Сегодня запускается &lt;strong&gt;Automated Insights&lt;/strong&gt; — технический хаб знаний предприятия Automated Technologies.&lt;/p&gt;&#xA;&lt;h2 id=&#34;что-такое-automated-insights&#34;&gt;Что такое Automated Insights?&lt;/h2&gt;&#xA;&lt;p&gt;Этот блог переводит внутренние технические достижения наших проектов в чёткие, общедоступные материалы. Вместо того чтобы хранить опыт в приватных лог-файлах спринтов, мы публикуем его здесь — на английском, немецком и русском — для мирового сообщества разработчиков.&lt;/p&gt;&#xA;&lt;h2 id=&#34;наши-проекты&#34;&gt;Наши проекты&lt;/h2&gt;&#xA;&lt;h3 id=&#34;-at_diary&#34;&gt;🍎 @AT_Diary&lt;/h3&gt;&#xA;&lt;p&gt;Приватное iOS-приложение для автоматического ведения дневника на основе нативных фреймворков Apple. Спринт 2 завершён успешно. Приложение синтезирует ежедневный контекст из MusicKit, EventKit, CoreLocation и Фото — полностью на устройстве. Никакие данные не покидают iPhone.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

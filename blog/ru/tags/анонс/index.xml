@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Анонс on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/tags/%D0%B0%D0%BD%D0%BE%D0%BD%D1%81/</link>
+    <description>Recent content in Анонс on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/%D0%B0%D0%BD%D0%BE%D0%BD%D1%81/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Анонс нового проекта: Automated Insights iOS (Mobile HUD)</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/anons-ios-app-mobile-hud/</link>
+      <pubDate>Fri, 06 Mar 2026 15:15:00 +0000</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/anons-ios-app-mobile-hud/</guid>
+      <description>Мы официально начинаем разработку приложения Automated Insights для iOS — высокотехнологичного мобильного расширения нашей экосистемы.</description>
+    </item>
+  </channel>
+</rss>

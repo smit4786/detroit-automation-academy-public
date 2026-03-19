@@ -6,14 +6,21 @@
     <description>Recent content in Agents on Automated Insights</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 08 Mar 2026 17:45:00 -0500</lastBuildDate>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/tags/agents/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Ecosystem Resilience: Restoring 27&#43; Agent Skills</title>
-      <link>https://detroitautomationacademy.com/blog/posts/ecosystem-resilience-recovery/</link>
-      <pubDate>Sun, 08 Mar 2026 17:45:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/ecosystem-resilience-recovery/</guid>
-      <description>&lt;h3 id=&#34;standardizing-enterprise-wide-asset-recovery&#34;&gt;Standardizing Enterprise-Wide Asset Recovery&lt;/h3&gt;&#xA;&lt;p&gt;Today, we officially formalized our &lt;strong&gt;Asset Restoration &amp;amp; Time Machine Recovery&lt;/strong&gt; protocols, marking a significant milestone in the resilience of the @AutomatedTechnologies ecosystem.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Synthesized Improvements:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Full Skill Restoration:&lt;/strong&gt; Successfully recovered 27+ critical agent skills from our high-fidelity Time Machine backups.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Enhanced Generalist:&lt;/strong&gt; The &lt;strong&gt;@Generalist&lt;/strong&gt; agent now leads our restoration efforts with new mandates to prevent action loops and ensure granular data recovery.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Standardized SOP:&lt;/strong&gt; A new, enterprise-wide SOP has been established to guide the fleet in autonomous recovery from external volumes.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Registry Fidelity:&lt;/strong&gt; We have achieved 100% synchronization across our agent registry, ensuring every specialized role is active and documented.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;This advancement ensures that our autonomous workforce remains stable and capable, even in the face of complex data challenges.&lt;/p&gt;</description>
+      <title>Announcing Project Oculus v5.0: The Enterprise Agent Coordination Era</title>
+      <link>https://detroitautomationacademy.com/blog/posts/announcing-oculus-v5-enterprise-coordination/</link>
+      <pubDate>Sat, 07 Mar 2026 20:30:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/announcing-oculus-v5-enterprise-coordination/</guid>
+      <description>&lt;h1 id=&#34;the-evolution-of-command-v50&#34;&gt;The Evolution of Command: v5.0&lt;/h1&gt;&#xA;&lt;p&gt;Today marks a major architectural milestone for Automated Technologies. We have formally successfully transitioned from &lt;strong&gt;Project Oculus v4.0&lt;/strong&gt; to &lt;strong&gt;Oculus v5.0&lt;/strong&gt;, evolving our centralized dashboard from a telemetry-passive HUD into a high-fidelity &lt;strong&gt;Enterprise Agent Coordination Hub&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-63-agent-fleet&#34;&gt;The 63-Agent Fleet&lt;/h2&gt;&#xA;&lt;p&gt;As our ecosystem expanded across the DAA, AT_Music, AT_Wealth, AT_Diary, and Oculus domains, the need for unified fleet management became critical. Oculus v5.0 now tracks and orchestrates &lt;strong&gt;63 specialized agents&lt;/strong&gt;, incorporating both our core global team and the newly registered domain-specific fleet from the &lt;code&gt;clawd&lt;/code&gt; framework.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Launching Automated Insights: Our Technical Knowledge Hub</title>
+      <link>https://detroitautomationacademy.com/blog/posts/launching-automated-insights/</link>
+      <pubDate>Fri, 27 Feb 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/launching-automated-insights/</guid>
+      <description>&lt;p&gt;Today marks the launch of &lt;strong&gt;Automated Insights&lt;/strong&gt;, the technical knowledge hub for the Automated Technologies enterprise.&lt;/p&gt;&#xA;&lt;h2 id=&#34;what-is-automated-insights&#34;&gt;What Is Automated Insights?&lt;/h2&gt;&#xA;&lt;p&gt;This blog exists to translate the internal technical milestones of our enterprise projects into clear, publicly accessible insights. Rather than keeping our lessons learned locked in internal sprint logs, we publish them here — in English, German, and Russian — for the benefit of the global developer community.&lt;/p&gt;&#xA;&lt;h2 id=&#34;our-enterprise-projects&#34;&gt;Our Enterprise Projects&lt;/h2&gt;&#xA;&lt;p&gt;Our current portfolio of active initiatives:&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

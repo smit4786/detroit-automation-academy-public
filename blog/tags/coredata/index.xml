@@ -6,13 +6,13 @@
     <description>Recent content in Coredata on Automated Insights</description>
     <generator>Hugo</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 28 Feb 2026 04:00:00 -0500</lastBuildDate>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/tags/coredata/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>@AT_Diary Sprint 2: Building a Privacy-First Diary on Apple Native Frameworks</title>
-      <link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2/</link>
+      <link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2-native-apple-frameworks/</link>
       <pubDate>Sat, 28 Feb 2026 04:00:00 -0500</pubDate>
-      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2/</guid>
+      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2-native-apple-frameworks/</guid>
       <description>&lt;p&gt;Sprint 2 of &lt;code&gt;@AT_Diary&lt;/code&gt; is complete with a successful build. Here&amp;rsquo;s what we shipped and how the architecture decisions are holding up.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-core-premise&#34;&gt;The Core Premise&lt;/h2&gt;&#xA;&lt;p&gt;Most journaling apps ask you to trust their servers with your most personal data. AT_Diary doesn&amp;rsquo;t. Every piece of data it touches — your music history, your calendar events, your location context, your photos — is processed &lt;strong&gt;on-device&lt;/strong&gt; and stored with iCloud encryption. Nothing phones home.&lt;/p&gt;</description>
     </item>
   </channel>

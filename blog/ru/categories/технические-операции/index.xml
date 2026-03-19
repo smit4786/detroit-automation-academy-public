@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Технические Операции on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/ru/categories/%D1%82%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5-%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8/</link>
+    <description>Recent content in Технические Операции on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>ru</language>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/ru/categories/%D1%82%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5-%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Этап развития экосистемы: Объединение в единое рабочее пространство Gemini</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/workspace-consolidation-milestone/</link>
+      <pubDate>Fri, 06 Mar 2026 15:00:00 +0000</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/workspace-consolidation-milestone/</guid>
+      <description>Сегодня мы успешно завершили полную консолидацию более чем 15 репозиториев и основных уровней координации в рабочее пространство Gemini.</description>
+    </item>
+  </channel>
+</rss>

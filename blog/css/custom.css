@@ -1,86 +1,72 @@
-/* 🌐 Automated Technologies - Blog Styling (Light/Dark Mode) */
+/* Brand-compliant styles for Automated Insights */
+/* Based on Automated Technologies Styling Initiative (ATSI) standards */
 
 :root {
   --at-primary: #0066CC;
+  /* AT Blue */
+  --at-surface: #FFFFFF;
+  /* Light Mode Background */
+  --at-text: #111111;
+  /* Primary Text */
+  --at-text-muted: #555555;
+  /* Secondary Text */
   --at-slate: #2C3E50;
-  --at-silver: #BDC3C7;
-  
-  --bg-color: #FFFFFF;
-  --text-color: #111111;
-  --text-muted: #555555;
-  --link-color: #0066CC;
-  --border-color: #EEEEEE;
-  --header-bg: #2C3E50; /* AT Slate Header */
+  /* AT Slate */
 }
 
-/* Dark Mode Overrides */
-[data-theme='dark'],
-body.bg-near-black[data-theme='dark'] {
-  --bg-color: #111111;
-  --text-color: #F4F4F4;
-  --text-muted: #AAAAAA;
-  --link-color: #3895FF;
-  --border-color: #333333;
-  --header-bg: #111111;
+[data-theme='dark'] {
+  --at-surface: #111111;
+  /* Dark Mode Background */
+  --at-text: #F4F4F4;
+  /* High Contrast Text */
+  --at-text-muted: #AAAAAA;
+  /* Grayed Text */
 }
 
-/* Force Dark Mode when no theme set if DAA default is dark */
-body.bg-near-black:not([data-theme]) {
-  --bg-color: #111111;
-  --text-color: #F4F4F4;
-}
-
-/* Global Styles */
 body {
-  background-color: var(--bg-color) !important;
-  color: var(--text-color) !important;
+  background-color: var(--at-surface);
+  color: var(--at-text);
+  font-family: 'Avenir', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.near-white, .white-90 {
-  color: var(--text-color) !important;
+.near-black {
+  color: var(--at-slate);
 }
 
 .bg-near-black {
-  background-color: var(--bg-color) !important;
+  background-color: var(--at-surface);
 }
 
-.link {
-  color: var(--link-color) !important;
+.near-white {
+  color: var(--at-text);
 }
 
-.link:hover {
-  opacity: 0.8;
+a {
+  color: var(--at-primary);
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-/* Header Adjustments */
-header.bg-near-black {
-  background-color: var(--header-bg) !important;
+a:hover {
+  color: #0056b3;
 }
 
-/* Navigation Links */
-nav .link {
-  color: #FFFFFF !important; /* Always white on AT Slate header */
+.post-content h1,
+.post-content h2,
+.post-content h3 {
+  color: var(--at-primary);
+  border-bottom: 1px solid var(--at-slate);
+  padding-bottom: 0.5rem;
 }
 
-/* Theme Toggle Button Styles */
-#theme-toggle {
-  background: none;
-  border: 1px solid rgba(255,255,255,0.3);
-  color: #FFFFFF;
-  padding: 4px 8px;
+pre,
+code {
+  background-color: #222;
   border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  margin-left: 1rem;
-  transition: all 0.2s ease;
 }
 
-#theme-toggle:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-[data-theme='light'] #theme-toggle {
-  color: #FFFFFF;
-  border-color: rgba(255,255,255,0.5);
+.featured-image img {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }

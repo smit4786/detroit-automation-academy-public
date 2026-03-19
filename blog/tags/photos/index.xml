@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Photos on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/tags/photos/</link>
+    <description>Recent content in Photos on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/tags/photos/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>@AT_Diary Sprint 2 Complete: On-Device Intelligence with Apple Frameworks</title>
+      <link>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2-retrospective/</link>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/at-diary-sprint-2-retrospective/</guid>
+      <description>&lt;p&gt;Sprint 2 of &lt;strong&gt;@AT_Diary&lt;/strong&gt; is complete — build successful. Here&amp;rsquo;s what we shipped.&lt;/p&gt;&#xA;&lt;h2 id=&#34;what-is-at_diary&#34;&gt;What Is @AT_Diary?&lt;/h2&gt;&#xA;&lt;p&gt;&lt;code&gt;@AT_Diary&lt;/code&gt; is a privacy-first iOS journaling application that automatically synthesizes your daily life into a structured diary. No servers. No cloud storage. No data leaves your device.&lt;/p&gt;&#xA;&lt;p&gt;The application pulls context from four native Apple frameworks and weaves them into a coherent daily narrative — entirely on-device.&lt;/p&gt;&#xA;&lt;h2 id=&#34;what-we-built-in-sprint-2&#34;&gt;What We Built in Sprint 2&lt;/h2&gt;&#xA;&lt;h3 id=&#34;apple-framework-integration&#34;&gt;Apple Framework Integration&lt;/h3&gt;&#xA;&lt;table&gt;&#xA;  &lt;thead&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;th&gt;Framework&lt;/th&gt;&#xA;          &lt;th&gt;Data Synthesized&lt;/th&gt;&#xA;          &lt;th&gt;Status&lt;/th&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/thead&gt;&#xA;  &lt;tbody&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;MusicKit&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;What you listened to, when, how long&lt;/td&gt;&#xA;          &lt;td&gt;✅ Sprint 2&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;EventKit&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Calendar events attended, scheduled meetings&lt;/td&gt;&#xA;          &lt;td&gt;✅ Sprint 2&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;CoreLocation&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Significant locations visited throughout the day&lt;/td&gt;&#xA;          &lt;td&gt;✅ Sprint 2&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;&lt;strong&gt;Photos&lt;/strong&gt;&lt;/td&gt;&#xA;          &lt;td&gt;Photos captured during the day (metadata only, on-device)&lt;/td&gt;&#xA;          &lt;td&gt;✅ Sprint 2&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/tbody&gt;&#xA;&lt;/table&gt;&#xA;&lt;h3 id=&#34;key-technical-decisions&#34;&gt;Key Technical Decisions&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;Why native frameworks only?&lt;/strong&gt;&lt;br&gt;&#xA;The moment data touches a network, you need a privacy policy, a server to secure, and a trust relationship with the user that&amp;rsquo;s easy to destroy. Native-only means the diary is as private as the iPhone itself.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

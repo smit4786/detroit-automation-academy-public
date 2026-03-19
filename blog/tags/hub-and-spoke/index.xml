@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hub-and-Spoke on Automated Insights</title>
+    <link>https://detroitautomationacademy.com/blog/tags/hub-and-spoke/</link>
+    <description>Recent content in Hub-and-Spoke on Automated Insights</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
+    <atom:link href="https://detroitautomationacademy.com/blog/tags/hub-and-spoke/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Launching Automated Insights: Our Technical Knowledge Hub</title>
+      <link>https://detroitautomationacademy.com/blog/posts/launching-automated-insights/</link>
+      <pubDate>Fri, 27 Feb 2026 00:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/posts/launching-automated-insights/</guid>
+      <description>&lt;p&gt;Today marks the launch of &lt;strong&gt;Automated Insights&lt;/strong&gt;, the technical knowledge hub for the Automated Technologies enterprise.&lt;/p&gt;&#xA;&lt;h2 id=&#34;what-is-automated-insights&#34;&gt;What Is Automated Insights?&lt;/h2&gt;&#xA;&lt;p&gt;This blog exists to translate the internal technical milestones of our enterprise projects into clear, publicly accessible insights. Rather than keeping our lessons learned locked in internal sprint logs, we publish them here — in English, German, and Russian — for the benefit of the global developer community.&lt;/p&gt;&#xA;&lt;h2 id=&#34;our-enterprise-projects&#34;&gt;Our Enterprise Projects&lt;/h2&gt;&#xA;&lt;p&gt;Our current portfolio of active initiatives:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

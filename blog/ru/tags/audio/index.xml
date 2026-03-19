@@ -6,7 +6,7 @@
     <description>Recent content in Audio on Automated Insights</description>
     <generator>Hugo</generator>
     <language>ru</language>
-    <lastBuildDate>Mon, 09 Mar 2026 10:00:00 -0500</lastBuildDate>
+    <lastBuildDate>Tue, 17 Mar 2026 01:30:58 -0400</lastBuildDate>
     <atom:link href="https://detroitautomationacademy.com/blog/ru/tags/audio/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Представляем Project Sonic: Будущее нейронной аудио-координации</title>
@@ -14,6 +14,13 @@
       <pubDate>Mon, 09 Mar 2026 10:00:00 -0500</pubDate>
       <guid>https://detroitautomationacademy.com/blog/ru/posts/proyekt-sonic-vvedeniye/</guid>
       <description>&lt;h1 id=&#34;project-sonic-оркестровка-акустической-сети&#34;&gt;Project Sonic: Оркестровка акустической сети&lt;/h1&gt;&#xA;&lt;p&gt;Сегодня &lt;strong&gt;@AutomatedTechnologies&lt;/strong&gt; с гордостью объявляет об официальном запуске &lt;strong&gt;Project Sonic&lt;/strong&gt;, высокотехнологичной эволюции нашей аудиоэкосистемы. В соответствии с исполнительным мандатом &lt;strong&gt;Фазы 9&lt;/strong&gt;, Project Sonic переводит нашу музыкальную инфраструктуру с устаревших сервисов Spotify на передовую платформу &lt;strong&gt;Apple MusicKit&lt;/strong&gt;, обеспечивая телеметрию с нулевой задержкой и кураторство на основе анализа настроений.&lt;/p&gt;&#xA;&lt;h2 id=&#34;sonic-hud-v18&#34;&gt;Sonic HUD (v1.8)&lt;/h2&gt;&#xA;&lt;p&gt;Центральное место в этой трансформации занимает &lt;strong&gt;Sonic HUD (Фаза 20)&lt;/strong&gt; — протокол управления нейронным оборудованием, интегрированный в координационный центр &lt;strong&gt;Oculus v5&lt;/strong&gt;. HUD предоставляет операторам визуализацию «Sonic Mesh» (звуковой сети) в реальном времени — нашей глобальной сети акустических узлов.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Проект Sonic: Будущее нейронной аудиокоординации</title>
+      <link>https://detroitautomationacademy.com/blog/ru/posts/introducing-project-sonic/</link>
+      <pubDate>Mon, 09 Mar 2026 10:00:00 -0500</pubDate>
+      <guid>https://detroitautomationacademy.com/blog/ru/posts/introducing-project-sonic/</guid>
+      <description>&lt;h1 id=&#34;проект-sonic-оркестровка-акустической-сети&#34;&gt;Проект Sonic: Оркестровка акустической сети&lt;/h1&gt;&#xA;&lt;p&gt;Сегодня &lt;strong&gt;@AutomatedTechnologies&lt;/strong&gt; с гордостью объявляет об официальном запуске &lt;strong&gt;Проекта Sonic&lt;/strong&gt;, высокоточной эволюции нашей аудиоэкосистемы. В рамках &lt;strong&gt;Исполнительного мандата Фазы 9&lt;/strong&gt;, Проект Sonic переводит нашу музыкальную инфраструктуру с устаревших сервисов Spotify на передовую платформу &lt;strong&gt;Apple MusicKit&lt;/strong&gt;, обеспечивая телеметрию с нулевой задержкой и курирование на основе настроения.&lt;/p&gt;&#xA;&lt;h2 id=&#34;sonic-hud-v18&#34;&gt;Sonic HUD (v1.8)&lt;/h2&gt;&#xA;&lt;p&gt;Центральным элементом этой трансформации является &lt;strong&gt;Sonic HUD (Фаза 20)&lt;/strong&gt;, нейронный аппаратный пилотный протокол, интегрированный в координационный центр &lt;strong&gt;Oculus v5&lt;/strong&gt;. HUD предоставляет операторам визуализацию «Sonic Mesh» в реальном времени — нашей глобальной сети акустических узлов.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
