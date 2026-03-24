@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="generator" content="Agentic Design Corp">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subscriptions - Detroit Automation Academy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="branding/palette.css">
     <style>
         /* ── Standardized Header/Footer Styles ── */
@@ -119,12 +120,12 @@
         
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: var(--daa-fg); background: var(--daa-bg); 
+        body { font-family: 'Courier New', Courier, monospace; line-height: 1.6; color: var(--daa-fg); background: var(--daa-bg); 
             transition: background 0.3s, color 0.3s;
         }
         
         nav { max-width: 1200px; margin: 0 auto; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 24px; color: var(--daa-primary); }
+        .logo { font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 24px; color: var(--daa-primary); }
         .nav-links { display: flex; gap: 24px; list-style: none; }
         .nav-links a { text-decoration: none; color: var(--daa-fg); font-weight: 500; transition: color 0.3s; }
         .nav-links a:hover { color: var(--daa-primary); }
@@ -132,7 +133,7 @@
         .cta-button:hover { background: #0052A3; }
         
         .hero { background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-primary-dark, #0052A3) 100%); color: var(--daa-bg); padding: 60px 32px; text-align: center; }
-        .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 800; margin-bottom: 16px; }
+        .hero h1 { font-family: 'Courier New', Courier, monospace; font-size: 42px; font-weight: 800; margin-bottom: 16px; }
         .hero p { font-size: 18px; max-width: 800px; margin: 0 auto 32px; opacity: 0.9; }
 
         .pricing-section { max-width: 1200px; margin: 64px auto; padding: 0 32px; }
@@ -142,8 +143,8 @@
         .pricing-card.popular { border: 2px solid var(--daa-primary); }
         .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--daa-primary); color: var(--daa-bg); padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
         
-        .tier-name { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--daa-fg); }
-        .price { font-family: 'Poppins', sans-serif; font-size: 48px; font-weight: 800; margin-bottom: 24px; color: var(--daa-primary); }
+        .tier-name { font-family: 'Courier New', Courier, monospace; font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--daa-fg); }
+        .price { font-family: 'Courier New', Courier, monospace; font-size: 48px; font-weight: 800; margin-bottom: 24px; color: var(--daa-primary); }
         .price span { font-size: 18px; font-weight: 500; color: var(--daa-fg-muted); }
         
         .features { list-style: none; margin-bottom: 32px; flex-grow: 1; }
@@ -206,6 +207,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="blog/">📝 Blog</a></li>
+                <li><a href="https://safety.detroitautomationacademy.com/prism/" target="_blank">🔮 Project Prism</a></li>
                 <li><a href="dashboard.html?v=2026030713">📊 Dashboard</a></li>
                 <li><a href="students.html?v=2026030713">👨‍🎓 Students</a></li>
                 <li><a href="instructors.html?v=2026030713">👨‍🏫 Instructors</a></li>
@@ -303,7 +305,7 @@
     <div id="checkout-modal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
         <div style="background: var(--daa-bg-card); padding: 40px; border-radius: 20px; max-width: 450px; width: 90%; border: 1px solid var(--daa-border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center;">
             <div style="font-size: 48px; margin-bottom: 16px;">💎</div>
-            <h2 id="modal-tier-name" style="font-family: 'Poppins', sans-serif; font-size: 24px; margin-bottom: 8px;">Checkout</h2>
+            <h2 id="modal-tier-name" style="font-family: 'Courier New', Courier, monospace; font-size: 24px; margin-bottom: 8px;">Checkout</h2>
             <p id="modal-tier-price" style="font-size: 18px; color: var(--daa-primary); font-weight: 700; margin-bottom: 24px;">$0/mo</p>
             
             <form id="checkout-form" style="display: flex; flex-direction: column; gap: 12px; text-align: left;">

@@ -25,7 +25,7 @@ To provide a decentralized, multi-tenant deployment of the Detroit Automation Ac
 - **Constituent Lab Nodes:** ESP32/Arduino-based robotics nodes that sync telemetry directly to the Hub's local MCP endpoint via Bluetooth or Secure MQTT.
 
 ## 4. Security & Compliance
-- **OAuth 2.0 Integration:** Mandatory Google SSO or Oculus-Core biometric login for all instructors.
+- **OAuth 2.0 Integration:** Mandatory Google SSO or oculus_core biometric login for all instructors.
 - **Data Sovereignty:** All student-generated code and PII remain within the Regional Hub's local encrypted storage (Local-First mandate).
 
 ## 5. Deployment Roadmap

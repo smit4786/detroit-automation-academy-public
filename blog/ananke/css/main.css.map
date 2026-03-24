@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "main.css",
-	"sourceRoot": "C:/Users/dbkr/workspace/oculus-core/content/blog",
+	"sourceRoot": "C:/Users/dbkr/workspace/oculus_core/content/blog",
 	"sources": [
 		"ananke/css/main.css"
 	],
