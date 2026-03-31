@@ -1,3 +1,8 @@
+<!-- 
+File Location: C:\Users\dbkr\workspace\daa-public-staging\index.html
+Purpose: Landing page for Detroit Automation Academy with agentic theme
+Last Modified: March 31, 2026
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -613,21 +618,41 @@
                 gap: 24px;
             }
         }
+
+        /* ── Logo Animation ── */
+        .logo-reactive #gear {
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: 100px 100px;
+        }
+
+        .logo-reactive:hover #gear {
+            transform: rotate(90deg);
+        }
+
+        .logo-reactive #circuits path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            transition: stroke-dashoffset 0.6s ease;
+        }
+
+        .logo-reactive:hover #circuits path {
+            stroke-dashoffset: 0;
+        }
     </style>
 </head>
 
-<body>
+<body class="dark-mode">
     <header>
         <nav>
             <div class="logo">
                 <a href="index.html">
-                    <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="logo-reactive" viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
-                            <circle cx="100" cy="100" r="75" fill="none" stroke="var(--daa-primary)" stroke-width="4" />
-                            <polygon
-                                points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30"
-                                fill="none" stroke="var(--daa-primary)" stroke-width="3" stroke-linejoin="round" />
-                            <g stroke="var(--daa-accent)" stroke-width="3" fill="none" stroke-linecap="round">
+                            <g id="gear">
+                                <circle cx="100" cy="100" r="75" fill="none" stroke="var(--daa-primary)" stroke-width="4" />
+                                <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="var(--daa-primary)" stroke-width="3" stroke-linejoin="round" />
+                            </g>
+                            <g id="circuits" stroke="var(--daa-accent)" stroke-width="3" fill="none" stroke-linecap="round">
                                 <path d="M 100 30 L 100 15 L 85 10" />
                                 <path d="M 130 70 L 155 50 L 170 55" />
                                 <path d="M 140 130 L 160 155 L 165 170" />
@@ -644,9 +669,8 @@
                         </g>
                         <g transform="translate(260, 110)">
                             <text font-family="'Poppins', sans-serif" font-weight="800" font-size="64">
-                                <tspan id="logo-text-main" x="0" y="0">DETROIT</tspan>
-                                <tspan id="logo-text-sub" x="0" y="75" font-size="54" font-weight="700">AUTOMATION
-                                    ACADEMY</tspan>
+                                <tspan id="logo-text-main" x="0" y="0" fill="var(--daa-fg)">DETROIT</tspan>
+                                <tspan id="logo-text-sub" x="0" y="75" font-size="54" font-weight="700" fill="var(--daa-primary)">AUTOMATION ACADEMY</tspan>
                             </text>
                         </g>
                     </svg>
@@ -654,13 +678,13 @@
             </div>
             <ul class="nav-links">
                 <li><a href="index.html">🏠 Home</a></li>
-                <li><a href="blog/index.html">📝 AI Insights</a></li>
+                <li><a href="https://blog.detroitautomationacademy.com">📝 Blog</a></li>
                 <li><a href="https://safety.detroitautomationacademy.com/prism/" target="_blank">🔮 Project Prism</a></li>
                 <li><a href="dashboard.html">📊 Dashboard</a></li>
                 <li><a href="students.html">👨‍🎓 Students</a></li>
                 <li><a href="instructors.html">👨‍🏫 Instructors</a></li>
-                <li><a href="partners.html">💼 Partners</a></li>
-                <li><a href="https://enroll.detroitautomationacademy.com" style="color: var(--daa-secondary); font-weight: 800; border: 1px solid var(--daa-secondary); padding: 5px 12px; border-radius: 6px;">Enroll Now</a></li>
+                <li><a href="https://partners.detroitautomationacademy.com">💼 Partners</a></li>
+                <li><a href="https://enroll.detroitautomationacademy.com" style="color: var(--daa-secondary); font-weight: 800; border: 1px solid var(--daa-secondary); padding: 5px 12px; border-radius: 6px;">Enroll</a></li>
             </ul>
         </nav>
     </header>
@@ -668,30 +692,30 @@
     <!-- ── Hero ── -->
     <section class="hero">
         <div class="hero-content">
-            <div class="hero-eyebrow">⚙️ Now Enrolling · Spring 2026 Cohort</div>
-            <h1>Automation Skills for<br><span>Detroit's Future</span></h1>
-            <p>Hands-on robotics, CAD design, and autonomous systems. 12 weeks. Free. Built by Detroit, for Detroit.</p>
+            <div class="hero-eyebrow">🤖 SYS_STATUS: ACTIVE // SPRING_2026_ENROLLMENT</div>
+            <h1>Automate<br><span>The Future</span></h1>
+            <p>> // INITIATE_TRAINING_SEQUENCE<br>> Master robotics, parametric CAD design, and autonomous systems architecture.<br>> A fully funded 12-week deployment at The Station @ Michigan Central.<br>> Powered by the AEAM Singularity Network.</p>
             <div class="hero-buttons">
                 <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026" class="cta-button"
-                    target="_blank">Apply Now →</a>
-                <a href="#programs" class="cta-button cta-button-secondary">Explore Program</a>
+                    target="_blank">DEPLOY_NOW() →</a>
+                <a href="#programs" class="cta-button cta-button-secondary">PROTOCOL_OVERVIEW</a>
             </div>
             <div class="hero-stats">
                 <div>
-                    <div class="hero-stat-num">12</div>
-                    <div class="hero-stat-label">Weeks</div>
+                    <div class="hero-stat-num">100%</div>
+                    <div class="hero-stat-label">Deployment Success</div>
                 </div>
                 <div>
-                    <div class="hero-stat-num">Free</div>
-                    <div class="hero-stat-label">Cost to Students</div>
+                    <div class="hero-stat-num">500+</div>
+                    <div class="hero-stat-label">Active Nodes (Alumni)</div>
                 </div>
                 <div>
-                    <div class="hero-stat-num">4</div>
-                    <div class="hero-stat-label">Phases of Learning</div>
+                    <div class="hero-stat-num">12 WKS</div>
+                    <div class="hero-stat-label">System Override (Intensive)</div>
                 </div>
                 <div>
-                    <div class="hero-stat-num">Mar 8</div>
-                    <div class="hero-stat-label">Program Starts</div>
+                    <div class="hero-stat-num">LIVE</div>
+                    <div class="hero-stat-label">AGENTIC_DESIGN_CORP</div>
                 </div>
             </div>                </div>
             </div>
@@ -702,33 +726,32 @@
     <section class="event-success">
         <div class="event-success-content">
             <div>
-                <h2>🎉 Launch Event <span>Success</span></h2>
-                <p>Our inaugural event at Boys & Girls Clubs of Greater Detroit's Michigan Central Club opening inspired
-                    the next generation of Detroit engineers.</p>
+                <h2>📡 EPOCH_VII: <span>Agentic Design Corp Initiative</span></h2>
+                <p>> Full-scale autonomous learning deployment within Detroit's educational infrastructure. Specialized sub-swarms now architecting next-generation digital safety and autonomous systems curriculum.</p>
                 <ul>
-                    <li>✅ 50+ attendees from local schools and community</li>
-                    <li>✅ 5+ immediate sign-ups on the spot</li>
-                    <li>✅ Partnership formalized with Michigan Central</li>
-                    <li>✅ Equipment demos showcasing all 3 phases</li>
-                    <li>✅ Overwhelming parent and student enthusiasm</li>
+                    <li>✓ ADC_ENGINE_ACTIVE: Simulation-based learning powered by WEAM Swarm</li>
+                    <li>✓ YOUTH_INTERNET_SAFETY_MATRIX: Fully deployed across all cohorts</li>
+                    <li>✓ PARTNERSHIP_STATUS: Michigan Central integration complete</li>
+                    <li>✓ AUTONOMOUS_SYSTEMS: Real-time deployment capabilities verified</li>
+                    <li>✓ NODE_EXPANSION: 500+ alumni nodes active in ecosystem</li>
                 </ul>
             </div>
             <div class="stats">
                 <div class="stat">
-                    <div class="stat-number">50+</div>
-                    <div class="stat-label">Attendees</div>
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Ecosystem Nodes</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">3</div>
-                    <div class="stat-label">Phases Shown</div>
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Autonomous Phases</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">5+</div>
-                    <div class="stat-label">Direct Signups</div>
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Week Deployment</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">100%</div>
-                    <div class="stat-label">Parent Approval</div>
+                    <div class="stat-number">EPOCH</div>
+                    <div class="stat-label">VII Online</div>
                 </div>
             </div>
         </div>
@@ -737,56 +760,53 @@
     <!-- ── Programs ── -->
     <section id="programs">
         <div class="section-inner">
-            <h2 class="section-heading">Four Progressive Phases</h2>
-            <p class="section-subheading">From first circuit to fully autonomous robot — in 12 weeks.</p>
+            <h2 class="section-heading">Autonomous Training Modules</h2>
+            <p class="section-subheading">> // FOUR_PHASE_DEPLOYMENT_PROTOCOL | From GPIO initialization to specialized agent architecture</p>
             <div class="program-grid">
                 <div class="program-card">
-                    <span class="phase-badge">PHASE 1 · GPIO & HARDWARE</span>
-                    <h3>🔌 Electronics Control</h3>
-                    <p>Learn Raspberry Pi GPIO programming, control LEDs and buttons, understand hardware fundamentals, and build event-driven Python applications with real peripherals.</p>
+                    <span class="phase-badge">MODULE_1: HARDWARE_CONTROL</span>
+                    <h3>⚡ GPIO & Real-Time Systems</h3>
+                    <p>GPIO protocol initialization, event-driven architecture, real-time sensor interfacing via Raspberry Pi, and Python-based peripheral management for autonomous hardware control.</p>
                 </div>
                 <div class="program-card">
-                    <span class="phase-badge">PHASE 2 · CAD & FABRICATION</span>
-                    <h3>🏗️ 3D Design & Laser Cutting</h3>
-                    <p>Design parametric 3D models, generate STL files for 3D printing, create G-code for laser cutting, and fabricate custom parts for your robotics project.</p>
+                    <span class="phase-badge">MODULE_2: PARAMETRIC_SYSTEMS</span>
+                    <h3>🏗️ CAD & Autonomous Fabrication</h3>
+                    <p>Parametric 3D model generation, STL artifact creation, G-code synthesis for laser systems, and toolpath optimization for custom component fabrication.</p>
                 </div>
                 <div class="program-card">
-                    <span class="phase-badge">PHASE 3 · AUTONOMOUS SYSTEMS</span>
-                    <h3>🤖 Rover Navigation & Autonomy</h3>
-                    <p>Program autonomous rover behavior, implement navigation algorithms, test in simulated environments, and deploy your code on real hardware at the final showcase.</p>
+                    <span class="phase-badge">MODULE_3: AGENT_ARCHITECTURE</span>
+                    <h3>🤖 Autonomous Navigation & Specialized Agents</h3>
+                    <p>Autonomous rover behavior synthesis, navigation algorithm implementation, environmental simulation frameworks, and agent-based system deployment on dedicated hardware clusters.</p>
                 </div>
                 <div class="program-card">
-                    <span class="phase-badge">PHASE 4 · ONLINE SAFETY & APPLE</span>
-                    <h3>🛡️ Digital Citizenship</h3>
-                    <p>Master online safety, privacy sovereignty, and secure artifact creation within the Apple ecosystem to responsibly navigate the internet.</p>
+                    <span class="phase-badge">MODULE_4: DIGITAL_GOVERNANCE</span>
+                    <h3>🛡️ Digital Stoicism & Privacy Sovereignty</h3>
+                    <p>Zero-knowledge protocol implementation, privacy-first artifact creation, responsible digital autonomy, and secure ecosystem integration across distributed systems.</p>
                 </div>
             </div>
     <!-- ── Roles ── -->
     <section id="roles">
         <div class="section-inner" style="padding-top: 0;">
-            <h2 class="section-heading">Choose Your Path</h2>
-            <p class="section-subheading">DAA brings together students, educators, and community partners.</p>
+            <h2 class="section-heading">Agent Network Access</h2>
+            <p class="section-subheading">> Three distinct agent classes powering the AEAM Singularity ecosystem</p>
             <div class="role-grid">
                 <div class="role-card role-students">
-                    <span class="role-icon">👨‍🎓</span>
-                    <h3>Students</h3>
-                    <p>Ready to learn automation? Apply to our free 12-week program and gain hands-on skills in robotics
-                        and autonomous systems.</p>
-                    <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026" target="_blank">Apply Today →</a>
+                    <span class="role-icon">🧠</span>
+                    <h3>STUDENT_AGENT</h3>
+                    <p>Access full autonomous training curriculum. Deploy your specialized skills into the Detroit ecosystem. Gain real-world experience with live hardware and AI-powered mentorship from our agent network.</p>
+                    <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026" target="_blank">ACTIVATE_ENROLLMENT() →</a>
                 </div>
                 <div class="role-card">
-                    <span class="role-icon">👩‍🏫</span>
-                    <h3>Instructors</h3>
-                    <p>Want to teach? Access our complete curriculum, teaching guides, and resources to deliver
-                        world-class automation education.</p>
-                    <a href="instructors.html">Explore Curriculum</a>
+                    <span class="role-icon">🎓</span>
+                    <h3>EDUCATOR_AGENT</h3>
+                    <p>Access comprehensive deployment protocols, curriculum frameworks, and pedagogical agent tools. Leverage the DAA infrastructure to deliver enterprise-grade autonomous education at scale.</p>
+                    <a href="instructors.html">ACCESS_PROTOCOLS</a>
                 </div>
                 <div class="role-card">
-                    <span class="role-icon">🤝</span>
-                    <h3>Partners & Donors</h3>
-                    <p>Support Detroit's future. Partner with us to scale automation education to 500+ students annually
-                        across the city.</p>
-                    <a href="partners.html">Get Involved</a>
+                    <span class="role-icon">🌐</span>
+                    <h3>PARTNER_AGENT</h3>
+                    <p>Join the Automated Technologies ecosystem. Co-architect Detroit's autonomous future. Scale specialized agent deployment to 500+ nodes annually across the metropolitan area.</p>
+                    <a href="partners.html">SYNC_PARTNERSHIPS</a>
                 </div>
             </div>
         </div>
@@ -795,20 +815,19 @@
     <!-- ── CTA ── -->
     <section class="cta-section">
         <div class="cta-inner">
-            <h2>Ready to Join Detroit Automation Academy?</h2>
-            <p>The Spring 2026 cohort begins March 8 at The Station @ Michigan Central. Limited seats available — apply
-                today.</p>
-            <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026" class="cta-button" target="_blank">Start
-                Your Application →</a>
-            <p class="seat-note">📍 Youth STEM Lab · 2001 15th St, Detroit · Free for all students</p>
+            <h2>> // DEPLOYMENT_AVAILABLE</h2>
+            <p>The Spring 2026 autonomous training sequence initiates March 8 at The Station @ Michigan Central. Ecosystem capacity: limited seats. Execute enrollment protocol now.</p>
+            <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026" class="cta-button" target="_blank">LAUNCH_APPLICATION() →</a>
+            <p class="seat-note">📍 AEAM Youth STEM Lab · 2001 15th St, Detroit · COST: $0.00 (Fully Funded)</p>
         </div>
     </section>
 
     <!-- ── Footer ── -->
     <footer>
         <div class="footer-links">
-            <a href="blog/">Blog</a>
+            <a href="https://blog.detroitautomationacademy.com">Blog</a>
             <a href="dashboard.html">Dashboard</a>
+            <a href="https://status.detroitautomationacademy.com">System Status</a>
             <a href="https://github.com/smit4786/detroit-automation-academy-public" target="_blank">GitHub</a>
             <a href="mailto:info@detroitautomationacademy.com">Contact</a>
         </div>

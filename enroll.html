@@ -1,0 +1,489 @@
+<!--
+File Location: C:\Users\dbkr\workspace\daa-public-staging\enroll.html
+Purpose: Enhanced agentic theme enrollment page for Detroit Automation Academy
+Last Modified: March 31, 2026
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAA Enrollment Portal — Detroit Automation Academy</title>
+    <meta name="description" content="Join EPOCH VII. Enroll in the Detroit Automation Academy's 12-week autonomous systems training program. Fully funded. Apply now.">
+    
+    <link rel="stylesheet" href="branding/palette.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: var(--daa-bg);
+            color: var(--daa-fg);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── Background Grid ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* ── Header ── */
+        header {
+            background: var(--daa-bg);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--daa-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--daa-fg);
+            text-decoration: none;
+        }
+
+        .logo-text span {
+            color: var(--daa-primary);
+        }
+
+        /* ── Main Container ── */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Hero ── */
+        .enrollment-hero {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .enrollment-hero h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--daa-fg);
+        }
+
+        .enrollment-hero h1 span {
+            background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .enrollment-hero .eyebrow {
+            display: inline-block;
+            background: rgba(57, 255, 20, 0.12);
+            color: var(--daa-secondary);
+            border: 1px solid var(--daa-border-green);
+            border-radius: 999px;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .enrollment-hero p {
+            font-size: 16px;
+            color: var(--daa-fg-muted);
+            max-width: 600px;
+            margin: 0 auto 12px;
+            line-height: 1.8;
+        }
+
+        .enrollment-hero .status {
+            color: var(--daa-secondary);
+            font-weight: 700;
+            margin: 20px 0;
+        }
+
+        /* ── Form Container ── */
+        .enrollment-form-wrapper {
+            background: var(--daa-bg-card);
+            border: 1px solid var(--daa-border);
+            border-radius: 20px;
+            padding: 48px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 60px var(--daa-accent-glow);
+            margin-bottom: 40px;
+        }
+
+        .form-section-heading {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--daa-accent);
+            margin-bottom: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* ── Form Groups ── */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group.two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--daa-fg);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--daa-bg-raised);
+            border: 1px solid var(--daa-border);
+            border-radius: 8px;
+            color: var(--daa-fg);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="email"]::placeholder,
+        textarea::placeholder {
+            color: var(--daa-fg-muted);
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--daa-primary);
+            background: rgba(0, 240, 255, 0.05);
+            box-shadow: 0 0 20px var(--daa-primary-glow);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ── Checkbox ── */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: var(--daa-primary);
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: 400;
+            text-transform: none;
+            font-size: 14px;
+        }
+
+        .checkbox-group a {
+            color: var(--daa-primary);
+            text-decoration: none;
+            border-bottom: 1px solid var(--daa-primary);
+        }
+
+        /* ── Submit Button ── */
+        .submit-btn {
+            background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-secondary) 100%);
+            color: var(--daa-bg);
+            padding: 14px 40px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px var(--daa-accent-glow);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--daa-accent-glow);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ── Info Boxes ── */
+        .info-box {
+            background: rgba(57, 255, 20, 0.08);
+            border: 1px solid var(--daa-border-green);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 32px 0;
+            color: var(--daa-fg-muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .info-box strong {
+            color: var(--daa-fg);
+        }
+
+        /* ── Footer ── */
+        footer {
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            padding: 32px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--daa-fg-muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        footer a {
+            color: var(--daa-primary);
+            text-decoration: none;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            .enrollment-form-wrapper {
+                padding: 28px 20px;
+            }
+
+            .form-group.two-col {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo-text">DETROIT <span>AUTOMATION ACADEMY</span></a>
+            <div style="font-size: 12px; color: var(--daa-fg-muted);">🤖 SYS_STATUS: ENROLLMENT_ACTIVE</div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="enrollment-hero">
+            <span class="eyebrow">📋 ENROLLMENT_PORTAL_V1</span>
+            <h1>Join <span>EPOCH VII</span></h1>
+            <p>> // ACTIVATE_AUTONOMOUS_LEARNING_PROTOCOL</p>
+            <p class="status">Spring 2026 Cohort — Limited Seats Available</p>
+        </div>
+
+        <div class="enrollment-form-wrapper">
+            <div class="form-section-heading">>> REGISTRATION_INITIALIZATION</div>
+            
+            <form id="enrollmentForm" name="enrollment" method="POST" netlify>
+                
+                <!-- Personal Information -->
+                <div class="form-section-heading" style="font-size: 14px; margin-top: 32px; margin-bottom: 20px; text-transform: uppercase;">
+                    🧠 PERSONAL_AGENT_CONFIGURATION
+                </div>
+
+                <div class="form-group two-col">
+                    <div>
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" placeholder="Your first name" required>
+                    </div>
+                    <div>
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" placeholder="Your last name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="your.email@domain.com" required>
+                </div>
+
+                <div class="form-group two-col">
+                    <div>
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="(313) 555-0100">
+                    </div>
+                    <div>
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                    </div>
+                </div>
+
+                <!-- Educational Background -->
+                <div class="form-section-heading" style="font-size: 14px; margin-top: 32px; margin-bottom: 20px; text-transform: uppercase;">
+                    🎓 EDUCATIONAL_FRAMEWORK
+                </div>
+
+                <div class="form-group two-col">
+                    <div>
+                        <label for="school">School / Organization</label>
+                        <input type="text" id="school" name="school" placeholder="Your current school">
+                    </div>
+                    <div>
+                        <label for="grade">Grade Level / Year</label>
+                        <select name="grade" id="grade" required>
+                            <option value="">Select grade level</option>
+                            <option value="9">9th Grade</option>
+                            <option value="10">10th Grade</option>
+                            <option value="11">11th Grade</option>
+                            <option value="12">12th Grade</option>
+                            <option value="college">College / University</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Interest & Experience -->
+                <div class="form-section-heading" style="font-size: 14px; margin-top: 32px; margin-bottom: 20px; text-transform: uppercase;">
+                    ⚙️ AUTONOMOUS_INTERESTS
+                </div>
+
+                <div class="form-group">
+                    <label>Which areas interest you most?</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="interests" value="robotics" id="robotics">
+                        <label for="robotics" style="margin: 0;">🤖 Robotics & Hardware Control</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="interests" value="cad" id="cad">
+                        <label for="cad" style="margin: 0;">🏗️ CAD Design & Fabrication</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="interests" value="autonomous" id="autonomous">
+                        <label for="autonomous" style="margin: 0;">🚀 Autonomous Systems & Navigation</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="interests" value="digital-safety" id="digital-safety">
+                        <label for="digital-safety" style="margin: 0;">🛡️ Digital Safety & Privacy</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">Prior Experience with Robotics/Programming</label>
+                    <textarea id="experience" name="experience" placeholder="Tell us about any relevant experience..."></textarea>
+                </div>
+
+                <!-- Guardian Information (if under 18) -->
+                <div class="form-section-heading" style="font-size: 14px; margin-top: 32px; margin-bottom: 20px; text-transform: uppercase;">
+                    👤 GUARDIAN_INFORMATION
+                </div>
+
+                <div class="form-group two-col">
+                    <div>
+                        <label for="guardianName">Guardian/Parent Name</label>
+                        <input type="text" id="guardianName" name="guardianName" placeholder="Guardian name">
+                    </div>
+                    <div>
+                        <label for="guardianPhone">Guardian Phone</label>
+                        <input type="tel" id="guardianPhone" name="guardianPhone" placeholder="(313) 555-0100">
+                    </div>
+                </div>
+
+                <!-- Agreement -->
+                <div class="form-section-heading" style="font-size: 14px; margin-top: 32px; margin-bottom: 20px; text-transform: uppercase;">
+                    ✓ PROTOCOL_ACKNOWLEDGMENT
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" name="agreement" id="agreement" required>
+                    <label for="agreement">I acknowledge that I have read and agree to the <a href="/privacy.html" target="_blank">Privacy Policy</a> and <a href="/terms.html" target="_blank">Terms of Service</a>.</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" name="communication" id="communication">
+                    <label for="communication">I'd like to receive updates about DAA programs and events.</label>
+                </div>
+
+                <!-- Info Box -->
+                <div class="info-box">
+                    <strong>📍 Program Details:</strong><br>
+                    • <strong>Location:</strong> The Station @ Michigan Central, 2001 15th St, Detroit, MI 48216<br>
+                    • <strong>Duration:</strong> 12 weeks (begins March 8, 2026)<br>
+                    • <strong>Cost:</strong> Fully funded — FREE for all students<br>
+                    • <strong>Schedule:</strong> TBD based on cohort availability<br>
+                    <strong>Protection:</strong> Your data is encrypted and protected under SIF-LAT_V24.0 zero-knowledge protocols.
+                </div>
+
+                <button type="submit" class="submit-btn">SUBMIT_APPLICATION() →</button>
+            </form>
+
+            <div style="text-align: center; margin-top: 32px; font-size: 13px; color: var(--daa-fg-muted);">
+                Questions? Contact us at <a href="mailto:info@detroitautomationacademy.com" style="color: var(--daa-primary); text-decoration: none;">info@detroitautomationacademy.com</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🤖 Detroit Automation Academy — EPOCH VII Autonomous Learning Network</p>
+        <p style="margin-top: 12px;">© 2026 Detroit Automation Academy. <a href="https://github.com/smit4786/detroit-automation-academy-public">GitHub</a> • <a href="/privacy.html">Privacy</a> • <a href="/terms.html">Terms</a></p>
+    </footer>
+
+    <script>
+        document.getElementById('enrollmentForm').addEventListener('submit', function(e) {
+            // Netlify form submission is automatic with name attribute
+            console.log('Enrollment form submitted');
+        });
+    </script>
+</body>
+</html>
