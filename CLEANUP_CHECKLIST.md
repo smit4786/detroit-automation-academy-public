@@ -1,3 +1,9 @@
+## C:\Users\dbkr\workspace\daa-public-staging\CLEANUP_CHECKLIST.md
+## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-02
+## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
+
+﻿## C:\Users\dbkr\workspace\daa-public-staging\CLEANUP_CHECKLIST.md
 # File Cleanup Checklist
 
 This checklist identifies files in the `docs/` folder that should be deleted or archived as part of the documentation consolidation.
@@ -6,7 +12,7 @@ This checklist identifies files in the `docs/` folder that should be deleted or 
 
 These files are empty, duplicated elsewhere, or have been consolidated into better versions.
 
-### ✂️ Deprecated Event Plan Files
+### âœ‚ï¸ Deprecated Event Plan Files
 
 These three files have been **consolidated into** [docs/bgc_event_guide.md](docs/bgc_event_guide.md) with three formats:
 - Format A: Physical Computing Showcase (from bgc_activation_plan.md)
@@ -14,9 +20,9 @@ These three files have been **consolidated into** [docs/bgc_event_guide.md](docs
 - Format C: Venture Showcase (from bgc_venture_creation_showcase.md)
 
 **Safe to delete:**
-- [ ] `docs/bgc_activation_plan.md` — Consolidated into bgc_event_guide.md Format A
-- [ ] `docs/bgc_ecommerce_activation.md` — Consolidated into bgc_event_guide.md Format B
-- [ ] `docs/bgc_venture_creation_showcase.md` — Consolidated into bgc_event_guide.md Format C
+- [ ] `docs/bgc_activation_plan.md` â€” Consolidated into bgc_event_guide.md Format A
+- [ ] `docs/bgc_ecommerce_activation.md` â€” Consolidated into bgc_event_guide.md Format B
+- [ ] `docs/bgc_venture_creation_showcase.md` â€” Consolidated into bgc_event_guide.md Format C
 
 **Verification before deletion:**
 ```bash
@@ -28,14 +34,14 @@ If no results, safe to delete.
 
 ---
 
-### ✂️ Duplicate/Empty Python Code Files
+### âœ‚ï¸ Duplicate/Empty Python Code Files
 
 These files should not be in `docs/` folder (docs is for documentation, not code).
 
 **Safe to delete:**
-- [ ] `docs/cad_design.py` — Empty file (0 bytes); real code is in [phase2/cad_design.py](phase2/cad_design.py)
-- [ ] `docs/github_example.py` — Example code not part of curriculum
-- [ ] `docs/test_examples.py` — Duplicate; use root-level [test_examples.py](../test_examples.py) instead
+- [ ] `docs/cad_design.py` â€” Empty file (0 bytes); real code is in [phase2/cad_design.py](phase2/cad_design.py)
+- [ ] `docs/github_example.py` â€” Example code not part of curriculum
+- [ ] `docs/test_examples.py` â€” Duplicate; use root-level [test_examples.py](../test_examples.py) instead
 
 **Verification before deletion:**
 ```bash
@@ -47,11 +53,11 @@ diff -u docs/test_examples.py test_examples.py  # Check if they're identical
 
 ---
 
-### ❓ Review Required (May Still Be Used)
+### â“ Review Required (May Still Be Used)
 
 These files should be reviewed before deletion to confirm they're not referenced elsewhere.
 
-- [ ] `docs/program_info.py` — Check if referenced in event dashboards or automation
+- [ ] `docs/program_info.py` â€” Check if referenced in event dashboards or automation
   ```bash
   grep -r "program_info" .
   ```
@@ -146,38 +152,38 @@ After deletion, verify the repository is still complete:
 ### Before Cleanup
 ```
 docs/
-├── bgc_activation_plan.md          ← Outdated
-├── bgc_ecommerce_activation.md     ← Outdated
-├── bgc_venture_creation_showcase.md ← Outdated
-├── bgc_event_guide.md              ← Current (replaces all 3 above)
-├── cad_design.py                   ← Empty!
-├── github_example.py               ← Not curriculum
-├── test_examples.py                ← Duplicate (use root level)
-├── program_info.py                 ← To review
-├── ... (other good files)
+â”œâ”€â”€ bgc_activation_plan.md          â† Outdated
+â”œâ”€â”€ bgc_ecommerce_activation.md     â† Outdated
+â”œâ”€â”€ bgc_venture_creation_showcase.md â† Outdated
+â”œâ”€â”€ bgc_event_guide.md              â† Current (replaces all 3 above)
+â”œâ”€â”€ cad_design.py                   â† Empty!
+â”œâ”€â”€ github_example.py               â† Not curriculum
+â”œâ”€â”€ test_examples.py                â† Duplicate (use root level)
+â”œâ”€â”€ program_info.py                 â† To review
+â”œâ”€â”€ ... (other good files)
 ```
 
 ### After Cleanup
 ```
 docs/
-├── INDEX.md                         ← Navigation hub
-├── bgc_event_guide.md              ← One source of truth
-├── api_reference.md
-├── phase1_guide.md
-├── phase2_guide.md
-├── phase3_guide.md
-├── quick_start.md
-├── token_design_concepts.md
-├── PROJECT_PLAN.md
-└── ... (other reference docs)
+â”œâ”€â”€ INDEX.md                         â† Navigation hub
+â”œâ”€â”€ bgc_event_guide.md              â† One source of truth
+â”œâ”€â”€ api_reference.md
+â”œâ”€â”€ phase1_guide.md
+â”œâ”€â”€ phase2_guide.md
+â”œâ”€â”€ phase3_guide.md
+â”œâ”€â”€ quick_start.md
+â”œâ”€â”€ token_design_concepts.md
+â”œâ”€â”€ PROJECT_PLAN.md
+â””â”€â”€ ... (other reference docs)
 ```
 
 **Benefits:**
-- ✅ Cleaner directory structure
-- ✅ No confusion about which event plan to use
-- ✅ Code in code folders, docs in docs folder
-- ✅ Single source of truth for each topic
-- ✅ Easier for new contributors to navigate
+- âœ… Cleaner directory structure
+- âœ… No confusion about which event plan to use
+- âœ… Code in code folders, docs in docs folder
+- âœ… Single source of truth for each topic
+- âœ… Easier for new contributors to navigate
 
 ---
 

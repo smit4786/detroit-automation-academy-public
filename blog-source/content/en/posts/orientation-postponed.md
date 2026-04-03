@@ -1,3 +1,9 @@
+## C:\Users\dbkr\workspace\daa-public-staging\blog-source\content\en\posts\orientation-postponed.md
+## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-02
+## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
+
+﻿## C:\Users\dbkr\workspace\daa-public-staging\blog-source\content\en\posts\orientation-postponed.md
 ---
 title: "Update: Spring 2026 Orientation Postponed"
 date: 2026-03-05T14:30:00Z

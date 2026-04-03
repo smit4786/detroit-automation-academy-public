@@ -1,3 +1,9 @@
+## C:\Users\dbkr\workspace\daa-public-staging\specs\ACADEMY_INSTRUCTOR_API_SPEC.md
+## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-02
+## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
+
+﻿## C:\Users\dbkr\workspace\daa-public-staging\specs\ACADEMY_INSTRUCTOR_API_SPEC.md
 # API Specification: Academy-Instructor Remote Orchestration
 **Owner:** @CTO
 **Status:** DRAFT - Sprint 2 Scaffolding

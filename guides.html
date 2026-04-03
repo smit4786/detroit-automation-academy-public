@@ -8,18 +8,172 @@
     
     <link rel="stylesheet" href="branding/palette.css">
     <style>
-        body { background-color: var(--daa-bg); color: var(--daa-fg); font-family: 'Courier New', Courier, monospace; line-height: 1.6; margin: 0; }
+        /* ── Standardized Header/Footer Styles ── */
+        header {
+            background: rgba(13, 17, 23, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--daa-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        body.light-mode header {
+            background: rgba(245, 247, 250, 0.92);
+        }
+
+        footer {
+            background: var(--daa-bg-card);
+            border-top: 1px solid var(--daa-border);
+            color: var(--daa-fg-muted);
+            padding: 32px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .footer-links {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: var(--daa-fg-muted);
+            text-decoration: none;
+            margin: 0 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--daa-accent);
+        }
+
+        nav { max-width: 1200px; margin: 0 auto; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 24px; color: var(--daa-primary); }
+        .nav-links { display: flex; gap: 24px; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--daa-fg); font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--daa-primary); }
+
+        body { background-color: var(--daa-bg); color: var(--daa-fg); font-family: 'Courier New', Courier, monospace; line-height: 1.6; margin: 0; transition: background 0.3s, color 0.3s; }
         .container { max-width: 900px; margin: 4rem auto; padding: 2rem; background: var(--daa-bg-card); border: 1px solid var(--daa-border); border-radius: 20px; box-shadow: var(--daa-shadow-blue); }
         h1, h2, h3 { font-family: 'Courier New', Courier, monospace; color: var(--daa-primary); }
         .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
         .guide-card { padding: 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--daa-border); border-radius: 12px; transition: 0.3s; }
         .guide-card:hover { border-color: var(--daa-accent); box-shadow: var(--daa-shadow-blue); transform: translateY(-5px); }
         .back-link { color: var(--daa-accent); text-decoration: none; font-weight: 600; }
+
+        /* ── Circuit background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--daa-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* ── Reactive Logo Animations ── */
+        .logo-reactive #gear {
+            transform-origin: 100px 100px;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo-reactive:hover #gear {
+            transform: rotate(90deg);
+        }
+
+        .logo-reactive #circuits path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.6s ease;
+        }
+
+        .logo-reactive:hover #circuits path {
+            stroke-dashoffset: 100;
+        }
     </style>
 </head>
-<body>
+<body class="dark-mode">
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="https://detroitautomationacademy.com">
+                    <svg viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg" class="logo-reactive">
+                        <g transform="translate(25, 25)">
+                            <!-- Gear (Rotation animation) -->
+                            <g id="gear">
+                                <circle cx="100" cy="100" r="75" fill="none" stroke="var(--daa-primary)" stroke-width="4" />
+                                <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="var(--daa-primary)" stroke-width="3" stroke-linejoin="round" />
+                            </g>
+                            <!-- Circuits (Stroke-dashoffset animation) -->
+                            <g id="circuits" stroke="var(--daa-accent)" stroke-width="3" fill="none" stroke-linecap="round">
+                                <path d="M 100 30 L 100 15 L 85 10" />
+                                <path d="M 130 70 L 155 50 L 170 55" />
+                                <path d="M 140 130 L 160 155 L 165 170" />
+                                <path d="M 60 160 L 30 180 L 20 175" />
+                                <path d="M 60 70 L 35 50 L 25 60" />
+                                <circle cx="100" cy="15" r="4" fill="var(--daa-accent)" />
+                                <circle cx="170" cy="55" r="4" fill="var(--daa-accent)" />
+                                <circle cx="165" cy="170" r="4" fill="var(--daa-accent)" />
+                                <circle cx="20" cy="175" r="4" fill="var(--daa-accent)" />
+                                <circle cx="25" cy="60" r="4" fill="var(--daa-accent)" />
+                            </g>
+                        </g>
+                        <g transform="translate(260, 110)">
+                            <text font-family="'Poppins', sans-serif" font-weight="800" font-size="64">
+                                <tspan id="logo-text-main" x="0" y="0" fill="var(--daa-fg)">DETROIT</tspan>
+                                <tspan id="logo-text-sub" x="0" y="75" font-size="54" font-weight="700" fill="var(--daa-primary)">AUTOMATION ACADEMY</tspan>
+                            </text>
+                        </g>
+                    </svg>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="https://blog.detroitautomationacademy.com">📝 Blog</a></li>
+                <li><a href="https://enroll.detroitautomationacademy.com">🎓 Enroll</a></li>
+                <li><a href="https://partners.detroitautomationacademy.com">💼 Partners</a></li>
+                <li><a href="https://subscriptions.detroitautomationacademy.com">💎 Subscriptions</a></li>
+            </ul>
+            <button id="theme-toggle">☀️ Light Mode</button>
+        </nav>
+    </header>
+
+    <script>
+        (function () {
+            const saved = localStorage.getItem('daa-theme');
+            const body = document.body;
+            const btn = document.getElementById('theme-toggle');
+            if (saved === 'light') {
+                body.classList.add('light-mode');
+                if (btn) btn.textContent = '🌙 Dark Mode';
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggle = document.getElementById('theme-toggle');
+                if (!toggle) return;
+                toggle.addEventListener('click', function () {
+                    const isLight = document.body.classList.toggle('light-mode');
+                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
+                    // Update SVG logo text color
+                    const main = document.getElementById('logo-text-main');
+                    const sub = document.getElementById('logo-text-sub');
+                    if (main) {
+                        main.setAttribute('fill', isLight ? '#1A1F2E' : 'var(--daa-fg)');
+                    }
+                    if (sub) {
+                        sub.setAttribute('fill', isLight ? '#0055BB' : 'var(--daa-primary)');
+                    }
+                });
+            });
+        })();
+    </script>
+
     <div class="container">
-        <a href="index.html" class="back-link">← Home</a>
+        <a href="https://detroitautomationacademy.com" class="back-link">← Home</a>
         <h1>Academy Learning Guides</h1>
         <p>High-fidelity technical documentation for the DAA cohort.</p>
         
@@ -27,19 +181,29 @@
             <div class="guide-card">
                 <h3>Phase 1</h3>
                 <p>Foundations of Automation & Robotics.</p>
-                <a href="index.html#programs" class="back-link">Explore Module</a>
+                <a href="https://detroitautomationacademy.com#programs" class="back-link">Explore Module</a>
             </div>
             <div class="guide-card">
                 <h3>Phase 2</h3>
                 <p>CAD Design & Digital Fabrication.</p>
-                <a href="index.html#programs" class="back-link">Explore Module</a>
+                <a href="https://detroitautomationacademy.com#programs" class="back-link">Explore Module</a>
             </div>
             <div class="guide-card">
                 <h3>Phase 3</h3>
                 <p>Autonomous Systems & AI Implementation.</p>
-                <a href="index.html#programs" class="back-link">Explore Module</a>
+                <a href="https://detroitautomationacademy.com#programs" class="back-link">Explore Module</a>
             </div>
         </div>
     </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="https://blog.detroitautomationacademy.com">Blog</a>
+            <a href="https://status.detroitautomationacademy.com">System Status</a>
+            <a href="https://github.com/smit4786/detroit-automation-academy-public" target="_blank">GitHub</a>
+            <a href="mailto:info@detroitautomationacademy.com">Contact</a>
+        </div>
+        <p>© 2026 Detroit Automation Academy. All rights reserved. | Automation skills for Detroit's future, built by Detroiters.</p>
+    </footer>
 </body>
 </html>

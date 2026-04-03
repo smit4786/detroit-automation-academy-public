@@ -1,4 +1,4 @@
-baseURL = 'https://detroitautomationacademy.com/blog/'
+baseURL = 'https://blog.detroitautomationacademy.com'
 title = "Automated Insights"
 theme = 'ananke'
 publishDir = '../blog'
@@ -28,7 +28,7 @@ defaultContentLanguage = 'en'
   body_classes = "avenir bg-near-black near-white"
   post_content_classes = "avenir"
   cover_dimming_class = "black-50"
-  custom_css = ["custom.css"]
+  custom_css = ["../../branding/palette.css", "custom.css"]
 
 [params.social]
   github = "https://github.com/AutomatedTechnologies"

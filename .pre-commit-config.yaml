@@ -64,6 +64,16 @@ repos:
           - --ignore=D100,D104,D107,D200,D205,D212,D401,D406,D407,D413,D415,D417
         name: Check docstring style
 
+  # Local hooks
+  - repo: local
+    hooks:
+      - id: standardize-headers
+        name: Standardize File Path Headers
+        entry: python scripts/standardize_headers.py
+        language: python
+        files: \.(md|txt)$
+        pass_filenames: true
+
 # Configuration
 default_language_version:
   python: python3.9

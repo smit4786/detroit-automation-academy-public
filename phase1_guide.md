@@ -1,3 +1,9 @@
+## C:\Users\dbkr\workspace\daa-public-staging\phase1_guide.md
+## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-02
+## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
+
+﻿## C:\Users\dbkr\workspace\daa-public-staging\phase1_guide.md
 # Phase 1: Python Fundamentals & Microcontrollers
 
 This phase introduces students to Python programming and basic microcontroller interaction using the Raspberry Pi.
@@ -18,20 +24,20 @@ By the end of Phase 1, students will be able to:
 - Breadboard
 - Jumper wires (male-to-male, male-to-female)
 - LEDs (various colors)
-- 220Ω resistors (current-limiting for LEDs)
+- 220Î© resistors (current-limiting for LEDs)
 - Push buttons
 - Optional: Temperature sensor (DS18B20), ultrasonic distance sensor
 
 ### Hardware References
 
 For detailed Raspberry Pi pinout and specifications:
-- **Raspberry Pi GPIO Pinout Diagram:** [https://pinout.xyz](https://pinout.xyz) — Interactive pin reference
+- **Raspberry Pi GPIO Pinout Diagram:** [https://pinout.xyz](https://pinout.xyz) â€” Interactive pin reference
 - **Official Raspberry Pi Documentation:** [https://www.raspberrypi.com/documentation/computers/raspberry-pi.html](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html)
 - **RPi.GPIO Documentation:** [https://pypi.org/project/RPi.GPIO/](https://pypi.org/project/RPi.GPIO/)
 
 **BCM vs. BOARD Pin Numbering:**
-- **BCM (Broadcom)**: Uses GPIO numbering (e.g., GPIO 17) — preferred for code
-- **BOARD**: Uses physical pin numbers (e.g., Pin 11) — useful for hardware wiring
+- **BCM (Broadcom)**: Uses GPIO numbering (e.g., GPIO 17) â€” preferred for code
+- **BOARD**: Uses physical pin numbers (e.g., Pin 11) â€” useful for hardware wiring
 - Our Phase 1 examples use **BCM mode** (set with `GPIO.setmode(GPIO.BCM)`)
 
 ---
@@ -58,18 +64,18 @@ Where:
 - Red LED V_forward: 2.1V
 - Desired current: 15mA (0.015A)
 
-R = (3.3V - 2.1V) / 0.015A = 1.2V / 0.015A = 80Ω
+R = (3.3V - 2.1V) / 0.015A = 1.2V / 0.015A = 80Î©
 
 **Common Resistor Values for Raspberry Pi:**
-- Red/Green LEDs: 220Ω (safe for most applications)
-- Blue/White LEDs: 100-150Ω (lower forward voltage)
+- Red/Green LEDs: 220Î© (safe for most applications)
+- Blue/White LEDs: 100-150Î© (lower forward voltage)
 - High-brightness LEDs: Check datasheet for exact specifications
 
 ### Circuit Protection
 
 Always include current-limiting resistors in series with LEDs:
 ```
-GPIO Pin → Resistor → LED Anode (+) → LED Cathode (-) → GND
+GPIO Pin â†’ Resistor â†’ LED Anode (+) â†’ LED Cathode (-) â†’ GND
 ```
 
 **Never connect LEDs directly to GPIO pins** - this can damage both the LED and the Raspberry Pi!
@@ -107,22 +113,22 @@ This example demonstrates basic GPIO output control and proper LED circuit desig
 
 **Circuit Setup:**
 ```
-Raspberry Pi GPIO 17 ──► 220Ω Resistor ──► LED Anode (+) │
-                                                       │
-                                                       ▼
-                                                     LED Cathode (-) ──► GND
+Raspberry Pi GPIO 17 â”€â”€â–º 220Î© Resistor â”€â”€â–º LED Anode (+) â”‚
+                                                       â”‚
+                                                       â–¼
+                                                     LED Cathode (-) â”€â”€â–º GND
 ```
 
 **Breadboard Layout:**
 ```
-GPIO 17 ──► [220Ω] ──► LED+ │
-                              │
-                              ▼
-                            LED- ──► GND Pin
+GPIO 17 â”€â”€â–º [220Î©] â”€â”€â–º LED+ â”‚
+                              â”‚
+                              â–¼
+                            LED- â”€â”€â–º GND Pin
 ```
 
 **Safety Notes:**
-- **Always use a current-limiting resistor** (220Ω is safe for most LEDs with Raspberry Pi)
+- **Always use a current-limiting resistor** (220Î© is safe for most LEDs with Raspberry Pi)
 - **Never connect LED directly to GPIO** - this will damage the Raspberry Pi
 - **Check LED polarity** - anode (+) connects to resistor, cathode (-) to GND
 - **Verify resistor value** - too low = LED burnout, too high = dim LED
@@ -192,13 +198,13 @@ GPIO.add_event_detect(18, GPIO.FALLING, callback=button_callback)
 3. **LED Not Lighting**
    - Check circuit connections (LED polarity: anode to resistor, cathode to GND)
    - Verify correct pin numbers and GPIO mode (BCM vs BOARD)
-   - Check resistor value (220Ω is safe; too high = dim, too low = dangerous)
+   - Check resistor value (220Î© is safe; too high = dim, too low = dangerous)
    - Test LED with multimeter (should show ~2-3V forward voltage)
    - Verify GPIO pin is set to OUTPUT mode
 
 4. **LED Too Dim or Too Bright**
    - Calculate proper resistor: R = (3.3V - V_forward) / I_desired
-   - Typical values: Red/Green=220Ω, Blue/White=100-150Ω
+   - Typical values: Red/Green=220Î©, Blue/White=100-150Î©
    - Check LED datasheet for exact forward voltage and current specs
 
 5. **LED Burns Out**

@@ -1,4 +1,10 @@
-# 📅 DETROIT AUTOMATION ACADEMY - CALENDAR SHARING PROCEDURE
+## C:\Users\dbkr\workspace\daa-public-staging\CALENDAR_SHARING_PROCEDURE.md
+## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-02
+## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
+
+﻿## C:\Users\dbkr\workspace\daa-public-staging\CALENDAR_SHARING_PROCEDURE.md
+# ðŸ“… DETROIT AUTOMATION ACADEMY - CALENDAR SHARING PROCEDURE
 
 **Prepared for:** @ADMIN, @SCHEDULER  
 **Date:** February 1, 2026  
@@ -7,13 +13,13 @@
 
 ---
 
-## 🎯 OBJECTIVE
+## ðŸŽ¯ OBJECTIVE
 
 Share the Detroit Automation Academy calendar (CALENDAR_FEB_MAR_2025.md) with all leadership team members, instructors, and administrative staff via Google Calendar for real-time visibility and synchronized reminders.
 
 ---
 
-## 📋 STEP-BY-STEP PROCEDURE
+## ðŸ“‹ STEP-BY-STEP PROCEDURE
 
 ### STEP 1: Export Calendar to ICS Format
 
@@ -55,11 +61,11 @@ Share the Detroit Automation Academy calendar (CALENDAR_FEB_MAR_2025.md) with al
    ```
 
 3. Verify .ics file contains all key dates:
-   - ✅ Feb 3-4: B&G Club Grand Opening Event
-   - ✅ Feb 5: Instructor Orientation + Leadership Meeting
-   - ✅ Feb 7: Application Portal Opens
-   - ✅ Mar 5: New Student Orientation
-   - ✅ Mar 8: First Cohort Launch
+   - âœ… Feb 3-4: B&G Club Grand Opening Event
+   - âœ… Feb 5: Instructor Orientation + Leadership Meeting
+   - âœ… Feb 7: Application Portal Opens
+   - âœ… Mar 5: New Student Orientation
+   - âœ… Mar 8: First Cohort Launch
 
 ---
 
@@ -79,7 +85,7 @@ Share the Detroit Automation Academy calendar (CALENDAR_FEB_MAR_2025.md) with al
    - Click **Create**
 
 3. **Calendar Settings:**
-   - Click calendar name → **Settings**
+   - Click calendar name â†’ **Settings**
    - Enable: **"Make available to public"** (optional, if public viewing desired)
    - Enable: **"Show as busy"**
    - Notifications: 
@@ -116,7 +122,7 @@ Share the Detroit Automation Academy calendar (CALENDAR_FEB_MAR_2025.md) with al
 #### Method A: Direct Sharing (Recommended)
 
 1. **Access Calendar Sharing:**
-   - Google Calendar → Click calendar name → **Settings**
+   - Google Calendar â†’ Click calendar name â†’ **Settings**
    - Scroll to **"Share with specific people"**
    - Click **"Add people"**
 
@@ -144,7 +150,7 @@ Share the Detroit Automation Academy calendar (CALENDAR_FEB_MAR_2025.md) with al
 #### Method B: Public Calendar Link (Alternative)
 
 1. **Generate Shareable Link:**
-   - Calendar Settings → **Integrate calendar**
+   - Calendar Settings â†’ **Integrate calendar**
    - Copy **Public URL** (if calendar is public)
    - Share via: Slack, email, website
 
@@ -171,7 +177,7 @@ Share the Detroit Automation Academy calendar (CALENDAR_FEB_MAR_2025.md) with al
    - Bi-weekly: Monday 10:00 AM (equipment inventory check)
 
 3. **Configure in Google Calendar:**
-   - Select each event → **Edit**
+   - Select each event â†’ **Edit**
    - Add notification: **Email, 3 days before**
    - Add notification: **Email, 1 day before**
    - Add notification: **Popup, 9:00 AM day-of**
@@ -185,26 +191,26 @@ Share the Detroit Automation Academy calendar (CALENDAR_FEB_MAR_2025.md) with al
 
 #### Outlook Integration
 ```
-1. Export calendar: Google Calendar → Settings → Export → Download
+1. Export calendar: Google Calendar â†’ Settings â†’ Export â†’ Download
 2. File format: .ics or .csv (for Outlook compatibility)
-3. Outlook: File → Open & Export → Import iCalendar
+3. Outlook: File â†’ Open & Export â†’ Import iCalendar
 4. Select downloaded file and target calendar
 5. Repeat monthly as events are updated
 ```
 
 #### Slack Integration
 ```
-1. Slack Workspace → Add app → Google Calendar
+1. Slack Workspace â†’ Add app â†’ Google Calendar
 2. Authenticate and authorize
 3. Commands available:
-   - /gcal today → Show today's events
-   - /gcal tomorrow → Show tomorrow's events
-   - /gcal schedule → Post calendar week to Slack
+   - /gcal today â†’ Show today's events
+   - /gcal tomorrow â†’ Show tomorrow's events
+   - /gcal schedule â†’ Post calendar week to Slack
 ```
 
 #### Microsoft Teams Integration
 ```
-1. Teams Channel → + Apps → Google Calendar
+1. Teams Channel â†’ + Apps â†’ Google Calendar
 2. Or: Use Zapier/Make to sync calendars automatically
 3. Daily digest: Post calendar summary to team channel
 ```
@@ -225,16 +231,16 @@ Share the Detroit Automation Academy calendar (CALENDAR_FEB_MAR_2025.md) with al
 
 ---
 
-## 🔐 SECURITY CONSIDERATIONS
+## ðŸ” SECURITY CONSIDERATIONS
 
-✅ **Do:**
+âœ… **Do:**
 - Use role-based access (editors vs. viewers)
 - Keep calendar internal/private unless public viewing approved
 - Audit sharing permissions monthly
 - Use unique passwords for shared calendar account
 - Enable 2-factor authentication
 
-❌ **Don't:**
+âŒ **Don't:**
 - Share calendar with public email addresses (security risk)
 - Expose sensitive meeting details in event descriptions
 - Grant editor access to external parties without authorization
@@ -243,18 +249,18 @@ Share the Detroit Automation Academy calendar (CALENDAR_FEB_MAR_2025.md) with al
 
 ---
 
-## 📞 SUPPORT & ESCALATION
+## ðŸ“ž SUPPORT & ESCALATION
 
 | Issue | Contact | Escalation |
 |-------|---------|------------|
-| Can't access calendar | @SCHEDULER → Justin Smith | CTO review permissions |
-| Events not syncing | @SCHEDULER → Google Support | Check API credentials |
-| Reminders not working | @ADMIN → @SCHEDULER | Verify notification settings |
-| Need new access | @ADMIN → @SCHEDULER | Add new email to sharing list |
+| Can't access calendar | @SCHEDULER â†’ Justin Smith | CTO review permissions |
+| Events not syncing | @SCHEDULER â†’ Google Support | Check API credentials |
+| Reminders not working | @ADMIN â†’ @SCHEDULER | Verify notification settings |
+| Need new access | @ADMIN â†’ @SCHEDULER | Add new email to sharing list |
 
 ---
 
-## ✅ COMPLETION CHECKLIST
+## âœ… COMPLETION CHECKLIST
 
 - [ ] Calendar exported to .ics format
 - [ ] Google Calendar created with correct timezone

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apply Now - Detroit Automation Academy</title>
-    <meta name="description" content="Apply for the free 12-week automation and robotics program in Detroit. No prior experience required. Now enrolling for Spring 2026.">
+    <meta name="description" content="Detroit Automation Academy: Master autonomous systems, robotics, and CAD design in Detroit. Join Epoch VII to transform into a specialized agent.">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -55,7 +55,7 @@
         }
 
         .footer-links a:hover {
-            color: var(--daa-accent);
+            color: var(--daa-student);
         }
 
         /* ── Circuit background ── */
@@ -84,7 +84,7 @@
         
 
         .footer-links a:hover {
-            color: var(--daa-accent);
+            color: var(--daa-student);
         }
 
         /* ── Circuit background ── */
@@ -102,7 +102,7 @@
         
 
         .footer-links a:hover {
-            color: var(--daa-accent);
+            color: var(--daa-student);
         }
 
         /* ── Circuit background ── */
@@ -120,7 +120,7 @@
         
 
         .footer-links a:hover {
-            color: var(--daa-accent);
+            color: var(--daa-student);
         }
 
         /* ── Circuit background ── */
@@ -159,11 +159,11 @@
             font-family: 'Courier New', Courier, monospace;
             font-weight: 700;
             font-size: 24px;
-            color: var(--daa-primary);
+            color: var(--daa-student);
         }
 
         .logo a {
-            color: var(--daa-primary);
+            color: var(--daa-student);
             text-decoration: none;
         }
 
@@ -181,11 +181,11 @@
         }
 
         .nav-links a:hover {
-            color: var(--daa-primary);
+            color: var(--daa-student);
         }
 
         .hero {
-            background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-primary-dark, #0052A3) 100%);
+            background: linear-gradient(135deg, var(--daa-student) 0%, var(--daa-primary-dark, #0052A3) 100%);
             color: var(--daa-bg);
             padding: 60px 32px;
             text-align: center;
@@ -228,7 +228,7 @@
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 24px;
-            color: var(--daa-primary);
+            color: var(--daa-student);
         }
 
         .info-box {
@@ -267,7 +267,7 @@
 
         .checklist li::before {
             content: '✓';
-            color: var(--daa-accent);
+            color: var(--daa-student);
             font-weight: bold;
             margin-right: 12px;
             font-size: 18px;
@@ -275,7 +275,7 @@
 
         .apply-button {
             display: inline-block;
-            background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-primary-dark, #0052A3) 100%);
+            background: linear-gradient(135deg, var(--daa-student) 0%, var(--daa-primary-dark, #0052A3) 100%);
             color: var(--daa-bg);
             padding: 16px 40px;
             border-radius: 8px;
@@ -305,7 +305,7 @@
 
         .faq-item h4 {
             font-family: 'Courier New', Courier, monospace;
-            color: var(--daa-primary);
+            color: var(--daa-student);
             margin-bottom: 8px;
             font-size: 16px;
         }
@@ -334,65 +334,66 @@
                 padding: 32px 16px;
             }
         }
+
+        /* ── Logo Animation ── */
+        .logo-reactive #gear {
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: 100px 100px;
+        }
+
+        .logo-reactive:hover #gear {
+            transform: rotate(90deg);
+        }
+
+        .logo-reactive #circuits path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            transition: stroke-dashoffset 0.6s ease;
+        }
+
+        .logo-reactive:hover #circuits path {
+            stroke-dashoffset: 0;
+        }
     </style>
 </head>
 
-<body class="light-mode">
-                                <header>
+<body class="dark-mode">
+                                    <header>
         <nav>
             <div class="logo">
-                <a href="index.html?v=2026030713">
-                    <svg viewBox="0 0 1000 250" width="180" height="45"
-                         xmlns="http://www.w3.org/2000/svg">
+                <a href="index.html?v=2026040220">
+                    <svg class="logo-reactive" viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
-                            <circle cx="100" cy="100" r="75" fill="none"
-                                    stroke="var(--daa-primary)" stroke-width="4" />
-                            <polygon points="100,30 130,40 140,70 130,100 140,130
-                                            100,170 70,160 60,130 70,100 60,70
-                                            100,30"
-                                     fill="none" stroke="var(--daa-primary)" stroke-width="3"
-                                     stroke-linejoin="round" />
-                            <g stroke="var(--daa-accent)" stroke-width="3" fill="none"
-                               stroke-linecap="round">
+                            <g id="gear">
+                                <circle cx="100" cy="100" r="75" fill="none" stroke="#00f0ff" stroke-width="4" />
+                                <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linejoin="round" />
+                            </g>
+                            <g id="circuits" stroke="#00f0ff" stroke-width="3" fill="none" stroke-linecap="round">
                                 <path d="M 100 30 L 100 15 L 85 10" />
                                 <path d="M 130 70 L 155 50 L 170 55" />
                                 <path d="M 140 130 L 160 155 L 165 170" />
                                 <path d="M 60 160 L 30 180 L 20 175" />
                                 <path d="M 60 70 L 35 50 L 25 60" />
                             </g>
-                            <g fill="var(--daa-accent)" opacity="0.9">
-                                <circle cx="100" cy="15" r="4" />
-                                <circle cx="170" cy="55" r="4" />
-                                <circle cx="165" cy="170" r="4" />
-                                <circle cx="20" cy="175" r="4" />
-                                <circle cx="25" cy="60" r="4" />
-                            </g>
                         </g>
                         <g transform="translate(260, 110)">
-                            <text font-family="'Poppins', sans-serif"
-                                  font-weight="800" font-size="64">
-                                <tspan id="logo-text-main" x="0" y="0">
-                                    DETROIT
-                                </tspan>
-                                <tspan id="logo-text-sub" x="0" y="75"
-                                       font-size="54" font-weight="700">
-                                    AUTOMATION ACADEMY
-                                </tspan>
+                            <text font-family="'Courier New', Courier, monospace" font-weight="800" font-size="64">
+                                <tspan x="0" y="0" fill="#f8fafc">DETROIT</tspan>
+                                <tspan x="0" y="75" font-size="54" font-weight="700" fill="#00f0ff">AUTOMATION ACADEMY</tspan>
                             </text>
                         </g>
                     </svg>
                 </a>
             </div>
             <ul class="nav-links">
-                <li><a href="blog/">📝 Blog</a></li>
-                <li><a href="https://safety.detroitautomationacademy.com/prism/" target="_blank">🔮 Project Prism</a></li>
-                <li><a href="dashboard.html?v=2026030713">📊 Dashboard</a></li>
-                <li><a href="students.html?v=2026030713">👨‍🎓 Students</a></li>
-                <li><a href="instructors.html?v=2026030713">👨‍🏫 Instructors</a></li>
-                <li><a href="partners.html?v=2026030713">💼 Partners</a></li>
-                <li><a href="subscriptions.html?v=2026030713">💎 Subscriptions</a></li>
+                <li><a href="index.html?v=2026040220">🏠 Home</a></li>
+                <li><a href="https://blog.detroitautomationacademy.com">📝 Blog</a></li>
+                <li><a href="dashboard.html?v=2026040220">📊 Dashboard</a></li>
+                <li><a href="students.html?v=2026040220">👨‍🎓 Students</a></li>
+                <li><a href="instructors.html?v=2026040220">👨‍🏫 Instructors</a></li>
+                <li><a href="partners.html?v=2026040220">💼 Partners</a></li>
+                <li><a href="https://enroll.detroitautomationacademy.com" style="color: #39ff14; font-weight: 800; border: 1px solid #39ff14; padding: 5px 12px; border-radius: 6px;">Enroll</a></li>
             </ul>
-            <button id="theme-toggle">☀️ Light Mode</button>
         </nav>
     </header>
 
@@ -419,7 +420,7 @@
                         main.setAttribute('fill', isLight ? '#1A1F2E' : 'var(--daa-fg)');
                     }
                     if (sub) {
-                        sub.setAttribute('fill', isLight ? '#0055BB' : 'var(--daa-primary)');
+                        sub.setAttribute('fill', isLight ? '#0055BB' : 'var(--daa-student)');
                     }
                 });
             });
@@ -447,13 +448,13 @@
                 <p><strong>Prerequisites:</strong> Enthusiasm to learn! No prior experience necessary.</p>
             </div>
 
-            <div class="info-box" style="border-left-color: var(--daa-primary); margin-top: 2rem;">
+            <div class="info-box" style="border-left-color: var(--daa-student); margin-top: 2rem;">
                 <h3>🛡️ New Core Module: The Sentient Shield</h3>
                 <p>Master the skills of digital sovereignty, online safety, and sentient ethics. Experience the ADC Simulation Engine, designed for the next generation of automation architects.</p>
-                <a href="https://safety.detroitautomationacademy.com" target="_blank" class="apply-button" style="padding: 8px 20px; font-size: 14px; margin-top: 12px; background: var(--daa-primary); color: var(--daa-bg); border-radius: 4px;">Enter Simulation</a>
+                <a href="https://safety.detroitautomationacademy.com" target="_blank" class="apply-button" style="padding: 8px 20px; font-size: 14px; margin-top: 12px; background: var(--daa-student); color: var(--daa-bg); border-radius: 4px;">Enter Simulation</a>
             </div>
 
-            <h3 style="margin-top: 32px; margin-bottom: 16px; color: var(--daa-primary);">What You'll Learn</h3>
+            <h3 style="margin-top: 32px; margin-bottom: 16px; color: var(--daa-student);">What You'll Learn</h3>
             <ul class="checklist">
                 <li><strong>Phase 1: Electronics & GPIO</strong> - Control hardware with Python, build event-driven
                     applications</li>
@@ -468,24 +469,24 @@
                 <li><strong>Portfolio Building</strong> - Create projects for your resume and college applications</li>
             </ul>
 
-            <h3 style="margin-top: 32px; margin-bottom: 16px; color: var(--daa-primary);">How to Apply</h3>
+            <h3 style="margin-top: 32px; margin-bottom: 16px; color: var(--daa-student);">How to Apply</h3>
             <ol style="margin-left: 20px; margin-bottom: 24px;">
                 <li><strong>Fill out the online form</strong> (click button below) - takes 5 minutes</li>
                 <li><strong>Share a bit about yourself</strong> - what interests you about automation?</li>
                 <li><strong>Get approval from a parent/guardian</strong> - we need their consent</li>
-                <li><strong>Attend student orientation</strong> - POSTPONED (Check <a href="blog/">Blog</a> for updates)</li>
-                <li><strong>Start the program!</strong> - TBD</li>
+                <li><strong>Attend student orientation</strong> - April 9, 2026 (5 PM - 6 PM)</li>
+                <li><strong>Start the program!</strong> - April 14, 2026</li>
             </ol>
 
             <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026&utm_content=students_page" target="_blank" class="apply-button">📝
                 Start Application</a>
 
-            <div class="info-box" style="margin-top: 32px; border-left-color: var(--daa-accent);">
+            <div class="info-box" style="margin-top: 32px; border-left-color: var(--daa-student);">
                 <h3>⏰ Important Dates</h3>
                 <p><strong>Applications Open:</strong> February 7, 2026</p>
                 <p><strong>Applications Close:</strong> February 28, 2026</p>
                 <p><strong>Acceptance Notifications:</strong> March 1, 2026</p>
-                <p><strong>Student Orientation:</strong> <span style="color: var(--daa-accent); font-weight: 800;">POSTPONED</span></p>
+                <p><strong>Student Orientation:</strong> <span style="color: var(--daa-student); font-weight: 800;">POSTPONED</span></p>
                 <p><strong>Program Starts:</strong> TBD (Currently improving our offering)</p>
             </div>
         </section>
@@ -559,8 +560,8 @@
         </section>
 
         <div
-            style="text-align: center; padding: 32px; background: linear-gradient(135deg, var(--daa-primary)15 0%, var(--daa-secondary)15 100%); border-radius: 12px; margin-bottom: 48px;">
-            <h3 style="margin-bottom: 16px; color: var(--daa-primary);">Ready to apply?</h3>
+            style="text-align: center; padding: 32px; background: linear-gradient(135deg, var(--daa-student)15 0%, var(--daa-secondary)15 100%); border-radius: 12px; margin-bottom: 48px;">
+            <h3 style="margin-bottom: 16px; color: var(--daa-student);">Ready to apply?</h3>
             <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026&utm_content=students_page" target="_blank"
                 class="apply-button">Start Your Application Now</a>
             <p style="margin-top: 16px; color: var(--daa-fg-muted); font-size: 14px;">Limited spots available • Applications close Feb
@@ -568,12 +569,12 @@
         </div>
     </section>
 
-                                <footer>
+                                    <footer>
         <div class="footer-links">
-            <a href="blog/">Blog</a>
-            <a href="dashboard.html?v=2026030713">Dashboard</a>
-            <a href="https://github.com/smit4786/detroit-automation-academy-public"
-               target="_blank">GitHub</a>
+            <a href="https://blog.detroitautomationacademy.com">Blog</a>
+            <a href="dashboard.html?v=2026040220">Dashboard</a>
+            <a href="https://status.detroitautomationacademy.com">System Status</a>
+            <a href="https://github.com/smit4786/detroit-automation-academy-public" target="_blank">GitHub</a>
             <a href="mailto:info@detroitautomationacademy.com">Contact</a>
         </div>
         <p>© 2026 Detroit Automation Academy. All rights reserved. |

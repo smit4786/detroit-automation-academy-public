@@ -1,4 +1,10 @@
-# 📁 Detroit Automation Academy Site Structure Guide
+## C:\Users\dbkr\workspace\daa-public-staging\site_structure.md
+## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-02
+## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
+
+﻿## C:\Users\dbkr\workspace\daa-public-staging\site_structure.md
+# ðŸ“ Detroit Automation Academy Site Structure Guide
 
 ## Purpose
 This guide documents the folder and file conventions for the Detroit Automation Academy repository, supporting clarity, maintainability, and deployment.
@@ -9,19 +15,19 @@ This guide documents the folder and file conventions for the Detroit Automation 
 
 ```
 DetroitAutomationAcademy/
-├── web/                  # All main public-facing HTML pages (dashboard, landing, students, instructors, partners, docs_index)
-├── docs/                 # Documentation, curriculum guides, API reference, event guides
-├── branding/             # Brand assets, color palettes, typography, logo concepts
-├── activations/          # Hardware workflows, G-code, STL files, laser cutting guides
-├── .github/workflows/    # GitHub Actions workflows for CI/CD and Pages deployment
-├── ...                   # Administrative, financial, and strategic documents
+â”œâ”€â”€ web/                  # All main public-facing HTML pages (dashboard, landing, students, instructors, partners, docs_index)
+â”œâ”€â”€ docs/                 # Documentation, curriculum guides, API reference, event guides
+â”œâ”€â”€ branding/             # Brand assets, color palettes, typography, logo concepts
+â”œâ”€â”€ activations/          # Hardware workflows, G-code, STL files, laser cutting guides
+â”œâ”€â”€ .github/workflows/    # GitHub Actions workflows for CI/CD and Pages deployment
+â”œâ”€â”€ ...                   # Administrative, financial, and strategic documents
 ```
 
 ---
 
 ## File Naming Conventions
 - Use descriptive names (e.g., `dashboard.html`, `phase1_guide.md`, `LOGO_CONCEPT_FRAMEWORK.md`)
-- Status indicators: ✅ COMPLETE, 🔄 IN PROGRESS, ❌ BLOCKED
+- Status indicators: âœ… COMPLETE, ðŸ”„ IN PROGRESS, âŒ BLOCKED
 - Markdown headers: Use emoji for visual scanning
 - Color codes: Always specify as `Color Name, #HEX, RGB`
 - Avoid generic names (e.g., `doc1.md`)

@@ -1,3 +1,9 @@
+## C:\Users\dbkr\workspace\daa-public-staging\curriculum\online-safety\module-5-cybersecurity.md
+## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-02
+## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
+
+﻿## C:\Users\dbkr\workspace\daa-public-staging\curriculum\online-safety\module-5-cybersecurity.md
 # Module 5: Cybersecurity Basics & Passkeys
 
 **Objective:** Move beyond passwords to the next generation of account security.

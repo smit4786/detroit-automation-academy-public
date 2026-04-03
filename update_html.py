@@ -1,166 +1,74 @@
+## C:\Users\dbkr\workspace\daa-public-staging\update_html.py
+## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-02
+## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
 import os
 import re
 import datetime
 
-# Generate cache-busting version string (Hourly)
-version = datetime.datetime.now().strftime("%Y%m%d%H")
+# --- CONFIGURATION (EPOCH VII) ---
+VERSION = datetime.datetime.now().strftime("%Y%m%d%H")
+SEO_DESC = "Detroit Automation Academy: Master autonomous systems, robotics, and CAD design in Detroit. Join Epoch VII to transform into a specialized agent."
 
-header_content = f"""    <header>
+# Branding Variables
+CYBER_CYAN = "#00f0ff"
+CYBER_GREEN = "#39ff14"
+STUDENT_PURPLE = "#BB6EE7"
+DEEP_CHARCOAL = "#050507"
+
+HEADER_CONTENT = f"""    <header>
         <nav>
             <div class="logo">
-                <a href="index.html?v={version}">
-                    <svg viewBox="0 0 1000 250" width="180" height="45"
-                         xmlns="http://www.w3.org/2000/svg">
+                <a href="index.html?v={VERSION}">
+                    <svg class="logo-reactive" viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25)">
-                            <circle cx="100" cy="100" r="75" fill="none"
-                                    stroke="#0066CC" stroke-width="4" />
-                            <polygon points="100,30 130,40 140,70 130,100 140,130
-                                            100,170 70,160 60,130 70,100 60,70
-                                            100,30"
-                                     fill="none" stroke="#0066CC" stroke-width="3"
-                                     stroke-linejoin="round" />
-                            <g stroke="#66CC00" stroke-width="3" fill="none"
-                               stroke-linecap="round">
+                            <g id="gear">
+                                <circle cx="100" cy="100" r="75" fill="none" stroke="{CYBER_CYAN}" stroke-width="4" />
+                                <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="{CYBER_CYAN}" stroke-width="3" stroke-linejoin="round" />
+                            </g>
+                            <g id="circuits" stroke="{CYBER_CYAN}" stroke-width="3" fill="none" stroke-linecap="round">
                                 <path d="M 100 30 L 100 15 L 85 10" />
                                 <path d="M 130 70 L 155 50 L 170 55" />
                                 <path d="M 140 130 L 160 155 L 165 170" />
                                 <path d="M 60 160 L 30 180 L 20 175" />
                                 <path d="M 60 70 L 35 50 L 25 60" />
                             </g>
-                            <g fill="#66CC00" opacity="0.9">
-                                <circle cx="100" cy="15" r="4" />
-                                <circle cx="170" cy="55" r="4" />
-                                <circle cx="165" cy="170" r="4" />
-                                <circle cx="20" cy="175" r="4" />
-                                <circle cx="25" cy="60" r="4" />
-                            </g>
                         </g>
                         <g transform="translate(260, 110)">
-                            <text font-family="'Poppins', sans-serif"
-                                  font-weight="800" font-size="64">
-                                <tspan id="logo-text-main" x="0" y="0">
-                                    DETROIT
-                                </tspan>
-                                <tspan id="logo-text-sub" x="0" y="75"
-                                       font-size="54" font-weight="700">
-                                    AUTOMATION ACADEMY
-                                </tspan>
+                            <text font-family="'Courier New', Courier, monospace" font-weight="800" font-size="64">
+                                <tspan x="0" y="0" fill="#f8fafc">DETROIT</tspan>
+                                <tspan x="0" y="75" font-size="54" font-weight="700" fill="{CYBER_CYAN}">AUTOMATION ACADEMY</tspan>
                             </text>
                         </g>
                     </svg>
                 </a>
             </div>
             <ul class="nav-links">
-                <li><a href="blog/">📝 Blog</a></li>
-                <li><a href="dashboard.html?v={version}">📊 Dashboard</a></li>
-                <li><a href="students.html?v={version}">👨‍🎓 Students</a></li>
-                <li><a href="instructors.html?v={version}">👨‍🏫 Instructors</a></li>
-                <li><a href="partners.html?v={version}">💼 Partners</a></li>
-                <li><a href="subscriptions.html?v={version}">💎 Subscriptions</a></li>
+                <li><a href="index.html?v={VERSION}">🏠 Home</a></li>
+                <li><a href="https://blog.detroitautomationacademy.com">📝 Blog</a></li>
+                <li><a href="dashboard.html?v={VERSION}">📊 Dashboard</a></li>
+                <li><a href="students.html?v={VERSION}">👨‍🎓 Students</a></li>
+                <li><a href="instructors.html?v={VERSION}">👨‍🏫 Instructors</a></li>
+                <li><a href="partners.html?v={VERSION}">💼 Partners</a></li>
+                <li><a href="https://enroll.detroitautomationacademy.com" style="color: {CYBER_GREEN}; font-weight: 800; border: 1px solid {CYBER_GREEN}; padding: 5px 12px; border-radius: 6px;">Enroll</a></li>
             </ul>
-            <button id="theme-toggle">☀️ Light Mode</button>
         </nav>
-    </header>
+    </header>"""
 
-    <script>
-        (function () {{
-            const saved = localStorage.getItem('daa-theme');
-            const body = document.body;
-            const btn = document.getElementById('theme-toggle');
-            if (saved === 'light') {{
-                body.classList.add('light-mode');
-                if (btn) btn.textContent = '🌙 Dark Mode';
-            }}
-            document.addEventListener('DOMContentLoaded', function () {{
-                const toggle = document.getElementById('theme-toggle');
-                if (!toggle) return;
-                toggle.addEventListener('click', function () {{
-                    const isLight = document.body.classList.toggle('light-mode');
-                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
-                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
-                    // Update SVG logo text color
-                    const main = document.getElementById('logo-text-main');
-                    const sub = document.getElementById('logo-text-sub');
-                    if (main) {{
-                        main.setAttribute('fill', isLight ? '#1A1F2E' : '#E6EDF3');
-                    }}
-                    if (sub) {{
-                        sub.setAttribute('fill', isLight ? '#0055BB' : '#0066CC');
-                    }}
-                }});
-            }});
-        }})();
-    </script>"""
-
-footer_content = f"""    <footer>
+FOOTER_CONTENT = f"""    <footer>
         <div class="footer-links">
-            <a href="blog/">Blog</a>
-            <a href="dashboard.html?v={version}">Dashboard</a>
-            <a href="https://github.com/smit4786/detroit-automation-academy-public"
-               target="_blank">GitHub</a>
+            <a href="https://blog.detroitautomationacademy.com">Blog</a>
+            <a href="dashboard.html?v={VERSION}">Dashboard</a>
+            <a href="https://status.detroitautomationacademy.com">System Status</a>
+            <a href="https://github.com/smit4786/detroit-automation-academy-public" target="_blank">GitHub</a>
             <a href="mailto:info@detroitautomationacademy.com">Contact</a>
         </div>
         <p>© 2026 Detroit Automation Academy. All rights reserved. |
            Automation skills for Detroit's future, built by Detroiters.</p>
     </footer>"""
 
-standard_styles = """
-        /* ── Standardized Header/Footer Styles ── */
-        header {
-            background: rgba(13, 17, 23, 0.88);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--daa-border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            transition: background 0.3s;
-        }
-
-        body.light-mode header {
-            background: rgba(245, 247, 250, 0.92);
-        }
-
-        footer {
-            background: var(--daa-bg-card);
-            border-top: 1px solid var(--daa-border);
-            color: var(--daa-fg-muted);
-            padding: 32px;
-            text-align: center;
-            font-size: 13px;
-        }
-
-        .footer-links {
-            margin-bottom: 14px;
-        }
-
-        .footer-links a {
-            color: var(--daa-fg-muted);
-            text-decoration: none;
-            margin: 0 14px;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Circuit background ── */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(var(--daa-border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
-            background-size: 52px 52px;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.6;
-        }
-"""
-
-files_to_update = [
+FILES_TO_UPDATE = [
+    "index.html",
     "students.html",
     "instructors.html",
     "partners.html",
@@ -168,58 +76,43 @@ files_to_update = [
     "dashboard.html",
     "admin.html",
     "landing.html",
+    "enroll.html"
 ]
-
 
 def update_file(filepath):
     if not os.path.exists(filepath):
+        print(f"Skipping {filepath} (Not Found)")
         return
-    with open(filepath, "r") as f:
+    
+    with open(filepath, "r", encoding='utf-8') as f:
         content = f.read()
 
-    # Standardize header/script
-    header_pattern = re.compile(
-        r"<header>.*?</header>\s*(<script>.*?</script>)?", re.DOTALL
-    )
+    # 1. Update Header/Nav
+    header_pattern = re.compile(r"<header>.*?</header>", re.DOTALL)
     if header_pattern.search(content):
-        content = header_pattern.sub(header_content, content, count=1)
-
-    # Standardize footer
+        content = header_pattern.sub(HEADER_CONTENT, content)
+    
+    # 2. Update Footer
     footer_pattern = re.compile(r"<footer>.*?</footer>", re.DOTALL)
     if footer_pattern.search(content):
-        content = footer_pattern.sub(footer_content, content)
+        content = footer_pattern.sub(FOOTER_CONTENT, content)
 
-    # Standardize styles
-    style_pattern = re.compile(r"<style>(.*?)</style>", re.DOTALL)
-    match = style_pattern.search(content)
-    if match:
-        style_content = match.group(1)
+    # 3. Inject/Update SEO Meta
+    meta_desc_pattern = re.compile(r'<meta name="description" content=".*?">', re.DOTALL)
+    new_meta = f'<meta name="description" content="{SEO_DESC}">'
+    if meta_desc_pattern.search(content):
+        content = meta_desc_pattern.sub(new_meta, content)
+    
+    # 4. Inject Student Purple Accent where appropriate
+    if "enroll.html" in filepath or "students.html" in filepath:
+        # Example: Update a specific class or button color
+        content = content.replace("var(--daa-accent)", "var(--daa-student)")
+        content = content.replace("var(--daa-primary)", "var(--daa-student)")
 
-        # Remove old header/footer styles if they exist to avoid duplication
-        style_content = re.sub(r"header\s*\{.*?\}", "", style_content, flags=re.DOTALL)
-        style_content = re.sub(r"footer\s*\{.*?\}", "", style_content, flags=re.DOTALL)
-        style_content = re.sub(
-            r"\.footer-links\s*\{.*?\}", "", style_content, flags=re.DOTALL
-        )
-        style_content = re.sub(
-            r"\.footer-links a\s*\{.*?\}", "", style_content, flags=re.DOTALL
-        )
-        style_content = re.sub(
-            r"body::before\s*\{.*?\}", "", style_content, flags=re.DOTALL
-        )
-
-        style_content = standard_styles + style_content
-        content = content[: match.start(1)] + style_content + content[match.end(1) :]
-
-    # Ensure body class
-    if 'body class="light-mode"' not in content and "<body>" in content:
-        content = content.replace("<body>", '<body class="light-mode">')
-
-    with open(filepath, "w") as f:
+    with open(filepath, "w", encoding='utf-8') as f:
         f.write(content)
-    print(f"Standardized {filepath}")
-
+    print(f"Standardized & Upgraded {filepath} to EPOCH VII")
 
 if __name__ == "__main__":
-    for f in files_to_update:
+    for f in FILES_TO_UPDATE:
         update_file(f)

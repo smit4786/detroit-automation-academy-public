@@ -1,3 +1,9 @@
+## C:\Users\dbkr\workspace\daa-public-staging\phase2_guide.md
+## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-02
+## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
+
+﻿## C:\Users\dbkr\workspace\daa-public-staging\phase2_guide.md
 # Phase 2: CAD Design & Rapid Prototyping
 
 This phase introduces students to computer-aided design (CAD) and rapid prototyping techniques using 3D printing and laser cutting.
@@ -44,7 +50,7 @@ The academy utilizes the following specific hardware for rapid prototyping:
   - **Type:** CO2 Laser Cutter/Engraver
   - **Work Area:** 24" x 12" (610 x 305 mm)
   - **Power:** 30W or 40W CO2 Laser
-  - **Features:** IRIS™ Camera Positioning System for precise alignment.
+  - **Features:** IRISâ„¢ Camera Positioning System for precise alignment.
   - **Materials:** Wood, Acrylic, Cardboard, Leather (Cutting & Engraving); Anodized Aluminum, Glass (Engraving only).
 
 - Computer for design and slicing
@@ -125,7 +131,7 @@ Understanding the kinematics of our printers helps in orienting parts and choosi
 - **Layer Height**: 0.1-0.3mm (finer = smoother but slower)
 - **Infill**: 10-30% for most functional parts
 - **Wall Thickness**: 2-4 shells for strength
-- **Supports**: Required for overhangs >45°
+- **Supports**: Required for overhangs >45Â°
 
 ### Common FDM Materials
 - **PLA**: Easy to print, biodegradable, good for prototyping
@@ -146,7 +152,7 @@ Understanding the kinematics of our printers helps in orienting parts and choosi
 ### Print Settings by Material
 
 #### FDM Settings
-| Material | Bed Temp (°C) | Nozzle Temp (°C) | Print Speed (mm/s) | Supports Needed |
+| Material | Bed Temp (Â°C) | Nozzle Temp (Â°C) | Print Speed (mm/s) | Supports Needed |
 |----------|---------------|------------------|-------------------|-----------------|
 | PLA      | 50-60        | 190-220         | 50-80            | Minimal        |
 | PETG     | 70-80        | 220-250         | 40-60            | Moderate       |
@@ -156,10 +162,10 @@ Understanding the kinematics of our printers helps in orienting parts and choosi
 #### SLA Settings
 | Material | Layer Height | Exposure Time | Best For |
 |----------|--------------|---------------|----------|
-| Standard | 25-100μm    | 6-10s        | Prototypes, models |
-| Tough    | 50-100μm    | 8-12s        | Functional parts |
-| Flexible | 50-100μm    | 10-15s       | Gaskets, grips |
-| Clear    | 25-50μm     | 8-12s        | Optics, displays |
+| Standard | 25-100Î¼m    | 6-10s        | Prototypes, models |
+| Tough    | 50-100Î¼m    | 8-12s        | Functional parts |
+| Flexible | 50-100Î¼m    | 10-15s       | Gaskets, grips |
+| Clear    | 25-50Î¼m     | 8-12s        | Optics, displays |
 
 ## SLA Printing Workflow
 
@@ -176,7 +182,7 @@ python3 phase2/cad_design.py
 4. Ensure model fits within build volume
 
 ### 3. Slicing Phase
-1. Set layer height (25-100μm depending on detail needed)
+1. Set layer height (25-100Î¼m depending on detail needed)
 2. Configure exposure times for base, normal, and support layers
 3. Set lift speeds and wait times between layers
 4. Generate sliced file (.ctb or .cbddlp format)
@@ -392,7 +398,7 @@ python3 phase2/cad_design.py
 3. **Support Structure Failures**
    - Increase support density
    - Use thicker support bases
-   - Optimize support angles (45° or less)
+   - Optimize support angles (45Â° or less)
    - Check for proper support placement
 
 4. **Warping or Deformation**
@@ -468,7 +474,7 @@ python3 phase2/cad_design.py
 - Plan for component access
 
 ### Tolerance Design
-- Account for 3D printing tolerances (±0.1-0.2mm)
+- Account for 3D printing tolerances (Â±0.1-0.2mm)
 - Design for press-fit assemblies
 - Include adjustment features
 
