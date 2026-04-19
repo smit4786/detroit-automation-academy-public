@@ -9,299 +9,79 @@
     
     <link rel="stylesheet" href="branding/palette.css"> <!-- Link palette.css -->
     <style>
-        /* ── Standardized Header/Footer Styles ── */
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500;800&display=swap');
+
+        /* ── Nav ── */
         header {
-            background: rgba(13, 17, 23, 0.88);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--daa-border);
+            background: rgba(5, 5, 7, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: sticky;
             top: 0;
-            z-index: 100;
-            transition: background 0.3s;
-        }
-
-        body.light-mode header {
-            background: rgba(245, 247, 250, 0.92);
-        }
-
-        footer {
-            background: var(--daa-bg-card);
-            border-top: 1px solid var(--daa-border);
-            color: var(--daa-fg-muted);
-            padding: 32px;
-            text-align: center;
-            font-size: 13px;
-        }
-
-        .footer-links {
-            margin-bottom: 14px;
-        }
-
-        .footer-links a {
-            color: var(--daa-fg-muted);
-            text-decoration: none;
-            margin: 0 14px;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Circuit background ── */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(var(--daa-border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
-            background-size: 52px 52px;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.6;
-        }
-
-        /* ── Standardized Header/Footer Styles ── */
-        
-
-        body.light-mode 
-
-        
-
-        
-
-        
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Circuit background ── */
-        
-
-        /* ── Standardized Header/Footer Styles ── */
-        
-
-        body.light-mode 
-
-        
-
-        
-
-        
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Circuit background ── */
-        
-
-        /* ── Standardized Header/Footer Styles ── */
-        
-
-        body.light-mode 
-
-        
-
-        
-
-        
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Circuit background ── */
-        
-
-        /* ── Circuit background ── */
-        
-
-        /* General styles, already fine */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            z-index: 1000;
+            padding: 0.8rem 0;
         }
 
         body {
-            font-family: 'Courier New', Courier, monospace;
-            line-height: 1.6;
-            color: var(--daa-fg);
-            /* Use CSS variable */
-            background: var(--daa-bg);
-            /* Use CSS variable */
-        
-            transition: background 0.3s, color 0.3s;
-        }
-
-        
-
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 700;
-            font-size: 24px;
-            color: var(--daa-primary);
-            /* Use CSS variable */
-        }
-
-        .logo a {
-            color: var(--daa-primary);
-            /* Use CSS variable */
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--daa-fg);
-            /* Use CSS variable */
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--daa-primary);
-            /* Use CSS variable */
-        }
-
-        .hero {
-            background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-primary-dark, #0052A3) 100%);
-            /* Use CSS variable */
-            color: var(--daa-bg);
-            /* Use CSS variable */
-            padding: 60px 32px;
-            text-align: center;
-        }
-
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'JetBrains Mono', monospace;
+            background: #050507;
+            color: #f8fafc;
         }
 
         .hero h1 {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 42px;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
             font-weight: 800;
-            margin-bottom: 16px;
-            line-height: 1.2;
+            letter-spacing: -0.04em;
+            line-height: 0.95;
+            margin-bottom: 24px;
         }
 
         .hero p {
-            font-size: 18px;
-            opacity: 0.95;
+            color: #94a3b8;
+            font-size: 1.1rem;
         }
 
-        .content {
-            max-width: 900px;
-            margin: 48px auto;
-            padding: 0 32px;
-        }
-
+        /* ── Bento Content ── */
         .application-section {
-            background: var(--daa-card);
-            /* Use CSS variable */
+            background: rgba(15, 20, 29, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 48px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px var(--daa-shadow);
-            /* Use CSS variable */
-            margin-bottom: 32px;
-        }
-
-        .application-section h2 {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: var(--daa-primary);
-            /* Use CSS variable */
+            border-radius: 32px;
+            backdrop-filter: blur(12px);
+            margin-bottom: 40px;
         }
 
         .info-box {
-            background: var(--daa-bg);
-            /* Use CSS variable */
-            padding: 24px;
-            border-radius: 12px;
+            background: rgba(5, 5, 7, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 32px;
+            border-radius: 24px;
             margin-bottom: 24px;
-            border-left: 4px solid var(--daa-secondary);
-            /* Use CSS variable */
+            transition: all 0.3s ease;
         }
 
-        .info-box h3 {
-            margin-bottom: 12px;
-            color: var(--daa-fg);
-            /* Use CSS variable */
-        }
-
-        .info-box p {
-            margin-bottom: 8px;
-            color: var(--daa-fg-muted);
-            /* Hardcoded gray */
-        }
-
-        .checklist {
-            list-style: none;
-            padding: 0;
-        }
-
-        .checklist li {
-            padding: 12px 0;
-            border-bottom: 1px solid var(--daa-border);
-            /* Use CSS variable */
-            display: flex;
-            align-items: center;
-        }
-
-        .checklist li:last-child {
-            border-bottom: none;
-        }
-
-        .checklist li::before {
-            content: '✓';
-            color: var(--daa-accent);
-            /* Use CSS variable */
-            font-weight: bold;
-            margin-right: 12px;
-            font-size: 18px;
+        .info-box:hover {
+            border-color: #00f0ff;
+            transform: scale(1.01);
         }
 
         .apply-button {
             display: inline-block;
-            background: linear-gradient(135deg, var(--daa-primary) 0%, var(--daa-primary-dark, #0052A3) 100%);
-            /* Use CSS variable */
-            color: var(--daa-bg);
-            /* Use CSS variable */
-            padding: 16px 40px;
-            border-radius: 8px;
+            background: #f8fafc;
+            color: #050507;
+            padding: 16px 32px;
+            border-radius: 16px;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
+            font-weight: 800;
             transition: all 0.3s;
-            margin-top: 24px;
         }
 
         .apply-button:hover {
+            background: #00f0ff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
-            /* Hardcoded hover */
         }
+    </style>
 
         .faq {
             display: grid;

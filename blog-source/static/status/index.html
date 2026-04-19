@@ -1,0 +1,143 @@
+<!-- ## C:\Users\dbkr\workspace\daa-public-staging\blog-source\static\status\index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to System Status - Detroit Automation Academy</title>
+    <!-- Automatic redirect -->
+    <meta http-equiv="refresh" content="3; url=https://status.detroitautomationacademy.com">
+    <link rel="canonical" href="https://status.detroitautomationacademy.com">
+    
+    <style>
+        :root {
+            --daa-bg: #050507; /* Cyber-Ops dark mode */
+            --daa-fg: #f5f5f7;
+            --daa-primary: #BB6EE7; /* Purple/Lavender */
+            --daa-primary-glow: rgba(187, 110, 231, 0.4);
+            --daa-border: #1a1a24;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--daa-bg);
+            color: var(--daa-fg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 500px;
+            padding: 40px;
+            border: 1px solid var(--daa-border);
+            border-radius: 24px;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 80px rgba(0, 0, 0, 0.5), 0 0 30px var(--daa-primary-glow);
+            position: relative;
+        }
+
+        .logo-ring {
+            width: 80px;
+            height: 80px;
+            border: 4px solid var(--daa-primary);
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            position: relative;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 var(--daa-primary-glow); }
+            100% { transform: scale(1.05); box-shadow: 0 0 40px 10px var(--daa-primary-glow); }
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, var(--daa-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            font-size: 15px;
+            color: rgba(245, 245, 247, 0.7);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .loader {
+            width: 100%;
+            height: 2px;
+            background: var(--daa-border);
+            border-radius: 1px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .loader-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--daa-primary);
+            animation: load 3s ease-in-out infinite;
+        }
+
+        @keyframes load {
+            0% { width: 0%; transform: translateX(-100%); }
+            100% { width: 100%; transform: translateX(100%); }
+        }
+
+        .cta-link {
+            color: var(--daa-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+
+        .cta-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* Scanline effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent 50%, rgba(187, 110, 231, 0.02) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-ring"></div>
+        <h1>System Status Integration</h1>
+        <p>Synthesizing connection to the executive monitoring mesh... <br>You are being redirected to the live status hub.</p>
+        <div class="loader">
+            <div class="loader-bar"></div>
+        </div>
+        <a href="https://status.detroitautomationacademy.com" class="cta-link">Click here if not redirected automatically →</a>
+    </div>
+    
+    <script>
+        // Fallback or early redirect
+        setTimeout(function() {
+            window.location.replace("https://status.detroitautomationacademy.com");
+        }, 2800);
+    </script>
+</body>
+</html>

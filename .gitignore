@@ -69,3 +69,7 @@ resources/
 .tox/
 coverage.xml
 *.cover
+
+# Git worktrees - not tracked
+themes/*/worktrees/
+*.worktrees/

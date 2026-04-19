@@ -1,76 +1,91 @@
-/* ── Automated Technologies — Blog Styling (Agentic Theme) ──────────────────
-   Unified with DAA Brand Palette.
+/* C:\Users\dbkr\workspace\daa-public-staging\blog-source\static\css\custom.css */
+/* Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-13 */
+/* Owner: @CTO-Agent | Project: DAA Infinite Synthesis */
+
+/* ── Automated Technologies — Blog Styling (Cyber-Ops v2.0) ──────────────────
+   Synchronized with Apple-inspired Bento Architecture & Epoch VI Palette.
    ─────────────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500;800&display=swap');
 
 :root {
-  --bg-color: var(--daa-bg);
-  --text-color: var(--daa-fg);
-  --text-muted: var(--daa-fg-muted);
-  --link-color: var(--daa-primary);
-  --border-color: var(--daa-border);
-  --header-bg: var(--daa-bg-raised);
+  --bg-color: #050507;
+  --text-color: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent-cyan: #00f0ff;
+  --accent-purple: #BB6EE7;
+  --glass-bg: rgba(5, 5, 7, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 /* Global Styles */
 body {
   background-color: var(--bg-color) !important;
   color: var(--text-color) !important;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  font-family: 'Courier New', Courier, monospace !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  line-height: 1.6;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-.near-white, .white-90 {
+/* Typography Scale */
+h1, h2, h3, h4, .f1, .f2, .f3 {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
   color: var(--text-color) !important;
 }
 
-.bg-near-black {
-  background-color: var(--bg-color) !important;
-}
+h1 { font-size: clamp(2.5rem, 6vw, 4rem) !important; line-height: 0.95 !important; }
 
-.link {
-  color: var(--link-color) !important;
-}
-
-.link:hover {
-  color: var(--daa-secondary) !important;
-  text-shadow: 0 0 10px var(--daa-primary-glow);
-}
-
-/* Header Adjustments */
+/* Header & Navigation */
 header.bg-near-black {
-  background-color: var(--header-bg) !important;
-  border-bottom: 1px solid var(--daa-border);
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
 }
 
-/* Navigation Links */
 nav .link {
-  color: var(--daa-fg) !important;
+  color: var(--text-muted) !important;
+  font-weight: 500 !important;
+  transition: color 0.2s ease !important;
 }
 
 nav .link:hover {
-  color: var(--daa-primary) !important;
+  color: var(--accent-cyan) !important;
 }
 
-/* Post Content */
-.post-content h1, .post-content h2, .post-content h3 {
-  color: var(--daa-primary) !important;
+/* Bento-inspired Post Cards (if Tachyons/Ananke classes allow) */
+.post-content, .bg-near-black {
+  background-color: transparent !important;
 }
 
-/* Theme Toggle Button Styles */
+article {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+article:hover {
+  transform: translateY(-4px);
+}
+
+/* Links & Accents */
+.link {
+  color: var(--accent-cyan) !important;
+}
+
+.link:hover {
+  color: var(--accent-purple) !important;
+  text-shadow: 0 0 15px rgba(187, 110, 231, 0.3);
+}
+
+/* Custom UI Elements */
 #theme-toggle {
-  background: none;
-  border: 1px solid var(--daa-border);
-  color: var(--daa-fg);
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  margin-left: 1rem;
-  transition: all 0.2s ease;
-  font-family: 'Courier New', Courier, monospace;
-}
-
-#theme-toggle:hover {
-  background: var(--daa-primary-glow);
-  border-color: var(--daa-primary);
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--accent-cyan) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 10px !important;
+  padding: 8px 16px !important;
+  border-radius: 999px !important;
 }

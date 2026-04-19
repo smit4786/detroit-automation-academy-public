@@ -1,3 +1,7 @@
+# C:\Users\dbkr\workspace\daa-public-staging\blog-source\hugo.toml
+# Status: 🟢 ACTIVE | Sprint: 1012 | Last Revised: 2026-04-16
+# Owner: @CTO-Agent | Project: DAA Infinite Synthesis
+
 baseURL = 'https://blog.detroitautomationacademy.com'
 title = "Automated Insights"
 theme = 'ananke'
@@ -45,6 +49,12 @@ defaultContentLanguage = 'en'
   name = "Posts"
   url = "/posts/"
   weight = 10
+
+[[menus.main]]
+  identifier = "status"
+  name = "Status"
+  url = "/status/"
+  weight = 15
 
 [[menus.main]]
   identifier = "daa"
