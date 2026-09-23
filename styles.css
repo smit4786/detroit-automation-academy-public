@@ -57,6 +57,11 @@ a { color: inherit; }
 .prose { max-width: 720px; }
 .prose p + p { margin-top: 1em; }
 .prose strong { color: var(--amber); }
+.prose h3 { margin: 1.8em 0 0.6em; }
+.prose ul { margin: 0.8em 0 1.2em 1.25em; }
+.prose li { margin-bottom: 0.6em; }
+.prose li::marker { color: var(--forge); }
+.prose em { color: var(--concrete); }
 
 /* ---------- Nav ---------- */
 .nav {
