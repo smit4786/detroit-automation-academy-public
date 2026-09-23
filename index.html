@@ -1,808 +1,193 @@
-<!-- 
-File Location: C:\Users\dbkr\workspace\daa-public-staging\index.html
-Purpose: Landing page for Detroit Automation Academy with agentic theme
-Last Modified: March 31, 2026
--->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta name="generator" content="Agentic Design Corp">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detroit Automation Academy — Automation Skills for Detroit's Future</title>
-    <meta name="description"
-        content="Detroit Automation Academy: Master autonomous systems, robotics, and CAD design in Detroit. Join Epoch VII to transform into a specialized agent through our 12-week program at Michigan Central.">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://detroitautomationacademy.com/">
-    <meta property="og:title" content="Detroit Automation Academy — Master Autonomous Systems & Robotics">
-    <meta property="og:description" content="Transform into a specialized agent in our free 12-week robotics and automation program. Now enrolling for Epoch VII.">
-    <meta property="og:image" content="https://detroitautomationacademy.com/assets/DAA_Logo_Horizontal.svg">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://detroitautomationacademy.com/">
-    <meta property="twitter:title" content="Detroit Automation Academy — Automation Skills for Detroit's Future">
-    <meta property="twitter:description" content="Free 12-week robotics and automation program for Detroit youth. Now enrolling for Spring 2026.">
-    <meta property="twitter:image" content="https://detroitautomationacademy.com/assets/DAA_Logo_Horizontal.svg">
-
-    
-    <link rel="stylesheet" href="branding/palette.css">
-    <style>
-        *,
-        *::before,
-        *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            line-height: 1.6;
-            color: var(--daa-fg);
-            background: var(--daa-bg);
-            min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        /* ── Circuit background ── */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(var(--daa-border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
-            background-size: 52px 52px;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.6;
-        }
-
-        /* ── Nav ── */
-        header {
-            background: rgba(5, 5, 7, 0.75);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 0.8rem 0;
-        }
-
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo a {
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        /* Dark-mode logo text */
-        #logo-text-main {
-            fill: var(--daa-fg);
-            transition: fill 0.3s;
-        }
-
-        #logo-text-sub {
-            fill: var(--daa-primary);
-            transition: fill 0.3s;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 28px;
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--daa-fg-muted);
-            font-weight: 500;
-            font-size: 14px;
-            transition: color 0.2s;
-            letter-spacing: 0.01em;
-        }
-
-        .nav-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── CTA Buttons ── */
-        .cta-button {
-            background: linear-gradient(135deg, var(--daa-accent) 0%, #52A300 100%);
-            color: var(--daa-bg);
-            padding: 13px 28px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 15px;
-            transition: all 0.25s;
-            display: inline-block;
-            position: relative;
-            box-shadow: 0 4px 20px var(--daa-accent-glow);
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px var(--daa-accent-glow);
-        }
-
-        .cta-button-secondary {
-            background: transparent;
-            color: var(--daa-fg);
-            border: 1px solid var(--daa-border);
-            box-shadow: none;
-        }
-
-        .cta-button-secondary:hover {
-            border-color: var(--daa-primary);
-            color: var(--daa-primary);
-            background: var(--daa-primary-glow);
-            box-shadow: none;
-        }
-
-        /* ── Hero ── */
-        .hero {
-            position: relative;
-            padding: 140px 32px 100px;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .hero-content {
-            position: relative;
-            max-width: 960px;
-            margin: 0 auto;
-        }
-
-        .hero-eyebrow {
-            display: inline-block;
-            background: rgba(0, 240, 255, 0.08);
-            color: #00f0ff;
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 999px;
-            padding: 6px 18px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            margin-bottom: 32px;
-        }
-
-        .hero h1 {
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: clamp(3rem, 8vw, 5.5rem);
-            font-weight: 800;
-            margin-bottom: 24px;
-            line-height: 0.95;
-            letter-spacing: -0.04em;
-            color: #f8fafc;
-        }
-
-        .hero h1 span {
-            background: linear-gradient(135deg, #00f0ff 0%, #BB6EE7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: 18px;
-            margin-bottom: 48px;
-            color: var(--daa-fg-muted);
-            max-width: 640px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.6;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 72px;
-        }
-
-        /* Hero stat strip - Bento Style */
-        .hero-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            overflow: hidden;
-            max-width: 900px;
-            margin: 0 auto;
-            backdrop-filter: blur(10px);
-        }
-
-        .hero-stats > div {
-            background: rgba(5, 5, 7, 0.6);
-            padding: 32px 20px;
-            text-align: center;
-        }
-
-        .hero-stat-num {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 32px;
-            font-weight: 800;
-            color: #00f0ff;
-            letter-spacing: -0.02em;
-        }
-
-        .hero-stat-label {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 4px;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-        }
-
-        /* ── Event Success ── */
-        .event-success {
-            position: relative;
-            padding: 60px 32px;
-            margin: 0;
-        }
-
-        .event-success-content {
-            max-width: 1100px;
-            margin: 0 auto;
-            background: var(--daa-bg-card);
-            border: 1px solid var(--daa-border);
-            border-radius: 20px;
-            padding: 48px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 48px;
-            align-items: center;
-            box-shadow: var(--daa-shadow-blue);
-        }
-
-        .event-success h2 {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 30px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            color: var(--daa-fg);
-        }
-
-        .event-success h2 span {
-            color: var(--daa-accent);
-        }
-
-        .event-success p {
-            font-size: 15px;
-            margin-bottom: 12px;
-            line-height: 1.8;
-            color: var(--daa-fg-muted);
-        }
-
-        .event-success ul {
-            text-align: left;
-            margin-top: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .event-success ul li {
-            list-style: none;
-            font-size: 14px;
-            color: var(--daa-fg);
-            padding-left: 4px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .stat {
-            background: var(--daa-bg-raised);
-            border: 1px solid var(--daa-border);
-            padding: 20px;
-            border-radius: 14px;
-            text-align: center;
-            transition: border-color 0.2s;
-        }
-
-        .stat:hover {
-            border-color: var(--daa-accent);
-        }
-
-        .stat-number {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--daa-accent);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--daa-fg-muted);
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        /* ── Section wrapper ── */
-        .section-inner {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 64px 32px;
-        }
-
-        .section-heading {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: clamp(1.6rem, 3vw, 2.2rem);
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 12px;
-            color: var(--daa-fg);
-        }
-
-        .section-subheading {
-            text-align: center;
-            color: var(--daa-fg-muted);
-            font-size: 15px;
-            margin-bottom: 48px;
-        }
-
-        /* ── Program Cards ── */
-        .program-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(2, auto);
-            gap: 20px;
-        }
-
-        .program-card {
-            background: rgba(15, 20, 29, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 40px;
-            border-radius: 28px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .program-card:nth-child(1) { grid-column: span 2; grid-row: span 2; }
-        .program-card:nth-child(2) { grid-column: span 2; }
-        .program-card:nth-child(3) { grid-column: span 1; }
-        .program-card:nth-child(4) { grid-column: span 1; }
-
-        .program-card:hover {
-            transform: scale(1.02);
-            border-color: rgba(0, 240, 255, 0.3);
-            background: rgba(15, 20, 29, 0.6);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        /* ── Role Cards ── */
-        .role-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-
-        .role-card {
-            background: rgba(5, 5, 7, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 48px 32px;
-            border-radius: 32px;
-            text-align: center;
-            transition: all 0.4s ease;
-        }
-
-        .role-card:hover {
-            border-color: #BB6EE7;
-            transform: translateY(-8px);
-            box-shadow: 0 0 40px rgba(187, 110, 231, 0.15);
-        }
-
-        .role-icon {
-            font-size: 44px;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .role-card h3 {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--daa-fg);
-        }
-
-        .role-card p {
-            font-size: 14px;
-            color: var(--daa-fg-muted);
-            margin-bottom: 24px;
-            line-height: 1.7;
-        }
-
-        .role-card a {
-            display: inline-block;
-            background: var(--daa-primary);
-            color: #fff;
-            padding: 10px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .role-card a:hover {
-            background: #0052A3;
-            transform: translateY(-1px);
-        }
-
-        /* Students role card — green CTA */
-        .role-card.role-students a {
-            background: linear-gradient(135deg, var(--daa-accent) 0%, #52A300 100%);
-            color: var(--daa-bg);
-            box-shadow: 0 4px 16px var(--daa-accent-glow);
-        }
-
-        .role-card.role-students a:hover {
-            background: #52A300;
-        }
-
-        /* ── CTA Section ── */
-        .cta-section {
-            position: relative;
-            padding: 80px 32px;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(102, 204, 0, 0.08) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .cta-inner {
-            position: relative;
-            max-width: 700px;
-            margin: 0 auto;
-            background: var(--daa-bg-card);
-            border: 1px solid var(--daa-border-green);
-            border-radius: 24px;
-            padding: 60px 48px;
-            box-shadow: 0 0 60px var(--daa-accent-glow);
-        }
-
-        .cta-section h2 {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: clamp(1.5rem, 3vw, 2rem);
-            font-weight: 800;
-            margin-bottom: 14px;
-            color: var(--daa-fg);
-        }
-
-        .cta-section p {
-            font-size: 15px;
-            margin-bottom: 32px;
-            color: var(--daa-fg-muted);
-        }
-
-        .seat-note {
-            margin-top: 16px;
-            font-size: 12px;
-            color: var(--daa-fg-muted);
-        }
-
-        /* ── Footer ── */
-        footer {
-            background: var(--daa-bg-card);
-            border-top: 1px solid var(--daa-border);
-            color: var(--daa-fg-muted);
-            padding: 32px;
-            text-align: center;
-            font-size: 13px;
-        }
-
-        .footer-links {
-            margin-bottom: 14px;
-        }
-
-        .footer-links a {
-            color: var(--daa-fg-muted);
-            text-decoration: none;
-            margin: 0 14px;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Responsive ── */
-        @media (max-width: 900px) {
-
-            .program-grid,
-            .role-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .event-success-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 640px) {
-            nav {
-                padding: 12px 20px;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .hero {
-                padding: 72px 20px 60px;
-            }
-
-            .program-grid,
-            .role-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section-inner {
-                padding: 48px 20px;
-            }
-
-            .event-success-content {
-                padding: 28px 20px;
-            }
-
-            .cta-inner {
-                padding: 40px 24px;
-            }
-
-            .hero-stats {
-                gap: 24px;
-            }
-        }
-
-        /* ── Logo Animation ── */
-        .logo-reactive #gear {
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: 100px 100px;
-        }
-
-        .logo-reactive:hover #gear {
-            transform: rotate(90deg);
-        }
-
-        .logo-reactive #circuits path {
-            stroke-dasharray: 100;
-            stroke-dashoffset: 100;
-            transition: stroke-dashoffset 0.6s ease;
-        }
-
-        .logo-reactive:hover #circuits path {
-            stroke-dashoffset: 0;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detroit Automation Academy — Where Detroit Builds What's Next</title>
+<meta name="description" content="Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.">
+<link rel="icon" type="image/webp" href="assets/logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
+<body>
 
-<body class="dark-mode">
-        <header>
-        <nav>
-            <div class="logo">
-                <a href="index.html?v=2026040220">
-                    <svg class="logo-reactive" viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
-                        <g transform="translate(25, 25)">
-                            <g id="gear">
-                                <circle cx="100" cy="100" r="75" fill="none" stroke="#00f0ff" stroke-width="4" />
-                                <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linejoin="round" />
-                            </g>
-                            <g id="circuits" stroke="#00f0ff" stroke-width="3" fill="none" stroke-linecap="round">
-                                <path d="M 100 30 L 100 15 L 85 10" />
-                                <path d="M 130 70 L 155 50 L 170 55" />
-                                <path d="M 140 130 L 160 155 L 165 170" />
-                                <path d="M 60 160 L 30 180 L 20 175" />
-                                <path d="M 60 70 L 35 50 L 25 60" />
-                            </g>
-                        </g>
-                        <g transform="translate(260, 110)">
-                            <text font-family="'Courier New', Courier, monospace" font-weight="800" font-size="64">
-                                <tspan x="0" y="0" fill="#f8fafc">DETROIT</tspan>
-                                <tspan x="0" y="75" font-size="54" font-weight="700" fill="#00f0ff">AUTOMATION ACADEMY</tspan>
-                            </text>
-                        </g>
-                    </svg>
-                </a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html?v=2026040220">🏠 Home</a></li>
-                <li><a href="https://blog.detroitautomationacademy.com">📝 Blog</a></li>
-                <li><a href="dashboard.html?v=2026040220">📊 Dashboard</a></li>
-                <li><a href="students.html?v=2026040220">👨‍🎓 Students</a></li>
-                <li><a href="instructors.html?v=2026040220">👨‍🏫 Instructors</a></li>
-                <li><a href="partners.html?v=2026040220">💼 Partners</a></li>
-                <li><a href="https://enroll.detroitautomationacademy.com" style="color: #39ff14; font-weight: 800; border: 1px solid #39ff14; padding: 5px 12px; border-radius: 6px;">Enroll</a></li>
-            </ul>
-        </nav>
-    </header>
+<header class="nav">
+  <a class="brand" href="#top" aria-label="Detroit Automation Academy home">
+    <img src="assets/logo.webp" alt="DAA logo" class="brand-mark">
+    <span class="brand-word">Detroit Automation <em>Academy</em></span>
+  </a>
+  <nav class="nav-links" id="navLinks">
+    <a href="#mission">Mission</a>
+    <a href="#programs">Programs</a>
+    <a href="#signal">The Signal</a>
+    <a href="#partners">Partners</a>
+    <a href="#support" class="nav-cta">Support</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</header>
 
-    <!-- ── Hero ── -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-eyebrow">🤖 SYS_STATUS: ACTIVE // SPRING_2026_ENROLLMENT</div>
-            <h1>Automate<br><span>The Future</span></h1>
-            <p>> // INITIATE_TRAINING_SEQUENCE<br>> Master robotics, parametric CAD design, and autonomous systems architecture.<br>> A fully funded 12-week deployment at The Station @ Michigan Central.<br>> Powered by the AEAM Singularity Network.</p>
-            <div class="hero-buttons">
-                <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026" class="cta-button"
-                    target="_blank">DEPLOY_NOW() →</a>
-                <a href="#programs" class="cta-button cta-button-secondary">PROTOCOL_OVERVIEW</a>
-            </div>
-            <div class="hero-stats">
-                <div>
-                    <div class="hero-stat-num">100%</div>
-                    <div class="hero-stat-label">Deployment Success</div>
-                </div>
-                <div>
-                    <div class="hero-stat-num">500+</div>
-                    <div class="hero-stat-label">Active Nodes (Alumni)</div>
-                </div>
-                <div>
-                    <div class="hero-stat-num">12 WKS</div>
-                    <div class="hero-stat-label">System Override (Intensive)</div>
-                </div>
-                <div>
-                    <div class="hero-stat-num">LIVE</div>
-                    <div class="hero-stat-label">AGENTIC_DESIGN_CORP</div>
-                </div>
-            </div>                </div>
-            </div>
-        </div>
-    </section>
+<main id="top">
 
-    <!-- ── Launch Event ── -->
-    <section class="event-success">
-        <div class="event-success-content">
-            <div>
-                <h2>📡 EPOCH_VII: <span>Agentic Design Corp Initiative</span></h2>
-                <p>> Full-scale autonomous learning deployment within Detroit's educational infrastructure. Specialized sub-swarms now architecting next-generation digital safety and autonomous systems curriculum.</p>
-                <ul>
-                    <li>✓ ADC_ENGINE_ACTIVE: Simulation-based learning powered by WEAM Swarm</li>
-                    <li>✓ YOUTH_INTERNET_SAFETY_MATRIX: Fully deployed across all cohorts</li>
-                    <li>✓ PARTNERSHIP_STATUS: Michigan Central integration complete</li>
-                    <li>✓ AUTONOMOUS_SYSTEMS: Real-time deployment capabilities verified</li>
-                    <li>✓ NODE_EXPANSION: 500+ alumni nodes active in ecosystem</li>
-                </ul>
-            </div>
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-number">500+</div>
-                    <div class="stat-label">Ecosystem Nodes</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">4</div>
-                    <div class="stat-label">Autonomous Phases</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">12</div>
-                    <div class="stat-label">Week Deployment</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">EPOCH</div>
-                    <div class="stat-label">VII Online</div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <img src="assets/logo.webp" alt="Forge D — Detroit Automation Academy mark" class="hero-mark">
+      <p class="eyebrow">Detroit, Michigan</p>
+      <h1>Where Detroit<br>builds <span class="accent">what's next.</span></h1>
+      <p class="lede">Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.</p>
+      <div class="hero-actions">
+        <a href="#programs" class="btn btn-primary">Explore the programs</a>
+        <a href="#signal" class="btn btn-ghost">Read The Signal</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">4</span><span class="stat-label">Training tracks</span></div>
+      <div class="stat"><span class="stat-num">0</span><span class="stat-label">Grants that funded this</span></div>
+      <div class="stat"><span class="stat-num">1</span><span class="stat-label">City that builds</span></div>
+    </div>
+  </section>
 
-    <!-- ── Programs ── -->
-    <section id="programs">
-        <div class="section-inner">
-            <h2 class="section-heading">Autonomous Training Modules</h2>
-            <p class="section-subheading">> // FOUR_PHASE_DEPLOYMENT_PROTOCOL | From GPIO initialization to specialized agent architecture</p>
-            <div class="program-grid">
-                <div class="program-card">
-                    <span class="phase-badge">MODULE_1: HARDWARE_CONTROL</span>
-                    <h3>⚡ GPIO & Real-Time Systems</h3>
-                    <p>GPIO protocol initialization, event-driven architecture, real-time sensor interfacing via Raspberry Pi, and Python-based peripheral management for autonomous hardware control.</p>
-                </div>
-                <div class="program-card">
-                    <span class="phase-badge">MODULE_2: PARAMETRIC_SYSTEMS</span>
-                    <h3>🏗️ CAD & Autonomous Fabrication</h3>
-                    <p>Parametric 3D model generation, STL artifact creation, G-code synthesis for laser systems, and toolpath optimization for custom component fabrication.</p>
-                </div>
-                <div class="program-card">
-                    <span class="phase-badge">MODULE_3: AGENT_ARCHITECTURE</span>
-                    <h3>🤖 Autonomous Navigation & Specialized Agents</h3>
-                    <p>Autonomous rover behavior synthesis, navigation algorithm implementation, environmental simulation frameworks, and agent-based system deployment on dedicated hardware clusters.</p>
-                </div>
-                <div class="program-card">
-                    <span class="phase-badge">MODULE_4: DIGITAL_GOVERNANCE</span>
-                    <h3>🛡️ Digital Stoicism & Privacy Sovereignty</h3>
-                    <p>Zero-knowledge protocol implementation, privacy-first artifact creation, responsible digital autonomy, and secure ecosystem integration across distributed systems.</p>
-                </div>
-            </div>
-    <!-- ── Roles ── -->
-    <section id="roles">
-        <div class="section-inner" style="padding-top: 0;">
-            <h2 class="section-heading">Agent Network Access</h2>
-            <p class="section-subheading">> Three distinct agent classes powering the AEAM Singularity ecosystem</p>
-            <div class="role-grid">
-                <div class="role-card role-students">
-                    <span class="role-icon">🧠</span>
-                    <h3>STUDENT_AGENT</h3>
-                    <p>Access full autonomous training curriculum. Deploy your specialized skills into the Detroit ecosystem. Gain real-world experience with live hardware and AI-powered mentorship from our agent network.</p>
-                    <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026" target="_blank">ACTIVATE_ENROLLMENT() →</a>
-                </div>
-                <div class="role-card">
-                    <span class="role-icon">🎓</span>
-                    <h3>EDUCATOR_AGENT</h3>
-                    <p>Access comprehensive deployment protocols, curriculum frameworks, and pedagogical agent tools. Leverage the DAA infrastructure to deliver enterprise-grade autonomous education at scale.</p>
-                    <a href="instructors.html">ACCESS_PROTOCOLS</a>
-                </div>
-                <div class="role-card">
-                    <span class="role-icon">🌐</span>
-                    <h3>PARTNER_AGENT</h3>
-                    <p>Join the Automated Technologies ecosystem. Co-architect Detroit's autonomous future. Scale specialized agent deployment to 500+ nodes annually across the metropolitan area.</p>
-                    <a href="partners.html">SYNC_PARTNERSHIPS</a>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- MISSION -->
+  <section class="section" id="mission">
+    <div class="wrap">
+      <p class="kicker">The mission</p>
+      <h2>The city that put the world on wheels<br>trains the kids who'll run the <span class="accent">automated</span> world.</h2>
+      <div class="prose">
+        <p>Detroit Automation Academy exists for one reason: the young people of this city should be the ones building the automated future, not watching it arrive from somewhere else. We teach robotics, drones, and automation the way Detroit taught the world manufacturing — hands on, no shortcuts, pride in the work.</p>
+        <p>This academy has never received institutional funding. No grant, no sponsor, no check that was promised. It was built anyway — nights, weekends, borrowed space — and it's being finished on principle. Detroit's kids shouldn't have to wait on paperwork.</p>
+      </div>
+      <div class="principles">
+        <div class="principle"><h3>Build, don't watch</h3><p>Every student leaves with something they made move, fly, or think.</p></div>
+        <div class="principle"><h3>No pity, no jargon</h3><p>We talk to young builders like builders. High bar, plain language.</p></div>
+        <div class="principle"><h3>Detroit first</h3><p>The talent is here. The training should be too.</p></div>
+      </div>
+    </div>
+  </section>
 
-    <!-- ── CTA ── -->
-    <section class="cta-section">
-        <div class="cta-inner">
-            <h2>> // DEPLOYMENT_AVAILABLE</h2>
-            <p>The Spring 2026 autonomous training sequence initiates March 8 at The Station @ Michigan Central. Ecosystem capacity: limited seats. Execute enrollment protocol now.</p>
-            <a href="https://enroll.detroitautomationacademy.com?utm_source=daa_public&utm_medium=organic&utm_campaign=spring_2026" class="cta-button" target="_blank">LAUNCH_APPLICATION() →</a>
-            <p class="seat-note">📍 AEAM Youth STEM Lab · 2001 15th St, Detroit · COST: $0.00 (Fully Funded)</p>
-        </div>
-    </section>
+  <!-- PROGRAMS -->
+  <section class="section section-alt" id="programs">
+    <div class="wrap">
+      <p class="kicker">Programs</p>
+      <h2>Four tracks. <span class="accent">Zero</span> fluff.</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="card-num">01</div>
+          <h3>Robotics Cohorts</h3>
+          <p>Seasonal build cohorts — design, wire, and program robots that compete and perform. Challenge-based learning from day one.</p>
+        </article>
+        <article class="card">
+          <div class="card-num">02</div>
+          <h3>Drones</h3>
+          <p>Flight fundamentals, safety, and real missions. Students learn the airspace rules and the engineering behind the rotors.</p>
+        </article>
+        <article class="card">
+          <div class="card-num">03</div>
+          <h3>Automation &amp; IoT</h3>
+          <p>Sensors, controllers, and the logic that connects them. The same systems thinking that runs modern factories.</p>
+        </article>
+        <article class="card">
+          <div class="card-num">04</div>
+          <h3>Apple Code + Create</h3>
+          <p>App design and Swift development for young creators — run with the Michigan Engineering Zone. From idea to working prototype.</p>
+        </article>
+      </div>
+    </div>
+  </section>
 
-    <!-- ── Footer ── -->
-        <footer>
-        <div class="footer-links">
-            <a href="https://blog.detroitautomationacademy.com">Blog</a>
-            <a href="dashboard.html?v=2026040220">Dashboard</a>
-            <a href="https://status.detroitautomationacademy.com">System Status</a>
-            <a href="https://github.com/smit4786/detroit-automation-academy-public" target="_blank">GitHub</a>
-            <a href="mailto:info@detroitautomationacademy.com">Contact</a>
-        </div>
-        <p>© 2026 Detroit Automation Academy. All rights reserved. |
-           Automation skills for Detroit's future, built by Detroiters.</p>
-    </footer>
+  <!-- THE SIGNAL / NEWSLETTER -->
+  <section class="section" id="signal">
+    <div class="wrap">
+      <p class="kicker">The Signal</p>
+      <h2>A weekly scam-watch brief <span class="accent">for investors.</span></h2>
+      <div class="prose">
+        <p><strong>The Signal</strong> is our weekly brief documenting the scam playbooks hitting real inboxes right now — grant-list fraud, greeting-wave social engineering, romance bait, money flips — written playbook-style for an investor audience. Every edition is drawn from observed waves, not theory.</p>
+        <p>It's also how the academy gets funded. Here's the trajectory:</p>
+      </div>
+      <ol class="trajectory">
+        <li class="phase">
+          <span class="phase-tag">Phase 01 — Now</span>
+          <h3>Audience</h3>
+          <p>A free weekly brief building a loyal investor readership. Reputation first, revenue later.</p>
+        </li>
+        <li class="phase">
+          <span class="phase-tag">Phase 02 — Next</span>
+          <h3>Sponsorship</h3>
+          <p>Fintech and security sponsors underwrite the brief. Their customers are the targets — their brand becomes the shield.</p>
+        </li>
+        <li class="phase">
+          <span class="phase-tag">Phase 03 — The flywheel</span>
+          <h3>Advisory</h3>
+          <p>Fraud-prevention advisory revenue flows straight back into the academy. Every scam dissected funds a student trained.</p>
+        </li>
+      </ol>
+      <div class="signal-cta">
+        <a href="https://www.linkedin.com/in/smit4786" class="btn btn-primary" target="_blank" rel="noopener">Follow The Signal on LinkedIn</a>
+        <p class="fine">New editions publish weekly. Free to read, built to forward.</p>
+      </div>
+    </div>
+  </section>
 
+  <!-- PARTNERS -->
+  <section class="section section-alt" id="partners">
+    <div class="wrap">
+      <p class="kicker">In good company</p>
+      <h2>Built alongside <span class="accent">Detroit's builders.</span></h2>
+      <ul class="partner-list">
+        <li>Michigan Central</li>
+        <li>University of Michigan Center for Innovation</li>
+        <li>Qualcomm Thinkabit Lab</li>
+        <li>College for Creative Studies</li>
+        <li>Michigan Engineering Zone</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section class="section" id="support">
+    <div class="wrap support-wrap">
+      <p class="kicker">Support</p>
+      <h2>Fund the <span class="accent">finish.</span></h2>
+      <div class="prose">
+        <p>The academy made it this far on nights, weekends, and conviction. Direct support goes to equipment, space, and instructors — the unglamorous line items that turn a program into an institution.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <h3>Sponsor a cohort</h3>
+          <p>Underwrite a full season of robotics or drones for a group of Detroit students. Your name on the build, not just the banner.</p>
+        </article>
+        <article class="card">
+          <h3>Donate equipment</h3>
+          <p>Robots, drones, sensors, laptops — working gear goes straight into students' hands.</p>
+        </article>
+        <article class="card">
+          <h3>Mentor &amp; advise</h3>
+          <p>Engineers, founders, and operators: an hour of your time can reroute a career.</p>
+        </article>
+      </div>
+      <!-- TODO: replace with the academy's contact email before publishing -->
+      <div class="support-cta">
+        <a href="mailto:dbkr@umich.edu?subject=Supporting%20Detroit%20Automation%20Academy" class="btn btn-primary">Start the conversation</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <img src="assets/logo.webp" alt="DAA logo" class="brand-mark">
+      <span>Detroit Automation Academy</span>
+    </div>
+    <p class="footer-line">Built without funding. Finished on principle.</p>
+    <p class="footer-fine">© 2026 Detroit Automation Academy · Detroit, Michigan</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
 </body>
-
 </html>
