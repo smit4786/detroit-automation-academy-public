@@ -76,42 +76,46 @@ FILES_TO_UPDATE = [
     "dashboard.html",
     "admin.html",
     "landing.html",
-    "enroll.html"
+    "enroll.html",
 ]
+
 
 def update_file(filepath):
     if not os.path.exists(filepath):
         print(f"Skipping {filepath} (Not Found)")
         return
-    
-    with open(filepath, "r", encoding='utf-8') as f:
+
+    with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
 
     # 1. Update Header/Nav
     header_pattern = re.compile(r"<header>.*?</header>", re.DOTALL)
     if header_pattern.search(content):
         content = header_pattern.sub(HEADER_CONTENT, content)
-    
+
     # 2. Update Footer
     footer_pattern = re.compile(r"<footer>.*?</footer>", re.DOTALL)
     if footer_pattern.search(content):
         content = footer_pattern.sub(FOOTER_CONTENT, content)
 
     # 3. Inject/Update SEO Meta
-    meta_desc_pattern = re.compile(r'<meta name="description" content=".*?">', re.DOTALL)
+    meta_desc_pattern = re.compile(
+        r'<meta name="description" content=".*?">', re.DOTALL
+    )
     new_meta = f'<meta name="description" content="{SEO_DESC}">'
     if meta_desc_pattern.search(content):
         content = meta_desc_pattern.sub(new_meta, content)
-    
+
     # 4. Inject Student Purple Accent where appropriate
     if "enroll.html" in filepath or "students.html" in filepath:
         # Example: Update a specific class or button color
         content = content.replace("var(--daa-accent)", "var(--daa-student)")
         content = content.replace("var(--daa-primary)", "var(--daa-student)")
 
-    with open(filepath, "w", encoding='utf-8') as f:
+    with open(filepath, "w", encoding="utf-8") as f:
         f.write(content)
     print(f"Standardized & Upgraded {filepath} to EPOCH VII")
+
 
 if __name__ == "__main__":
     for f in FILES_TO_UPDATE:
