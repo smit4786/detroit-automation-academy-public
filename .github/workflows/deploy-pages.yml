@@ -77,6 +77,11 @@ jobs:
             cp -r curriculum/* deployment/curriculum/
           fi
 
+          # Copy Signal newsletter archive
+          if [ -d "signal" ]; then
+            cp -r signal deployment/ || echo "signal copy failed"
+          fi
+
           # Copy asset directories
           cp -r assets deployment/   || (mkdir -p deployment/assets   && echo "assets dir created empty")
           cp -r branding deployment/ || (mkdir -p deployment/branding && echo "branding dir created empty")
