@@ -21,6 +21,7 @@
   <nav class="nav-links" id="navLinks">
     <a href="#mission">Mission</a>
     <a href="#programs">Programs</a>
+    <a href="#demo">Try it</a>
     <a href="#signal">The Signal</a>
     <a href="#partners">Partners</a>
     <a href="#support" class="nav-cta">Support</a>
@@ -76,6 +77,54 @@
       <div class="stat"><span class="stat-num">4</span><span class="stat-label">Training tracks</span></div>
       <div class="stat"><span class="stat-num">0</span><span class="stat-label">Grants that funded this</span></div>
       <div class="stat"><span class="stat-num">1</span><span class="stat-label">City that builds</span></div>
+    </div>
+  </section>
+
+  <!-- TRY IT -->
+  <section class="section section-alt" id="demo">
+    <div class="wrap">
+      <p class="kicker">Try it</p>
+      <h2>Type a command. <span class="accent">Watch it move.</span></h2>
+      <div class="prose">
+        <p>This is what day one feels like at the academy: you tell a machine what to do, and it does it. The training bot is listening — go ahead.</p>
+      </div>
+      <div class="demo">
+        <div class="demo-stage">
+          <svg class="demo-bot" id="demoBot" viewBox="0 0 220 220" role="img" aria-label="A small orange training robot that responds to typed commands">
+            <ellipse cx="110" cy="198" rx="54" ry="10" class="bot-shadow"/>
+            <g class="bot-body">
+              <circle cx="88" cy="178" r="15" class="bot-wheel"/>
+              <circle cx="132" cy="178" r="15" class="bot-wheel"/>
+              <rect x="52" y="104" width="12" height="46" rx="6" class="bot-arm"/>
+              <g class="bot-arm-wave">
+                <rect x="156" y="104" width="12" height="46" rx="6" class="bot-arm"/>
+              </g>
+              <rect x="68" y="92" width="84" height="72" rx="20" class="bot-torso"/>
+              <rect x="94" y="114" width="32" height="24" rx="7" class="bot-panel"/>
+              <circle cx="110" cy="126" r="5" class="bot-light"/>
+              <rect x="72" y="36" width="76" height="62" rx="26" class="bot-head"/>
+              <circle cx="96" cy="66" r="9" class="bot-eye"/>
+              <circle cx="124" cy="66" r="9" class="bot-eye"/>
+              <line x1="110" y1="36" x2="110" y2="18" class="bot-antenna"/>
+              <circle cx="110" cy="14" r="6" class="bot-eye"/>
+              <polygon points="148,66 214,34 214,98" class="scan-beam"/>
+            </g>
+          </svg>
+        </div>
+        <div class="demo-term">
+          <div class="demo-log" id="demoLog" aria-live="polite" aria-label="Command output"></div>
+          <form class="demo-input-row" id="demoForm">
+            <span class="demo-prompt" aria-hidden="true">&gt;</span>
+            <input id="demoInput" type="text" aria-label="Type a command" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="forward, spin, scan, wave…" maxlength="24">
+          </form>
+          <div class="demo-chips">
+            <button type="button" class="demo-chip" data-cmd="forward">forward</button>
+            <button type="button" class="demo-chip" data-cmd="spin">spin</button>
+            <button type="button" class="demo-chip" data-cmd="scan">scan</button>
+            <button type="button" class="demo-chip" data-cmd="wave">wave</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
