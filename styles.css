@@ -91,12 +91,6 @@ a { color: inherit; }
 .nav-links { display: flex; align-items: center; gap: 26px; }
 .nav-links a { text-decoration: none; color: var(--concrete); font-weight: 500; font-size: 0.95rem; transition: color 0.2s; }
 .nav-links a:hover { color: var(--paper); }
-.nav-cta {
-  color: var(--midnight) !important;
-  background: var(--forge);
-  padding: 9px 20px; border-radius: 999px; font-weight: 600 !important;
-}
-.nav-cta:hover { background: var(--amber); }
 .nav-toggle { display: none; background: none; border: 0; cursor: pointer; padding: 8px; }
 .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--paper); margin: 5px 0; border-radius: 2px; }
 
@@ -247,10 +241,6 @@ a { color: inherit; }
 }
 .partner-list li:hover { border-color: var(--forge); color: var(--forge); }
 
-/* ---------- Support ---------- */
-.support-wrap .cards { margin-bottom: 40px; }
-.support-cta { text-align: center; }
-
 /* ---------- Footer ---------- */
 .footer { border-top: 1px solid var(--line); padding: 48px 0; background: var(--midnight-2); }
 .footer-inner { text-align: center; }
@@ -281,7 +271,6 @@ a { color: inherit; }
   .nav-links.open { display: flex; }
   .nav-links a { padding: 12px 0; border-top: 1px solid var(--line); }
   .nav-links a:first-child { border-top: 0; }
-  .nav-cta { text-align: center; margin-top: 8px; }
   .nav-toggle { display: block; }
   .hero { padding: 72px 20px 54px; }
   .hero-stats { gap: 32px; }
