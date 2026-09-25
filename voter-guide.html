@@ -242,7 +242,8 @@ a { color: inherit; }
 
 /* reveal — hidden pre-scroll only when JS runs; no-JS viewers see everything */
 html.js .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
-.reveal.visible { opacity: 1; transform: none; }
+/* NOTE: must outrank `html.js .reveal` above (0,2,1) or cards stay invisible forever. */
+html.js .reveal.visible { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   html.js .reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
