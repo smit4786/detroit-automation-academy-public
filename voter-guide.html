@@ -1465,13 +1465,23 @@ window.GUIDE = GUIDE;
   renderChecklist();
   document.getElementById("printBtn").addEventListener("click", function () { window.print(); });
 
-  /* ---------- reveal on scroll ---------- */
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) {
-      if (en.isIntersecting) { en.target.classList.add("visible"); io.unobserve(en.target); }
-    });
-  }, { threshold: 0.08 });
-  document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+  /* ---------- reveal on scroll (with fail-safe) ---------- */
+  function revealAll() {
+    document.querySelectorAll(".reveal:not(.visible)").forEach(function (el) { el.classList.add("visible"); });
+  }
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("visible"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+    /* Fail-safe: if the observer never fires (stale cache, backgrounded tab,
+       content blocker), don't leave content invisible — reveal everything. */
+    setTimeout(revealAll, 2500);
+  } else {
+    revealAll();
+  }
 
   /* ---------- election countdown ---------- */
   var el = document.getElementById("countdown");
