@@ -22,7 +22,14 @@
   var revealEls = document.querySelectorAll('.section .wrap, .hero-inner, .hero-stats, .card, .phase, .principle');
   revealEls.forEach(function (el) { el.classList.add('reveal'); });
 
-  if ('IntersectionObserver' in window) {
+  // Where CSS scroll-driven animations are supported, the stylesheet owns the
+  // reveal and the observer below would only double-trigger. Skip it there.
+  var scrollDriven = false;
+  try { scrollDriven = ('animationTimeline' in document.body.style); } catch (e) {}
+
+  if (scrollDriven) {
+    /* CSS animation-timeline handles the reveal; nothing to observe. */
+  } else if ('IntersectionObserver' in window) {
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
