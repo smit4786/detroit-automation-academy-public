@@ -267,6 +267,74 @@ a { color: inherit; }
   }
 }
 
+/* ---------- Owner layer: announcement bar + director's commentary ----------
+   The console (unlisted) drives these; visitors never see them. */
+.announce-bar {
+  background: var(--forge);
+  color: var(--midnight);
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 10px 24px;
+}
+.announce-bar a {
+  color: var(--midnight);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-left: 10px;
+}
+#daa-commentary {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 200;
+  width: min(360px, calc(100vw - 36px));
+  max-height: 70vh;
+  overflow: auto;
+  background: var(--card);
+  border: 1px solid var(--forge);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  padding: 14px 16px;
+}
+.daac-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.daac-head strong {
+  font-family: "Space Grotesk", Inter, sans-serif;
+  color: var(--amber);
+  font-size: 0.95rem;
+}
+#daac-close {
+  background: none;
+  border: 0;
+  color: var(--concrete);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+}
+#daa-commentary ol { margin: 0; padding: 0; list-style: none; }
+#daa-commentary li { border-top: 1px solid #232c36; }
+#daa-commentary li button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: var(--paper);
+  cursor: pointer;
+  padding: 10px 2px;
+  font: inherit;
+}
+#daa-commentary li button:hover strong { color: var(--forge); }
+#daa-commentary li strong { display: block; color: var(--amber); font-size: 0.9rem; }
+#daa-commentary li span { display: block; font-size: 0.85rem; color: #cfd4d9; margin-top: 2px; }
+.daac-flash { outline: 2px solid var(--amber) !important; outline-offset: 6px; }
+
 /* ---------- State of the art II: @property — animatable custom properties -----
    A light beam travels down each trajectory rail: momentum, expressed in CSS.
    The animation sits behind the animation-timeline @supports gate: every
