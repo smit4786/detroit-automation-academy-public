@@ -88,14 +88,19 @@
         <button class="btn ghost" id="copyPublish" type="button">Copy publish request</button>
       </div>
       <p class="ok" id="contentOk"></p>
-      <p class="hint">Phone publish: tap <b>Copy publish request</b>, paste it to Muse, and the update is pushed + deployed. True one-tap publishing (no paste step) arrives with the Worker — see the Telemetry tab setup.</p>
-      <h2 style="margin-top:26px">iOS Shortcut recipe (Worker required)</h2>
+      <p class="hint">Phone publish, two paths: tap <b>Copy publish request</b> and paste it to Muse (I push + deploy), or build the one-tap iOS Shortcut below — it commits straight to the repo and the site redeploys itself.</p>
+      <h2 style="margin-top:26px">iOS Shortcut recipe — “DAA Publish” (no Worker needed)</h2>
+      <p class="hint">One-time: github.com → Settings → Developer settings → Personal access tokens → Fine-grained tokens → new token, repo <code>smit4786/detroit-automation-academy-public</code>, Contents: Read and write. Save it in your password manager.</p>
       <ol class="steps">
-        <li>Shortcuts → <kbd>+</kbd> → <b>Ask for Input</b> (“Announcement text”).</li>
-        <li><b>Get Contents of URL</b>: <code>POST https://&lt;your-worker&gt;/live</code>, headers <code>Content-Type: application/json</code>, JSON body:<br>
-          <code>{"token":"&lt;owner token&gt;","content":{"announcement":{"text":"[Provided Input]","link":"","linkLabel":""},"stats":[]}}</code></li>
-        <li>Name it “DAA Publish”. Empty <code>stats</code> keeps current stats; empty announcement text hides the bar.</li>
+        <li><b>Text</b> = your token → variable <code>PAT</code>.</li>
+        <li><b>Get Contents of URL</b> <code>GET https://api.github.com/repos/smit4786/detroit-automation-academy-public/contents/live.json</code>, header <code>Authorization: Bearer «PAT»</code>. Save <code>sha</code> → <code>FileSHA</code>; base64-decode <code>content</code> → <code>Current</code> (today's live.json, used for defaults).</li>
+        <li><b>Ask for Input</b> for announcement text / link / link label / the 3 stat numbers + labels — each with its current value as the default answer, so tapping through keeps everything.</li>
+        <li>Escape each answer: <b>Replace Text</b> <code>\</code> → <code>\\</code>, then <code>"</code> → <code>\"</code> (literal, not regex).</li>
+        <li><b>Text</b> the JSON <code>{"announcement":{"text":"…","link":"…","linkLabel":"…"},"stats":[{"num":"…","label":"…"},…]}</code> → <b>Base64 Encode</b> → <code>FileB64</code>.</li>
+        <li><b>Get Contents of URL</b> <code>PUT</code> same URL, JSON body <code>{"message":"Update live.json from iOS Shortcut","content":"«FileB64»","sha":"«FileSHA»"}</code>.</li>
+        <li><b>Show Result</b> “Published — live in ~2 min.” A 409 means the file changed since you fetched it; run again.</li>
       </ol>
+      <p class="hint">Lock the Shortcuts app behind Face ID — the token lives inside the shortcut. Full step-by-step: <code>daa-owner-layer/ios-shortcut-recipe.md</code> in your files.</p>
     </section>
 
     <section class="panel" id="tab-telemetry" role="tabpanel" hidden>
