@@ -143,6 +143,8 @@
 <script>
 (function () {
   'use strict';
+  /* Refuse to run inside someone else's iframe. */
+  if (window.top !== window.self) { window.top.location = window.self.location; }
   var TOKEN_HASH = '3588c1ec5b4fac904080bce8dea8ce2829b12bdbcb25e620df4a72fd7a4cbc8b'; /* production */
   var ownerToken = null;
 
@@ -254,7 +256,7 @@
       err.textContent = '';
       if (!ep) { err.textContent = 'Set the collector endpoint first.'; return; }
       try { localStorage.setItem('daa_endpoint', epInput.value.trim()); } catch (e) {}
-      fetch(ep + '/events?token=' + encodeURIComponent(ownerToken) + '&limit=50')
+      fetch(ep + '/events?limit=50', { headers: { 'Authorization': 'Bearer ' + ownerToken } })
         .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function (rows) {
           var tb = document.querySelector('#eventsTable tbody');
