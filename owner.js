@@ -17,6 +17,15 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  /* Only http(s) links out of the announcement bar — never javascript:/data:. */
+  function safeUrl(u) {
+    try {
+      var parsed = new URL(u, location.href);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.href;
+    } catch (e) {}
+    return null;
+  }
+
   /* ---------------- live.json ---------------- */
   function applyLive(data) {
     if (!data || typeof data !== 'object') return;
@@ -26,9 +35,10 @@
       bar.className = 'announce-bar';
       bar.setAttribute('role', 'note');
       bar.appendChild(document.createTextNode(a.text));
-      if (a.link) {
+      var href = a.link ? safeUrl(a.link) : null;
+      if (href) {
         var link = document.createElement('a');
-        link.href = a.link;
+        link.href = href;
         link.textContent = a.linkLabel || 'Learn more';
         bar.appendChild(document.createTextNode(' '));
         bar.appendChild(link);
