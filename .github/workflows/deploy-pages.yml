@@ -67,6 +67,7 @@ jobs:
           cp *.sh deployment/   || echo "No shell scripts found"
           cp *.css deployment/ || echo "No CSS files found"
           cp *.js deployment/ || echo "No JS files found"
+          cp *.json deployment/ || echo "No JSON files found"
           
           # Copy system metadata
           cp CNAME deployment/               || echo "CNAME not found"
