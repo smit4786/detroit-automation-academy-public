@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DAA Owner Console</title>
+<style>
+  :root { --forge:#E85D1A; --midnight:#0C1116; --card:#141B22; --amber:#FFB000;
+          --paper:#F5F2EA; --concrete:#9AA0A6; --radius:14px; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--midnight); color:var(--paper);
+         font-family: Inter, system-ui, -apple-system, sans-serif; font-size:15px; line-height:1.55; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 22px 80px; }
+  h1 { font-family: "Space Grotesk", Inter, sans-serif; font-size: 1.6rem; margin: 0 0 4px; }
+  h1 .dot { color: var(--forge); }
+  .sub { color: var(--concrete); margin: 0 0 28px; font-size: .92rem; }
+  #gate { max-width: 420px; margin: 18vh auto 0; text-align: center; }
+  #gate input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #2a333d;
+                background: var(--card); color: var(--paper); font-size: 1rem; margin: 14px 0; }
+  .btn { display:inline-block; background:var(--forge); color:var(--midnight); border:0; cursor:pointer;
+         font-weight:700; padding: 11px 22px; border-radius: 999px; font-size:.95rem; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.ghost { background:transparent; color:var(--paper); border:1px solid #2a333d; }
+  .btn.ghost:hover { border-color: var(--forge); }
+  .err { color:#ff7a7a; min-height:1.4em; font-size:.9rem; }
+  .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 22px; }
+  .tab-btn { background:var(--card); color:var(--paper); border:1px solid #2a333d; cursor:pointer;
+             padding:9px 18px; border-radius:999px; font-size:.9rem; font-weight:600; }
+  .tab-btn[aria-selected="true"] { background:var(--forge); color:var(--midnight); border-color:var(--forge); }
+  .panel { background:var(--card); border:1px solid #232c36; border-radius:var(--radius); padding:22px; }
+  .panel h2 { margin:0 0 14px; font-size:1.05rem; font-family:"Space Grotesk",Inter,sans-serif; }
+  label { display:block; font-size:.82rem; color:var(--concrete); margin:14px 0 4px; font-weight:600;
+          text-transform:uppercase; letter-spacing:.06em; }
+  input[type=text], textarea { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #2a333d;
+          background:var(--midnight); color:var(--paper); font-size:.95rem; font-family:inherit; }
+  textarea { min-height: 90px; resize: vertical; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  .stat-grid { display:grid; grid-template-columns: 1fr 2fr; gap:8px 12px; align-items:center; }
+  .hint { font-size:.85rem; color:var(--concrete); margin-top:14px; }
+  .hint code { color:var(--amber); }
+  table.schema { width:100%; border-collapse:collapse; font-size:.88rem; margin-top:10px; }
+  table.schema td, table.schema th { border-bottom:1px solid #232c36; padding:8px 6px; text-align:left; }
+  table.schema th { color:var(--concrete); font-weight:600; text-transform:uppercase; font-size:.75rem; }
+  ol.steps { margin:10px 0; padding-left:20px; } ol.steps li { margin:8px 0; }
+  .note-item { border-bottom:1px solid #232c36; padding:10px 0; }
+  .note-item strong { display:block; color:var(--amber); font-size:.92rem; }
+  .note-item span { font-size:.88rem; color:#cfd4d9; }
+  #publishMsg { position:fixed; inset:auto 0 0 0; }
+  .ok { color:#7dffa8; font-size:.9rem; min-height:1.4em; }
+  kbd { background:#232c36; border-radius:6px; padding:2px 8px; font-size:.85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="gate">
+    <h1>Forge<span class="dot">·</span>Console</h1>
+    <p class="sub">Owner access. This page is unlisted and never linked.</p>
+    <input type="password" id="tokenInput" placeholder="Owner token" autocomplete="off" aria-label="Owner token">
+    <div><button class="btn" id="unlockBtn" type="button">Unlock</button></div>
+    <p class="err" id="gateErr" role="alert"></p>
+  </div>
+
+  <div id="app" hidden>
+    <h1>Forge<span class="dot">·</span>Console</h1>
+    <p class="sub">The back door. Everything here is owner-only.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab-btn" role="tab" aria-selected="true" data-tab="content">Content</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="telemetry">Telemetry</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="commentary">Commentary</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="log">Changelog</button>
+    </div>
+
+    <section class="panel" id="tab-content" role="tabpanel">
+      <h2>Live content <span class="hint" style="display:inline">— edits <code>live.json</code>; nothing goes live until published</span></h2>
+      <label for="f-announce">Announcement bar (empty = hidden)</label>
+      <input type="text" id="f-announce" placeholder="e.g. Cohort applications open — Fall 2026">
+      <div class="stat-grid" style="margin-top:10px">
+        <label for="f-alink" style="margin:0">Link URL</label><input type="text" id="f-alink" placeholder="https://…">
+        <label for="f-alabel" style="margin:0">Link label</label><input type="text" id="f-alabel" placeholder="Apply">
+      </div>
+      <label>Hero stats</label>
+      <div class="stat-grid" id="statsGrid"></div>
+      <div class="row">
+        <button class="btn" id="downloadLive" type="button">Download live.json</button>
+        <button class="btn ghost" id="copyPublish" type="button">Copy publish request</button>
+      </div>
+      <p class="ok" id="contentOk"></p>
+      <p class="hint">Phone publish: tap <b>Copy publish request</b>, paste it to Muse, and the update is pushed + deployed. True one-tap publishing (no paste step) arrives with the Worker — see the Telemetry tab setup.</p>
+      <h2 style="margin-top:26px">iOS Shortcut recipe (Worker required)</h2>
+      <ol class="steps">
+        <li>Shortcuts → <kbd>+</kbd> → <b>Ask for Input</b> (“Announcement text”).</li>
+        <li><b>Get Contents of URL</b>: <code>POST https://&lt;your-worker&gt;/live</code>, headers <code>Content-Type: application/json</code>, JSON body:<br>
+          <code>{"token":"&lt;owner token&gt;","content":{"announcement":{"text":"[Provided Input]","link":"","linkLabel":""},"stats":[]}}</code></li>
+        <li>Name it “DAA Publish”. Empty <code>stats</code> keeps current stats; empty announcement text hides the bar.</li>
+      </ol>
+    </section>
+
+    <section class="panel" id="tab-telemetry" role="tabpanel" hidden>
+      <h2>Telemetry</h2>
+      <p id="teleStatus" class="hint">Collector: <b>not configured</b> — the beacon is dormant, no data leaves visitors' browsers.</p>
+      <label for="f-endpoint">Collector endpoint (Worker URL + /collect)</label>
+      <input type="text" id="f-endpoint" placeholder="https://daa-collect.&lt;you&gt;.workers.dev/collect">
+      <div class="row">
+        <button class="btn" id="loadEvents" type="button">Load recent events</button>
+      </div>
+      <p class="err" id="teleErr"></p>
+      <table class="schema" id="eventsTable" hidden>
+        <thead><tr><th>Time</th><th>Type</th><th>Page</th><th>Detail</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <h2 style="margin-top:22px">Event schema</h2>
+      <table class="schema">
+        <tr><th>type</th><td><code>pageview</code> · <code>demo-cmd</code></td></tr>
+        <tr><th>page</th><td>pathname, e.g. <code>/</code>, <code>/sponsor.html</code></td></tr>
+        <tr><th>detail</th><td>demo-cmd carries the typed command (first 80 chars)</td></tr>
+      </table>
+      <p class="hint">Privacy: no cookies, no fingerprinting, honors Do Not Track. The Worker code lives in your files (<code>daa-owner-layer/worker.js</code>) — deploy it to Cloudflare Workers with a KV namespace, set the endpoint above and in <code>owner.js</code>, and this tab lights up.</p>
+    </section>
+
+    <section class="panel" id="tab-commentary" role="tabpanel" hidden>
+      <h2>Director's commentary</h2>
+      <p class="hint">Overlays your margin notes on the live site — built for sponsor walkthroughs.</p>
+      <div class="row">
+        <button class="btn" id="comOn" type="button">Enable + open site</button>
+        <button class="btn ghost" id="comOff" type="button">Disable</button>
+      </div>
+      <div id="notesList" style="margin-top:16px"></div>
+    </section>
+
+    <section class="panel" id="tab-log" role="tabpanel" hidden>
+      <h2>Private changelog</h2>
+      <p class="hint">Stays in this browser (localStorage). Never published.</p>
+      <textarea id="changelog" aria-label="Private changelog"></textarea>
+      <div class="row"><button class="btn" id="saveLog" type="button">Save</button></div>
+      <p class="ok" id="logOk"></p>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var TOKEN_HASH = '42d5d39274c623759e20e1baef00c9591710d176edab18646479f30689f966c5'; /* production */
+  var ownerToken = null;
+
+  function hex(buf) {
+    return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+      return ('0' + b.toString(16)).slice(-2);
+    }).join('');
+  }
+  function sha256(str) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(hex);
+  }
+
+  var gate = document.getElementById('gate'),
+      app = document.getElementById('app'),
+      tokenInput = document.getElementById('tokenInput'),
+      gateErr = document.getElementById('gateErr');
+
+  function unlock() {
+    gateErr.textContent = '';
+    var t = tokenInput.value.trim();
+    if (!t) { gateErr.textContent = 'Enter the owner token.'; return; }
+    sha256(t).then(function (h) {
+      if (h === TOKEN_HASH) {
+        ownerToken = t;
+        try { sessionStorage.setItem('daa_owner', '1'); } catch (e) {}
+        gate.hidden = true; app.hidden = false;
+        initApp();
+      } else {
+        gateErr.textContent = 'Wrong token.';
+        tokenInput.value = '';
+      }
+    }).catch(function () { gateErr.textContent = 'Crypto unavailable in this browser.'; });
+  }
+  document.getElementById('unlockBtn').addEventListener('click', unlock);
+  tokenInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') unlock(); });
+
+  /* tabs */
+  var tabBtns = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
+  tabBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      tabBtns.forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+      ['content', 'telemetry', 'commentary', 'log'].forEach(function (name) {
+        document.getElementById('tab-' + name).hidden = (name !== b.dataset.tab);
+      });
+    });
+  });
+
+  var live = null;
+
+  function initApp() {
+    /* ---- content tab ---- */
+    fetch('live.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+      live = d;
+      document.getElementById('f-announce').value = (d.announcement && d.announcement.text) || '';
+      document.getElementById('f-alink').value = (d.announcement && d.announcement.link) || '';
+      document.getElementById('f-alabel').value = (d.announcement && d.announcement.linkLabel) || '';
+      var grid = document.getElementById('statsGrid');
+      grid.innerHTML = '';
+      (d.stats || []).forEach(function (s, i) {
+        var ln = document.createElement('label'); ln.textContent = 'Stat ' + (i + 1) + ' number';
+        var n = document.createElement('input'); n.type = 'text'; n.value = s.num; n.dataset.k = 'num'; n.dataset.i = i;
+        var ll = document.createElement('label'); ll.textContent = 'Stat ' + (i + 1) + ' label';
+        var l = document.createElement('input'); l.type = 'text'; l.value = s.label; l.dataset.k = 'label'; l.dataset.i = i;
+        grid.appendChild(ln); grid.appendChild(n); grid.appendChild(ll); grid.appendChild(l);
+      });
+    }).catch(function () {});
+
+    function collectLive() {
+      var stats = (live && live.stats ? live.stats : []).map(function (s, i) {
+        var num = document.querySelector('#statsGrid input[data-i="' + i + '"][data-k="num"]');
+        var label = document.querySelector('#statsGrid input[data-i="' + i + '"][data-k="label"]');
+        return { num: num ? num.value : s.num, label: label ? label.value : s.label };
+      });
+      return {
+        announcement: {
+          text: document.getElementById('f-announce').value.trim(),
+          link: document.getElementById('f-alink').value.trim(),
+          linkLabel: document.getElementById('f-alabel').value.trim()
+        },
+        stats: stats,
+        updated: new Date().toISOString().slice(0, 10)
+      };
+    }
+
+    document.getElementById('downloadLive').addEventListener('click', function () {
+      var blob = new Blob([JSON.stringify(collectLive(), null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'live.json'; a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    });
+
+    document.getElementById('copyPublish').addEventListener('click', function () {
+      var msg = 'Publish live.json update for detroitautomationacademy.com:\n\n' +
+        JSON.stringify(collectLive(), null, 2) +
+        '\n\nPush it as live.json to smit4786/detroit-automation-academy-public on main, then verify the Pages deployment succeeded.';
+      navigator.clipboard.writeText(msg).then(function () {
+        document.getElementById('contentOk').textContent = 'Publish request copied — paste it to Muse.';
+      }).catch(function () {
+        document.getElementById('contentOk').textContent = 'Clipboard blocked — use Download instead.';
+      });
+    });
+
+    /* ---- telemetry tab ---- */
+    var epInput = document.getElementById('f-endpoint');
+    try { epInput.value = localStorage.getItem('daa_endpoint') || ''; } catch (e) {}
+    document.getElementById('loadEvents').addEventListener('click', function () {
+      var ep = epInput.value.trim().replace(/\/collect\/?$/, '');
+      var err = document.getElementById('teleErr');
+      err.textContent = '';
+      if (!ep) { err.textContent = 'Set the collector endpoint first.'; return; }
+      try { localStorage.setItem('daa_endpoint', epInput.value.trim()); } catch (e) {}
+      fetch(ep + '/events?token=' + encodeURIComponent(ownerToken) + '&limit=50')
+        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function (rows) {
+          var tb = document.querySelector('#eventsTable tbody');
+          tb.innerHTML = '';
+          (rows || []).forEach(function (ev) {
+            var tr = document.createElement('tr');
+            var t = new Date(ev.ts).toLocaleString();
+            tr.innerHTML = '<td></td><td></td><td></td><td></td>';
+            tr.children[0].textContent = t;
+            tr.children[1].textContent = ev.type || '';
+            tr.children[2].textContent = ev.page || '';
+            tr.children[3].textContent = ev.detail || '';
+            tb.appendChild(tr);
+          });
+          document.getElementById('eventsTable').hidden = false;
+          document.getElementById('teleStatus').innerHTML =
+            'Collector: <b>connected</b> — showing ' + (rows || []).length + ' recent events.';
+        })
+        .catch(function (e) { err.textContent = 'Could not reach the collector (' + e.message + ').'; });
+    });
+
+    /* ---- commentary tab ---- */
+    document.getElementById('comOn').addEventListener('click', function () {
+      try { sessionStorage.setItem('daa_commentary', '1'); } catch (e) {}
+      window.open('index.html?commentary', '_blank', 'noopener');
+    });
+    document.getElementById('comOff').addEventListener('click', function () {
+      try { sessionStorage.removeItem('daa_commentary'); } catch (e) {}
+    });
+    fetch('commentary.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (notes) {
+      var list = document.getElementById('notesList');
+      (notes || []).forEach(function (n) {
+        var d = document.createElement('div');
+        d.className = 'note-item';
+        var s = document.createElement('strong'); s.textContent = n.title;
+        var p = document.createElement('span'); p.textContent = n.note + '  →  ' + n.selector;
+        d.appendChild(s); d.appendChild(p); list.appendChild(d);
+      });
+    }).catch(function () {});
+
+    /* ---- changelog ---- */
+    var ta = document.getElementById('changelog');
+    try { ta.value = localStorage.getItem('daa_changelog') || ''; } catch (e) {}
+    document.getElementById('saveLog').addEventListener('click', function () {
+      try { localStorage.setItem('daa_changelog', ta.value); } catch (e) {}
+      document.getElementById('logOk').textContent = 'Saved locally.';
+    });
+  }
+})();
+</script>
+</body>
+</html>
