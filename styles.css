@@ -252,8 +252,64 @@ a { color: inherit; }
 /* ---------- Reveal on scroll ---------- */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .reveal.visible { opacity: 1; transform: none; }
+
+/* ---------- State of the art: scroll-driven reveal (no JavaScript) ----------
+   Where supported, the reveal is driven by the element's own scroll progress.
+   The JS IntersectionObserver path below stays as the fallback. */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: reveal-in 0.7s cubic-bezier(.4, 0, .2, 1) forwards;
+    animation-timeline: view();
+    animation-range: entry 10% cover 30%;
+  }
+  @keyframes reveal-in {
+    to { opacity: 1; transform: none; }
+  }
+}
+
+/* ---------- State of the art II: @property — animatable custom properties -----
+   A light beam travels down each trajectory rail: momentum, expressed in CSS.
+   The animation sits behind the animation-timeline @supports gate: every
+   browser new enough for scroll-driven animations also supports @property,
+   so older browsers simply keep the static rail — no discrete-flip fallback. */
+@property --beam {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 120%;
+}
+@supports (animation-timeline: view()) {
+  .phase::before {
+    --beam: 120%;
+    background:
+      linear-gradient(180deg,
+        transparent var(--beam),
+        rgba(255, 255, 255, 0.55) calc(var(--beam) + 9%),
+        transparent calc(var(--beam) + 20%)),
+      linear-gradient(var(--forge), var(--amber));
+    animation: rail-beam 5s linear infinite;
+  }
+  .trajectory .phase:nth-child(2)::before { animation-delay: 1.6s; }
+  .trajectory .phase:nth-child(3)::before { animation-delay: 3.2s; }
+  @keyframes rail-beam {
+    from { --beam: -30%; }
+    to { --beam: 120%; }
+  }
+}
+
+/* ---------- State of the art III: cross-document view transitions ----------
+   Same-origin page changes crossfade while the brand mark holds its place. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+  .nav .brand-mark {
+    view-transition-name: brand-mark;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
+  .reveal { opacity: 1; transform: none; transition: none; animation: none; }
+  .phase::before { animation: none; }
   .circuit .trace { animation: none; stroke-dashoffset: 0; }
   .circuit .node { animation: none; opacity: .95; }
   html { scroll-behavior: auto; }
