@@ -540,3 +540,10 @@ a { color: inherit; }
   .demo { grid-template-columns: 1fr; }
   .demo-stage { min-height: 280px; }
 }
+
+/* ---------- Signal logo animation ---------- */
+.signal-animation { max-width: 620px; margin: 2.5rem auto 0; }
+.signal-animation iframe {
+  display: block; width: 100%; aspect-ratio: 1 / 1;
+  border: 0; border-radius: 14px; background: #000;
+}
