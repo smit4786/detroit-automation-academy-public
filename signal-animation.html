@@ -49,7 +49,7 @@
     }
 
     * { box-sizing: border-box; }
-    html, body { width: 100%; min-height: 100%; }
+    html, body { width: 100%; height: 100%; }
     body {
       margin: 0;
       overflow-x: hidden;
@@ -64,7 +64,7 @@
       position: relative;
       isolation: isolate;
       width: 100%;
-      min-height: 100svh;
+      height: 100%;
       overflow: hidden;
       background:
         radial-gradient(circle at 22% 20%, rgba(55, 76, 86, .08), transparent 25%),
@@ -506,9 +506,14 @@
       var replay = document.getElementById('replay');
       var pause = document.getElementById('pause');
       var pauseLabel = pause.querySelector('span');
-      var pauseIcon = pause.querySelector('svg');
+      var pausePath = pause.querySelector('path');
       var status = document.querySelector('.status');
       var timers = [];
+      var statusInterval = null;
+      var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      var ICON_PAUSE = 'M7 5h4v14H7zm6 0h4v14h-4z';
+      var ICON_PLAY = 'M8 5v14l11-7z';
 
       function setStatusTimeline() {
         timers.forEach(clearTimeout);
@@ -519,32 +524,44 @@
         timers.push(setTimeout(function () { status.textContent = 'Searching skyline'; }, 6800));
       }
 
+      function stopStatusLoop() {
+        timers.forEach(clearTimeout);
+        timers = [];
+        if (statusInterval !== null) { clearInterval(statusInterval); statusInterval = null; }
+      }
+
+      function startStatusLoop() {
+        stopStatusLoop();
+        setStatusTimeline();
+        statusInterval = setInterval(setStatusTimeline, 8500);
+      }
+
+      function setPausedUI(isPaused) {
+        pause.setAttribute('aria-pressed', String(isPaused));
+        pause.setAttribute('aria-label', isPaused ? 'Resume spotlight animation' : 'Pause spotlight animation');
+        pauseLabel.textContent = isPaused ? 'Resume' : 'Pause';
+        pausePath.setAttribute('d', isPaused ? ICON_PLAY : ICON_PAUSE);
+      }
+
       function restart() {
         stage.classList.remove('paused');
-        pause.setAttribute('aria-pressed', 'false');
-        pause.setAttribute('aria-label', 'Pause spotlight animation');
-        pauseLabel.textContent = 'Pause';
-        pauseIcon.innerHTML = '<path d="M7 5h4v14H7zm6 0h4v14h-4z"/>';
+        setPausedUI(false);
         stage.style.display = 'none';
         void stage.offsetWidth;
         stage.style.display = '';
-        setStatusTimeline();
+        if (!reducedMotion) { startStatusLoop(); }
       }
 
       replay.addEventListener('click', restart);
       pause.addEventListener('click', function () {
         var isPaused = stage.classList.toggle('paused');
-        pause.setAttribute('aria-pressed', String(isPaused));
-        pause.setAttribute('aria-label', isPaused ? 'Resume spotlight animation' : 'Pause spotlight animation');
-        pauseLabel.textContent = isPaused ? 'Resume' : 'Pause';
-        pauseIcon.innerHTML = isPaused
-          ? '<path d="M8 5v14l11-7z"/>'
-          : '<path d="M7 5h4v14H7zm6 0h4v14h-4z"/>';
+        setPausedUI(isPaused);
+        if (isPaused) { stopStatusLoop(); }
+        else if (!reducedMotion) { startStatusLoop(); }
       });
 
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        setStatusTimeline();
-        setInterval(setStatusTimeline, 8500);
+      if (!reducedMotion) {
+        startStatusLoop();
       } else {
         status.textContent = 'Signal acquired';
       }
