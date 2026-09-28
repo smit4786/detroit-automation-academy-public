@@ -12,13 +12,14 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip-link" href="#top">Skip to main content</a>
 
 <header class="nav">
   <a class="brand" href="#top" aria-label="Detroit Automation Academy home">
     <img src="assets/logo.webp" alt="DAA logo" class="brand-mark">
     <span class="brand-word">Detroit Automation <em>Academy</em></span>
   </a>
-  <nav class="nav-links" id="navLinks">
+  <nav class="nav-links" id="navLinks" aria-label="Primary">
     <a href="#demo">Try it</a>
     <a href="#mission">Mission</a>
     <a href="#programs">Programs</a>
@@ -34,7 +35,7 @@
 <main id="top">
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" aria-labelledby="hero-heading">
     <div class="hero-inner">
       <div class="hero-mark-wrap">
         <svg class="circuit" viewBox="0 0 600 600" aria-hidden="true" focusable="false">
@@ -66,7 +67,7 @@
         <img src="assets/logo.webp" alt="Forge D — Detroit Automation Academy mark" class="hero-mark">
       </div>
       <p class="eyebrow">Detroit, Michigan</p>
-      <h1>Where Detroit<br>builds <span class="accent">what's next.</span></h1>
+      <h1 id="hero-heading">Where Detroit<br>builds <span class="accent">what's next.</span></h1>
       <p class="lede">Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.</p>
       <div class="hero-actions">
         <a href="#programs" class="btn btn-primary">Explore the programs</a>
@@ -81,10 +82,10 @@
   </section>
 
   <!-- TRY IT -->
-  <section class="section section-alt" id="demo">
+  <section class="section section-alt" id="demo" aria-labelledby="demo-heading">
     <div class="wrap">
       <p class="kicker">Try it</p>
-      <h2>Type a command. <span class="accent">Watch it move.</span></h2>
+      <h2 id="demo-heading">Type a command. <span class="accent">Watch it move.</span></h2>
       <div class="prose">
         <p>This is what day one feels like at the academy: you tell a machine what to do, and it does it. The training bot is listening — go ahead.</p>
       </div>
@@ -129,10 +130,10 @@
   </section>
 
   <!-- MISSION -->
-  <section class="section" id="mission">
+  <section class="section" id="mission" aria-labelledby="mission-heading">
     <div class="wrap">
       <p class="kicker">The mission</p>
-      <h2>The city that put the world on wheels<br>trains the kids who'll run the <span class="accent">automated</span> world.</h2>
+      <h2 id="mission-heading">The city that put the world on wheels<br>trains the kids who'll run the <span class="accent">automated</span> world.</h2>
       <div class="prose">
         <p>Detroit Automation Academy exists for one reason: the young people of this city should be the ones building the automated future, not watching it arrive from somewhere else. We teach robotics, drones, and automation the way Detroit taught the world manufacturing — hands on, no shortcuts, pride in the work.</p>
         <p>This academy has never received institutional funding. No grant, no sponsor, no check that was promised. It was built anyway — nights, weekends, borrowed space — and it's being finished on principle. Detroit's kids shouldn't have to wait on paperwork.</p>
@@ -146,10 +147,10 @@
   </section>
 
   <!-- PROGRAMS -->
-  <section class="section section-alt" id="programs">
+  <section class="section section-alt" id="programs" aria-labelledby="programs-heading">
     <div class="wrap">
       <p class="kicker">Programs</p>
-      <h2>Four tracks. <span class="accent">Zero</span> fluff.</h2>
+      <h2 id="programs-heading">Four tracks. <span class="accent">Zero</span> fluff.</h2>
       <div class="cards">
         <article class="card">
           <div class="card-num">01</div>
@@ -176,10 +177,10 @@
   </section>
 
   <!-- THE SIGNAL / NEWSLETTER -->
-  <section class="section" id="signal">
+  <section class="section" id="signal" aria-labelledby="signal-heading">
     <div class="wrap">
       <p class="kicker">The Signal</p>
-      <h2>Notes on automation, robotics, <span class="accent">and the Detroiters building the future.</span></h2>
+      <h2 id="signal-heading">Notes on automation, robotics, <span class="accent">and the Detroiters building the future.</span></h2>
       <div class="signal-animation">
         <iframe src="signal-animation.html" title="The Signal logo animation — a spotlight sweeping the night sky until it lights up the Forge D" loading="lazy"></iframe>
       </div>
@@ -214,10 +215,10 @@
   </section>
 
   <!-- PARTNERS -->
-  <section class="section section-alt" id="partners">
+  <section class="section section-alt" id="partners" aria-labelledby="partners-heading">
     <div class="wrap">
       <p class="kicker">In good company</p>
-      <h2>Built alongside <span class="accent">Detroit's builders.</span></h2>
+      <h2 id="partners-heading">Built alongside <span class="accent">Detroit's builders.</span></h2>
       <ul class="partner-list">
         <li>Michigan Central</li>
         <li>University of Michigan Center for Innovation</li>
