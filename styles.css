@@ -547,3 +547,24 @@ a { color: inherit; }
   display: block; width: 100%; aspect-ratio: 1 / 1;
   border: 0; border-radius: 14px; background: #000;
 }
+
+/* ---------- Day 3: keyboard focus + VoiceOver ---------- */
+.skip-link {
+  position: absolute; left: 16px; top: -64px; z-index: 100;
+  background: var(--amber); color: #000; font-weight: 700;
+  padding: 10px 20px; border-radius: 999px; text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus-visible { top: 12px; outline: 2px solid var(--paper); outline-offset: 2px; }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+/* Hover parity: keyboard focus plays the same feedback as hover */
+.btn:focus-visible { transform: translateY(-2px); }
+.btn-primary:focus-visible { background: var(--amber); }
+.btn-ghost:focus-visible { border-color: var(--forge); color: var(--forge); }
+.nav-links a:focus-visible { color: var(--paper); }
+.card:focus-visible { border-color: var(--forge); transform: translateY(-3px); }
+.partner-list li:focus-visible { border-color: var(--forge); color: var(--forge); }
+.demo-chip:focus-visible { border-color: var(--forge); color: var(--forge); }
