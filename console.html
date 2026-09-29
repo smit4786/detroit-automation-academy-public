@@ -60,6 +60,8 @@
   .chat-row { display:flex; gap:8px; }
   .chat-row input[type=text] { flex:1; }
   #chatStop[hidden] { display:none; } /* .btn's display:inline-block would override UA hidden */
+  .preset-row { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 10px; }
+  .preset-btn { padding:7px 14px; font-size:.8rem; font-weight:600; }
   .usage { font-size:.76rem; color:var(--concrete); margin-top:6px; }
 </style>
 </head>
@@ -171,6 +173,11 @@
       </div>
       <p class="ok" id="claudeKeyOk"></p>
       <div id="chatLog" aria-live="polite"></div>
+      <div class="preset-row" id="presetRow">
+        <button class="btn ghost preset-btn" id="presetAnnounce" type="button">Draft announcement</button>
+        <button class="btn ghost preset-btn" id="presetChangelog" type="button">Draft changelog entry</button>
+        <button class="btn ghost preset-btn" id="presetCommentary" type="button">Draft commentary note</button>
+      </div>
       <div class="chat-row">
         <input type="text" id="chatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Claude">
         <button class="btn" id="chatSend" type="button">Send</button>
@@ -545,6 +552,23 @@
     chatInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') sendChat(); });
     document.getElementById('chatClear').addEventListener('click', function () {
       history = []; chatLog.innerHTML = '';
+    });
+
+    /* ---- preset prompt buttons (#4): one click fills the input with a starter
+          prompt the owner can edit before sending. Nothing auto-sends. ---- */
+    var PRESETS = {
+      presetAnnounce: 'Draft an announcement-bar headline for the site about <topic>. ' +
+        'Keep it under 12 words, upbeat, and suggest a short link label.',
+      presetChangelog: 'Draft a private-changelog entry for today: a dated heading, then ' +
+        '2-3 short factual bullets of what changed. Terse, no fluff.',
+      presetCommentary: "Draft a director's-commentary note for a sponsor walkthrough of the site: " +
+        'a title, a one-sentence note, and the CSS selector it applies to.'
+    };
+    ['presetAnnounce', 'presetChangelog', 'presetCommentary'].forEach(function (id) {
+      document.getElementById(id).addEventListener('click', function () {
+        chatInput.value = PRESETS[id];
+        chatInput.focus();
+      });
     });
   }
 })();
