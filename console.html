@@ -361,7 +361,19 @@
       var k = keyInput.value.trim();
       if (!k) { keyOk.textContent = 'Enter a key first.'; return; }
       try { localStorage.setItem('daa_claude_key', k); } catch (e) {}
-      keyOk.textContent = 'Key saved in this browser only.';
+      keyOk.textContent = 'Key saved — verifying…';
+      fetch('https://api.anthropic.com/v1/models', {
+        headers: {
+          'x-api-key': k,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        }
+      }).then(function (r) {
+        if (r.ok) { keyOk.textContent = 'Key saved in this browser only — verified working.'; }
+        else { keyOk.textContent = 'Key saved, but the API rejected it (HTTP ' + r.status + ') — check the key.'; }
+      }).catch(function (e) {
+        keyOk.textContent = 'Key saved, but verification could not reach the API (' + e.message + ').';
+      });
     });
     document.getElementById('forgetClaudeKey').addEventListener('click', function () {
       try { localStorage.removeItem('daa_claude_key'); } catch (e) {}
