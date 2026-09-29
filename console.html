@@ -63,6 +63,10 @@
   .preset-row { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 10px; }
   .preset-btn { padding:7px 14px; font-size:.8rem; font-weight:600; }
   .usage { font-size:.76rem; color:var(--concrete); margin-top:6px; }
+  .copy-btn { display:inline-block; margin-top:8px; background:transparent; color:var(--concrete);
+              border:1px solid #2a333d; border-radius:999px; padding:3px 12px; font-size:.75rem;
+              cursor:pointer; font-weight:600; }
+  .copy-btn:hover { color:var(--paper); border-color:var(--forge); }
 </style>
 </head>
 <body>
@@ -425,10 +429,42 @@
     function addMsg(role, text) {
       var d = document.createElement('div');
       d.className = 'msg ' + (role === 'user' ? 'user' : role === 'error' ? 'err' : 'bot');
-      d.textContent = text; /* textContent only — model output is never parsed as HTML */
+      /* Message text lives in its own span so streaming updates and other
+         set-text calls never wipe the copy button. */
+      var t = document.createElement('span');
+      t.textContent = text; /* textContent only — model output is never parsed as HTML */
+      d.appendChild(t);
+      if (role === 'bot') { /* copy-reply button (#6) */
+        var copyBtn = document.createElement('button');
+        copyBtn.type = 'button';
+        copyBtn.className = 'copy-btn';
+        copyBtn.textContent = 'Copy';
+        copyBtn.addEventListener('click', function () {
+          copyMsgText(copyBtn, t.textContent);
+        });
+        d.appendChild(copyBtn);
+      }
       chatLog.appendChild(d);
       chatLog.scrollTop = chatLog.scrollHeight;
       return d;
+    }
+
+    function copyMsgText(btn, text) {
+      function done(ok) {
+        btn.textContent = ok ? 'Copied ✓' : 'Copy failed';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); },
+          function () { done(false); });
+      } else { /* older browsers: hidden textarea + execCommand fallback */
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { done(document.execCommand('copy')); } catch (e) { done(false); }
+        document.body.removeChild(ta);
+      }
     }
 
     function claudeSystem() {
@@ -513,7 +549,7 @@
               }
               if (evt.type === 'content_block_delta' && evt.delta && evt.delta.type === 'text_delta') {
                 reply += evt.delta.text;
-                msgEl.textContent = reply; /* textContent only — model output is never parsed as HTML */
+                msgEl.firstChild.textContent = reply; /* text span only — keep the copy button */
                 chatLog.scrollTop = chatLog.scrollHeight;
               }
             });
@@ -529,7 +565,7 @@
           addUsageLine(msgEl, model, usageIn, usageOut);
         } else {
           msgEl.className = 'msg err';
-          msgEl.textContent = '(empty response)';
+          msgEl.firstChild.textContent = '(empty response)';
           history.pop();
         }
       }).catch(function (e) {
@@ -542,10 +578,10 @@
               usage: { input: usageIn, output: usageOut, model: model } });
             addUsageLine(msgEl, model, usageIn, usageOut);
           }
-          else { history.pop(); msgEl.textContent = '(stopped)'; }
+          else { history.pop(); msgEl.firstChild.textContent = '(stopped)'; }
         } else {
           msgEl.className = 'msg err';
-          msgEl.textContent = 'Request failed (' + e.message + '). ' +
+          msgEl.firstChild.textContent = 'Request failed (' + e.message + '). ' +
             'Check the key, the model name, and your network connection.';
           history.pop();
         }
