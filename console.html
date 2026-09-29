@@ -60,6 +60,7 @@
   .chat-row { display:flex; gap:8px; }
   .chat-row input[type=text] { flex:1; }
   #chatStop[hidden] { display:none; } /* .btn's display:inline-block would override UA hidden */
+  .usage { font-size:.76rem; color:var(--concrete); margin-top:6px; }
 </style>
 </head>
 <body>
@@ -360,6 +361,33 @@
     var history = [];
     var streaming = false; /* true while a streamed reply is in flight */
 
+    /* USD per 1M tokens [input, output]; checked against Anthropic's pricing 2026-09-29.
+       Update these if Anthropic reprices — the console computes cost from this table. */
+    var TOKEN_PRICES = {
+      'claude-haiku-4-5': [1, 5],
+      'claude-sonnet-4-6': [3, 15],
+      'claude-opus-4-8': [5, 25]
+    };
+
+    function fmtTokens(n) {
+      return Number(n || 0).toLocaleString('en-US');
+    }
+    function fmtCost(inT, outT, model) {
+      var p = null;
+      for (var k in TOKEN_PRICES) { if (model.indexOf(k) !== -1) { p = TOKEN_PRICES[k]; break; } }
+      if (!p) return null;
+      return (inT * p[0] + outT * p[1]) / 1e6;
+    }
+    function addUsageLine(msgEl, model, inT, outT) {
+      var line = fmtTokens(inT) + ' input · ' + fmtTokens(outT) + ' output';
+      var cost = fmtCost(inT, outT, model);
+      line += cost === null ? ' · cost: unknown for this model' : ' · ≈ $' + cost.toFixed(cost < 0.01 ? 4 : 2);
+      var u = document.createElement('div');
+      u.className = 'usage';
+      u.textContent = line; /* textContent only — never parsed as HTML */
+      msgEl.appendChild(u);
+    }
+
     try { keyInput.value = localStorage.getItem('daa_claude_key') || ''; } catch (e) {}
 
     document.getElementById('saveClaudeKey').addEventListener('click', function () {
@@ -419,6 +447,7 @@
       var msgEl = addMsg('bot', '');
       msgEl.classList.add('typing');
       var reply = '';
+      var usageIn = 0, usageOut = 0;
       var aborter = new AbortController();
       streaming = true;
       chatSend.disabled = true;
@@ -467,6 +496,13 @@
               var evt;
               try { evt = JSON.parse(data); } catch (e) { return; }
               if (evt.type === 'error') throw new Error((evt.error && evt.error.message) || 'stream error');
+              if (evt.type === 'message_start' && evt.message && evt.message.usage) {
+                usageIn = evt.message.usage.input_tokens || 0;
+              }
+              if (evt.type === 'message_delta' && evt.usage &&
+                  typeof evt.usage.output_tokens === 'number') {
+                usageOut = evt.usage.output_tokens;
+              }
               if (evt.type === 'content_block_delta' && evt.delta && evt.delta.type === 'text_delta') {
                 reply += evt.delta.text;
                 msgEl.textContent = reply; /* textContent only — model output is never parsed as HTML */
@@ -481,6 +517,7 @@
         stopStreaming();
         if (reply) {
           history.push({ role: 'assistant', content: reply });
+          addUsageLine(msgEl, model, usageIn, usageOut);
         } else {
           msgEl.className = 'msg err';
           msgEl.textContent = '(empty response)';
@@ -491,7 +528,10 @@
         msgEl.classList.remove('typing');
         if (e.name === 'AbortError') {
           /* User hit Stop: keep what streamed so far, drop the pending user turn if nothing arrived. */
-          if (reply) { history.push({ role: 'assistant', content: reply }); }
+          if (reply) {
+            history.push({ role: 'assistant', content: reply });
+            addUsageLine(msgEl, model, usageIn, usageOut);
+          }
           else { history.pop(); msgEl.textContent = '(stopped)'; }
         } else {
           msgEl.className = 'msg err';
