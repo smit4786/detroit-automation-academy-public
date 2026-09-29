@@ -183,7 +183,8 @@
         <button class="btn" id="chatSend" type="button">Send</button>
         <button class="btn ghost" id="chatStop" type="button" hidden>Stop</button>
       </div>
-      <div class="row"><button class="btn ghost" id="chatClear" type="button">Clear chat</button></div>
+      <div class="row"><button class="btn ghost" id="chatClear" type="button">Clear chat</button>
+      <button class="btn ghost" id="chatExport" type="button">Export chat (.md)</button></div>
       <p class="hint">Chat history lives only in this page session — closing the tab clears it. Claude knows the console's file layout (<code>live.json</code>, <code>commentary.json</code>) and sees the current live.json; paste drafts here, then publish via the Content tab.</p>
     </section>
   </div>
@@ -523,7 +524,8 @@
       }).then(function () {
         stopStreaming();
         if (reply) {
-          history.push({ role: 'assistant', content: reply });
+          history.push({ role: 'assistant', content: reply,
+            usage: { input: usageIn, output: usageOut, model: model } });
           addUsageLine(msgEl, model, usageIn, usageOut);
         } else {
           msgEl.className = 'msg err';
@@ -536,7 +538,8 @@
         if (e.name === 'AbortError') {
           /* User hit Stop: keep what streamed so far, drop the pending user turn if nothing arrived. */
           if (reply) {
-            history.push({ role: 'assistant', content: reply });
+            history.push({ role: 'assistant', content: reply,
+              usage: { input: usageIn, output: usageOut, model: model } });
             addUsageLine(msgEl, model, usageIn, usageOut);
           }
           else { history.pop(); msgEl.textContent = '(stopped)'; }
@@ -552,6 +555,30 @@
     chatInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') sendChat(); });
     document.getElementById('chatClear').addEventListener('click', function () {
       history = []; chatLog.innerHTML = '';
+    });
+
+    /* ---- export chat as Markdown (#5): downloads the session history as a
+          .md file. Built from the in-memory history array (never DOM reads),
+          so it can't pick up stray UI text. ---- */
+    document.getElementById('chatExport').addEventListener('click', function () {
+      if (!history.length) { addMsg('bot', 'Nothing to export yet.'); return; }
+      var lines = ['# DAA owner console — chat export', '',
+        '_' + new Date().toLocaleString('en-US') + '_', ''];
+      history.forEach(function (m) {
+        lines.push(m.role === 'user' ? '## User' : '## Assistant', '');
+        lines.push(m.content, '');
+        if (m.usage) {
+          var c = fmtCost(m.usage.input, m.usage.output, m.usage.model);
+          lines.push('*' + fmtTokens(m.usage.input) + ' input · ' + fmtTokens(m.usage.output) +
+            ' output' + (c === null ? '' : ' · ≈ $' + c.toFixed(c < 0.01 ? 4 : 2)) + '*', '');
+        }
+      });
+      var blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'daa-chat-' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.md';
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
     });
 
     /* ---- preset prompt buttons (#4): one click fills the input with a starter
