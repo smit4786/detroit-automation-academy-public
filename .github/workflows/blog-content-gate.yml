@@ -1,0 +1,30 @@
+name: Blog content gate
+
+# Safety net for the Automated Insights blog: fail loudly if internal
+# agent metadata or known fabricated-content markers reappear in the
+# Hugo source. This is a check, not a deploy blocker — every blog post
+# still requires Justin's explicit review before it is pushed to main.
+on:
+  push:
+    paths:
+      - 'blog-source/**'
+  pull_request:
+    paths:
+      - 'blog-source/**'
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject internal metadata and fabricated-content markers
+        run: |
+          set -u
+          markers='C:\\Users\|@CTO-Agent\|Infinite Synthesis\|Unified Narrative\|EPOCH VII\|EPOCH VIII\|AlgoTradingEngine\|Swarm Matrix\|Central Command\|Status: 🟢 ACTIVE\|Sentient Matrix\|Cyber-Ops'
+          hits=$(grep -rE "$markers" blog-source/content blog-source/layouts blog-source/assets blog-source/static blog-source/archetypes blog-source/hugo.toml 2>/dev/null | grep -v 'themes/' || true)
+          if [ -n "$hits" ]; then
+            echo "BLOCKED: forbidden markers found in blog source:"
+            echo "$hits"
+            exit 1
+          fi
+          echo "Blog content gate passed: no forbidden markers."
