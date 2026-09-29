@@ -37,6 +37,12 @@
   textarea { min-height: 90px; resize: vertical; }
   .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
   .stat-grid { display:grid; grid-template-columns: 1fr 2fr; gap:8px 12px; align-items:center; }
+  .announce-preview { background:var(--forge); color:var(--midnight); text-align:center;
+         font-weight:600; font-size:.92rem; padding:10px 24px; border-radius:10px; margin-top:10px; }
+  .announce-preview .preview-link { color:var(--midnight); font-weight:800; text-decoration:underline;
+         text-underline-offset:3px; margin-left:10px; }
+  .announce-preview.is-hidden { background:transparent; border:1px dashed #2a333d; color:var(--concrete);
+         font-weight:400; font-size:.85rem; }
   .hint { font-size:.85rem; color:var(--concrete); margin-top:14px; }
   .hint code { color:var(--amber); }
   table.schema { width:100%; border-collapse:collapse; font-size:.88rem; margin-top:10px; }
@@ -100,6 +106,8 @@
         <label for="f-alink" style="margin:0">Link URL</label><input type="text" id="f-alink" placeholder="https://…">
         <label for="f-alabel" style="margin:0">Link label</label><input type="text" id="f-alabel" placeholder="Apply">
       </div>
+      <label>Preview — as it renders on the live site</label>
+      <div class="announce-preview is-hidden" id="announcePreview">Announcement bar hidden — empty text hides it on the live site.</div>
       <label>Hero stats</label>
       <div class="stat-grid" id="statsGrid"></div>
       <div class="row">
@@ -291,6 +299,7 @@
         var l = document.createElement('input'); l.type = 'text'; l.value = s.label; l.dataset.k = 'label'; l.dataset.i = i;
         grid.appendChild(ln); grid.appendChild(n); grid.appendChild(ll); grid.appendChild(l);
       });
+      updateAnnouncePreview();
     }).catch(function () {});
 
     function collectLive() {
@@ -315,6 +324,41 @@
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = 'live.json'; a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    });
+
+    /* live announcement-bar preview — mirrors the site's owner.js rendering,
+       textContent only; the link is a non-navigating span so a click can't
+       leave the console mid-edit */
+    function announceSafeUrl(u) {
+      try {
+        var parsed = new URL(u, window.location.href);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.href;
+      } catch (e) {}
+      return null;
+    }
+    function updateAnnouncePreview() {
+      var preview = document.getElementById('announcePreview');
+      var text = document.getElementById('f-announce').value.trim();
+      preview.textContent = '';
+      if (!text) {
+        preview.className = 'announce-preview is-hidden';
+        preview.textContent = 'Announcement bar hidden — empty text hides it on the live site.';
+        return;
+      }
+      preview.className = 'announce-preview';
+      preview.appendChild(document.createTextNode(text));
+      var href = announceSafeUrl(document.getElementById('f-alink').value.trim());
+      if (href) {
+        preview.appendChild(document.createTextNode(' '));
+        var link = document.createElement('span');
+        link.className = 'preview-link';
+        link.textContent = document.getElementById('f-alabel').value.trim() || 'Learn more';
+        link.title = href;
+        preview.appendChild(link);
+      }
+    }
+    ['f-announce', 'f-alink', 'f-alabel'].forEach(function (id) {
+      document.getElementById(id).addEventListener('input', updateAnnouncePreview);
     });
 
     document.getElementById('copyPublish').addEventListener('click', function () {
