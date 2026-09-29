@@ -1,14 +1,11 @@
-/* C:\Users\dbkr\workspace\daa-public-staging\blog-source\assets\ananke\css\custom.css */
-/* Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-13 */
-/* Owner: @CTO-Agent | Project: DAA Infinite Synthesis */
 
-/* AEAM Sentient Rebrand - Automated Insights Blog */
+/* Automated Insights Blog */
 /* Based on Detroit Automation Academy (DAA) V10 palette */
 
 :root {
-  --brand-primary: #00ff41; /* Sentient Matrix Green */
+  --brand-primary: #00ff41; /* Brand Green */
   --brand-bg: #020b18;      /* Deep Space Blue */
-  --brand-accent: #ffb700;  /* Matrix Amber */
+  --brand-accent: #ffb700;  /* Brand Amber */
   --brand-fg: #E6EDF3;
   --brand-muted: rgba(255, 255, 255, 0.4);
 }

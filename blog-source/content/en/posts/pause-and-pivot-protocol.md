@@ -1,8 +1,3 @@
-## C:\Users\dbkr\workspace\daa-public-staging\blog-source\content\en\posts\pause-and-pivot-protocol.md
-## Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-13
-## Owner: @CTO-Agent | Project: DAA Infinite Synthesis
-
-﻿## C:\Users\dbkr\workspace\daa-public-staging\blog-source\content\en\posts\pause-and-pivot-protocol.md
 ---
 title: "Digital Stoicism: The Pause-and-Pivot Protocol"
 date: 2026-02-28T11:00:00-05:00
@@ -14,9 +9,9 @@ featured_image: "/images/daa-logo.svg"
 description: "Mastering the gap between a digital stimulus and your response. A micro-guide for sage digital problem-solving."
 ---
 
-# â±ï¸ The "Pause-and-Pivot" Protocol
+# ⏱️ The "Pause-and-Pivot" Protocol
 
-In a digital environment designed for instant reaction, the most effective "power move" is the intentional delay. This protocol focuses on the habit of **Emotional Decoupling**â€”the ability to separate a digital stressor from your immediate physical response.
+In a digital environment designed for instant reaction, the most effective "power move" is the intentional delay. This protocol focuses on the habit of **Emotional Decoupling**—the ability to separate a digital stressor from your immediate physical response.
 
 ## 1. The Trigger
 You encounter a digital roadblock: an inflammatory comment, a confusing technical error, or a high-stakes misunderstanding in a group chat.
@@ -40,11 +35,11 @@ Once the minute is up, apply the **Minimalist Intervention**:
 *   **Technical:** Search the error code + "solved."
 *   **Interpersonal:** Use a "Neutral Bridge" statement (e.g., *"I want to make sure I understand your point before I respond."*)
 
-> **The Sage Insight:** Responsibility in the digital age isn't about knowing every answer; itâ€™s about mastering the gap between a stimulus and your response.
+> **The Sage Insight:** Responsibility in the digital age isn't about knowing every answer; it’s about mastering the gap between a stimulus and your response.
 
 ---
 
-## ðŸŽ¨ Visual Guide
+## 🎨 Visual Guide
 
 {{< rawhtml >}}
 <div class="pause-pivot-card" style="background: #161B22; border: 2px solid #0066CC; border-radius: 16px; padding: 32px; color: #E6EDF3; font-family: 'Inter', sans-serif; max-width: 500px; margin: 2rem auto; box-shadow: 0 10px 30px rgba(0,102,204,0.2);">
@@ -59,7 +54,7 @@ Once the minute is up, apply the **Minimalist Intervention**:
     </div>
 
     <div style="text-align: center; margin-bottom: 24px;">
-        <div style="font-size: 48px; margin-bottom: 8px;">â±ï¸</div>
+        <div style="font-size: 48px; margin-bottom: 8px;">⏱️</div>
         <div style="font-weight: 800; font-size: 24px;">60s FIREWALL</div>
         <div style="color: #8B949E; font-size: 14px;">Move from Hot Reaction to Cold Strategy</div>
     </div>

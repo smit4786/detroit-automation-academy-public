@@ -1,10 +1,5 @@
-/* C:\Users\dbkr\workspace\daa-public-staging\blog-source\static\css\custom.css */
-/* Status: 🟢 ACTIVE | Sprint: 1011 | Last Revised: 2026-04-13 */
-/* Owner: @CTO-Agent | Project: DAA Infinite Synthesis */
 
-/* ── Automated Technologies — Blog Styling (Cyber-Ops v2.0) ──────────────────
-   Synchronized with Apple-inspired Bento Architecture & Epoch VI Palette.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* Automated Technologies — Blog Styling */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500;800&display=swap');
 
 :root {
@@ -54,7 +49,7 @@ nav .link:hover {
   color: var(--accent-cyan) !important;
 }
 
-/* Bento-inspired Post Cards (if Tachyons/Ananke classes allow) */
+/* Post Cards */
 .post-content, .bg-near-black {
   background-color: transparent !important;
 }

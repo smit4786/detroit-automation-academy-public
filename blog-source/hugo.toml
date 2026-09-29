@@ -1,6 +1,3 @@
-# C:\Users\dbkr\workspace\daa-public-staging\blog-source\hugo.toml
-# Status: 🟢 ACTIVE | Sprint: 1012 | Last Revised: 2026-04-16
-# Owner: @CTO-Agent | Project: DAA Infinite Synthesis
 
 baseURL = 'https://blog.detroitautomationacademy.com'
 title = "Automated Insights"
@@ -18,10 +15,6 @@ defaultContentLanguage = 'en'
     contentDir = 'content/de'
     languageName = 'Deutsch'
     weight = 2
-  [languages.ru]
-    contentDir = 'content/ru'
-    languageName = 'Ruсский'
-    weight = 3
 
 [params]
   author = "Justin Smith"

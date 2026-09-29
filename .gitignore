@@ -73,3 +73,6 @@ coverage.xml
 # Git worktrees - not tracked
 themes/*/worktrees/
 *.worktrees/
+
+# Hugo local build output (built by CI from blog-source)
+/blog/
