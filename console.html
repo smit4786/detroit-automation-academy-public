@@ -225,6 +225,7 @@
         ownerToken = t;
         try { sessionStorage.setItem('daa_owner', '1'); } catch (e) {}
         gate.hidden = true; app.hidden = false;
+        startAutoLock();
         initApp();
       } else {
         gateErr.textContent = 'Wrong token.';
@@ -234,6 +235,32 @@
   }
   document.getElementById('unlockBtn').addEventListener('click', unlock);
   tokenInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') unlock(); });
+
+  /* #7 auto-lock: re-lock the console after 15 minutes of inactivity */
+  var AUTO_LOCK_MS = 15 * 60 * 1000;
+  var lastActivity = 0;
+  var lockTimer = null;
+
+  function autoLock() {
+    ownerToken = null;
+    tokenInput.value = '';
+    try { sessionStorage.removeItem('daa_owner'); } catch (e) {}
+    gate.hidden = false; app.hidden = true;
+    gateErr.textContent = 'Locked after 15 minutes of inactivity.';
+    if (lockTimer) { clearInterval(lockTimer); lockTimer = null; }
+    tokenInput.focus();
+  }
+  function noteActivity() { lastActivity = Date.now(); }
+  ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'wheel'].forEach(function (ev) {
+    window.addEventListener(ev, noteActivity, { passive: true });
+  });
+  function startAutoLock() {
+    lastActivity = Date.now();
+    if (lockTimer) clearInterval(lockTimer);
+    lockTimer = setInterval(function () {
+      if (ownerToken && Date.now() - lastActivity > AUTO_LOCK_MS) autoLock();
+    }, 30000);
+  }
 
   /* tabs */
   var tabBtns = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
