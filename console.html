@@ -59,6 +59,7 @@
   .typing { color:var(--concrete); font-style:italic; }
   .chat-row { display:flex; gap:8px; }
   .chat-row input[type=text] { flex:1; }
+  #chatStop[hidden] { display:none; } /* .btn's display:inline-block would override UA hidden */
 </style>
 </head>
 <body>
@@ -172,6 +173,7 @@
       <div class="chat-row">
         <input type="text" id="chatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Claude">
         <button class="btn" id="chatSend" type="button">Send</button>
+        <button class="btn ghost" id="chatStop" type="button" hidden>Stop</button>
       </div>
       <div class="row"><button class="btn ghost" id="chatClear" type="button">Clear chat</button></div>
       <p class="hint">Chat history lives only in this page session — closing the tab clears it. Claude knows the console's file layout (<code>live.json</code>, <code>commentary.json</code>) and sees the current live.json; paste drafts here, then publish via the Content tab.</p>
@@ -350,10 +352,13 @@
     var CLAUDE_URL = 'https://api.anthropic.com/v1/messages';
     var chatLog = document.getElementById('chatLog'),
         chatInput = document.getElementById('chatInput'),
+        chatSend = document.getElementById('chatSend'),
+        chatStop = document.getElementById('chatStop'),
         keyInput = document.getElementById('f-claude-key'),
         modelInput = document.getElementById('f-claude-model'),
         keyOk = document.getElementById('claudeKeyOk');
     var history = [];
+    var streaming = false; /* true while a streamed reply is in flight */
 
     try { keyInput.value = localStorage.getItem('daa_claude_key') || ''; } catch (e) {}
 
@@ -404,15 +409,26 @@
 
     function sendChat() {
       var text = chatInput.value.trim();
-      if (!text) return;
+      if (!text || streaming) return;
       var key = keyInput.value.trim();
       if (!key) { addMsg('error', 'Save your Anthropic API key first — it stays in this browser.'); return; }
       var model = modelInput.value.trim() || 'claude-haiku-4-5';
       addMsg('user', text);
       history.push({ role: 'user', content: text });
       chatInput.value = '';
-      var typing = addMsg('bot', '…');
-      typing.classList.add('typing');
+      var msgEl = addMsg('bot', '');
+      msgEl.classList.add('typing');
+      var reply = '';
+      var aborter = new AbortController();
+      streaming = true;
+      chatSend.disabled = true;
+      chatStop.hidden = false;
+      function stopStreaming() {
+        streaming = false;
+        chatSend.disabled = false;
+        chatStop.hidden = true;
+      }
+      chatStop.onclick = function () { aborter.abort(); };
       fetch(CLAUDE_URL, {
         method: 'POST',
         headers: {
@@ -424,24 +440,65 @@
         body: JSON.stringify({
           model: model,
           max_tokens: 1024,
+          stream: true,
           system: claudeSystem(),
           messages: history.slice(-20)
-        })
+        }),
+        signal: aborter.signal
       }).then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      }).then(function (data) {
-        var reply = '';
-        (data.content || []).forEach(function (b) { if (b.type === 'text') reply += b.text; });
-        typing.classList.remove('typing');
-        typing.textContent = reply || '(empty response)';
-        history.push({ role: 'assistant', content: reply });
+        if (!r.body || !r.body.getReader) throw new Error('streaming not supported in this browser');
+        var reader = r.body.getReader();
+        var decoder = new TextDecoder();
+        var buf = '';
+        msgEl.classList.remove('typing');
+        function pump() {
+          return reader.read().then(function (res) {
+            if (res.done) return;
+            buf += decoder.decode(res.value, { stream: true });
+            var parts = buf.split('\n\n');
+            buf = parts.pop(); /* keep the trailing partial event */
+            parts.forEach(function (chunk) {
+              var data = null;
+              chunk.split('\n').forEach(function (line) {
+                if (line.indexOf('data: ') === 0) data = line.slice(6);
+              });
+              if (!data || data === '[DONE]') return;
+              var evt;
+              try { evt = JSON.parse(data); } catch (e) { return; }
+              if (evt.type === 'error') throw new Error((evt.error && evt.error.message) || 'stream error');
+              if (evt.type === 'content_block_delta' && evt.delta && evt.delta.type === 'text_delta') {
+                reply += evt.delta.text;
+                msgEl.textContent = reply; /* textContent only — model output is never parsed as HTML */
+                chatLog.scrollTop = chatLog.scrollHeight;
+              }
+            });
+            return pump();
+          });
+        }
+        return pump();
+      }).then(function () {
+        stopStreaming();
+        if (reply) {
+          history.push({ role: 'assistant', content: reply });
+        } else {
+          msgEl.className = 'msg err';
+          msgEl.textContent = '(empty response)';
+          history.pop();
+        }
       }).catch(function (e) {
-        typing.classList.remove('typing');
-        typing.className = 'msg err';
-        typing.textContent = 'Request failed (' + e.message + '). ' +
-          'Check the key, the model name, and your network connection.';
-        history.pop();
+        stopStreaming();
+        msgEl.classList.remove('typing');
+        if (e.name === 'AbortError') {
+          /* User hit Stop: keep what streamed so far, drop the pending user turn if nothing arrived. */
+          if (reply) { history.push({ role: 'assistant', content: reply }); }
+          else { history.pop(); msgEl.textContent = '(stopped)'; }
+        } else {
+          msgEl.className = 'msg err';
+          msgEl.textContent = 'Request failed (' + e.message + '). ' +
+            'Check the key, the model name, and your network connection.';
+          history.pop();
+        }
       });
     }
     document.getElementById('chatSend').addEventListener('click', sendChat);
