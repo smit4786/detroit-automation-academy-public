@@ -165,6 +165,18 @@
         <button class="btn ghost" id="comOff" type="button">Disable</button>
       </div>
       <div id="notesList" style="margin-top:16px"></div>
+      <h2 style="margin-top:22px">Add a note</h2>
+      <p class="hint">Appends your note to the notes above, then downloads an updated commentary.json — replace the site's commentary.json with the download to publish.</p>
+      <div class="stat-grid">
+        <label for="comTitle" style="margin:0">Title</label>
+        <input type="text" id="comTitle" placeholder="e.g. Hero section">
+        <label for="comNote" style="margin:0">Note</label>
+        <input type="text" id="comNote" placeholder="What a visitor should notice…">
+        <label for="comSelector" style="margin:0">Selector</label>
+        <input type="text" id="comSelector" placeholder="e.g. #hero, .programs">
+      </div>
+      <div class="row"><button class="btn" id="comAdd" type="button">Add note + download commentary.json</button></div>
+      <p class="ok" id="comOk"></p>
     </section>
 
     <section class="panel" id="tab-log" role="tabpanel" hidden>
@@ -518,16 +530,43 @@
     document.getElementById('comOff').addEventListener('click', function () {
       try { sessionStorage.removeItem('daa_commentary'); } catch (e) {}
     });
+    /* ---- #11: add-note form — appends to the fetched notes and downloads an updated commentary.json ---- */
+    var comNotes = [];
+    function renderComNote(n, list) {
+      if (!n) return;
+      var d = document.createElement('div');
+      d.className = 'note-item';
+      var s = document.createElement('strong'); s.textContent = n.title;
+      var p = document.createElement('span'); p.textContent = n.note + '  →  ' + n.selector;
+      d.appendChild(s); d.appendChild(p); list.appendChild(d);
+    }
     fetch('commentary.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (notes) {
+      comNotes = notes || [];
       var list = document.getElementById('notesList');
-      (notes || []).forEach(function (n) {
-        var d = document.createElement('div');
-        d.className = 'note-item';
-        var s = document.createElement('strong'); s.textContent = n.title;
-        var p = document.createElement('span'); p.textContent = n.note + '  →  ' + n.selector;
-        d.appendChild(s); d.appendChild(p); list.appendChild(d);
-      });
+      comNotes.forEach(function (n) { renderComNote(n, list); });
     }).catch(function () {});
+
+    document.getElementById('comAdd').addEventListener('click', function () {
+      var titleEl = document.getElementById('comTitle'),
+          noteEl = document.getElementById('comNote'),
+          selEl = document.getElementById('comSelector'),
+          ok = document.getElementById('comOk');
+      var title = titleEl.value.trim(), note = noteEl.value.trim(), selector = selEl.value.trim();
+      if (!title || !note) {
+        ok.textContent = 'Title and note are required — nothing was added or downloaded.';
+        return;
+      }
+      var updated = comNotes.concat([{ title: title, note: note, selector: selector }]);
+      var blob = new Blob([JSON.stringify(updated, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'commentary.json'; a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+      comNotes = updated;
+      renderComNote({ title: title, note: note, selector: selector }, document.getElementById('notesList'));
+      titleEl.value = ''; noteEl.value = ''; selEl.value = '';
+      ok.textContent = 'Added note and downloaded commentary.json (' + updated.length +
+        ' note' + (updated.length === 1 ? '' : 's') + ') — replace the site file with it to publish.';
+    });
 
     /* ---- changelog ---- */
     var ta = document.getElementById('changelog');
