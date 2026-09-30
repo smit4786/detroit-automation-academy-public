@@ -172,6 +172,26 @@
     var botTag = makeLabel('TRAINING BOT');
     botTag.position.set(0, 15.5, 0);
     botGroup.add(botTag);
+    // glowing eyes: emissive amber spheres over the STL eye positions.
+    // OpenSCAD (±1.3, 1.95, 7.4) -> three.js (x, z, -y) = (±1.3, 7.4, -1.95).
+    var eyeGeo = new THREE.SphereGeometry(0.72, 12, 12);
+    var eyeMat = new THREE.MeshStandardMaterial({
+      color: 0xFFB000, emissive: 0xFFB000, emissiveIntensity: 2.2, roughness: 0.4
+    });
+    [-1.3, 1.3].forEach(function (ex) {
+      var eye = new THREE.Mesh(eyeGeo, eyeMat);
+      eye.position.set(ex, 7.4, -1.95);
+      botGroup.add(eye);
+    });
+    // headlight beam: translucent cone from the chest, facing -z (bot forward)
+    var beamGeo = new THREE.ConeGeometry(3.2, 11, 20, 1, true);
+    var beam = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({
+      color: 0xfff2c0, transparent: true, opacity: 0.16,
+      blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
+    }));
+    beam.rotation.x = Math.PI / 2; // apex -> +z so it sits at the chest
+    beam.position.set(0, 4.3, -8.1); // apex lands at (0, 4.3, -2.6), base at z=-13.6
+    botGroup.add(beam);
     var botMesh = null;
     loader.load(base + 'bot.stl', function (geo) {
       geo.rotateX(-Math.PI / 2);
