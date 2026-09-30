@@ -246,7 +246,7 @@
         <button class="btn ghost preset-btn" id="presetCommentary" type="button">Draft commentary note</button>
       </div>
       <div class="chat-row">
-        <input type="text" id="chatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Claude" title="Cmd/Ctrl+K to focus · Esc to clear">
+        <input type="text" id="chatInput" placeholder="Ask about the site, draft an announcement… or type /help" aria-label="Message Claude" title="Cmd/Ctrl+K to focus · Esc to clear">
         <button class="btn" id="chatSend" type="button">Send</button>
         <button class="btn ghost" id="chatStop" type="button" hidden>Stop</button>
         <button class="btn ghost" id="chatRegen" type="button" title="Re-send the last message for a fresh reply" disabled>Regenerate</button>
@@ -780,6 +780,7 @@
     function sendChat() {
       var text = chatInput.value.trim();
       if (!text || streaming) return;
+      if (text.charAt(0) === '/') { handleChatCommand(text); return; } /* #B1: slash-commands */
       var key = keyInput.value.trim();
       if (!key) { addMsg('error', 'Save your Anthropic API key first — it stays in this browser.'); return; }
       var model = modelInput.value.trim() || 'claude-haiku-4-5';
@@ -959,6 +960,37 @@
         chatInput.focus();
       });
     });
+
+    /* ---- bot commands (#B1): slash-commands in the chat input. A leading "/"
+          routes to a local handler instead of the API — no key needed, and
+          commands never enter API history or Regenerate's last message. ---- */
+    var CHAT_COMMANDS = {
+      help: {
+        hint: '/help — list available commands',
+        run: function () {
+          var lines = ['Available commands:'];
+          Object.keys(CHAT_COMMANDS).forEach(function (name) {
+            lines.push('\u00b7 ' + CHAT_COMMANDS[name].hint);
+          });
+          addMsg('bot', lines.join('\n'));
+        }
+      }
+    };
+
+    function handleChatCommand(text) {
+      var rest = text.slice(1);
+      var first = rest.split(/\s+/)[0] || '';
+      var name = first.toLowerCase();
+      var args = rest.slice(first.length).trim();
+      addMsg('user', text);
+      chatInput.value = '';
+      var cmd = CHAT_COMMANDS[name];
+      if (!cmd) {
+        addMsg('bot', 'Unknown command "/' + name + '". Type /help for the list.');
+        return;
+      }
+      cmd.run(args);
+    }
   }
     /* ---- gemini tab: bring-your-own-key chat, browser-direct to the Gemini API ----
        Key lives in this browser's localStorage only — never in the repo.
