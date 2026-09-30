@@ -26,6 +26,14 @@
   .roots-list li { border-left: 3px solid #E85D1A; padding: .2rem 0 .2rem 1rem; }
   .roots-list strong { display: block; margin-bottom: .2rem; }
   .roots-list p { margin: 0; color: #9AA0A6; }
+  .vehicle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .vehicle-card { border: 1px solid rgba(245,242,234,.14); border-radius: 12px; overflow: hidden; background: rgba(245,242,234,.03); }
+  .vehicle-card img { display: block; width: 100%; height: auto; background: #f5f1e4; }
+  .vehicle-card .vehicle-body { padding: 1rem 1.2rem 1.2rem; }
+  .vehicle-card h3 { margin: 0 0 .2rem; font-size: 1.05rem; }
+  .vehicle-card h3 .use { color: #FFB000; font-weight: 500; font-size: .85rem; display: block; margin-top: .15rem; }
+  .vehicle-card .specs { margin: .4rem 0 .5rem; color: #9AA0A6; font-size: .85rem; }
+  .vehicle-card p { margin: 0; color: #9AA0A6; font-size: .95rem; }
 </style>
 </head>
 <body>
@@ -39,6 +47,7 @@
     <a href="#network">Network</a>
     <a href="#stations">Stations</a>
     <a href="#roots">Roots</a>
+    <a href="#vehicles">Vehicles</a>
     <a href="./#demo">3D demo</a>
   </nav>
   <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
@@ -144,6 +153,51 @@
           <p>The bot is already an on-demand shuttle (<code>go &lt;place&gt;</code>). The Forge Line is the rapid trunk; the bot is the last-mile Flex &mdash; the same two-layer pattern voters funded on August 4, when Wayne County approved the transit millage 67&ndash;33.</p>
         </li>
       </ul>
+    </div>
+  </section>
+
+  <!-- VEHICLES -->
+  <section class="section" id="vehicles">
+    <div class="wrap">
+      <p class="kicker">Prototype series</p>
+      <h2>Four vehicles. <span class="accent">Four jobs.</span></h2>
+      <div class="prose">
+        <p>One guideway, different work. Each prototype is modeled in CAD at real scale &mdash; passenger, cargo, maintenance, and heritage service. Renders below are straight from the models.</p>
+      </div>
+      <div class="vehicle-grid">
+        <div class="vehicle-card">
+          <img src="assets/forge-line/pod.png" alt="CAD render of the Forge Pod passenger vehicle" loading="lazy">
+          <div class="vehicle-body">
+            <h3>Forge Pod <span class="use">Passenger</span></h3>
+            <p class="specs">6.0 &times; 2.6 &times; 2.7 m &middot; 6 riders</p>
+            <p>Spoke service: Central Interchange to every district. Automated, 90-second headways, zero-fare.</p>
+          </div>
+        </div>
+        <div class="vehicle-card">
+          <img src="assets/forge-line/hauler.png" alt="CAD render of the Forge Hauler cargo vehicle" loading="lazy">
+          <div class="vehicle-body">
+            <h3>Forge Hauler <span class="use">Cargo</span></h3>
+            <p class="specs">5.0 &times; 2.6 &times; 3.0 m &middot; 800 kg</p>
+            <p>Moves equipment and materials between the Workshop and the labs on the same guideway.</p>
+          </div>
+        </div>
+        <div class="vehicle-card">
+          <img src="assets/forge-line/tender.png" alt="CAD render of the Line Tender maintenance rig" loading="lazy">
+          <div class="vehicle-body">
+            <h3>Line Tender <span class="use">Maintenance</span></h3>
+            <p class="specs">4.0 &times; 2.4 m flatbed &middot; crew of 2</p>
+            <p>Guideway inspection and repair: sensor mast, railed work platform, amber beacon.</p>
+          </div>
+        </div>
+        <div class="vehicle-card">
+          <img src="assets/forge-line/heritage.png" alt="CAD render of the Heritage Car streetcar" loading="lazy">
+          <div class="vehicle-body">
+            <h3>Heritage Car <span class="use">Streetcar &middot; Phase 2</span></h3>
+            <p class="specs">8.3 &times; 2.6 &times; 5.1 m &middot; 24 riders</p>
+            <p>At-grade plaza loop. A QLINE homage in cream and green, trolley pole and all.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
