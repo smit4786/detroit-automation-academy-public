@@ -249,6 +249,7 @@
         <input type="text" id="chatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Claude" title="Cmd/Ctrl+K to focus · Esc to clear">
         <button class="btn" id="chatSend" type="button">Send</button>
         <button class="btn ghost" id="chatStop" type="button" hidden>Stop</button>
+        <button class="btn ghost" id="chatRegen" type="button" title="Re-send the last message for a fresh reply" disabled>Regenerate</button>
       </div>
       <div class="row"><button class="btn ghost" id="chatClear" type="button">Clear chat</button>
       <button class="btn ghost" id="chatExport" type="button">Export chat (.md)</button></div>
@@ -635,12 +636,15 @@
         chatInput = document.getElementById('chatInput'),
         chatSend = document.getElementById('chatSend'),
         chatStop = document.getElementById('chatStop'),
+        chatRegen = document.getElementById('chatRegen'),
         keyInput = document.getElementById('f-claude-key'),
         modelInput = document.getElementById('f-claude-model'),
         maxTokensInput = document.getElementById('f-claude-max-tokens'),
         keyOk = document.getElementById('claudeKeyOk');
     var history = [];
     var streaming = false; /* true while a streamed reply is in flight */
+    var lastUserMsg = '', lastBotMsgEl = null; /* #20: what Regenerate re-sends / replaces */
+    function updateRegen() { chatRegen.disabled = streaming || !lastUserMsg; }
 
     /* ---- connection status pill (#15): shows key-saved state and last-call
           latency, rendered text-only via textContent. ---- */
@@ -784,7 +788,9 @@
       addMsg('user', text);
       history.push({ role: 'user', content: text });
       chatInput.value = '';
+      lastUserMsg = text; /* remember for Regenerate (#20) */
       var msgEl = addMsg('bot', '');
+      lastBotMsgEl = msgEl;
       msgEl.classList.add('typing');
       var reply = '';
       var usageIn = 0, usageOut = 0;
@@ -792,12 +798,14 @@
       streaming = true;
       chatSend.disabled = true;
       chatStop.hidden = false;
+      updateRegen();
       var callStart = Date.now(); /* last-call latency for the status pill */
       setClaudeStatus('Streaming…', 'warn');
       function stopStreaming() {
         streaming = false;
         chatSend.disabled = false;
         chatStop.hidden = true;
+        updateRegen();
       }
       chatStop.onclick = function () { aborter.abort(); };
       fetch(CLAUDE_URL, {
@@ -889,8 +897,26 @@
     }
     document.getElementById('chatSend').addEventListener('click', sendChat);
     chatInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') sendChat(); });
+    /* ---- regenerate (#20): re-send the last user message for a fresh reply.
+          Drops the previous assistant reply (history + its message div, usage
+          line included) so the log stays clean. No-op until a message has
+          been sent, and inert while a reply is streaming. ---- */
+    function regenChat() {
+      if (streaming || !lastUserMsg) return;
+      var last = history[history.length - 1];
+      if (last && last.role === 'assistant') {
+        history.pop();
+        if (lastBotMsgEl && lastBotMsgEl.parentNode) lastBotMsgEl.parentNode.removeChild(lastBotMsgEl);
+        lastBotMsgEl = null;
+      }
+      chatInput.value = lastUserMsg;
+      sendChat();
+    }
+    chatRegen.addEventListener('click', regenChat);
     document.getElementById('chatClear').addEventListener('click', function () {
       history = []; chatLog.innerHTML = '';
+      lastUserMsg = ''; lastBotMsgEl = null;
+      updateRegen();
     });
 
     /* ---- export chat as Markdown (#5): downloads the session history as a
