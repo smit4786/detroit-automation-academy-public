@@ -997,6 +997,16 @@
           chatInput.value = PRESETS.presetCommentary;
           chatInput.focus();
         }
+      },
+      /* ---- #B3: /clear — same behavior as the Clear button, plus a
+            confirmation message (which stays out of API history). ---- */
+      clear: {
+        hint: '/clear \u2014 clear the chat log and history (same as the Clear button)',
+        run: function () {
+          history = []; chatLog.innerHTML = ''; lastUserMsg = ''; lastBotMsgEl = null;
+          updateRegen();
+          addMsg('bot', 'Chat cleared.');
+        }
       }
     };
 
