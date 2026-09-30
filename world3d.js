@@ -51,7 +51,10 @@
       import('three/addons/controls/OrbitControls.js'),
       import('three/addons/loaders/STLLoader.js')
     ]).then(function (m) { init(m[0], m[1].OrbitControls, m[2].STLLoader); })
-      .catch(fallback);
+      .catch(function (e) {
+        if (window.console && console.error) console.error('[world3d] init failed:', e);
+        fallback();
+      });
   }
 
   if ('IntersectionObserver' in window) {
@@ -127,7 +130,7 @@
         mesh.receiveShadow = true;
         mesh.castShadow = p[0] !== 'ground' && p[0] !== 'roads' && p[0] !== 'water';
         scene.add(mesh);
-      }, undefined, fallback);
+      }, undefined, partError(base + p[0] + '.stl'));
     });
 
     // The Workshop: procedural SC3K-standard build (replaces workshop.stl).
@@ -136,10 +139,22 @@
       if (window.DAAArchKit && window.DAAArchKit.buildWorkshop) {
         scene.add(window.DAAArchKit.buildWorkshop(THREE));
       }
-    } catch (e) { /* workshop stays absent rather than breaking the scene */ }
+    } catch (e) {
+      // workshop stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] workshop build failed:', e);
+    }
     bumpLoadCount();
 
-    // clickable district markers (invisible hit discs at each stop)    var hitGeo = new THREE.CylinderGeometry(13, 13, 6, 12);
+    // STL load failures: log which asset failed, then engage the 2D fallback.
+    function partError(url) {
+      return function (err) {
+        if (window.console && console.error) console.error('[world3d] STL load failed: ' + url, err);
+        fallback();
+      };
+    }
+
+    // clickable district markers (invisible hit discs at each stop)
+    var hitGeo = new THREE.CylinderGeometry(13, 13, 6, 12);
     Object.keys(DISTRICT).forEach(function (key) {
       var d = DISTRICT[key];
       var hit = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
@@ -228,7 +243,7 @@
       botGroup.position.set(0, 0.35, 24); // workshop approach point (clear of the building)
       scene.add(botGroup);
       ready();
-    }, undefined, fallback);
+    }, undefined, partError(base + 'bot.stl'));
 
     // info card
     var card = document.createElement('div');
@@ -368,8 +383,21 @@
       // camera follows the bot loosely
       controls.target.lerp(new THREE.Vector3(botGroup.position.x, 2, botGroup.position.z), 0.04);
       controls.update();
-      renderer.render(scene, camera);
+      try {
+        renderer.render(scene, camera);
+      } catch (e) {
+        // one bad frame must never kill the loop silently; the ready backstop
+        // (installed below, before the first frame) still fires.
+        if (!tick._renderLogged && window.console && console.error) {
+          tick._renderLogged = true;
+          console.error('[world3d] render failed:', e);
+        }
+      }
     }
+    // Ready backstop BEFORE the first frame: even if the render loop throws,
+    // init completes and the loading overlay can never strand.
+    manager.onLoad = ready;
+    setTimeout(ready, 12000); // don't hang on a stalled part
     tick();
 
     window.addEventListener('resize', function () {
@@ -420,8 +448,5 @@
       look: function (key) { if (key && DISTRICT[key]) showCard(key); }
     };
     window.DAAWorld = api;
-
-    manager.onLoad = ready;
-    setTimeout(ready, 12000); // don't hang on a stalled part
   }
 })();
