@@ -99,7 +99,7 @@ module riverfront() {
   // open pavilion: columns + roof slab
   translate([C_RIVERFRONT[0] - 11, C_RIVERFRONT[1] - 8, 0]) {
     for (sx = [-1, 1], sy = [-1, 1])
-      translate([sx*9, sy*6, 0]) cylinder(r = 0.9, h = 7);
+      translate([sx*9, sy*6, 0]) cylinder(r = 0.35, h = 7);   // columns — slender (were 1.8 m across)
     translate([-11, -8, 7]) cube([22, 16, 1.6]);
     // bench blocks — seat height (~0.5 m), not wall height (bot is 1.1 m)
     translate([-6, -2, 0]) {
