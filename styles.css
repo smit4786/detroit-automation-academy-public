@@ -584,6 +584,7 @@ a { color: inherit; }
   #demoBot .bot-body, #demoBot .bot-arm-wave,
   #demoBot .bot-wheel, #demoBot .scan-beam, #demoBot .bot-light { animation: none !important; }
   .scan-beam { opacity: 0 !important; }
+  .world3d-loading span { animation: none; }
 }
 
 /* ---------- Demo mobile ---------- */

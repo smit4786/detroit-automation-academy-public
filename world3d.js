@@ -97,6 +97,14 @@
 
     var manager = new THREE.LoadingManager();
     var loader = new STLLoader(manager);
+    // real load progress on the overlay: 11 district parts + the bot
+    var loadTotal = PARTS.length + 1;
+    var loadCountEl = mount.querySelector('.world3d-count');
+    function paintLoadCount(done) {
+      if (loadCountEl) loadCountEl.textContent = done + '/' + loadTotal;
+    }
+    paintLoadCount(0);
+    manager.onProgress = function (url, loaded) { paintLoadCount(loaded); };
     var base = 'assets/world/';
     var clickTargets = [];
 
