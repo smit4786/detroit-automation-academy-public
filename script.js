@@ -96,6 +96,13 @@
       ANIM_CLASSES.forEach(function (c) { bot.classList.remove(c); });
     }
 
+    /* 3D bridge: when the Three.js district is live, commands drive the 3D
+       bot instead of the SVG one. Null until world3d.js finishes loading. */
+    function world3d() {
+      var live = document.getElementById('demoStage').classList.contains('world-live');
+      return (live && window.DAAWorld) ? window.DAAWorld : null;
+    }
+
     function printLine(kind, text) {
       var line = document.createElement('div');
       line.className = 'demo-line ' + kind;
@@ -121,6 +128,8 @@
 
     function look() {
       var w = WORLD[botLoc];
+      var w3 = world3d();
+      if (w3) w3.look(botLoc);
       printLine('demo-line-out', w.name + ' \u2014 ' + w.desc);
       printLine('demo-line-out', 'Exits: ' + exitsList().join(' \u00B7 '));
     }
@@ -164,11 +173,16 @@
       }
       battery -= MOVE_COST;
       botLoc = target;
-      clearAnims();
-      void bot.getBoundingClientRect(); // restart the animation
-      if (!reduced) bot.classList.add('anim-forward');
       printLine('demo-line-ok', 'Rolling to ' + WORLD[target].name + '.');
-      look();
+      var w3 = world3d();
+      if (w3) {
+        w3.goTo(target, look); // describe the stop when the bot arrives
+      } else {
+        clearAnims();
+        void bot.getBoundingClientRect(); // restart the animation
+        if (!reduced) bot.classList.add('anim-forward');
+        look();
+      }
     }
 
     function printHelp() {
@@ -193,9 +207,17 @@
         printLine('demo-line-out', 'Unknown command \u2014 try "help".');
         return;
       }
-      clearAnims();
-      void bot.getBoundingClientRect(); // restart the animation
-      if (!reduced) bot.classList.add(def.anim);
+      var w3 = world3d();
+      if (w3) {
+        var act = { forward: function () { w3.nudge(1); }, back: function () { w3.nudge(-1); },
+          spin: w3.spin, dance: w3.dance, jump: w3.jump, wave: w3.wave,
+          scan: w3.scan, charge: w3.charge }[cmd];
+        if (act) act();
+      } else {
+        clearAnims();
+        void bot.getBoundingClientRect(); // restart the animation
+        if (!reduced) bot.classList.add(def.anim);
+      }
       if (def.fn) def.fn();
       printLine('demo-line-ok', def.reply);
     }

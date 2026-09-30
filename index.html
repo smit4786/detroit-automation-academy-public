@@ -10,6 +10,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 </head>
 <body>
 <a class="skip-link" href="#top">Skip to main content</a>
@@ -87,10 +95,13 @@
       <p class="kicker">Try it</p>
       <h2 id="demo-heading">Type a command. <span class="accent">Watch it move.</span></h2>
       <div class="prose">
-        <p>This is what day one feels like at the academy: you tell a machine what to do, and it does it. The training bot is listening — go ahead.</p>
+        <p>This is what day one feels like at the academy: you tell a machine what to do, and it does it. The training bot is listening &mdash; go ahead. Drag to orbit the 3D training district, tap a building to visit it, or drive with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>.</p>
       </div>
       <div class="demo">
-        <div class="demo-stage">
+        <div class="demo-stage" id="demoStage">
+          <div id="world3d" class="world3d" role="img" aria-label="Interactive 3D training district. Drag to orbit, scroll to zoom, tap a building to visit it.">
+            <div class="world3d-loading"><span></span>Building the district&hellip;</div>
+          </div>
           <svg class="demo-bot" id="demoBot" viewBox="0 0 220 220" role="img" aria-label="A small orange training robot that responds to typed commands">
             <ellipse cx="110" cy="198" rx="54" ry="10" class="bot-shadow"/>
             <g class="bot-body">
@@ -245,6 +256,7 @@
 </footer>
 
 <script src="script.js"></script>
+<script src="world3d.js" defer></script>
 <script src="owner.js" defer></script>
 </body>
 </html>
