@@ -71,6 +71,12 @@
   .preset-row { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 10px; }
   .preset-btn { padding:7px 14px; font-size:.8rem; font-weight:600; }
   .usage { font-size:.76rem; color:var(--concrete); margin-top:6px; }
+  .sys-prompt { margin:8px 0 0; font-size:.85rem; }
+  .sys-prompt summary { cursor:pointer; color:var(--concrete); }
+  .sys-prompt summary:hover { color:var(--paper); }
+  .sys-prompt pre { white-space:pre-wrap; word-wrap:break-word; background:var(--midnight);
+    border:1px solid #2a333d; border-radius:10px; padding:12px; font-size:.82rem;
+    max-height:260px; overflow-y:auto; font-family:ui-monospace,Menlo,Consolas,monospace; }
   .copy-btn { display:inline-block; margin-top:8px; background:transparent; color:var(--concrete);
               border:1px solid #2a333d; border-radius:999px; padding:3px 12px; font-size:.75rem;
               cursor:pointer; font-weight:600; }
@@ -214,6 +220,10 @@
         <button class="btn ghost" id="forgetClaudeKey" type="button">Forget key</button>
       </div>
       <p class="ok" id="claudeKeyOk"></p>
+      <details class="sys-prompt" id="sysPromptDetails">
+        <summary>View the active system prompt</summary>
+        <pre id="sysPromptView" aria-live="polite"></pre>
+      </details>
       <div id="chatLog" aria-live="polite"></div>
       <div class="preset-row" id="presetRow">
         <button class="btn ghost preset-btn" id="presetAnnounce" type="button">Draft announcement</button>
@@ -738,6 +748,15 @@
       if (live) { ctx += ' Current live.json: ' + JSON.stringify(live).slice(0, 1200); }
       return ctx;
     }
+
+    /* ---- #17: read-only viewer for the active system prompt — re-rendered
+          every time the details element opens, so the live.json context is
+          always current. textContent only, never editable. ---- */
+    var sysPromptDetails = document.getElementById('sysPromptDetails'),
+        sysPromptView = document.getElementById('sysPromptView');
+    sysPromptDetails.addEventListener('toggle', function () {
+      if (sysPromptDetails.open) sysPromptView.textContent = claudeSystem();
+    });
 
     function sendChat() {
       var text = chatInput.value.trim();
