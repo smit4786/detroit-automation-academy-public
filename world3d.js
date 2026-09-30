@@ -12,17 +12,19 @@
 
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // three.js coords: x = east, z = south (OpenSCAD +y/north maps to -z)
+  // three.js coords: x = east, z = south (OpenSCAD +y/north maps to -z).
+  // pos values are road-side approach points, kept clear of building
+  // footprints so the bot is never occluded inside a mesh.
   var DISTRICT = {
-    workshop:   { pos: [0, 0],   name: 'The Workshop',     color: 0xE85D1A,
+    workshop:   { pos: [20, 0],   name: 'The Workshop',     color: 0xE85D1A,
       desc: 'Home base. Workbenches, spare servos, the smell of solder.' },
-    techtown:   { pos: [0, -44], name: 'TechTown Detroit', color: 0x8a94a6,
+    techtown:   { pos: [0, -28],  name: 'TechTown Detroit', color: 0x8a94a6,
       desc: 'Startups, mentors, whiteboards full of impossible.' },
-    station:    { pos: [44, 0],  name: 'Michigan Central', color: 0xF5F2EA,
+    station:    { pos: [19, 0],   name: 'Michigan Central', color: 0xF5F2EA,
       desc: 'The old train station, reborn as an innovation hub.' },
-    riverfront: { pos: [0, 44],  name: 'Detroit Riverfront', color: 0x9AA0A6,
+    riverfront: { pos: [0, 30],   name: 'Detroit Riverfront', color: 0x9AA0A6,
       desc: 'Wind off the water, skyline at your back.' },
-    thinkabit:  { pos: [-44, 0], name: 'Thinkabit Lab',    color: 0xFFB000,
+    thinkabit:  { pos: [-26, 0],  name: 'Thinkabit Lab',    color: 0xFFB000,
       desc: 'A STEM lab buzzing with kits and big questions.' }
   };
   var PARTS = [
@@ -134,7 +136,7 @@
       }));
       botMesh.castShadow = true;
       botGroup.add(botMesh);
-      botGroup.position.set(0, 0.35, 10);
+      botGroup.position.set(20, 0.35, 0); // workshop approach point (clear of the building)
       scene.add(botGroup);
       ready();
     }, undefined, fallback);
