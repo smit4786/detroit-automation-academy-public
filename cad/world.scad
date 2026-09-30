@@ -87,8 +87,12 @@ module station() {
         rotate([0, 90, 0]) cylinder(r = 9, h = 38);
         translate([0, -9, 0]) cube([38, 18, 9]);
       }
-    // entrance block
+    // entrance block + human-scale doorway (the 6x3x6 block was a blank mass)
     translate([14, -2.5, 0]) cube([6, 3, 6]);
+    translate([16.3, -2.9, 0]) cube([2.4, 0.8, 3.2]);            // doorway, proud of face
+    for (sx = [-1, 1])
+      translate([16.3 + sx*1.9, -2.9, 0.4]) cube([0.8, 0.8, 2.4]); // sidelights
+    translate([15.9, -3.4, 3.2]) cube([3.2, 1.2, 0.15]);          // canopy
     // column hints along the face
     for (x = [2:6:32])
       translate([x, -0.4, 0]) cube([1.2, 0.8, 8]);
