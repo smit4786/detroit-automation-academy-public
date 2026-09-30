@@ -125,8 +125,53 @@
       clickTargets.push(hit);
     });
 
+    // floating name labels (canvas sprites; positions are building centers
+    // in three.js coords: x = east, z = south, y = just above the roofline)
+    function makeLabel(text) {
+      var fs = 44, pad = 34;
+      var c = document.createElement('canvas');
+      var g = c.getContext('2d');
+      g.font = '600 ' + fs + 'px system-ui, -apple-system, "Segoe UI", sans-serif';
+      c.width = Math.ceil(g.measureText(text).width) + pad * 2;
+      c.height = Math.ceil(fs + pad * 1.5);
+      var g2 = c.getContext('2d');
+      g2.fillStyle = 'rgba(12,17,22,0.80)';
+      g2.beginPath();
+      if (g2.roundRect) g2.roundRect(2, 2, c.width - 4, c.height - 4, (c.height - 4) / 2);
+      else g2.rect(2, 2, c.width - 4, c.height - 4);
+      g2.fill();
+      g2.lineWidth = 3;
+      g2.strokeStyle = 'rgba(232,93,26,0.95)';
+      g2.stroke();
+      g2.font = '600 ' + fs + 'px system-ui, -apple-system, "Segoe UI", sans-serif';
+      g2.fillStyle = '#F5F2EA';
+      g2.textBaseline = 'middle';
+      g2.fillText(text, pad, c.height / 2 + 2);
+      var tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = 4;
+      var sp = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: tex, transparent: true, depthTest: true
+      }));
+      var hWorld = 3.4;
+      sp.scale.set(hWorld * c.width / c.height, hWorld, 1);
+      return sp;
+    }
+    var LABEL_AT = { // [x, z, y] per district, from cad/world.scad
+      workshop:   [0, 0, 21], techtown: [0, -44, 37], station: [44, 0, 21],
+      riverfront: [0, 44, 12], thinkabit: [-44, 0, 17]
+    };
+    Object.keys(DISTRICT).forEach(function (key) {
+      var p = LABEL_AT[key];
+      var sp = makeLabel(DISTRICT[key].name);
+      sp.position.set(p[0], p[2], p[1]);
+      scene.add(sp);
+    });
+
     // the bot
     var botGroup = new THREE.Group();
+    var botTag = makeLabel('TRAINING BOT');
+    botTag.position.set(0, 15.5, 0);
+    botGroup.add(botTag);
     var botMesh = null;
     loader.load(base + 'bot.stl', function (geo) {
       geo.rotateX(-Math.PI / 2);
