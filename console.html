@@ -200,6 +200,8 @@
           <option value="claude-sonnet-4-6"></option>
           <option value="claude-opus-4-8"></option>
         </datalist>
+        <label for="f-claude-max-tokens" style="margin:0">Max tokens</label>
+        <input type="number" id="f-claude-max-tokens" value="1024" min="1" step="1">
       </div>
       <div class="row">
         <button class="btn ghost" id="saveClaudeKey" type="button">Save key</button>
@@ -604,6 +606,7 @@
         chatStop = document.getElementById('chatStop'),
         keyInput = document.getElementById('f-claude-key'),
         modelInput = document.getElementById('f-claude-model'),
+        maxTokensInput = document.getElementById('f-claude-max-tokens'),
         keyOk = document.getElementById('claudeKeyOk');
     var history = [];
     var streaming = false; /* true while a streamed reply is in flight */
@@ -720,6 +723,8 @@
       var key = keyInput.value.trim();
       if (!key) { addMsg('error', 'Save your Anthropic API key first — it stays in this browser.'); return; }
       var model = modelInput.value.trim() || 'claude-haiku-4-5';
+      var maxTokens = parseInt(maxTokensInput.value, 10);
+      if (isNaN(maxTokens) || maxTokens < 1) maxTokens = 1024; /* sane fallback */
       addMsg('user', text);
       history.push({ role: 'user', content: text });
       chatInput.value = '';
@@ -747,7 +752,7 @@
         },
         body: JSON.stringify({
           model: model,
-          max_tokens: 1024,
+          max_tokens: maxTokens,
           stream: true,
           system: claudeSystem(),
           messages: history.slice(-20)
