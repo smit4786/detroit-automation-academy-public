@@ -49,8 +49,13 @@ module workshop() {
         rotate([90, 0, 0])
           linear_extrude(height = d)
             polygon(points = [[0,0], [w/3,0], [w/3,4.5]]);
-    // door (proud of the face)
-    translate([w/2 - 3, -0.4, 0]) cube([6, 0.8, 7]);
+    // entrance: roll-up freight door (4 x 4.5) + pedestrian door (1.2 x 2.4)
+    // — human scale for a 1.1 m bot (the old single 6 x 7 door was oversized)
+    translate([w/2 - 2, -0.4, 0]) cube([4, 0.8, 4.5]);          // roll-up door
+    for (z = [0.75 : 0.75 : 3.75])
+      translate([w/2 - 2, -0.45, z]) cube([4, 0.1, 0.08]);      // slat hints
+    translate([w/2 + 3.2, -0.4, 0]) cube([1.2, 0.8, 2.4]);      // pedestrian door
+    translate([w/2 + 2.9, -0.9, 2.4]) cube([1.8, 1.0, 0.15]);   // canopy
     // chimney
     translate([w - 5, d/2, h + 2]) cylinder(r = 1.1, h = 6);
     // window band
