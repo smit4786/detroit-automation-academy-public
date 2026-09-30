@@ -101,8 +101,12 @@ module riverfront() {
     for (sx = [-1, 1], sy = [-1, 1])
       translate([sx*9, sy*6, 0]) cylinder(r = 0.9, h = 7);
     translate([-11, -8, 7]) cube([22, 16, 1.6]);
-    // bench blocks
-    translate([-6, -2, 0]) cube([12, 1.4, 1.2]);
+    // bench blocks — seat height (~0.5 m), not wall height (bot is 1.1 m)
+    translate([-6, -2, 0]) {
+      for (lx = [0.3, 5.35, 10.85])
+        translate([lx, 0.15, 0]) cube([0.5, 0.9, 0.38]);   // legs
+      translate([0, 0, 0.38]) cube([12, 1.2, 0.12]);       // seat slab
+    }
   }
 }
 
