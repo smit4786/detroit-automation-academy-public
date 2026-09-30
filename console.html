@@ -277,7 +277,7 @@
       </div>
 
       <div class="chat-row">
-        <input type="text" id="geminiChatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Gemini" title="Cmd/Ctrl+K to focus · Esc to clear">
+        <input type="text" id="geminiChatInput" placeholder="Ask about the site, draft an announcement… or type /help" aria-label="Message Gemini" title="Cmd/Ctrl+K to focus · Esc to clear">
         <button class="btn" id="geminiChatSend" type="button">Send</button>
         <button class="btn ghost" id="geminiChatStop" type="button" hidden>Stop</button>
       </div>
@@ -1148,6 +1148,7 @@
     function sendGeminiChat() {
       var text = geminiChatInput.value.trim();
       if (!text || geminiStreaming) return;
+      if (text.charAt(0) === '/') { handleGeminiChatCommand(text); return; } /* #B5 */
       var key = geminiKeyInput.value.trim();
       if (!key) { addGeminiMsg('error', 'Save your Google AI Studio API key first — it stays in this browser.'); return; }
       var model = geminiModelInput.value.trim() || 'gemini-3.7-flash';
@@ -1291,6 +1292,73 @@
         geminiChatInput.focus();
       });
     });
+
+    /* ---- #B5: Gemini tab command parity — same command set as the Claude tab
+          (#B1-#B4), wired to the Gemini input/log/history. Commands run
+          locally: no API key needed, nothing enters API history. ---- */
+    var GEMINI_CHAT_COMMANDS = {
+      help: {
+        hint: '/help \u2014 list available commands',
+        run: function () {
+          var lines = ['Available commands:'];
+          Object.keys(GEMINI_CHAT_COMMANDS).forEach(function (name) {
+            lines.push('\u00b7 ' + GEMINI_CHAT_COMMANDS[name].hint);
+          });
+          addGeminiMsg('bot', lines.join('\n'));
+        }
+      },
+      announce: {
+        hint: '/announce <topic> \u2014 fill the input with the announcement-draft prompt',
+        run: function (args) {
+          geminiChatInput.value = GEMINI_PRESETS.geminiPresetAnnounce.replace('<topic>', args || '<topic>');
+          geminiChatInput.focus();
+        }
+      },
+      changelog: {
+        hint: '/changelog \u2014 fill the input with the changelog-entry prompt',
+        run: function () {
+          geminiChatInput.value = GEMINI_PRESETS.geminiPresetChangelog;
+          geminiChatInput.focus();
+        }
+      },
+      commentary: {
+        hint: '/commentary \u2014 fill the input with the commentary-note prompt',
+        run: function () {
+          geminiChatInput.value = GEMINI_PRESETS.geminiPresetCommentary;
+          geminiChatInput.focus();
+        }
+      },
+      clear: {
+        hint: '/clear \u2014 clear the chat log and history (same as the Clear button)',
+        run: function () {
+          geminiHistory = []; geminiChatLog.innerHTML = '';
+          addGeminiMsg('bot', 'Chat cleared.');
+        }
+      },
+      model: {
+        hint: '/model <name> \u2014 set the chat model; bare /model reports the current one',
+        run: function (args) {
+          if (!args) {
+            addGeminiMsg('bot', 'Current model: ' + (geminiModelInput.value.trim() || 'gemini-3.7-flash'));
+            return;
+          }
+          geminiModelInput.value = args.split(/\s+/)[0];
+          addGeminiMsg('bot', 'Model set to ' + geminiModelInput.value + '.');
+        }
+      }
+    };
+
+    function handleGeminiChatCommand(text) {
+      var rest = text.slice(1);
+      var first = rest.split(/\s+/)[0] || '';
+      var name = first.toLowerCase();
+      var args = rest.slice(first.length).trim();
+      addGeminiMsg('user', text);
+      geminiChatInput.value = '';
+      var cmd = GEMINI_CHAT_COMMANDS[name];
+      if (!cmd) { addGeminiMsg('bot', 'Unknown command "' + name + '". Try /help.'); return; }
+      cmd.run(args);
+    }
 
     /* ---- keyboard shortcuts (#18): Cmd/Ctrl+K jumps to a chat input, Esc
           clears it. Cmd/Ctrl+K focuses the chat input of the visible chat tab
