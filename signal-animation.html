@@ -546,10 +546,22 @@
       function restart() {
         stage.classList.remove('paused');
         setPausedUI(false);
+        restartAnimations();
+        if (!reducedMotion) { startStatusLoop(); }
+      }
+
+      function restartAnimations() {
+        // Web Animations API restart: reliable across browsers. The old
+        // display:none + reflow trick does not restart CSS animations in
+        // iOS Safari, which left the Replay button dead on iPhones.
+        var anims = (stage.getAnimations ? stage.getAnimations({ subtree: true }) : []);
+        if (anims.length) {
+          anims.forEach(function (a) { a.cancel(); a.play(); });
+          return;
+        }
         stage.style.display = 'none';
         void stage.offsetWidth;
         stage.style.display = '';
-        if (!reducedMotion) { startStatusLoop(); }
       }
 
       replay.addEventListener('click', restart);
