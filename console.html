@@ -974,6 +974,29 @@
           });
           addMsg('bot', lines.join('\n'));
         }
+      },
+      /* ---- #B2: preset-fill commands — same text as the preset buttons,
+            words after the command become the <topic>. Nothing auto-sends. ---- */
+      announce: {
+        hint: '/announce <topic> \u2014 fill the input with the announcement-draft prompt',
+        run: function (args) {
+          chatInput.value = PRESETS.presetAnnounce.replace('<topic>', args || '<topic>');
+          chatInput.focus();
+        }
+      },
+      changelog: {
+        hint: '/changelog \u2014 fill the input with the changelog-entry prompt',
+        run: function () {
+          chatInput.value = PRESETS.presetChangelog;
+          chatInput.focus();
+        }
+      },
+      commentary: {
+        hint: "/commentary \u2014 fill the input with the commentary-note prompt",
+        run: function () {
+          chatInput.value = PRESETS.presetCommentary;
+          chatInput.focus();
+        }
       }
     };
 
