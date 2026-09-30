@@ -123,12 +123,13 @@ module trees() {
 }
 
 module street() {
-  // lamp posts along each spoke
+  // lamp posts along each spoke — human scale (was 8 m poles with 1.4 m globes)
   for (a = [0, 90, 180, 270], d = [24:14:58])
     rotate([0, 0, a])
       translate([ROAD_W/2 + 1.6, d, 0]) {
-        cylinder(r = 0.28, h = 8);
-        translate([0, 0, 8]) sphere(r = 0.7, $fn = 12);
+        cylinder(r = 0.14, h = 6);
+        translate([-0.9, 0, 6]) rotate([0, 90, 0]) cylinder(r = 0.08, h = 1.8, center = true);
+        translate([-1.8, 0, 6]) sphere(r = 0.28, $fn = 12);
       }
   // crates near the workshop
   translate([14, 10, 0]) cube([2.4, 2.4, 2.4]);
