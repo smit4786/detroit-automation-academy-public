@@ -222,6 +222,11 @@
       printLine('demo-line-ok', def.reply);
     }
 
+    // On touch devices, focusing the text input summons the software keyboard,
+    // which covers the 3D scene (reported on iPadOS). Command chips must not
+    // trigger it; the user can still tap the input deliberately to type.
+    var coarsePointer = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       run(input.value);
@@ -232,7 +237,7 @@
     document.querySelectorAll('.demo-chip').forEach(function (chip) {
       chip.addEventListener('click', function () {
         run(chip.getAttribute('data-cmd'));
-        input.focus();
+        if (!coarsePointer) input.focus();
       });
     });
 
