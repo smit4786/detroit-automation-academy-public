@@ -57,7 +57,7 @@
   #publishMsg { position:fixed; inset:auto 0 0 0; }
   .ok { color:#7dffa8; font-size:.9rem; min-height:1.4em; }
   kbd { background:#232c36; border-radius:6px; padding:2px 8px; font-size:.85em; }
-  #chatLog { display:flex; flex-direction:column; gap:10px; max-height:420px;
+  #chatLog, #geminiChatLog { display:flex; flex-direction:column; gap:10px; max-height:420px;
              overflow-y:auto; margin:16px 0; }
   .msg { padding:10px 14px; border-radius:12px; max-width:94%; white-space:pre-wrap;
          word-wrap:break-word; font-size:.92rem; }
@@ -67,7 +67,7 @@
   .typing { color:var(--concrete); font-style:italic; }
   .chat-row { display:flex; gap:8px; }
   .chat-row input[type=text] { flex:1; }
-  #chatStop[hidden] { display:none; } /* .btn's display:inline-block would override UA hidden */
+  #chatStop[hidden], #geminiChatStop[hidden] { display:none; } /* .btn's display:inline-block would override UA hidden */
   .preset-row { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 10px; }
   .preset-btn { padding:7px 14px; font-size:.8rem; font-weight:600; }
   .usage { font-size:.76rem; color:var(--concrete); margin-top:6px; }
@@ -98,6 +98,7 @@
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="commentary">Commentary</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="log">Changelog</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="claude">Claude</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="gemini">Gemini</button>
     </div>
 
     <section class="panel" id="tab-content" role="tabpanel">
@@ -203,6 +204,22 @@
       <button class="btn ghost" id="chatExport" type="button">Export chat (.md)</button></div>
       <p class="hint">Chat history lives only in this page session — closing the tab clears it. Claude knows the console's file layout (<code>live.json</code>, <code>commentary.json</code>) and sees the current live.json; paste drafts here, then publish via the Content tab.</p>
     </section>
+    <section class="panel" id="tab-gemini" role="tabpanel" hidden>
+      <h2>Gemini <span class="hint" style="display:inline">— owner-only chat, runs in this browser</span></h2>
+      <p class="hint">Bring your own Google AI Studio API key. It stays in this browser's localStorage — never in the repo, never on the public site. Usage bills to your Google account. Don&apos;t use this on a shared machine. Tip: restrict the key by HTTP referrer in Google AI Studio.</p>
+      <div class="stat-grid">
+        <label for="f-gemini-key" style="margin:0">API key</label>
+        <input type="password" id="f-gemini-key" placeholder="AIza…" autocomplete="off">
+        <label for="f-gemini-model" style="margin:0">Model</label>
+        <input type="text" id="f-gemini-model" value="gemini-3.7-flash">
+      </div>
+      <div class="row">
+        <button class="btn ghost" id="saveGeminiKey" type="button">Save key</button>
+        <button class="btn ghost" id="forgetGeminiKey" type="button">Forget key</button>
+      </div>
+      <p class="ok" id="geminiKeyOk"></p>
+      <p class="hint" id="geminiComingSoon">Chat streaming ships in the next release — save and verify your key above.</p>
+    </section>
   </div>
 </div>
 
@@ -279,7 +296,7 @@
   tabBtns.forEach(function (b) {
     b.addEventListener('click', function () {
       tabBtns.forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
-      ['content', 'telemetry', 'commentary', 'log', 'claude'].forEach(function (name) {
+      ['content', 'telemetry', 'commentary', 'log', 'claude', 'gemini'].forEach(function (name) {
         document.getElementById('tab-' + name).hidden = (name !== b.dataset.tab);
       });
     });
@@ -779,6 +796,34 @@
       });
     });
   }
+    /* ---- gemini tab: bring-your-own-key chat, browser-direct to the Gemini API ----
+       Key lives in this browser's localStorage only — never in the repo.
+       The key travels in the x-goog-api-key header, never the URL, so it stays
+       out of browser history and server logs. */
+    var geminiKeyInput = document.getElementById('f-gemini-key'),
+        geminiModelInput = document.getElementById('f-gemini-model'),
+        geminiKeyOk = document.getElementById('geminiKeyOk');
+    try { geminiKeyInput.value = localStorage.getItem('daa_gemini_key') || ''; } catch (e) {}
+
+    document.getElementById('saveGeminiKey').addEventListener('click', function () {
+      var k = geminiKeyInput.value.trim();
+      if (!k) { geminiKeyOk.textContent = 'Enter a key first.'; return; }
+      try { localStorage.setItem('daa_gemini_key', k); } catch (e) {}
+      geminiKeyOk.textContent = 'Key saved — verifying…';
+      fetch('https://generativelanguage.googleapis.com/v1beta/models', {
+        headers: { 'x-goog-api-key': k }
+      }).then(function (r) {
+        if (r.ok) { geminiKeyOk.textContent = 'Key saved in this browser only — verified working.'; }
+        else { geminiKeyOk.textContent = 'Key saved, but the API rejected it (HTTP ' + r.status + ') — check the key.'; }
+      }).catch(function (e) {
+        geminiKeyOk.textContent = 'Key saved, but verification could not reach the API (' + e.message + ').';
+      });
+    });
+    document.getElementById('forgetGeminiKey').addEventListener('click', function () {
+      try { localStorage.removeItem('daa_gemini_key'); } catch (e) {}
+      geminiKeyInput.value = '';
+      geminiKeyOk.textContent = 'Key forgotten.';
+    });
 })();
 </script>
 </body>
