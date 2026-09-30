@@ -56,8 +56,8 @@ module workshop() {
       translate([w/2 - 2, -0.45, z]) cube([4, 0.1, 0.08]);      // slat hints
     translate([w/2 + 3.2, -0.4, 0]) cube([1.2, 0.8, 2.4]);      // pedestrian door
     translate([w/2 + 2.9, -0.9, 2.4]) cube([1.8, 1.0, 0.15]);   // canopy
-    // chimney
-    translate([w - 5, d/2, h + 2]) cylinder(r = 1.1, h = 6);
+    // chimney — workshop-stack scale, not a smokestack 80% of building height
+    translate([w - 5, d/2, h + 1]) cylinder(r = 0.6, h = 3.5);
     // window band
     translate([-0.3, 3, 6]) cube([0.6, d - 6, 2]);
   }
