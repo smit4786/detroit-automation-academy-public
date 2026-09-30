@@ -679,6 +679,7 @@
       });
     });
     document.getElementById('forgetClaudeKey').addEventListener('click', function () {
+      if (!confirm('Forget the saved API key? You will need to paste it again to keep using the chat.')) return;
       try { localStorage.removeItem('daa_claude_key'); } catch (e) {}
       keyInput.value = '';
       keyOk.textContent = 'Key forgotten.';
@@ -923,6 +924,7 @@
       });
     });
     document.getElementById('forgetGeminiKey').addEventListener('click', function () {
+      if (!confirm('Forget the saved API key? You will need to paste it again to keep using the chat.')) return;
       try { localStorage.removeItem('daa_gemini_key'); } catch (e) {}
       geminiKeyInput.value = '';
       geminiKeyOk.textContent = 'Key forgotten.';
