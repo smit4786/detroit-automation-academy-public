@@ -87,6 +87,21 @@
   .status-pill.ok { color:#7dffa8; border-color:#1e4d31; }
   .status-pill.bad { color:#ff7a7a; border-color:#5a2a2a; }
   .status-pill.warn { color:#ffb347; border-color:#5a452a; }
+  /* #19: mobile CSS polish for the chat UI under 480px */
+  @media (max-width: 480px) {
+    body { font-size:14px; }
+    .wrap { padding:24px 14px 60px; }
+    h1 { font-size:1.35rem; }
+    .panel { padding:16px 14px; }
+    #chatLog, #geminiChatLog { max-height:60vh; }
+    .msg { max-width:100%; font-size:.9rem; padding:9px 12px; }
+    .chat-row { flex-wrap:wrap; }
+    .chat-row input[type=text] { flex:1 1 100%; min-width:0; }
+    .chat-row .btn { flex:1; text-align:center; }
+    .stat-grid { grid-template-columns:1fr; }
+    .announce-preview { padding:8px 12px; }
+    .preset-row { gap:6px; }
+  }
 </style>
 </head>
 <body>
