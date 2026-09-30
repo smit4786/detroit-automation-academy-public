@@ -16,7 +16,7 @@
   // pos values are road-side approach points, kept clear of building
   // footprints so the bot is never occluded inside a mesh.
   var DISTRICT = {
-    workshop:   { pos: [20, 0],   name: 'The Workshop',     color: 0xE85D1A,
+    workshop:   { pos: [0, 24],   name: 'The Workshop',     color: 0xE85D1A,
       desc: 'Home base. Workbenches, spare servos, the smell of solder.' },
     techtown:   { pos: [0, -28],  name: 'TechTown Detroit', color: 0x8a94a6,
       desc: 'Startups, mentors, whiteboards full of impossible.' },
@@ -136,7 +136,7 @@
       }));
       botMesh.castShadow = true;
       botGroup.add(botMesh);
-      botGroup.position.set(20, 0.35, 0); // workshop approach point (clear of the building)
+      botGroup.position.set(0, 0.35, 24); // workshop approach point (clear of the building)
       scene.add(botGroup);
       ready();
     }, undefined, fallback);
