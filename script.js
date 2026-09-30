@@ -73,12 +73,12 @@
     var WORLD = {
       workshop:   { name: 'The Workshop',
         desc: 'Home base. Workbenches, spare servos, the smell of solder. Every builder starts here.',
-        exits: { north: 'techtown', east: 'station', south: 'riverfront', west: 'thinkabit' } },
+        exits: { north: 'techtown', east: 'hq', south: 'riverfront', west: 'thinkabit' } },
       techtown:   { name: 'TechTown Detroit',
         desc: 'Startups, mentors, whiteboards full of impossible. The future gets prototyped here.',
         exits: { south: 'workshop' } },
-      station:    { name: 'Michigan Central',
-        desc: 'The old train station, reborn as an innovation hub. Proof that Detroit rebuilds.',
+      hq:         { name: 'Academy HQ',
+        desc: 'The new Detroit Automation Academy headquarters in Corktown — glass, brick, and big plans.',
         exits: { west: 'workshop' } },
       riverfront: { name: 'Detroit Riverfront',
         desc: "Wind off the water, skyline at your back. The view never gets old.",
@@ -142,7 +142,7 @@
       printLine('demo-line-out', '              ' + cell('techtown', 'TechTown'));
       printLine('demo-line-out', '                  |');
       printLine('demo-line-out',
-        cell('thinkabit', 'Thinkabit') + '---' + cell('workshop', 'Workshop') + '---' + cell('station', 'Station'));
+        cell('thinkabit', 'Thinkabit') + '---' + cell('workshop', 'Workshop') + '---' + cell('hq', 'HQ'));
       printLine('demo-line-out', '                  |');
       printLine('demo-line-out', '              ' + cell('riverfront', 'Riverfront'));
       printLine('demo-line-out', '* marks where you are. Battery ' + battery + '%.');
@@ -157,7 +157,7 @@
       var here = WORLD[botLoc];
       var target = here.exits[dest] || null;
       if (!target && dest) {
-        /* allow naming a place directly ("go techtown", "go station") */
+        /* allow naming a place directly ("go techtown", "go hq") */
         var key = Object.keys(WORLD).filter(function (k) {
           return k === dest || WORLD[k].name.toLowerCase() === dest;
         })[0];

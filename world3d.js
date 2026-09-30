@@ -20,8 +20,8 @@
       desc: 'Home base. Workbenches, spare servos, the smell of solder.' },
     techtown:   { pos: [0, -28],  name: 'TechTown Detroit', color: 0x8a94a6,
       desc: 'Startups, mentors, whiteboards full of impossible.' },
-    station:    { pos: [19, 0],   name: 'Michigan Central', color: 0xF5F2EA,
-      desc: 'The old train station, reborn as an innovation hub.' },
+    hq:         { pos: [19, 0],   name: 'Academy HQ', color: 0x9fc3d8,
+      desc: 'The new Detroit Automation Academy headquarters in Corktown — glass, brick, and big plans.' },
     riverfront: { pos: [0, 30],   name: 'Detroit Riverfront', color: 0x9AA0A6,
       desc: 'Wind off the water, skyline at your back.' },
     thinkabit:  { pos: [-26, 0],  name: 'Thinkabit Lab',    color: 0xFFB000,
@@ -30,7 +30,7 @@
   var PARTS = [
     ['ground', 0x11161c, 1.0, 0.0], ['roads', 0x3a4046, 1.0, 0.0],
     ['water', 0x1a6f8f, 0.35, 0.4],
-    ['techtown', 0x8a94a6, 0.5, 0.6], ['station', 0xF5F2EA, 0.9, 0.0],
+    ['techtown', 0x8a94a6, 0.5, 0.6],
     ['riverfront', 0x9AA0A6, 0.9, 0.0], ['thinkabit', 0xFFB000, 0.85, 0.0],
     ['trees', 0x2f7d4f, 1.0, 0.0], ['street', 0x6a7076, 0.6, 0.4]
   ];
@@ -102,9 +102,9 @@
 
     var manager = new THREE.LoadingManager();
     var loader = new STLLoader(manager);
-    // real load progress on the overlay: 9 STL district parts + the bot +
-    // the procedural workshop build (window.DAAArchKit)
-    var loadTotal = PARTS.length + 2;
+    // real load progress on the overlay: 8 STL district parts + the bot +
+    // the procedural builds (workshop + corktown via window.DAAArchKit)
+    var loadTotal = PARTS.length + 3;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
@@ -142,6 +142,18 @@
     } catch (e) {
       // workshop stays absent rather than breaking the scene; log for diagnostics
       if (window.console && console.warn) console.warn('[world3d] workshop build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Corktown: procedural Academy HQ + rowhouses + pocket park
+    // (replaces the old station STL). Synchronous and local; one overlay step.
+    try {
+      if (window.DAAArchKit && window.DAAArchKit.buildCorktown) {
+        scene.add(window.DAAArchKit.buildCorktown(THREE));
+      }
+    } catch (e) {
+      // corktown stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] corktown build failed:', e);
     }
     bumpLoadCount();
 
@@ -196,7 +208,7 @@
       return sp;
     }
     var LABEL_AT = { // [x, z, y] per district, from cad/world.scad
-      workshop:   [0, 0, 21], techtown: [0, -44, 35], station: [44, 0, 21],
+      workshop:   [0, 0, 21], techtown: [0, -44, 35], hq: [47, -20, 42],
       riverfront: [0, 44, 12], thinkabit: [-44, 0, 17]
     };
     Object.keys(DISTRICT).forEach(function (key) {

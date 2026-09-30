@@ -432,5 +432,386 @@
     return g;
   }
 
-  window.DAAArchKit = { buildWorkshop: buildWorkshop };
+  // ---- Corktown: Academy HQ + rowhouses + pocket park ----
+  // Flexible brick facade: punched steel-sash windows floor by floor.
+  // base: [r,g,b]; floors: [{sill, h, w}]; bay: window spacing (m).
+  function facadeCanvas(wM, hM, seed, base, floors, bay, openings) {
+    var p = cv(wM, hM), g = p[1], W = p[0].width, H = p[0].height;
+    paintBrick(g, W, H, seed, base);
+    var wt = 0.9 * PXM;
+    g.fillStyle = 'rgba(28,12,8,0.5)';
+    g.fillRect(0, H - wt, W, wt);
+    g.fillStyle = '#b9b2a4';
+    g.fillRect(0, H - wt - 0.12 * PXM, W, 0.12 * PXM);
+    for (var f = 0; f < floors.length; f++) {
+      var sill = floors[f].sill, wh = floors[f].h, ww = floors[f].w || 1.8;
+      for (var x = bay / 2; x + ww <= wM - 1.0; x += bay) {
+        if (inOpenings(openings, x + ww / 2, sill + wh / 2)) continue;
+        paintWindow(g, x * PXM, Y(hM, sill + wh), ww * PXM, wh * PXM);
+      }
+    }
+    g.fillStyle = '#b9b2a4';
+    g.fillRect(0, 0, W, 0.45 * PXM);
+    var gr = g.createLinearGradient(0, H - 2 * PXM, 0, H);
+    gr.addColorStop(0, 'rgba(0,0,0,0)');
+    gr.addColorStop(1, 'rgba(0,0,0,0.3)');
+    g.fillStyle = gr;
+    g.fillRect(0, H - 2 * PXM, W, 2 * PXM);
+    return p[0];
+  }
+
+  function signTextCanvas(wM, hM, line1, line2) {
+    var p = cv(wM, hM), g = p[1], W = p[0].width, H = p[0].height;
+    g.fillStyle = '#10161d';
+    g.fillRect(0, 0, W, H);
+    g.strokeStyle = '#E85D1A';
+    g.lineWidth = 4;
+    g.strokeRect(6, 6, W - 12, H - 12);
+    g.textAlign = 'center';
+    g.fillStyle = '#FFB000';
+    g.font = '700 ' + Math.round(H * (line2 ? 0.32 : 0.42)) + 'px system-ui, sans-serif';
+    g.fillText(line1, W / 2, H * (line2 ? 0.4 : 0.58));
+    if (line2) {
+      g.fillStyle = '#F5F2EA';
+      g.font = '600 ' + Math.round(H * 0.19) + 'px system-ui, sans-serif';
+      g.fillText(line2, W / 2, H * 0.72);
+    }
+    return p[0];
+  }
+
+  // simple street tree: trunk + 3 canopy blobs, ~6 m
+  function tree(THREE, x, z, s, mTrunk, mLeaf) {
+    var t = new THREE.Group();
+    var trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.14 * s, 0.2 * s, 2.6 * s, 8), mTrunk);
+    trunk.position.y = 1.3 * s;
+    t.add(trunk);
+    [[0, 3.4, 0, 1.7], [0.7, 2.8, 0.3, 1.2], [-0.6, 2.9, -0.3, 1.1]].forEach(function (b) {
+      var m = new THREE.Mesh(new THREE.IcosahedronGeometry(b[3] * s, 1), mLeaf);
+      m.position.set(b[0] * s, b[1] * s, b[2] * s);
+      t.add(m);
+    });
+    t.position.set(x, 0, z);
+    return t;
+  }
+
+  function bench(THREE, mWood, mSteel) {
+    var b = new THREE.Group();
+    var seat = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.08, 0.5), mWood);
+    seat.position.y = 0.45; b.add(seat);
+    var back = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.5, 0.07), mWood);
+    back.position.set(0, 0.75, -0.25); b.add(back);
+    [-0.8, 0.8].forEach(function (lx) {
+      var leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.45, 0.5), mSteel);
+      leg.position.set(lx, 0.225, 0); b.add(leg);
+    });
+    return b;
+  }
+
+  // Detroit Automation Academy HQ: imagined state-of-the-art headquarters.
+  // 4-story brick podium (34 x 24 x 14 m) + set-back 6-story glass tower
+  // (20 x 18 x 20 m), rooftop terrace, entrance plaza. Local origin at the
+  // podium center, ground level; south (+z) face fronts the street.
+  function buildAcademyHQ(THREE) {
+    var g = new THREE.Group();
+    var PW = 34, PD = 24, PH = 14;
+    var TW = 20, TD = 18, TH = 20;
+    var mConcrete = std(THREE, tex(THREE, concreteCanvas(4, 1, 41)), 0.9);
+    var mRoof = std(THREE, tex(THREE, roofCanvas()), 0.95);
+    mRoof.map.wrapS = mRoof.map.wrapT = THREE.RepeatWrapping;
+    var mDark = new THREE.MeshStandardMaterial({ color: 0x14171b, roughness: 1 });
+    var mSteel = new THREE.MeshStandardMaterial({ color: 0x2b2e33, roughness: 0.6, metalness: 0.5 });
+    var mOrange = new THREE.MeshStandardMaterial({ color: 0xE85D1A, roughness: 0.55, metalness: 0.25 });
+    var mGlass = std(THREE, tex(THREE, glassCanvas(12, 7, 55)), 0.35, 0.15);
+
+    // podium: 4 floors of punched windows; lobby opening on the south face
+    var floors = [];
+    for (var f = 0; f < 4; f++) floors.push({ sill: 1.6 + f * 3.2, h: 2.0, w: 1.9 });
+    var lobby = [{ x0: PW / 2 - 6, x1: PW / 2 + 6, y0: 0, y1: 7.2 }];
+    var mPodS = std(THREE, tex(THREE, facadeCanvas(PW, PH, 51, [128, 66, 48], floors, 3.4, lobby)));
+    var mPodN = std(THREE, tex(THREE, facadeCanvas(PW, PH, 52, [128, 66, 48], floors, 3.4)));
+    var mPodE = std(THREE, tex(THREE, facadeCanvas(PD, PH, 53, [122, 62, 46], floors, 3.4)));
+    var mPodW = std(THREE, tex(THREE, facadeCanvas(PD, PH, 54, [122, 62, 46], floors, 3.4)));
+    var podium = new THREE.Mesh(
+      new THREE.BoxGeometry(PW, PH, PD),
+      [mPodE, mPodW, mRoof, mDark, mPodS, mPodN]
+    );
+    podium.position.y = PH / 2;
+    g.add(podium);
+
+    // limestone base + cornice
+    var base = new THREE.Mesh(new THREE.BoxGeometry(PW + 0.3, 1.1, PD + 0.3), mConcrete);
+    base.position.y = 0.55;
+    g.add(base);
+    var cornice = new THREE.Mesh(new THREE.BoxGeometry(PW + 0.7, 0.6, PD + 0.7), mConcrete);
+    cornice.position.y = PH - 0.25;
+    g.add(cornice);
+    // forge-orange brand band between 2nd and 3rd floor
+    var bandS = new THREE.Mesh(new THREE.BoxGeometry(PW + 0.15, 0.5, 0.12), mOrange);
+    bandS.position.set(0, 6.9, PD / 2 + 0.06); g.add(bandS);
+    var bandN = bandS.clone(); bandN.position.z = -PD / 2 - 0.06; g.add(bandN);
+    var bandE = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.5, PD + 0.15), mOrange);
+    bandE.position.set(PW / 2 + 0.06, 6.9, 0); g.add(bandE);
+    var bandW = bandE.clone(); bandW.position.x = -PW / 2 - 0.06; g.add(bandW);
+
+    // glass tower, set back 6 m from the podium's south face
+    var mTowS = std(THREE, tex(THREE, glassCanvas(TW, TH, 56)), 0.3, 0.2);
+    var mTowE = std(THREE, tex(THREE, glassCanvas(TD, TH, 57)), 0.3, 0.2);
+    var tower = new THREE.Mesh(
+      new THREE.BoxGeometry(TW, TH, TD),
+      [mTowE, mTowE, mRoof, mDark, mTowS, mTowS]
+    );
+    tower.position.set(0, PH + TH / 2, -3);
+    g.add(tower);
+    // tower crown: orange fin + parapet
+    var fin = new THREE.Mesh(new THREE.BoxGeometry(0.5, 3.2, TD * 0.7), mOrange);
+    fin.position.set(TW / 2 + 0.2, PH + TH + 1.0, -3);
+    g.add(fin);
+    var crown = new THREE.Mesh(new THREE.BoxGeometry(TW + 0.4, 1.0, TD + 0.4), mSteel);
+    crown.position.set(0, PH + TH + 0.4, -3);
+    g.add(crown);
+
+    // rooftop terrace on the podium roof, south of the tower
+    var terr = new THREE.Mesh(new THREE.BoxGeometry(PW - 2, 0.12, 5.4), mConcrete);
+    terr.position.set(0, PH + 0.06, PD / 2 - 3.1);
+    g.add(terr);
+    // railing around the podium roof edge
+    var railY = PH + 1.0;
+    function railRun(w, x, z, alongX) {
+      var top = new THREE.Mesh(new THREE.BoxGeometry(alongX ? w : 0.06, 0.06, alongX ? 0.06 : w), mSteel);
+      top.position.set(x, railY, z); g.add(top);
+      var mid = top.clone(); mid.position.y = railY - 0.45; g.add(mid);
+      var n = Math.max(2, Math.round(w / 2));
+      for (var i = 0; i <= n; i++) {
+        var post = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.0, 0.06), mSteel);
+        var off = -w / 2 + (w * i) / n;
+        post.position.set(alongX ? x + off : x, PH + 0.5, alongX ? z : z + off);
+        g.add(post);
+      }
+    }
+    railRun(PW, 0, PD / 2 - 0.1, true);
+    railRun(PW, 0, -PD / 2 + 0.1, true);
+    railRun(PD, PW / 2 - 0.1, 0, false);
+    railRun(PD, -PW / 2 + 0.1, 0, false);
+    // pergola + planters on the terrace
+    [[-6], [6]].forEach(function (px) {
+      [-1.5, 1.5].forEach(function (pz) {
+        var post = new THREE.Mesh(new THREE.BoxGeometry(0.18, 2.6, 0.18), mSteel);
+        post.position.set(px[0], PH + 1.3, PD / 2 - 3.1 + pz);
+        g.add(post);
+      });
+    });
+    for (var s = 0; s < 6; s++) {
+      var slat = new THREE.Mesh(new THREE.BoxGeometry(13.5, 0.1, 0.24), mSteel);
+      slat.position.set(0, PH + 2.65, PD / 2 - 5.2 + s * 0.85);
+      g.add(slat);
+    }
+    var mLeaf = new THREE.MeshStandardMaterial({ color: 0x3f7d44, roughness: 1 });
+    [-10, 10].forEach(function (px) {
+      var planter = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.7, 1.0), mConcrete);
+      planter.position.set(px, PH + 0.45, PD / 2 - 1.4);
+      g.add(planter);
+      var shrub = new THREE.Mesh(new THREE.IcosahedronGeometry(0.75, 1), mLeaf);
+      shrub.position.set(px, PH + 1.2, PD / 2 - 1.4);
+      shrub.scale.y = 0.75;
+      g.add(shrub);
+    });
+    // rooftop equipment, north of the tower
+    var eq1 = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.4, 1.6), mSteel);
+    eq1.position.set(-8, PH + 0.7, -PD / 2 + 3); g.add(eq1);
+    var eq2 = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.1, 1.4), mSteel);
+    eq2.position.set(-4.5, PH + 0.55, -PD / 2 + 3.2); g.add(eq2);
+    var fan = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.0, 16), mSteel);
+    fan.position.set(8, PH + 0.5, -PD / 2 + 3); g.add(fan);
+    var fanCap = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.15, 16), mConcrete);
+    fanCap.position.set(8, PH + 1.05, -PD / 2 + 3); g.add(fanCap);
+
+    // ---- lobby: double-height glass, doors, canopy ----
+    var zf = PD / 2;
+    var lobbyGlass = new THREE.Mesh(new THREE.PlaneGeometry(12, 7.2), mGlass);
+    lobbyGlass.position.set(0, 3.6, zf + 0.04);
+    g.add(lobbyGlass);
+    for (var mi = -5; mi <= 5; mi += 2) {
+      var mull = new THREE.Mesh(new THREE.BoxGeometry(0.1, 7.2, 0.1), mSteel);
+      mull.position.set(mi, 3.6, zf + 0.08);
+      g.add(mull);
+    }
+    var transom = new THREE.Mesh(new THREE.BoxGeometry(12, 0.12, 0.12), mSteel);
+    transom.position.set(0, 3.4, zf + 0.08);
+    g.add(transom);
+    var mDoor = std(THREE, tex(THREE, pedDoorCanvas(1.4, 2.6)), 0.6, 0.4);
+    [-1.6, 1.6].forEach(function (dx) {
+      var door = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.6), mDoor);
+      door.position.set(dx, 1.3, zf + 0.1);
+      g.add(door);
+    });
+    // canopy on orange-trimmed columns
+    var can = new THREE.Mesh(new THREE.BoxGeometry(15, 0.22, 3.6), mSteel);
+    can.position.set(0, 7.5, zf + 1.8);
+    g.add(can);
+    var canTrim = new THREE.Mesh(new THREE.BoxGeometry(15.2, 0.14, 0.14), mOrange);
+    canTrim.position.set(0, 7.42, zf + 3.55);
+    g.add(canTrim);
+    [-6.5, -2.2, 2.2, 6.5].forEach(function (cx) {
+      var col = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 7.5, 12), mOrange);
+      col.position.set(cx, 3.75, zf + 3.2);
+      g.add(col);
+    });
+    // sign band on the south frieze
+    var signTex = tex(THREE, signTextCanvas(20, 1.7, 'DETROIT AUTOMATION ACADEMY', 'CORKTOWN · DETROIT'));
+    var sign = new THREE.Mesh(
+      new THREE.PlaneGeometry(20, 1.7),
+      new THREE.MeshStandardMaterial({
+        map: signTex, roughness: 0.6,
+        emissive: 0xffffff, emissiveMap: signTex, emissiveIntensity: 0.3
+      })
+    );
+    sign.position.set(0, PH - 1.6, zf + 0.08);
+    g.add(sign);
+
+    // ---- forecourt: pavers, trees, benches, flags ----
+    var fore = new THREE.Mesh(new THREE.BoxGeometry(PW - 2, 0.1, 4), mConcrete);
+    fore.position.set(0, 0.05, zf + 2);
+    g.add(fore);
+    var mTrunk = new THREE.MeshStandardMaterial({ color: 0x5a4632, roughness: 1 });
+    var mWood = new THREE.MeshStandardMaterial({ color: 0x8a6a48, roughness: 0.9 });
+    [-14, 0, 14].forEach(function (tx) { g.add(tree(THREE, tx, zf + 2.6, 0.9, mTrunk, mLeaf)); });
+    [-9, 9].forEach(function (bx) {
+      var b = bench(THREE, mWood, mSteel);
+      b.position.set(bx, 0.1, zf + 1.2);
+      b.rotation.y = Math.PI;
+      g.add(b);
+    });
+    [-11, 11].forEach(function (fx) {
+      var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 8, 8), mSteel);
+      pole.position.set(fx, 4, zf + 3.2);
+      g.add(pole);
+      var flagShape = new THREE.Shape();
+      flagShape.moveTo(0, 0); flagShape.lineTo(1.4, -0.35); flagShape.lineTo(0, -0.7); flagShape.closePath();
+      var flag = new THREE.Mesh(new THREE.ShapeGeometry(flagShape),
+        new THREE.MeshStandardMaterial({ color: 0xE85D1A, side: THREE.DoubleSide, roughness: 0.8 }));
+      flag.position.set(fx + 0.06, 7.9, zf + 3.2);
+      g.add(flag);
+    });
+
+    g.traverse(function (o) {
+      if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+    });
+    return g;
+  }
+
+  // Corktown rowhouse: brick townhouse with cornice, parapet, stoop + door.
+  function buildRowhouse(THREE, seed, base, w, d, h) {
+    var g = new THREE.Group();
+    var floors = [];
+    var fh = (h - 1.6) / 3;
+    for (var f = 0; f < 3; f++) floors.push({ sill: 1.6 + f * fh, h: fh - 1.1, w: 1.4 });
+    var door = [{ x0: w / 2 - 2.2, x1: w / 2 - 0.6, y0: 0, y1: 2.8 }];
+    var mFront = std(THREE, tex(THREE, facadeCanvas(w, h, seed, base, floors, 2.6, door)));
+    var mBack = std(THREE, tex(THREE, facadeCanvas(w, h, seed + 1, base, floors, 2.6)));
+    var mSide = std(THREE, tex(THREE, brickPatchCanvas()), 0.9);
+    mSide.map.wrapS = mSide.map.wrapT = THREE.RepeatWrapping;
+    mSide.map.repeat.set(w / 4, h / 4);
+    var mRoof = std(THREE, tex(THREE, roofCanvas()), 0.95);
+    var mDark = new THREE.MeshStandardMaterial({ color: 0x14171b, roughness: 1 });
+    var mConcrete = std(THREE, tex(THREE, concreteCanvas(4, 1, 71)), 0.9);
+    var body = new THREE.Mesh(
+      new THREE.BoxGeometry(w, h, d),
+      [mSide, mSide, mRoof, mDark, mFront, mBack]
+    );
+    body.position.y = h / 2;
+    g.add(body);
+    // cornice + parapet cap
+    var cor = new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 0.35, d + 0.4), mConcrete);
+    cor.position.y = h - 0.15;
+    g.add(cor);
+    var par = new THREE.Mesh(new THREE.BoxGeometry(w + 0.15, 0.5, d + 0.15), mSide);
+    par.position.y = h + 0.2;
+    g.add(par);
+    // door + stoop on the south face
+    var zf = d / 2;
+    var mDoor = std(THREE, tex(THREE, pedDoorCanvas(1.4, 2.6)), 0.6, 0.4);
+    var dr = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.6), mDoor);
+    dr.position.set(-w / 2 + 1.4, 1.3, zf + 0.04);
+    g.add(dr);
+    var stoop = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.5, 1.4), mConcrete);
+    stoop.position.set(-w / 2 + 1.4, 0.25, zf + 0.7);
+    g.add(stoop);
+    g.traverse(function (o) {
+      if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+    });
+    return g;
+  }
+
+  // Pocket park (Roosevelt Park nod): lawn, path cross, tree rows, benches.
+  function buildPocketPark(THREE) {
+    var g = new THREE.Group();
+    var W = 32, D = 16;
+    var mGrass = new THREE.MeshStandardMaterial({ color: 0x3f7d44, roughness: 1 });
+    var mConcrete = std(THREE, tex(THREE, concreteCanvas(4, 1, 81)), 0.9);
+    var mSteel = new THREE.MeshStandardMaterial({ color: 0x2b2e33, roughness: 0.6, metalness: 0.5 });
+    var lawn = new THREE.Mesh(new THREE.BoxGeometry(W, 0.12, D), mGrass);
+    lawn.position.y = 0.06;
+    g.add(lawn);
+    var pathEW = new THREE.Mesh(new THREE.BoxGeometry(W, 0.14, 2), mConcrete);
+    pathEW.position.y = 0.07;
+    g.add(pathEW);
+    var pathNS = new THREE.Mesh(new THREE.BoxGeometry(2, 0.14, D), mConcrete);
+    pathNS.position.y = 0.07;
+    g.add(pathNS);
+    var mTrunk = new THREE.MeshStandardMaterial({ color: 0x5a4632, roughness: 1 });
+    var mLeaf = new THREE.MeshStandardMaterial({ color: 0x3f7d44, roughness: 1 });
+    var mWood = new THREE.MeshStandardMaterial({ color: 0x8a6a48, roughness: 0.9 });
+    [-12, -6, 0, 6, 12].forEach(function (tx) {
+      g.add(tree(THREE, tx, -6, 1.0, mTrunk, mLeaf));
+      g.add(tree(THREE, tx + 2, 6, 0.85, mTrunk, mLeaf));
+    });
+    [[-4, 1.6, 0], [4, 1.6, Math.PI], [-1.6, -4, Math.PI / 2], [1.6, 4, -Math.PI / 2]].forEach(function (bp) {
+      var b = bench(THREE, mWood, mSteel);
+      b.position.set(bp[0], 0.12, bp[1]);
+      b.rotation.y = bp[2];
+      g.add(b);
+    });
+    // park sign
+    var post = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.6, 0.12), mSteel);
+    post.position.set(-W / 2 + 2, 0.8, -D / 2 + 1.2);
+    g.add(post);
+    var signTex = tex(THREE, signTextCanvas(3.2, 0.9, 'CORKTOWN'));
+    var psign = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 0.9),
+      new THREE.MeshStandardMaterial({ map: signTex, roughness: 0.7 }));
+    psign.position.set(-W / 2 + 2, 1.9, -D / 2 + 1.26);
+    g.add(psign);
+    g.traverse(function (o) {
+      if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+    });
+    return g;
+  }
+
+  // Corktown district: Academy HQ + brick rowhouses + pocket park.
+  // Replaces the old station STL.
+  function buildCorktown(THREE) {
+    var g = new THREE.Group();
+    var hq = buildAcademyHQ(THREE);
+    hq.position.set(47, 0, -20);
+    g.add(hq);
+    [
+      { x: 31.5, seed: 61, base: [139, 69, 50], h: 9.0 },
+      { x: 40.0, seed: 62, base: [110, 72, 52], h: 10.0 },
+      { x: 48.5, seed: 63, base: [122, 62, 44], h: 9.0 },
+      { x: 57.0, seed: 64, base: [96, 104, 96], h: 9.5 }
+    ].forEach(function (hh) {
+      var r = buildRowhouse(THREE, hh.seed, hh.base, 8, 10, hh.h);
+      r.position.set(hh.x, 0, -40);
+      g.add(r);
+    });
+    var park = buildPocketPark(THREE);
+    park.position.set(44, 0, 14);
+    g.add(park);
+    return g;
+  }
+
+  window.DAAArchKit = {
+    buildWorkshop: buildWorkshop,
+    buildAcademyHQ: buildAcademyHQ,
+    buildCorktown: buildCorktown
+  };
 })();
