@@ -135,7 +135,7 @@
 
     // floating name labels (canvas sprites; positions are building centers
     // in three.js coords: x = east, z = south, y = just above the roofline)
-    function makeLabel(text) {
+    function makeLabel(text, hWorld) {
       var fs = 44, pad = 34;
       var c = document.createElement('canvas');
       var g = c.getContext('2d');
@@ -160,7 +160,7 @@
       var sp = new THREE.Sprite(new THREE.SpriteMaterial({
         map: tex, transparent: true, depthTest: true
       }));
-      var hWorld = 3.4;
+      var hWorld = hWorld || 3.4;
       sp.scale.set(hWorld * c.width / c.height, hWorld, 1);
       return sp;
     }
@@ -177,28 +177,28 @@
 
     // the bot
     var botGroup = new THREE.Group();
-    var botTag = makeLabel('TRAINING BOT');
-    botTag.position.set(0, 15.5, 0);
+    var botTag = makeLabel('TRAINING BOT', 0.55);
+    botTag.position.set(0, 1.9, 0);
     botGroup.add(botTag);
     // glowing eyes: emissive amber spheres over the STL eye positions.
-    // OpenSCAD (±1.3, 1.95, 7.4) -> three.js (x, z, -y) = (±1.3, 7.4, -1.95).
-    var eyeGeo = new THREE.SphereGeometry(0.72, 12, 12);
+    // OpenSCAD (±0.121, 0.181, 0.688) -> three.js (x, z, -y) = (±0.121, 0.688, -0.181).
+    var eyeGeo = new THREE.SphereGeometry(0.066, 12, 12);
     var eyeMat = new THREE.MeshStandardMaterial({
       color: 0xFFB000, emissive: 0xFFB000, emissiveIntensity: 2.2, roughness: 0.4
     });
-    [-1.3, 1.3].forEach(function (ex) {
+    [-0.121, 0.121].forEach(function (ex) {
       var eye = new THREE.Mesh(eyeGeo, eyeMat);
-      eye.position.set(ex, 7.4, -1.95);
+      eye.position.set(ex, 0.688, -0.181);
       botGroup.add(eye);
     });
     // headlight beam: translucent cone from the chest, facing -z (bot forward)
-    var beamGeo = new THREE.ConeGeometry(3.2, 11, 20, 1, true);
+    var beamGeo = new THREE.ConeGeometry(0.30, 1.05, 20, 1, true);
     var beam = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({
       color: 0xfff2c0, transparent: true, opacity: 0.16,
       blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
     }));
     beam.rotation.x = Math.PI / 2; // apex -> +z so it sits at the chest
-    beam.position.set(0, 4.3, -8.1); // apex lands at (0, 4.3, -2.6), base at z=-13.6
+    beam.position.set(0, 0.40, -0.78); // apex lands at (0, 0.40, -0.255), base at z=-1.3
     botGroup.add(beam);
     var botMesh = null;
     loader.load(base + 'bot.stl', function (geo) {
@@ -273,7 +273,7 @@
 
     // scan radar ring
     var ring = new THREE.Mesh(
-      new THREE.RingGeometry(2, 2.6, 40),
+      new THREE.RingGeometry(0.18, 0.24, 40),
       new THREE.MeshBasicMaterial({ color: 0xFFB000, transparent: true, opacity: 0, side: THREE.DoubleSide })
     );
     ring.rotation.x = -Math.PI / 2;
@@ -291,7 +291,7 @@
       var mz = (keys['s'] || keys['arrowdown'] ? 1 : 0) - (keys['w'] || keys['arrowup'] ? 1 : 0);
       if (driveArmed && (mx || mz)) {
         tween = null;
-        var sp = 26 * dt;
+        var sp = 3 * dt;
         var nx = THREE.MathUtils.clamp(botGroup.position.x + mx * sp, -58, 58);
         var nz = THREE.MathUtils.clamp(botGroup.position.z + mz * sp, -58, 58);
         face(mx, mz);
@@ -306,7 +306,7 @@
           var done = tween.done; tween = null;
           if (done) done();
         } else {
-          var step = Math.min(dist, 30 * dt);
+          var step = Math.min(dist, 3.5 * dt);
           face(dx, dz);
           botGroup.position.x += dx / dist * step;
           botGroup.position.z += dz / dist * step;
@@ -321,10 +321,10 @@
         var t = (now - anim.t0) / anim.dur;
         if (t >= 1) { anim = null; botMesh.position.y = 0; botMesh.rotation.set(0, 0, 0); }
         else if (anim.kind === 'dance') {
-          botMesh.position.y = Math.abs(Math.sin(t * Math.PI * 6)) * 1.4;
+          botMesh.position.y = Math.abs(Math.sin(t * Math.PI * 6)) * 0.16;
           botMesh.rotation.z = Math.sin(t * Math.PI * 6) * 0.22;
         } else if (anim.kind === 'jump') {
-          botMesh.position.y = Math.sin(t * Math.PI) * 5;
+          botMesh.position.y = Math.sin(t * Math.PI) * 0.5;
         } else if (anim.kind === 'spin') {
           botMesh.rotation.y = t * Math.PI * 2;
         } else if (anim.kind === 'wave') {
@@ -343,8 +343,8 @@
         if (rt >= 1) { ringT = -1; ring.material.opacity = 0; }
         else {
           ring.position.set(botGroup.position.x, 0.6, botGroup.position.z);
-          var s = 2 + rt * 26;
-          ring.scale.set(s / 2.6, s / 2.6, 1);
+          var s = 0.24 + rt * 2.4;
+          ring.scale.set(s / 0.24, s / 0.24, 1);
           ring.material.opacity = 0.5 * (1 - rt);
         }
       }
