@@ -183,7 +183,7 @@
       <h2>Private changelog</h2>
       <p class="hint">Stays in this browser (localStorage). Never published.</p>
       <textarea id="changelog" aria-label="Private changelog"></textarea>
-      <div class="row"><button class="btn" id="saveLog" type="button">Save</button></div>
+      <div class="row"><button class="btn" id="saveLog" type="button">Save</button><button class="btn ghost" id="insertTs" type="button">Insert timestamp</button></div>
       <p class="ok" id="logOk"></p>
     </section>
 
@@ -574,6 +574,19 @@
     document.getElementById('saveLog').addEventListener('click', function () {
       try { localStorage.setItem('daa_changelog', ta.value); } catch (e) {}
       document.getElementById('logOk').textContent = 'Saved locally.';
+    });
+    document.getElementById('insertTs').addEventListener('click', function () {
+      var d = new Date();
+      function pad(n) { return (n < 10 ? '0' : '') + n; }
+      var stamp = '## ' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+                  ' ~' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' EDT — ';
+      var start = ta.selectionStart || 0, end = ta.selectionEnd || 0;
+      var before = ta.value.slice(0, start), after = ta.value.slice(end);
+      if (before && before.charAt(before.length - 1) !== '\n') { stamp = '\n' + stamp; }
+      ta.value = before + stamp + after;
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = (before + stamp).length;
+      document.getElementById('logOk').textContent = 'Timestamp inserted — save to keep it.';
     });
 
     /* ---- claude tab: bring-your-own-key chat, browser-direct to the API ----
