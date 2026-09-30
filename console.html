@@ -231,7 +231,7 @@
         <button class="btn ghost preset-btn" id="presetCommentary" type="button">Draft commentary note</button>
       </div>
       <div class="chat-row">
-        <input type="text" id="chatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Claude">
+        <input type="text" id="chatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Claude" title="Cmd/Ctrl+K to focus · Esc to clear">
         <button class="btn" id="chatSend" type="button">Send</button>
         <button class="btn ghost" id="chatStop" type="button" hidden>Stop</button>
       </div>
@@ -261,7 +261,7 @@
       </div>
 
       <div class="chat-row">
-        <input type="text" id="geminiChatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Gemini">
+        <input type="text" id="geminiChatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Gemini" title="Cmd/Ctrl+K to focus · Esc to clear">
         <button class="btn" id="geminiChatSend" type="button">Send</button>
         <button class="btn ghost" id="geminiChatStop" type="button" hidden>Stop</button>
       </div>
@@ -1162,6 +1162,29 @@
         geminiChatInput.value = GEMINI_PRESETS[id];
         geminiChatInput.focus();
       });
+    });
+
+    /* ---- keyboard shortcuts (#18): Cmd/Ctrl+K jumps to a chat input, Esc
+          clears it. Cmd/Ctrl+K focuses the chat input of the visible chat tab
+          (Claude or Gemini); when no chat tab is showing it opens the Claude
+          tab first. Esc clears only when a chat input has focus, so it never
+          interferes with the token gate or the auto-lock timer. ---- */
+    var CHAT_TAB_INPUTS = { claude: 'chatInput', gemini: 'geminiChatInput' };
+    document.addEventListener('keydown', function (e) {
+      if (app.hidden) return; /* console locked or not yet unlocked */
+      if (e.key === 'Escape' &&
+          (e.target.id === 'chatInput' || e.target.id === 'geminiChatInput')) {
+        e.target.value = '';
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        var name = Object.keys(CHAT_TAB_INPUTS).filter(function (n) {
+          return !document.getElementById('tab-' + n).hidden;
+        })[0] || 'claude';
+        tabBtns.filter(function (b) { return b.dataset.tab === name; })[0].click();
+        document.getElementById(CHAT_TAB_INPUTS[name]).focus();
+      }
     });
 })();
 </script>
