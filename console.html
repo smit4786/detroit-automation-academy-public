@@ -139,6 +139,8 @@
       <input type="text" id="f-endpoint" placeholder="https://daa-collect.&lt;you&gt;.workers.dev/collect">
       <div class="row">
         <button class="btn" id="loadEvents" type="button">Load recent events</button>
+        <label class="hint" for="teleAuto" style="align-self:center; cursor:pointer"><input type="checkbox" id="teleAuto"> Auto-refresh every 30s</label>
+        <span class="hint" id="teleUpdated" style="align-self:center"></span>
       </div>
       <p class="err" id="teleErr"></p>
       <table class="schema" id="eventsTable" hidden>
@@ -408,7 +410,45 @@
     /* ---- telemetry tab ---- */
     var epInput = document.getElementById('f-endpoint');
     try { epInput.value = localStorage.getItem('daa_endpoint') || ''; } catch (e) {}
-    document.getElementById('loadEvents').addEventListener('click', function () {
+
+    function relTime(ts) {
+      var ms = Date.now() - new Date(ts).getTime();
+      if (isNaN(ms) || ms < 0) return '—';
+      var s = Math.floor(ms / 1000);
+      if (s < 60) return 'just now';
+      var m = Math.floor(s / 60);
+      if (m < 60) return m + 'm ago';
+      var h = Math.floor(m / 60);
+      if (h < 24) return h + 'h ago';
+      return Math.floor(h / 24) + 'd ago';
+    }
+
+    function renderRows(rows) {
+      var tb = document.querySelector('#eventsTable tbody');
+      tb.innerHTML = '';
+      (rows || []).forEach(function (ev) {
+        var tr = document.createElement('tr');
+        var tdT = document.createElement('td');
+        tdT.textContent = relTime(ev.ts);
+        tdT.title = new Date(ev.ts).toLocaleString(); /* exact time on hover */
+        tdT.setAttribute('data-ts', ev.ts || '');
+        var tdType = document.createElement('td'); tdType.textContent = ev.type || '';
+        var tdPage = document.createElement('td'); tdPage.textContent = ev.page || '';
+        var tdDetail = document.createElement('td'); tdDetail.textContent = ev.detail || '';
+        tr.appendChild(tdT); tr.appendChild(tdType); tr.appendChild(tdPage); tr.appendChild(tdDetail);
+        tb.appendChild(tr);
+      });
+      document.getElementById('eventsTable').hidden = false;
+    }
+
+    /* re-label relative timestamps without refetching */
+    setInterval(function () {
+      document.querySelectorAll('#eventsTable tbody td[data-ts]').forEach(function (td) {
+        td.textContent = relTime(td.getAttribute('data-ts'));
+      });
+    }, 30000);
+
+    function loadTelemetry() {
       var ep = epInput.value.trim().replace(/\/collect\/?$/, '');
       var err = document.getElementById('teleErr');
       err.textContent = '';
@@ -417,23 +457,24 @@
       fetch(ep + '/events?limit=50', { headers: { 'Authorization': 'Bearer ' + ownerToken } })
         .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function (rows) {
-          var tb = document.querySelector('#eventsTable tbody');
-          tb.innerHTML = '';
-          (rows || []).forEach(function (ev) {
-            var tr = document.createElement('tr');
-            var t = new Date(ev.ts).toLocaleString();
-            tr.innerHTML = '<td></td><td></td><td></td><td></td>';
-            tr.children[0].textContent = t;
-            tr.children[1].textContent = ev.type || '';
-            tr.children[2].textContent = ev.page || '';
-            tr.children[3].textContent = ev.detail || '';
-            tb.appendChild(tr);
-          });
-          document.getElementById('eventsTable').hidden = false;
+          renderRows(rows);
+          document.getElementById('teleUpdated').textContent = 'updated just now';
           document.getElementById('teleStatus').innerHTML =
             'Collector: <b>connected</b> — showing ' + (rows || []).length + ' recent events.';
         })
         .catch(function (e) { err.textContent = 'Could not reach the collector (' + e.message + ').'; });
+    }
+
+    document.getElementById('loadEvents').addEventListener('click', loadTelemetry);
+
+    var autoTimer = null;
+    document.getElementById('teleAuto').addEventListener('change', function (e) {
+      if (e.target.checked) {
+        loadTelemetry();
+        autoTimer = setInterval(loadTelemetry, 30000);
+      } else {
+        if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+      }
     });
 
     /* ---- commentary tab ---- */
