@@ -218,7 +218,16 @@
         <button class="btn ghost" id="forgetGeminiKey" type="button">Forget key</button>
       </div>
       <p class="ok" id="geminiKeyOk"></p>
-      <p class="hint" id="geminiComingSoon">Chat streaming ships in the next release — save and verify your key above.</p>
+            <div id="geminiChatLog" aria-live="polite"></div>
+      <!-- GEMINI-R3A-ANCHOR -->
+      <div class="chat-row">
+        <input type="text" id="geminiChatInput" placeholder="Ask about the site, draft an announcement…" aria-label="Message Gemini">
+        <button class="btn" id="geminiChatSend" type="button">Send</button>
+        <button class="btn ghost" id="geminiChatStop" type="button" hidden>Stop</button>
+      </div>
+      <!-- GEMINI-R3B-ANCHOR -->
+      <p class="hint">Chat history lives only in this page session — closing the tab clears it. Gemini knows the console&apos;s file layout (<code>live.json</code>, <code>commentary.json</code>) and sees the current live.json; paste drafts here, then publish via the Content tab.</p>
+
     </section>
   </div>
 </div>
@@ -824,6 +833,182 @@
       geminiKeyInput.value = '';
       geminiKeyOk.textContent = 'Key forgotten.';
     });
+    /* ---- gemini chat (R2): SSE streaming via :streamGenerateContent ----
+       Roles are "user"/"model" (Gemini has no "assistant" role); the site brief
+       rides in systemInstruction. usageMetadata carries the token counts. */
+    var GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
+    /* USD per 1M tokens [input, output]; checked against
+       https://ai.google.dev/gemini-api/docs/pricing on 2026-09-29 (model IDs from
+       https://ai.google.dev/gemini-api/docs/models, last updated 2026-09-24 UTC).
+       3.x paid-tier text rates shown are through 2026-12-31; they double 2027-01-01. */
+    var GEMINI_PRICES = {
+      'gemini-3.8-flash': [0.75, 3.75],
+      'gemini-3.7-flash': [0.75, 3.75],
+      'gemini-3.6-flash': [0.75, 3.75],
+      'gemini-3.5-flash': [1.50, 9.00],
+      'gemini-3.5-flash-lite': [0.30, 2.50],
+      'gemini-3.1-flash-lite': [0.25, 1.50],
+      'gemini-2.5-flash': [0.30, 2.50],
+      'gemini-2.5-flash-lite': [0.10, 0.40],
+      'gemini-2.5-pro': [1.25, 10.00]
+    };
+    var geminiFlags = { copy: false }; /* R3 flips copy on */
+    var geminiChatLog = document.getElementById('geminiChatLog'),
+        geminiChatInput = document.getElementById('geminiChatInput'),
+        geminiChatSend = document.getElementById('geminiChatSend'),
+        geminiChatStop = document.getElementById('geminiChatStop');
+    var geminiHistory = []; /* {role:'user'|'model', text, usage?} */
+    var geminiStreaming = false;
+
+    function geminiCost(inT, outT, model) {
+      var p = GEMINI_PRICES[model] || null;
+      if (!p) { /* fall back to the longest known model id contained in the name */
+        var best = null;
+        for (var k in GEMINI_PRICES) {
+          if (model.indexOf(k) !== -1 && (!best || k.length > best.length)) best = k;
+        }
+        if (best) p = GEMINI_PRICES[best];
+      }
+      if (!p) return null;
+      return (inT * p[0] + outT * p[1]) / 1e6;
+    }
+    function addGeminiUsageLine(msgEl, model, inT, outT) {
+      var line = fmtTokens(inT) + ' input \u00b7 ' + fmtTokens(outT) + ' output';
+      var cost = geminiCost(inT, outT, model);
+      line += cost === null ? ' \u00b7 cost: unknown for this model' : ' \u00b7 \u2248 $' + cost.toFixed(cost < 0.01 ? 4 : 2);
+      var u = document.createElement('div');
+      u.className = 'usage';
+      u.textContent = line; /* textContent only — never parsed as HTML */
+      msgEl.appendChild(u);
+    }
+    function addGeminiMsg(role, text) {
+      var d = document.createElement('div');
+      d.className = 'msg ' + (role === 'user' ? 'user' : role === 'error' ? 'err' : 'bot');
+      var t = document.createElement('span');
+      t.textContent = text; /* textContent only — model output is never parsed as HTML */
+      d.appendChild(t);
+      if (role === 'bot' && geminiFlags.copy) { /* copy-reply button (R3) */
+        var copyBtn = document.createElement('button');
+        copyBtn.type = 'button';
+        copyBtn.className = 'copy-btn';
+        copyBtn.textContent = 'Copy';
+        copyBtn.addEventListener('click', function () {
+          copyMsgText(copyBtn, t.textContent);
+        });
+        d.appendChild(copyBtn);
+      }
+      geminiChatLog.appendChild(d);
+      geminiChatLog.scrollTop = geminiChatLog.scrollHeight;
+      return d;
+    }
+
+    function sendGeminiChat() {
+      var text = geminiChatInput.value.trim();
+      if (!text || geminiStreaming) return;
+      var key = geminiKeyInput.value.trim();
+      if (!key) { addGeminiMsg('error', 'Save your Google AI Studio API key first — it stays in this browser.'); return; }
+      var model = geminiModelInput.value.trim() || 'gemini-3.7-flash';
+      addGeminiMsg('user', text);
+      geminiHistory.push({ role: 'user', text: text });
+      geminiChatInput.value = '';
+      var msgEl = addGeminiMsg('bot', '');
+      msgEl.classList.add('typing');
+      var reply = '', usageIn = 0, usageOut = 0;
+      var aborter = new AbortController();
+      geminiStreaming = true;
+      geminiChatSend.disabled = true;
+      geminiChatStop.hidden = false;
+      function stopGemini() {
+        geminiStreaming = false;
+        geminiChatSend.disabled = false;
+        geminiChatStop.hidden = true;
+      }
+      geminiChatStop.onclick = function () { aborter.abort(); };
+      var contents = geminiHistory.slice(-20).map(function (m) {
+        return { role: m.role, parts: [{ text: m.text }] };
+      });
+      fetch(GEMINI_BASE + '/' + encodeURIComponent(model) + ':streamGenerateContent?alt=sse', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: claudeSystem() }] },
+          contents: contents
+        }),
+        signal: aborter.signal
+      }).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        if (!r.body || !r.body.getReader) throw new Error('streaming not supported in this browser');
+        var reader = r.body.getReader();
+        var decoder = new TextDecoder();
+        var buf = '';
+        msgEl.classList.remove('typing');
+        function pump() {
+          return reader.read().then(function (res) {
+            if (res.done) return;
+            buf += decoder.decode(res.value, { stream: true });
+            var parts = buf.split('\n\n');
+            buf = parts.pop(); /* keep the trailing partial event */
+            parts.forEach(function (chunk) {
+              var datas = [];
+              chunk.split('\n').forEach(function (line) {
+                if (line.indexOf('data: ') === 0) datas.push(line.slice(6));
+              });
+              datas.forEach(function (data) {
+                var evt;
+                try { evt = JSON.parse(data); } catch (e) { return; }
+                if (evt.error) throw new Error((evt.error && evt.error.message) || 'stream error');
+                if (evt.usageMetadata) {
+                  usageIn = evt.usageMetadata.promptTokenCount || usageIn;
+                  usageOut = evt.usageMetadata.candidatesTokenCount || usageOut;
+                }
+                (evt.candidates || []).forEach(function (c) {
+                  var content = c.content || {};
+                  (content.parts || []).forEach(function (part) {
+                    if (part.text && !part.thought) { /* skip thought parts */
+                      reply += part.text;
+                      msgEl.firstChild.textContent = reply; /* text span only — keep the copy button */
+                      geminiChatLog.scrollTop = geminiChatLog.scrollHeight;
+                    }
+                  });
+                });
+              });
+            });
+            return pump();
+          });
+        }
+        return pump();
+      }).then(function () {
+        stopGemini();
+        if (reply) {
+          geminiHistory.push({ role: 'model', text: reply,
+            usage: { input: usageIn, output: usageOut, model: model } });
+          addGeminiUsageLine(msgEl, model, usageIn, usageOut);
+        } else {
+          msgEl.className = 'msg err';
+          msgEl.firstChild.textContent = '(empty response)';
+          geminiHistory.pop();
+        }
+      }).catch(function (e) {
+        stopGemini();
+        msgEl.classList.remove('typing');
+        if (e.name === 'AbortError') {
+          /* User hit Stop: keep what streamed so far. */
+          if (reply) {
+            geminiHistory.push({ role: 'model', text: reply,
+              usage: { input: usageIn, output: usageOut, model: model } });
+            addGeminiUsageLine(msgEl, model, usageIn, usageOut);
+          }
+          else { geminiHistory.pop(); msgEl.firstChild.textContent = '(stopped)'; }
+        } else {
+          msgEl.className = 'msg err';
+          msgEl.firstChild.textContent = 'Request failed (' + e.message + '). ' +
+            'Check the key, the model name, and your network connection.';
+          geminiHistory.pop();
+        }
+      });
+    }
+    geminiChatSend.addEventListener('click', sendGeminiChat);
+    geminiChatInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') sendGeminiChat(); });
 })();
 </script>
 </body>
