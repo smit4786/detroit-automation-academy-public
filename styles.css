@@ -454,6 +454,10 @@ a { color: inherit; }
 .anim-wave .bot-arm-wave { animation: arm-wave 1.2s ease; }
 .anim-scan .bot-body { animation: scan-tilt 1.4s ease; }
 .anim-scan .scan-beam { animation: beam-sweep 1.4s ease; }
+.anim-dance .bot-body { animation: bot-dance 1.2s ease; }
+.anim-dance .bot-wheel { animation: wheel-spin 0.45s linear infinite; }
+.anim-jump .bot-body { animation: bot-jump 0.85s cubic-bezier(.4, 0, .2, 1); }
+.anim-charge .bot-light { animation: charge-pulse 1.6s ease; }
 
 @keyframes bot-forward {
   0% { transform: translateX(0); }
@@ -484,6 +488,21 @@ a { color: inherit; }
   30% { opacity: 0.45; transform: scaleX(1); }
   70% { opacity: 0.45; transform: scaleX(1); }
   100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes bot-dance {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  20% { transform: translateX(-18px) rotate(-8deg); }
+  40% { transform: translateX(18px) rotate(8deg); }
+  60% { transform: translateX(-18px) rotate(-8deg); }
+  80% { transform: translateX(18px) rotate(8deg); }
+}
+@keyframes bot-jump {
+  0%, 100% { transform: translateY(0); }
+  40%, 60% { transform: translateY(-46px); }
+}
+@keyframes charge-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
 }
 
 /* Terminal */
@@ -531,7 +550,7 @@ a { color: inherit; }
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   #demoBot .bot-body, #demoBot .bot-arm-wave,
-  #demoBot .bot-wheel, #demoBot .scan-beam { animation: none !important; }
+  #demoBot .bot-wheel, #demoBot .scan-beam, #demoBot .bot-light { animation: none !important; }
   .scan-beam { opacity: 0 !important; }
 }
 
