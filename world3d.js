@@ -29,11 +29,13 @@
   };
   var PARTS = [
     ['ground', 0x11161c, 1.0, 0.0], ['roads', 0x3a4046, 1.0, 0.0],
-    ['water', 0x1a6f8f, 0.35, 0.4], ['workshop', 0xE85D1A, 0.85, 0.0],
+    ['water', 0x1a6f8f, 0.35, 0.4],
     ['techtown', 0x8a94a6, 0.5, 0.6], ['station', 0xF5F2EA, 0.9, 0.0],
     ['riverfront', 0x9AA0A6, 0.9, 0.0], ['thinkabit', 0xFFB000, 0.85, 0.0],
     ['trees', 0x2f7d4f, 1.0, 0.0], ['street', 0x6a7076, 0.6, 0.4]
   ];
+  // NOTE: 'workshop' is no longer an STL — the procedural SC3K-standard build
+  // from window.DAAArchKit (site/js/arch-kit.js) replaces assets/world/workshop.stl.
 
   function fallback() {
     stage.classList.add('world-fallback');
@@ -97,14 +99,20 @@
 
     var manager = new THREE.LoadingManager();
     var loader = new STLLoader(manager);
-    // real load progress on the overlay: 11 district parts + the bot
-    var loadTotal = PARTS.length + 1;
+    // real load progress on the overlay: 9 STL district parts + the bot +
+    // the procedural workshop build (window.DAAArchKit)
+    var loadTotal = PARTS.length + 2;
+    var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
       if (loadCountEl) loadCountEl.textContent = done + '/' + loadTotal;
     }
+    function bumpLoadCount() {
+      loadDone += 1;
+      paintLoadCount(Math.min(loadDone, loadTotal));
+    }
     paintLoadCount(0);
-    manager.onProgress = function (url, loaded) { paintLoadCount(loaded); };
+    manager.onProgress = function () { bumpLoadCount(); };
     var base = 'assets/world/';
     var clickTargets = [];
 
@@ -122,8 +130,16 @@
       }, undefined, fallback);
     });
 
-    // clickable district markers (invisible hit discs at each stop)
-    var hitGeo = new THREE.CylinderGeometry(13, 13, 6, 12);
+    // The Workshop: procedural SC3K-standard build (replaces workshop.stl).
+    // Synchronous and local; counts as one step on the loading overlay.
+    try {
+      if (window.DAAArchKit && window.DAAArchKit.buildWorkshop) {
+        scene.add(window.DAAArchKit.buildWorkshop(THREE));
+      }
+    } catch (e) { /* workshop stays absent rather than breaking the scene */ }
+    bumpLoadCount();
+
+    // clickable district markers (invisible hit discs at each stop)    var hitGeo = new THREE.CylinderGeometry(13, 13, 6, 12);
     Object.keys(DISTRICT).forEach(function (key) {
       var d = DISTRICT[key];
       var hit = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
