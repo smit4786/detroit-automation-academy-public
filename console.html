@@ -75,6 +75,12 @@
               border:1px solid #2a333d; border-radius:999px; padding:3px 12px; font-size:.75rem;
               cursor:pointer; font-weight:600; }
   .copy-btn:hover { color:var(--paper); border-color:var(--forge); }
+  .status-pill { display:inline-block; font-size:.75rem; font-weight:700; border-radius:999px;
+    padding:3px 12px; margin-left:8px; background:#232c36; color:var(--concrete);
+    border:1px solid #2a333d; vertical-align:middle; white-space:nowrap; }
+  .status-pill.ok { color:#7dffa8; border-color:#1e4d31; }
+  .status-pill.bad { color:#ff7a7a; border-color:#5a2a2a; }
+  .status-pill.warn { color:#ffb347; border-color:#5a452a; }
 </style>
 </head>
 <body>
@@ -188,7 +194,7 @@
     </section>
 
     <section class="panel" id="tab-claude" role="tabpanel" hidden>
-      <h2>Claude <span class="hint" style="display:inline">— owner-only chat, runs in this browser</span></h2>
+      <h2>Claude <span class="status-pill" id="claudeStatus">No key</span> <span class="hint" style="display:inline">— owner-only chat, runs in this browser</span></h2>
       <p class="hint">Bring your own Anthropic API key. It stays in this browser's localStorage — never in the repo, never on the public site. Usage bills to your Anthropic account. Don't use this on a shared machine.</p>
       <div class="stat-grid">
         <label for="f-claude-key" style="margin:0">API key</label>
@@ -611,6 +617,16 @@
     var history = [];
     var streaming = false; /* true while a streamed reply is in flight */
 
+    /* ---- connection status pill (#15): shows key-saved state and last-call
+          latency, rendered text-only via textContent. ---- */
+    var statusPill = document.getElementById('claudeStatus');
+    function setClaudeStatus(text, cls) {
+      statusPill.textContent = text;
+      statusPill.className = 'status-pill' + (cls ? ' ' + cls : '');
+    }
+    try { setClaudeStatus(localStorage.getItem('daa_claude_key') ? 'Key saved' : 'No key', ''); }
+    catch (e) { setClaudeStatus('No key', ''); }
+
     /* USD per 1M tokens [input, output]; checked against Anthropic's pricing 2026-09-29.
        Update these if Anthropic reprices — the console computes cost from this table. */
     var TOKEN_PRICES = {
@@ -645,6 +661,7 @@
       if (!k) { keyOk.textContent = 'Enter a key first.'; return; }
       try { localStorage.setItem('daa_claude_key', k); } catch (e) {}
       keyOk.textContent = 'Key saved — verifying…';
+      setClaudeStatus('Verifying…', 'warn');
       fetch('https://api.anthropic.com/v1/models', {
         headers: {
           'x-api-key': k,
@@ -652,16 +669,20 @@
           'anthropic-dangerous-direct-browser-access': 'true'
         }
       }).then(function (r) {
-        if (r.ok) { keyOk.textContent = 'Key saved in this browser only — verified working.'; }
-        else { keyOk.textContent = 'Key saved, but the API rejected it (HTTP ' + r.status + ') — check the key.'; }
+        if (r.ok) { keyOk.textContent = 'Key saved in this browser only — verified working.';
+          setClaudeStatus('Connected', 'ok'); }
+        else { keyOk.textContent = 'Key saved, but the API rejected it (HTTP ' + r.status + ') — check the key.';
+          setClaudeStatus('Key rejected', 'bad'); }
       }).catch(function (e) {
         keyOk.textContent = 'Key saved, but verification could not reach the API (' + e.message + ').';
+        setClaudeStatus('Unreachable', 'warn');
       });
     });
     document.getElementById('forgetClaudeKey').addEventListener('click', function () {
       try { localStorage.removeItem('daa_claude_key'); } catch (e) {}
       keyInput.value = '';
       keyOk.textContent = 'Key forgotten.';
+      setClaudeStatus('No key', '');
     });
 
     function addMsg(role, text) {
@@ -736,6 +757,8 @@
       streaming = true;
       chatSend.disabled = true;
       chatStop.hidden = false;
+      var callStart = Date.now(); /* last-call latency for the status pill */
+      setClaudeStatus('Streaming…', 'warn');
       function stopStreaming() {
         streaming = false;
         chatSend.disabled = false;
@@ -799,6 +822,7 @@
         return pump();
       }).then(function () {
         stopStreaming();
+        setClaudeStatus('Connected · ' + ((Date.now() - callStart) / 1000).toFixed(1) + 's', 'ok');
         if (reply) {
           history.push({ role: 'assistant', content: reply,
             usage: { input: usageIn, output: usageOut, model: model } });
@@ -824,6 +848,7 @@
           msgEl.firstChild.textContent = 'Request failed (' + e.message + '). ' +
             'Check the key, the model name, and your network connection.';
           history.pop();
+          setClaudeStatus('Call failed', 'bad');
         }
       });
     }
