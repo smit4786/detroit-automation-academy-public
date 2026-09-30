@@ -157,7 +157,7 @@
       return sp;
     }
     var LABEL_AT = { // [x, z, y] per district, from cad/world.scad
-      workshop:   [0, 0, 21], techtown: [0, -44, 37], station: [44, 0, 21],
+      workshop:   [0, 0, 21], techtown: [0, -44, 35], station: [44, 0, 21],
       riverfront: [0, 44, 12], thinkabit: [-44, 0, 17]
     };
     Object.keys(DISTRICT).forEach(function (key) {
