@@ -54,14 +54,43 @@
 
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    var ANIM_CLASSES = ['anim-forward', 'anim-back', 'anim-spin', 'anim-scan', 'anim-wave'];
+    var ANIM_CLASSES = ['anim-forward', 'anim-back', 'anim-spin', 'anim-scan', 'anim-wave',
+      'anim-dance', 'anim-jump', 'anim-charge'];
     var COMMANDS = {
       forward: { anim: 'anim-forward', reply: 'Rolling forward one meter. No excuses.' },
       back:    { anim: 'anim-back',    reply: "Backing up. Even robots check their blind spots." },
       spin:    { anim: 'anim-spin',    reply: "Full 360\u00B0. That's one rotation of confidence." },
       scan:    { anim: 'anim-scan',    reply: 'Scan complete \u2014 path is clear. Build on, Detroit.' },
-      wave:    { anim: 'anim-wave',    reply: 'Hello, Detroit. Good to meet a builder.' }
+      wave:    { anim: 'anim-wave',    reply: 'Hello, Detroit. Good to meet a builder.' },
+      dance:   { anim: 'anim-dance',   reply: 'Servo shuffle. The workshop playlist is all Motown.' },
+      jump:    { anim: 'anim-jump',    reply: 'Twelve centimeters of pure ambition.' },
+      charge:  { anim: 'anim-charge',  reply: 'Topping up. A builder never runs on empty.',
+                 fn: function () { battery = 100; } }
     };
+
+    /* ---- Training district (world v1): five Detroit stops to explore.
+          Moving costs battery; "charge" refills it. ---- */
+    var WORLD = {
+      workshop:   { name: 'The Workshop',
+        desc: 'Home base. Workbenches, spare servos, the smell of solder. Every builder starts here.',
+        exits: { north: 'techtown', east: 'station', south: 'riverfront', west: 'thinkabit' } },
+      techtown:   { name: 'TechTown Detroit',
+        desc: 'Startups, mentors, whiteboards full of impossible. The future gets prototyped here.',
+        exits: { south: 'workshop' } },
+      station:    { name: 'Michigan Central',
+        desc: 'The old train station, reborn as an innovation hub. Proof that Detroit rebuilds.',
+        exits: { west: 'workshop' } },
+      riverfront: { name: 'Detroit Riverfront',
+        desc: "Wind off the water, skyline at your back. The view never gets old.",
+        exits: { north: 'workshop' } },
+      thinkabit:  { name: 'Thinkabit Lab',
+        desc: 'A STEM lab buzzing with kits and big questions. Young engineers at work.',
+        exits: { east: 'workshop' } }
+    };
+    var DIRS = ['north', 'east', 'south', 'west'];
+    var MOVE_COST = 5;
+    var botLoc = 'workshop';
+    var battery = 100;
 
     function clearAnims() {
       ANIM_CLASSES.forEach(function (c) { bot.classList.remove(c); });
@@ -86,22 +115,88 @@
       }, 14);
     }
 
+    function exitsList() {
+      return DIRS.filter(function (d) { return WORLD[botLoc].exits[d]; });
+    }
+
+    function look() {
+      var w = WORLD[botLoc];
+      printLine('demo-line-out', w.name + ' \u2014 ' + w.desc);
+      printLine('demo-line-out', 'Exits: ' + exitsList().join(' \u00B7 '));
+    }
+
+    function showMap() {
+      function cell(key, label) {
+        var s = ' ' + label + ' ';
+        return key === botLoc ? '[' + s + '*]' : '[' + s + ']';
+      }
+      printLine('demo-line-out', '              ' + cell('techtown', 'TechTown'));
+      printLine('demo-line-out', '                  |');
+      printLine('demo-line-out',
+        cell('thinkabit', 'Thinkabit') + '---' + cell('workshop', 'Workshop') + '---' + cell('station', 'Station'));
+      printLine('demo-line-out', '                  |');
+      printLine('demo-line-out', '              ' + cell('riverfront', 'Riverfront'));
+      printLine('demo-line-out', '* marks where you are. Battery ' + battery + '%.');
+    }
+
+    function status() {
+      printLine('demo-line-out',
+        'Battery ' + battery + '%. Location: ' + WORLD[botLoc].name + '. Morale: Detroit.');
+    }
+
+    function travel(dest) {
+      var here = WORLD[botLoc];
+      var target = here.exits[dest] || null;
+      if (!target && dest) {
+        /* allow naming a place directly ("go techtown", "go station") */
+        var key = Object.keys(WORLD).filter(function (k) {
+          return k === dest || WORLD[k].name.toLowerCase() === dest;
+        })[0];
+        if (key && exitsList().some(function (d) { return here.exits[d] === key; })) target = key;
+      }
+      if (!target) {
+        printLine('demo-line-out', "Can't go that way from here. Try: " + exitsList().join(', ') + '.');
+        return;
+      }
+      if (battery < MOVE_COST) {
+        printLine('demo-line-out', 'Battery too low to travel. Type "charge".');
+        return;
+      }
+      battery -= MOVE_COST;
+      botLoc = target;
+      clearAnims();
+      void bot.getBoundingClientRect(); // restart the animation
+      if (!reduced) bot.classList.add('anim-forward');
+      printLine('demo-line-ok', 'Rolling to ' + WORLD[target].name + '.');
+      look();
+    }
+
+    function printHelp() {
+      printLine('demo-line-out', 'Moves: forward \u00B7 back \u00B7 spin \u00B7 wave \u00B7 dance \u00B7 jump');
+      printLine('demo-line-out', 'Explore: look \u00B7 go <north|east|south|west|place> \u00B7 map \u00B7 status');
+      printLine('demo-line-out', 'Upkeep: scan \u00B7 charge');
+    }
+
     function run(raw) {
       var cmd = (raw || '').trim().toLowerCase();
       if (!cmd) return;
       printLine('demo-line-in', cmd);
-      if (cmd === 'help') {
-        printLine('demo-line-out', 'Commands: forward \u00B7 back \u00B7 spin \u00B7 scan \u00B7 wave');
-        return;
-      }
+      if (cmd === 'help') { printHelp(); return; }
+      if (cmd === 'look') { look(); return; }
+      if (cmd === 'map') { showMap(); return; }
+      if (cmd === 'status') { status(); return; }
+      var parts = cmd.split(/\s+/);
+      if (parts[0] === 'go') { travel(parts.slice(1).join(' ')); return; }
+      if (parts.length === 1 && DIRS.indexOf(parts[0]) !== -1) { travel(parts[0]); return; }
       var def = COMMANDS[cmd];
       if (!def) {
-        printLine('demo-line-out', 'Unknown command \u2014 try: forward, back, spin, scan, wave, help.');
+        printLine('demo-line-out', 'Unknown command \u2014 try "help".');
         return;
       }
       clearAnims();
       void bot.getBoundingClientRect(); // restart the animation
       if (!reduced) bot.classList.add(def.anim);
+      if (def.fn) def.fn();
       printLine('demo-line-ok', def.reply);
     }
 
@@ -120,10 +215,11 @@
     });
 
     bot.addEventListener('animationend', function (e) {
-      if (e.target.classList && (e.target.classList.contains('bot-body') || e.target.classList.contains('bot-arm-wave'))) {
+      var c = e.target.classList;
+      if (c && (c.contains('bot-body') || c.contains('bot-arm-wave') || c.contains('bot-light'))) {
         clearAnims();
       }
     });
 
-    printLine('demo-line-out', 'Training bot online. Type "help" or tap a command.');
+    printLine('demo-line-out', 'Training bot online. Type "help" \u2014 or "look" to start exploring.');
   })();
