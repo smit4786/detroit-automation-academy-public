@@ -37,6 +37,8 @@
   textarea { min-height: 90px; resize: vertical; }
   .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
   .stat-grid { display:grid; grid-template-columns: 1fr 2fr; gap:8px 12px; align-items:center; }
+  .stat-hint { font-size:.78rem; color:#ffb347; margin:4px 0 0; min-height:1em; }
+  input[type=text].invalid { border-color:#ff7a7a; }
   .announce-preview { background:var(--forge); color:var(--midnight); text-align:center;
          font-weight:600; font-size:.92rem; padding:10px 24px; border-radius:10px; margin-top:10px; }
   .announce-preview .preview-link { color:var(--midnight); font-weight:800; text-decoration:underline;
@@ -295,12 +297,35 @@
       (d.stats || []).forEach(function (s, i) {
         var ln = document.createElement('label'); ln.textContent = 'Stat ' + (i + 1) + ' number';
         var n = document.createElement('input'); n.type = 'text'; n.value = s.num; n.dataset.k = 'num'; n.dataset.i = i;
+        var hn = document.createElement('p'); hn.className = 'stat-hint'; hn.setAttribute('role', 'status');
+        var nw = document.createElement('div'); nw.appendChild(n); nw.appendChild(hn);
         var ll = document.createElement('label'); ll.textContent = 'Stat ' + (i + 1) + ' label';
         var l = document.createElement('input'); l.type = 'text'; l.value = s.label; l.dataset.k = 'label'; l.dataset.i = i;
-        grid.appendChild(ln); grid.appendChild(n); grid.appendChild(ll); grid.appendChild(l);
+        var hl = document.createElement('p'); hl.className = 'stat-hint'; hl.setAttribute('role', 'status');
+        var lw = document.createElement('div'); lw.appendChild(l); lw.appendChild(hl);
+        grid.appendChild(ln); grid.appendChild(nw); grid.appendChild(ll); grid.appendChild(lw);
+        n.addEventListener('input', function () { checkStatField(n, hn, 'num'); });
+        l.addEventListener('input', function () { checkStatField(l, hl, 'label'); });
+        checkStatField(n, hn, 'num');
+        checkStatField(l, hl, 'label');
       });
       updateAnnouncePreview();
     }).catch(function () {});
+
+    /* #9 — inline validation hints for empty stat numbers/labels.
+       Empty stats render blank (or a bare number) on the live site, so
+       flag them right under the input instead of failing silently. */
+    function checkStatField(input, hint, kind) {
+      var empty = !input.value.trim();
+      input.classList.toggle('invalid', empty);
+      input.setAttribute('aria-invalid', empty ? 'true' : 'false');
+      hint.textContent = empty
+        ? (kind === 'num'
+            ? 'Number is empty — this stat shows blank on the live site.'
+            : 'Label is empty — this stat shows a bare number on the live site.')
+        : '';
+      return !empty;
+    }
 
     function collectLive() {
       var stats = (live && live.stats ? live.stats : []).map(function (s, i) {
@@ -320,10 +345,18 @@
     }
 
     document.getElementById('downloadLive').addEventListener('click', function () {
-      var blob = new Blob([JSON.stringify(collectLive(), null, 2)], { type: 'application/json' });
+      var data = collectLive();
+      var empties = data.stats.filter(function (s) {
+        return !(s.num || '').trim() || !(s.label || '').trim();
+      }).length;
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = 'live.json'; a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+      document.getElementById('contentOk').textContent = empties
+        ? 'Downloaded live.json — ' + empties + ' stat' + (empties === 1 ? '' : 's') +
+          ' ha' + (empties === 1 ? 's' : 've') + ' an empty number or label (flagged above).'
+        : 'Downloaded live.json — all stats have a number and label.';
     });
 
     /* live announcement-bar preview — mirrors the site's owner.js rendering,
