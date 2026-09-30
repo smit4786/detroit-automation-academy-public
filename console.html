@@ -1007,6 +1007,28 @@
           updateRegen();
           addMsg('bot', 'Chat cleared.');
         }
+      },
+      /* ---- #B4: /model — set or report the model field. Names are validated
+            case-insensitively against the known-models datalist (#13); a bare
+            /model reports the current setting. ---- */
+      model: {
+        hint: '/model <name> \u2014 set the chat model (validated); bare /model reports the current one',
+        run: function (args) {
+          var known = Array.prototype.map.call(
+            document.querySelectorAll('#claude-models option'), function (o) { return o.value; });
+          if (!args) {
+            addMsg('bot', 'Current model: ' + (modelInput.value.trim() || 'claude-haiku-4-5'));
+            return;
+          }
+          var want = args.split(/\s+/)[0];
+          var match = known.filter(function (m) { return m.toLowerCase() === want.toLowerCase(); })[0];
+          if (match) {
+            modelInput.value = match;
+            addMsg('bot', 'Model set to ' + match + '.');
+          } else {
+            addMsg('bot', 'Unknown model "' + want + '". Known models: ' + known.join(', '));
+          }
+        }
       }
     };
 
