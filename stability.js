@@ -203,12 +203,84 @@
     } catch (e) {}
   }
 
+  // ---- boot journal: crash telemetry without a server ----
+  // The screenshot IS the telemetry: when a tab dies mid-build on iOS there
+  // is no error event, no beacon, nothing. So we journal the boot in
+  // sessionStorage BEFORE the heavy work starts and clear it after the first
+  // successful frame. A journal left behind means the previous boot never
+  // reached first frame -> the next boot enters 'safe' mode (reduced
+  // district, far-field only on explicit user action) instead of crashing
+  // the same way again. A clean pagehide clears the journal so navigating
+  // away is never mistaken for a crash.
+  var JOURNAL_KEY = 'daa3d_boot_v1';
+  var JOURNAL_TTL_MS = 10 * 60 * 1000;
+  function readJournal() {
+    try {
+      var raw = (typeof sessionStorage !== 'undefined') ?
+        sessionStorage.getItem(JOURNAL_KEY) : null;
+      if (!raw) return null;
+      var j = JSON.parse(raw);
+      return (j && j.t) ? j : null;
+    } catch (e) { return null; }
+  }
+  function writeJournal(stage, mode) {
+    try {
+      if (typeof sessionStorage === 'undefined') return;
+      sessionStorage.setItem(JOURNAL_KEY, JSON.stringify({
+        t: Date.now(), stage: stage || '', mode: mode || ''
+      }));
+    } catch (e) {}
+  }
+  function clearJournal() {
+    try {
+      if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(JOURNAL_KEY);
+    } catch (e) {}
+  }
+
+  // ---- boot mode: decided BEFORE three.js loads, BEFORE any geometry ----
+  // 'full': desktop-class device, no crash history — build everything.
+  // 'lite': constrained device (all iPhones land here: WebKit reports
+  //   hardwareConcurrency <= 4 and deviceMemory is undefined) — boot the
+  //   core + near-field district, stream the far-field rings after first
+  //   frame on idle.
+  // 'safe': the journal says the last boot died before first frame — boot
+  //   the reduced district and do NOT auto-stream; the user taps once to
+  //   load the far field. Never build 20 sq mi synchronously on a phone.
+  function detectBootMode() {
+    try {
+      var j = readJournal();
+      if (j && (Date.now() - j.t) < JOURNAL_TTL_MS) return 'safe';
+    } catch (e) {}
+    return detectTier() === 'low' ? 'lite' : 'full';
+  }
+
+  // ---- idle scheduler: requestIdleCallback is absent in WebKit ----
+  function whenIdle(fn, waitMs) {
+    var wait = (typeof waitMs === 'number') ? waitMs : 1500;
+    try {
+      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        window.requestIdleCallback(function () { fn(); }, { timeout: 6000 });
+        return;
+      }
+    } catch (e) {}
+    setTimeout(fn, wait);
+  }
+
+  if (typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('pagehide', function () { clearJournal(); });
+  }
+
   if (typeof window !== 'undefined') {
     window.DAAStability = {
       create: create,
       runSliced: runSliced,
       disposeObject: disposeObject,
-      detectTier: detectTier
+      detectTier: detectTier,
+      detectBootMode: detectBootMode,
+      readJournal: readJournal,
+      writeJournal: writeJournal,
+      clearJournal: clearJournal,
+      whenIdle: whenIdle
     };
   }
 })();
