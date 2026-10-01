@@ -325,6 +325,7 @@
 
     // ---- bot motion ----
     var tween = null;      // {x, z, done}
+    var turnT = null;      // target rotation.y for in-place turns
     var anim = null;       // {kind, t0, dur}
     var keys = {};
     var driveArmed = false;
@@ -394,6 +395,14 @@
           botGroup.position.y = 0.35 + Math.abs(Math.sin(now * 0.02)) * 0.25;
         }
       } else {
+        // in-place turn tween (left/right commands, D-pad turns)
+        if (turnT !== null) {
+          var dd = turnT - botGroup.rotation.y;
+          while (dd > Math.PI) dd -= Math.PI * 2;
+          while (dd < -Math.PI) dd += Math.PI * 2;
+          if (Math.abs(dd) < 0.04) { turnT = null; }
+          else botGroup.rotation.y += dd * Math.min(1, 8 * dt);
+        }
         botGroup.position.y += (0.35 - botGroup.position.y) * 0.2;
       }
 
@@ -483,11 +492,25 @@
       nudge: function (dir) { // forward/back relative to facing
         var f = botGroup.rotation.y;
         var dx = -Math.sin(f) * 5 * dir, dz = -Math.cos(f) * 5 * dir;
+        turnT = null;
         tween = {
           x: THREE.MathUtils.clamp(botGroup.position.x + dx, -58, 58),
           z: THREE.MathUtils.clamp(botGroup.position.z + dz, -58, 58),
           done: null
         };
+      },
+      drive: function (mx, mz) { // screen-relative step (D-pad), mirrors WASD
+        turnT = null;
+        var sp = 2.4;
+        tween = {
+          x: THREE.MathUtils.clamp(botGroup.position.x + mx * sp, -58, 58),
+          z: THREE.MathUtils.clamp(botGroup.position.z + mz * sp, -58, 58),
+          done: null
+        };
+      },
+      turn: function (dir) { // -1 = left, +1 = right; smooth 45° in place
+        tween = null;
+        turnT = botGroup.rotation.y + dir * Math.PI / 4;
       },
       dance: function () { playAnim('dance', 1300); },
       jump: function () { playAnim('jump', 900); },
