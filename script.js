@@ -68,7 +68,10 @@
       jump:    { anim: 'anim-jump',    reply: 'Twelve centimeters of pure ambition.' },
       charge:  { anim: 'anim-charge',  reply: 'Topping up. A builder never runs on empty.',
                  fn: function () { battery = 100; } },
-      focus:   { anim: null,         reply: 'Camera on the bot. There it is.' }
+      focus:   { anim: null,         reply: 'Camera on the bot. There it is.' },
+      patrol:  { anim: null,         reply: 'Fleet on patrol. The bee is doing its rounds.' },
+      follow:  { anim: null,         reply: 'Fleet falling in. Escort formation.' },
+      rtp:     { anim: null,         reply: 'Fleet returning to pads.' }
     };
 
     /* ---- Training district (world v1): five Detroit stops to explore.
@@ -233,6 +236,7 @@
       printLine('demo-line-out', 'Fly: takeoff · land · up · down (the bot is a quadcopter now)');
       printLine('demo-line-out', 'Explore: look · focus · go <north|east|south|west|place> · map · status');
       printLine('demo-line-out', 'Upkeep: scan · charge');
+      printLine('demo-line-out', 'Fleet: patrol · follow · rtp (autonomous bee + scout drones)');
     }
 
     function run(raw) {
@@ -259,7 +263,8 @@
         var act = { forward: function () { w3.nudge(1); }, back: function () { w3.nudge(-1); },
           left: function () { w3.turn(-1); }, right: function () { w3.turn(1); },
           spin: w3.spin, dance: w3.dance, jump: w3.jump, wave: w3.wave,
-          scan: w3.scan, charge: w3.charge, focus: w3.focus }[cmd];
+          scan: w3.scan, charge: w3.charge, focus: w3.focus,
+          patrol: w3.patrol, follow: w3.follow, rtp: w3.rtp }[cmd];
         if (act) act();
       } else {
         clearAnims();
@@ -282,12 +287,41 @@
       input.focus();
     });
 
-    document.querySelectorAll('.demo-chip:not(.dpad-btn)').forEach(function (chip) {
+    document.querySelectorAll('.demo-chip:not(.dpad-btn):not(.theme-toggle)').forEach(function (chip) {
       chip.addEventListener('click', function () {
         run(chip.getAttribute('data-cmd'));
         if (!coarsePointer) input.focus();
       });
     });
+
+    /* Theme audio: a visible toggle, default off, no autoplay ever.
+       Starts only on the user's click; under reduced motion it stays inert. */
+    (function () {
+      var btn = document.getElementById('themeToggle');
+      var audio = document.getElementById('themeAudio');
+      if (!btn || !audio) return;
+      var reduceMotion = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) {
+        btn.disabled = true;
+        btn.setAttribute('aria-label', 'Site theme music (off — disabled under reduced motion)');
+        return;
+      }
+      function setState(on) {
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        btn.textContent = '♪ Theme: ' + (on ? 'on' : 'off');
+      }
+      btn.addEventListener('click', function () {
+        if (audio.paused) {
+          var p = audio.play();
+          if (p && p.catch) p.catch(function () { setState(false); });
+          setState(true);
+        } else {
+          audio.pause();
+          setState(false);
+        }
+      });
+    })();
 
     /* D-pad: multi-directional drive. Tap for one step, hold to keep rolling.
        Screen-relative like WASD; never summons the keyboard or the page scroll. */
