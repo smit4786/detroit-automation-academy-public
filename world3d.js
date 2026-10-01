@@ -465,6 +465,206 @@
     // honest between modules instead of dying inside one giant synchronous
     // build — the failure mode that killed mobile tabs. A failed module logs
     // and continues; one bad build never strands the district.
+    // ---- static geometry merger (2026-10-01 draw-call pass) ----
+    // Merges static Meshes by material signature so the sliced build emits
+    // far fewer draw calls (iPadOS). material.color is baked into a 'color'
+    // vertex attribute under a white base material (bit-exact); meshes whose
+    // map textures share one canvas image but use different repeat/offset
+    // get the texture uvTransform baked into their UVs and share a single
+    // identity-transform texture clone (visually lossless, sub-texel).
+    // Animated modules (rail-vehicles, drone-autonomy, rail-multilevel),
+    // click targets (hit-discs) and sprites are never passed in.
+    // Inline: zero new files, zero new external requests. Deterministic
+    // (seeded PRNG only — never Math.random).
+    // DAA static-geometry merger (inline, zero new dependencies/requests).
+    // mergeStatic(THREE, root) merges static Meshes under root by material
+    // signature. Two color/texture strategies keep merged output faithful:
+    //  - material.color is baked into a 'color' vertex attribute under a white
+    //    base material (bit-exact: color is already in linear working space);
+    //  - meshes whose map textures share the same IMAGE but use different
+    //    repeat/offset (RepeatWrapping only) get the texture uvTransform baked
+    //    into their UVs and share one identity-transform texture clone
+    //    (visually lossless: sub-texel <1e-6 UV difference, not bit-exact).
+    // Meshes that cannot merge safely are left in place: InstancedMesh/
+    // SkinnedMesh, multi-material meshes, non-material materials, morph
+    // targets, interleaved attributes. Caller passes only static build-step
+    // groups (animated modules are never passed in).
+    // Deterministic: no Math.random; Map preserves insertion order.
+    var DAA_mergeStatic = (function () {
+      var _imgIds = new WeakMap(), _imgNext = 1;
+      function imageKey(t) {
+        var img = t && t.image;
+        if (!img) return 'noimg';
+        if (img.src) return 'src:' + img.src;
+        var id = _imgIds.get(img);
+        if (!id) { id = _imgNext++; _imgIds.set(img, id); }
+        return 'cv' + id;
+      }
+      function texParams(t) {
+        return 'w' + t.wrapS + ',' + t.wrapT + 'f' + (t.flipY ? 1 : 0) + 'c' + (t.colorSpace || '');
+      }
+      function transformKey(t) {
+        if (t.matrixAutoUpdate) t.updateMatrix();
+        var e = t.matrix.elements;
+        return e[0].toFixed(6) + ',' + e[1].toFixed(6) + ',' + e[3].toFixed(6) + ',' +
+               e[4].toFixed(6) + ',' + e[6].toFixed(6) + ',' + e[7].toFixed(6);
+      }
+      return function mergeStatic(THREE, root) {
+        var stats = { inMeshes: 0, outMeshes: 0, skipped: 0, buckets: 0, bakedUV: 0, ms: 0 };
+        if (!root || !root.traverse) { mergeStatic.stats = stats; return root; }
+        var t0 = Date.now();
+        root.updateMatrixWorld(true);
+        var inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+        var tmpM = new THREE.Matrix4();
+        var meshes = [];
+        root.traverse(function (o) {
+          if (o.isMesh && !o.isInstancedMesh && !o.isSkinnedMesh) meshes.push(o);
+        });
+        stats.inMeshes = meshes.length;
+        if (!meshes.length) { mergeStatic.stats = stats; return root; }
+        var RepeatW = THREE.RepeatWrapping;
+        function sig(m, mesh) {
+          var parts = [m.type,
+            's' + m.side, 'f' + (m.flatShading ? 1 : 0), 'v' + (m.vertexColors ? 1 : 0),
+            'o' + m.opacity, 't' + (m.transparent ? 1 : 0), 'a' + (m.alphaTest || 0),
+            'r' + (m.roughness === undefined ? '-' : m.roughness),
+            'm' + (m.metalness === undefined ? '-' : m.metalness),
+            'e' + (m.emissive ? m.emissive.getHex() : 0),
+            'ei' + (m.emissiveIntensity === undefined ? '-' : m.emissiveIntensity),
+            'cs' + (mesh.castShadow ? 1 : 0), 'rs' + (mesh.receiveShadow ? 1 : 0),
+            'ro' + (mesh.renderOrder || 0), 'vis' + (mesh.visible ? 1 : 0)];
+          var bUV = false, emSame = false;
+          if (m.map && m.map.isTexture) {
+            var tp = texParams(m.map);
+            var em = m.emissiveMap;
+            if (em && em !== m.map) {
+              parts.push('mapimg' + imageKey(m.map) + '|' + tp + '|' + transformKey(m.map));
+              parts.push('emapimg' + imageKey(em) + '|' + texParams(em) + '|' + transformKey(em));
+            } else {
+              emSame = !!em;
+              if (m.map.wrapS === RepeatW && m.map.wrapT === RepeatW) {
+                parts.push('mapimg' + imageKey(m.map) + '|' + tp + '|BAKE');
+                bUV = true;
+              } else {
+                parts.push('mapimg' + imageKey(m.map) + '|' + tp + '|' + transformKey(m.map));
+              }
+            }
+          } else {
+            parts.push('nomap');
+            if (m.emissiveMap) parts.push('emaponly' + imageKey(m.emissiveMap));
+          }
+          return { key: parts.join('|'), bakeUV: bUV, emSame: emSame };
+        }
+        var buckets = new Map(), order = [];
+        var i, mesh, m, g;
+        for (i = 0; i < meshes.length; i++) {
+          mesh = meshes[i]; m = mesh.material; g = mesh.geometry;
+          var okm = m && m.isMaterial && typeof m.clone === 'function' && !Array.isArray(m) &&
+            g && g.isBufferGeometry &&
+            !(g.morphAttributes && Object.keys(g.morphAttributes).some(function (k) {
+              return g.morphAttributes[k] && g.morphAttributes[k].length; }));
+          if (okm) {
+            for (var an in g.attributes) {
+              if (g.attributes[an].isInterleavedBufferAttribute) { okm = false; break; }
+            }
+            if (okm && m.map && m.map.isTexture && !g.attributes.uv) okm = false;
+          }
+          if (!okm) { stats.skipped++; continue; }
+          var s = sig(m, mesh);
+          var k = s.key + '#' + Object.keys(g.attributes).sort().join(',');
+          var b = buckets.get(k);
+          if (!b) {
+            b = { mat: m, bake: !m.vertexColors, bakeUV: s.bakeUV, emSame: s.emSame, items: [] };
+            buckets.set(k, b); order.push(k);
+          }
+          b.items.push(mesh);
+        }
+        stats.buckets = order.length;
+        var WHITE = new THREE.Color(0xffffff);
+        for (i = 0; i < order.length; i++) {
+          var b2 = buckets.get(order[i]);
+          if (b2.items.length < 2) { stats.skipped += b2.items.length; continue; }
+          var geoms = [], good = true, gi;
+          var sharedTex = null;
+          for (gi = 0; gi < b2.items.length; gi++) {
+            mesh = b2.items[gi];
+            var src = mesh.geometry;
+            var ng = src.index ? src.toNonIndexed() : src.clone();
+            tmpM.copy(inv).multiply(mesh.matrixWorld);
+            ng.applyMatrix4(tmpM);
+            if (b2.bakeUV) {
+              var tx = mesh.material.map;
+              if (tx.matrixAutoUpdate) tx.updateMatrix();
+              var e = tx.matrix.elements;
+              var uv = ng.attributes.uv, uvs = uv.array;
+              for (var q = 0; q < uv.count; q++) {
+                var u = uvs[q * 2], vv = uvs[q * 2 + 1];
+                uvs[q * 2] = e[0] * u + e[3] * vv + e[6];
+                uvs[q * 2 + 1] = e[1] * u + e[4] * vv + e[7];
+              }
+              if (!sharedTex) {
+                sharedTex = tx.clone();
+                sharedTex.repeat.set(1, 1); sharedTex.offset.set(0, 0);
+                sharedTex.rotation = 0; sharedTex.center.set(0, 0);
+                if (sharedTex.matrixAutoUpdate) sharedTex.updateMatrix();
+                sharedTex.needsUpdate = true;
+              }
+            }
+            if (b2.bake) {
+              var c = (mesh.material && mesh.material.color) || WHITE;
+              var n = ng.attributes.position.count;
+              var carr = new Float32Array(n * 3);
+              for (var v = 0; v < n; v++) { carr[v * 3] = c.r; carr[v * 3 + 1] = c.g; carr[v * 3 + 2] = c.b; }
+              ng.setAttribute('color', new THREE.BufferAttribute(carr, 3));
+            }
+            geoms.push(ng);
+          }
+          if (b2.bakeUV) stats.bakedUV += b2.items.length;
+          var names = Object.keys(geoms[0].attributes);
+          var total = 0;
+          for (gi = 0; gi < geoms.length; gi++) total += geoms[gi].attributes.position.count;
+          var out = new THREE.BufferGeometry();
+          for (var ni = 0; ni < names.length && good; ni++) {
+            var nm = names[ni], is = geoms[0].attributes[nm].itemSize;
+            var arr = new Float32Array(total * is), off = 0;
+            for (gi = 0; gi < geoms.length; gi++) {
+              var at = geoms[gi].attributes[nm];
+              if (!at || at.itemSize !== is) { good = false; break; }
+              arr.set(at.array, off); off += at.array.length;
+            }
+            if (good) out.setAttribute(nm, new THREE.BufferAttribute(arr, is));
+          }
+          if (!good || !out.attributes.position || !out.attributes.normal) {
+            stats.skipped += b2.items.length;
+            for (gi = 0; gi < geoms.length; gi++) geoms[gi].dispose();
+            continue;
+          }
+          out.computeBoundingSphere();
+          var mm = b2.mat.clone();
+          if (b2.bake) { mm.color.set(0xffffff); mm.vertexColors = true; }
+          if (sharedTex) {
+            mm.map = sharedTex;
+            if (b2.emSame) mm.emissiveMap = sharedTex;
+          }
+          var mo = new THREE.Mesh(out, mm);
+          var f = b2.items[0];
+          mo.castShadow = f.castShadow; mo.receiveShadow = f.receiveShadow;
+          mo.renderOrder = f.renderOrder; mo.visible = f.visible;
+          for (gi = 0; gi < b2.items.length; gi++) {
+            var p = b2.items[gi].parent;
+            if (p) p.remove(b2.items[gi]);
+            geoms[gi].dispose();
+          }
+          root.add(mo);
+          stats.outMeshes++;
+        }
+        stats.ms = Date.now() - t0;
+        mergeStatic.stats = stats;
+        return root;
+      }
+      return mergeStatic;
+    })();
+
     var buildTasks = [];
     function buildStep(name, fn) {
       buildTasks.push(function () {
@@ -489,6 +689,9 @@
         try {
           if (window.DAARegionExpansionR4 && window.DAARegionExpansionR4.buildRegionExpansionR4) {
             farFieldGroup = window.DAARegionExpansionR4.buildRegionExpansionR4(THREE);
+            try { DAA_mergeStatic(THREE, farFieldGroup); } catch (e) {
+              if (window.console && console.warn) console.warn('[world3d] r4 merge failed, using unmerged:', e);
+            }
             scene.add(farFieldGroup);
           }
         } catch (e) {
@@ -587,7 +790,7 @@
     // Synchronous and local; counts as one step on the loading overlay.
     buildStep('workshop', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildWorkshop) {
-        scene.add(window.DAAArchKit.buildWorkshop(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAArchKit.buildWorkshop(THREE)));
       }
     });
 
@@ -595,7 +798,7 @@
     // (replaces the old station STL). Synchronous and local; one overlay step.
     buildStep('corktown', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildCorktown) {
-        scene.add(window.DAAArchKit.buildCorktown(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAArchKit.buildCorktown(THREE)));
       }
     });
 
@@ -603,7 +806,7 @@
     // (replaces the old techtown STL). Synchronous and local; one overlay step.
     buildStep('innovation', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildInnovation) {
-        scene.add(window.DAAArchKit.buildInnovation(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAArchKit.buildInnovation(THREE)));
       }
     });
 
@@ -611,7 +814,7 @@
     // (replaces the old thinkabit STL). Synchronous and local; one overlay step.
     buildStep('thinkabit', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildThinkabit) {
-        scene.add(window.DAAArchKit.buildThinkabit(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAArchKit.buildThinkabit(THREE)));
       }
     });
 
@@ -619,7 +822,7 @@
     // (replaces the old riverfront STL). Synchronous and local; one overlay step.
     buildStep('riverfront', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildRiverfront) {
-        scene.add(window.DAAArchKit.buildRiverfront(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAArchKit.buildRiverfront(THREE)));
       }
     });
 
@@ -627,7 +830,7 @@
     // (proposed rails, in-scene). Synchronous and local; one overlay step.
     buildStep('guideway', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildGuideway) {
-        scene.add(window.DAAArchKit.buildGuideway(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAArchKit.buildGuideway(THREE)));
       }
     });
 
@@ -635,7 +838,7 @@
     // Synchronous and local; one overlay step.
     buildStep('streetscape', function () {
       if (window.DAAStreetscape && window.DAAStreetscape.buildStreetscape) {
-        scene.add(window.DAAStreetscape.buildStreetscape(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAStreetscape.buildStreetscape(THREE)));
       }
     });
 
@@ -643,7 +846,7 @@
     // Synchronous and local; one overlay step.
     buildStep('furniture', function () {
       if (window.DAAFurniture && window.DAAFurniture.buildFurniture) {
-        scene.add(window.DAAFurniture.buildFurniture(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAFurniture.buildFurniture(THREE)));
       }
     });
 
@@ -651,7 +854,7 @@
     // Synchronous and local; one overlay step.
     buildStep('vehicles', function () {
       if (window.DAAVehicles && window.DAAVehicles.buildVehicles) {
-        scene.add(window.DAAVehicles.buildVehicles(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAVehicles.buildVehicles(THREE)));
       }
     });
 
@@ -659,7 +862,7 @@
     // context buildings, street trees. Synchronous and local; one overlay step.
     buildStep('district-expansion', function () {
       if (window.DAADistrictExpansion && window.DAADistrictExpansion.buildDistrictExpansion) {
-        scene.add(window.DAADistrictExpansion.buildDistrictExpansion(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAADistrictExpansion.buildDistrictExpansion(THREE)));
       }
     });
 
@@ -667,7 +870,7 @@
     // building-base grounding decals. Synchronous and local; one overlay step.
     buildStep('groundwork', function () {
       if (window.DAAGroundwork && window.DAAGroundwork.buildGroundwork) {
-        scene.add(window.DAAGroundwork.buildGroundwork(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAGroundwork.buildGroundwork(THREE)));
       }
     });
 
@@ -675,7 +878,7 @@
     // Synchronous and local; one overlay step.
     buildStep('promenade', function () {
       if (window.DAAPromenade && window.DAAPromenade.buildPromenade) {
-        scene.add(window.DAAPromenade.buildPromenade(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAPromenade.buildPromenade(THREE)));
       }
     });
 
@@ -686,7 +889,7 @@
     // buildings, street trees. Synchronous and local; one overlay step.
     buildStep('region-expansion', function () {
       if (window.DAARegionExpansion && window.DAARegionExpansion.buildRegionExpansion) {
-        scene.add(window.DAARegionExpansion.buildRegionExpansion(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAARegionExpansion.buildRegionExpansion(THREE)));
       }
     });
 
@@ -694,7 +897,7 @@
     // station, Chicago terminus. Synchronous and local; one overlay step.
     buildStep('chicago-hsr', function () {
       if (window.DAAChicagoHSR && window.DAAChicagoHSR.buildChicagoHSR) {
-        scene.add(window.DAAChicagoHSR.buildChicagoHSR(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAChicagoHSR.buildChicagoHSR(THREE)));
       }
     });
 
@@ -702,7 +905,7 @@
     // / 14th St / riverfront spur lines. Synchronous and local; one overlay step.
     buildStep('railways', function () {
       if (window.DAARailways && window.DAARailways.buildRailways) {
-        scene.add(window.DAARailways.buildRailways(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAARailways.buildRailways(THREE)));
       }
     });
 
@@ -712,7 +915,7 @@
     // one overlay step.
     buildStep('stations', function () {
       if (window.DAAStations && window.DAAStations.buildStations) {
-        scene.add(window.DAAStations.buildStations(THREE));
+        scene.add(DAA_mergeStatic(THREE, window.DAAStations.buildStations(THREE)));
       }
     });
 
@@ -917,6 +1120,23 @@
     // handle above is assigned before the first frame.
     function onCoreDone() {
       try { if (window.DAAStability) window.DAAStability.writeJournal('core', mode); } catch (e) {}
+      // Settled draw calls (iPadOS): the first-frame log fires before the
+      // sliced build runs, so it always sees a near-empty scene. Log the
+      // real post-build count once, on the next rendered frame — one line
+      // per boot, a warn (never a crash) when over the ~80 budget.
+      try {
+        var _sdc = function () {
+          try {
+            var _dc = renderer.info && renderer.info.render ? renderer.info.render.calls : -1;
+            if (window.console && _dc >= 0) {
+              var _m = '[world3d] settled draw calls: ' + _dc + ' (budget ~80)';
+              if (_dc > 80) window.console.warn(_m); else window.console.info(_m);
+            }
+          } catch (e) {}
+        };
+        if (window.requestAnimationFrame) window.requestAnimationFrame(_sdc);
+        else setTimeout(_sdc, 0);
+      } catch (e) {}
     // info card
     var card = document.createElement('div');
     card.className = 'world-card';
