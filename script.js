@@ -287,12 +287,27 @@
       input.focus();
     });
 
-    document.querySelectorAll('.demo-chip:not(.dpad-btn):not(.theme-toggle)').forEach(function (chip) {
+    document.querySelectorAll('.demo-chip:not(.dpad-btn):not(.theme-toggle):not(.farfield-chip)').forEach(function (chip) {
       chip.addEventListener('click', function () {
         run(chip.getAttribute('data-cmd'));
         if (!coarsePointer) input.focus();
       });
     });
+
+    /* Far-field chip: shown only in 'safe' boot mode (a previous boot died
+       before first frame). One tap streams the R4/R5 far-field rings; the
+       chip hides itself once streaming starts. */
+    (function () {
+      var btn = document.getElementById('farFieldChip');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        btn.disabled = true;
+        btn.textContent = 'Loading district…';
+        try {
+          if (window.DAAWorld && window.DAAWorld.loadFarField) window.DAAWorld.loadFarField();
+        } catch (e) {}
+      });
+    })();
 
     /* Theme audio: a visible toggle, default off, no autoplay ever.
        Starts only on the user's click; under reduced motion it stays inert. */
