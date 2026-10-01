@@ -67,7 +67,8 @@
       dance:   { anim: 'anim-dance',   reply: 'Servo shuffle. The workshop playlist is all Motown.' },
       jump:    { anim: 'anim-jump',    reply: 'Twelve centimeters of pure ambition.' },
       charge:  { anim: 'anim-charge',  reply: 'Topping up. A builder never runs on empty.',
-                 fn: function () { battery = 100; } }
+                 fn: function () { battery = 100; } },
+      focus:   { anim: null,         reply: 'Camera on the bot. There it is.' }
     };
 
     /* ---- Training district (world v1): five Detroit stops to explore.
@@ -189,7 +190,7 @@
 
     function printHelp() {
       printLine('demo-line-out', 'Moves: forward \u00B7 back \u00B7 left \u00B7 right \u00B7 spin \u00B7 wave \u00B7 dance \u00B7 jump');
-      printLine('demo-line-out', 'Explore: look \u00B7 go <north|east|south|west|place> \u00B7 map \u00B7 status');
+      printLine('demo-line-out', 'Explore: look \u00B7 focus \u00B7 go <north|east|south|west|place> \u00B7 map \u00B7 status');
       printLine('demo-line-out', 'Upkeep: scan \u00B7 charge');
     }
 
@@ -214,7 +215,7 @@
         var act = { forward: function () { w3.nudge(1); }, back: function () { w3.nudge(-1); },
           left: function () { w3.turn(-1); }, right: function () { w3.turn(1); },
           spin: w3.spin, dance: w3.dance, jump: w3.jump, wave: w3.wave,
-          scan: w3.scan, charge: w3.charge }[cmd];
+          scan: w3.scan, charge: w3.charge, focus: w3.focus }[cmd];
         if (act) act();
       } else {
         clearAnims();
@@ -346,25 +347,24 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && mode === 'pseudo' && isOn()) set(false);
     });
-    // Terminal collapse toggle (fullscreen only): lets the 3D stage take 100%.
-    // Resets when fullscreen closes so the inline layout is never left collapsed.
+    // Terminal collapse toggle (fullscreen only): the log rolls up so the 3D
+    // environment stays visible, while input + chips keep the bot drivable.
+    // Fullscreen opens compact; closing restores the expanded inline layout.
     var termToggle = document.getElementById('demoTermToggle');
     var term = demo.querySelector('.demo-term');
-    function termReset() {
+    function setTermCollapsed(collapsed) {
       if (!term || !termToggle) return;
-      term.classList.remove('demo-term-collapsed');
-      termToggle.setAttribute('aria-expanded', 'true');
-      termToggle.innerHTML = '&#9662; Terminal';
+      term.classList.toggle('demo-term-collapsed', collapsed);
+      termToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      termToggle.innerHTML = (collapsed ? '&#9656;' : '&#9662;') + ' Terminal';
     }
     if (termToggle && term) {
       termToggle.addEventListener('click', function () {
-        var collapsed = term.classList.toggle('demo-term-collapsed');
-        termToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-        termToggle.innerHTML = (collapsed ? '&#9656;' : '&#9662;') + ' Terminal';
+        setTermCollapsed(!term.classList.contains('demo-term-collapsed'));
         nudge();
       });
       var _set = set;
-      set = function (on) { if (!on) termReset(); _set(on); };
+      set = function (on) { setTermCollapsed(on); _set(on); };
     }
     label();
   })();
