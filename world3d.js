@@ -105,8 +105,9 @@
     var loader = new STLLoader(manager);
     // real load progress on the overlay: 5 STL district parts + the bot +
     // the procedural builds (workshop + corktown + innovation + thinkabit +
-    // riverfront via window.DAAArchKit)
-    var loadTotal = PARTS.length + 7;
+    // riverfront + guideway via window.DAAArchKit, plus streetscape,
+    // furniture, vehicles, district-expansion, groundwork and promenade)
+    var loadTotal = PARTS.length + 13;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
@@ -204,6 +205,78 @@
     } catch (e) {
       // guideway stays absent rather than breaking the scene; log for diagnostics
       if (window.console && console.warn) console.warn('[world3d] guideway build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Streetscape: curbs, sidewalks, lane markings, crosswalks, plaza pavers.
+    // Synchronous and local; one overlay step.
+    try {
+      if (window.DAAStreetscape && window.DAAStreetscape.buildStreetscape) {
+        scene.add(window.DAAStreetscape.buildStreetscape(THREE));
+      }
+    } catch (e) {
+      // streetscape stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] streetscape build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Street furniture: lamps, benches, planters, bollards, trees.
+    // Synchronous and local; one overlay step.
+    try {
+      if (window.DAAFurniture && window.DAAFurniture.buildFurniture) {
+        scene.add(window.DAAFurniture.buildFurniture(THREE));
+      }
+    } catch (e) {
+      // furniture stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] furniture build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Vehicles: Forge Pod on the guideway, parked Hauler/Tender/sedans.
+    // Synchronous and local; one overlay step.
+    try {
+      if (window.DAAVehicles && window.DAAVehicles.buildVehicles) {
+        scene.add(window.DAAVehicles.buildVehicles(THREE));
+      }
+    } catch (e) {
+      // vehicles stay absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] vehicles build failed:', e);
+    }
+    bumpLoadCount();
+
+    // District expansion: outer-ring ground, street extensions, low-rise
+    // context buildings, street trees. Synchronous and local; one overlay step.
+    try {
+      if (window.DAADistrictExpansion && window.DAADistrictExpansion.buildDistrictExpansion) {
+        scene.add(window.DAADistrictExpansion.buildDistrictExpansion(THREE));
+      }
+    } catch (e) {
+      // expansion stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] district-expansion build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Groundwork: terrain variation, texture transitions, river detail,
+    // building-base grounding decals. Synchronous and local; one overlay step.
+    try {
+      if (window.DAAGroundwork && window.DAAGroundwork.buildGroundwork) {
+        scene.add(window.DAAGroundwork.buildGroundwork(THREE));
+      }
+    } catch (e) {
+      // groundwork stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] groundwork build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Promenade: riverfront boardwalk, connectors, pocket-park detailing.
+    // Synchronous and local; one overlay step.
+    try {
+      if (window.DAAPromenade && window.DAAPromenade.buildPromenade) {
+        scene.add(window.DAAPromenade.buildPromenade(THREE));
+      }
+    } catch (e) {
+      // promenade stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] promenade build failed:', e);
     }
     bumpLoadCount();
 
