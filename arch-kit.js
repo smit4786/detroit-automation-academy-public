@@ -1290,12 +1290,198 @@
     return g;
   }
 
+  // Forge Line guideway + Amtrak high-speed viaduct (proposed transit plant).
+  // Elevated C-shaped local line serving four district stations, plus a
+  // higher-speed intercity viaduct terminating at the Amtrak Intercity
+  // transfer. All geometry checked against measured building footprints:
+  // workshop x[-13.3,13.3] z[-10.3,11.7], HQ x[-17.4,17.4] z[-12.4,16.1],
+  // rowhouses x[27.3,64.4] z[-45.2,22], innovation x[-22,28.8] z[-53.3,-10],
+  // thinkabit x[-58.5,-29.3] z[-8.1,14], riverfront x[-17,17] z[31,52.6].
+  function buildGuideway(THREE) {
+    var g = new THREE.Group();
+    var mDeck = new THREE.MeshStandardMaterial({ color: 0x8f959b, roughness: 0.9 });
+    var mDeckHSR = new THREE.MeshStandardMaterial({ color: 0x7d848b, roughness: 0.85 });
+    var mRail = new THREE.MeshStandardMaterial({ color: 0xc9ced4, roughness: 0.3, metalness: 0.85 });
+    var mPylon = new THREE.MeshStandardMaterial({ color: 0x9aa0a6, roughness: 0.95 });
+    var mCanopy = new THREE.MeshStandardMaterial({ color: 0x23282e, roughness: 0.6, metalness: 0.4 });
+    var mPole = new THREE.MeshStandardMaterial({ color: 0x3a4046, roughness: 0.6, metalness: 0.5 });
+    var mPlat = new THREE.MeshStandardMaterial({ color: 0x6a7076, roughness: 0.9 });
+    var mLampF = new THREE.MeshStandardMaterial({ color: 0xE85D1A, emissive: 0xE85D1A, emissiveIntensity: 1.6 });
+    var mLampH = new THREE.MeshStandardMaterial({ color: 0xbfe0f2, emissive: 0x9fc3d8, emissiveIntensity: 1.4 });
+    var mStripe = new THREE.MeshStandardMaterial({ color: 0xFFB000, emissive: 0xFFB000, emissiveIntensity: 0.5 });
+    var mBumper = new THREE.MeshStandardMaterial({ color: 0xE85D1A, roughness: 0.7 });
+
+    function mesh(geo, mat, x, y, z, ry) {
+      var m = new THREE.Mesh(geo, mat);
+      m.position.set(x, y, z);
+      if (ry) m.rotation.y = ry;
+      g.add(m);
+      return m;
+    }
+
+    // Lay deck, rails, lamps and pylons along a polyline [[x,z],...].
+    function run(pts, o) {
+      var deckMat = o.hsr ? mDeckHSR : mDeck;
+      var lampMat = o.hsr ? mLampH : mLampF;
+      var W = o.width, Y = o.deckY;
+      var segs = [];
+      for (var i = 0; i < pts.length - 1; i++) {
+        var ax = pts[i][0], az = pts[i][1], bx = pts[i + 1][0], bz = pts[i + 1][1];
+        var dx = bx - ax, dz = bz - az, len = Math.hypot(dx, dz);
+        var ang = Math.atan2(dx, dz);
+        segs.push({ ax: ax, az: az, bx: bx, bz: bz, len: len, ang: ang,
+          cx: (ax + bx) / 2, cz: (az + bz) / 2 });
+      }
+      segs.forEach(function (s) {
+        mesh(new THREE.BoxGeometry(W, 0.7, s.len + 0.35), deckMat, s.cx, Y - 0.35, s.cz, s.ang);
+        [-0.8, 0.8].forEach(function (off) {
+          var px = -Math.cos(s.ang) * off, pz = Math.sin(s.ang) * off;
+          mesh(new THREE.BoxGeometry(0.14, 0.14, s.len), mRail, s.cx + px, Y + 0.07, s.cz + pz, s.ang);
+        });
+      });
+      // joint caps hide miter seams at interior vertices
+      for (var v = 1; v < pts.length - 1; v++) {
+        mesh(new THREE.CylinderGeometry(W / 2, W / 2, 0.7, 20), deckMat, pts[v][0], Y - 0.35, pts[v][1]);
+      }
+      // walk the line placing pylons + edge lamps
+      var dist = 0, nextPylon = 4, nextLamp = 2;
+      segs.forEach(function (s) {
+        var n = Math.max(1, Math.round(s.len / 2));
+        for (var k = 0; k <= n; k++) {
+          var t = k / n, d = dist + t * s.len;
+          var x = s.ax + (s.bx - s.ax) * t, z = s.az + (s.bz - s.az) * t;
+          if (d >= nextPylon) {
+            nextPylon += o.pylonEvery;
+            var nearJoint = pts.some(function (p, vi) {
+              return vi > 0 && vi < pts.length - 1 &&
+                Math.hypot(x - p[0], z - p[1]) < 3.5;
+            });
+            if (!nearJoint) {
+              var colH = Y - 1.2;
+              mesh(new THREE.BoxGeometry(0.9, colH, 0.9), mPylon, x, colH / 2, z);
+              mesh(new THREE.BoxGeometry(W + 1.4, 0.5, 1.4), mPylon, x, Y - 0.95, z, s.ang);
+            }
+          }
+          if (d >= nextLamp) {
+            nextLamp += o.lightEvery;
+            var lx = Math.cos(s.ang) * (W / 2 - 0.12), lz = -Math.sin(s.ang) * (W / 2 - 0.12);
+            mesh(new THREE.BoxGeometry(0.16, 0.14, 0.16), lampMat, x + lx, Y + 0.12, z + lz);
+            mesh(new THREE.BoxGeometry(0.16, 0.14, 0.16), lampMat, x - lx, Y + 0.12, z - lz);
+          }
+        }
+        dist += s.len;
+      });
+    }
+
+    function bumper(x, z, ang) {
+      mesh(new THREE.BoxGeometry(2.6, 1.1, 0.5), mBumper, x, 7.5 + 0.55, z, ang);
+      mesh(new THREE.BoxGeometry(0.5, 7.5, 0.5), mPole, x - 1.0, 3.75, z, ang);
+      mesh(new THREE.BoxGeometry(0.5, 7.5, 0.5), mPole, x + 1.0, 3.75, z, ang);
+    }
+
+    function signTex(title, sub, accent, wM, hM) {
+      var cw = cv(wM || 3.2, hM || 1.1), c = cw[0], x2 = cw[1];
+      x2.fillStyle = '#10141a'; x2.fillRect(0, 0, c.width, c.height);
+      x2.strokeStyle = accent; x2.lineWidth = Math.max(4, c.height * 0.08);
+      x2.strokeRect(4, 4, c.width - 8, c.height - 8);
+      x2.fillStyle = '#f5f2ea'; x2.textAlign = 'center'; x2.textBaseline = 'middle';
+      var fs = Math.round(c.height * (sub ? 0.34 : 0.44));
+      x2.font = 'bold ' + fs + 'px sans-serif';
+      while (x2.measureText(title).width > c.width * 0.86 && fs > 8) {
+        fs -= 2; x2.font = 'bold ' + fs + 'px sans-serif';
+      }
+      x2.fillText(title, c.width / 2, sub ? c.height * 0.36 : c.height / 2);
+      if (sub) {
+        x2.font = Math.round(c.height * 0.2) + 'px sans-serif'; x2.fillStyle = accent;
+        x2.fillText(sub, c.width / 2, c.height * 0.72);
+      }
+      return tex(THREE, c);
+    }
+
+    // side platform + canopy + totem; alongZ=true => platform long axis is z.
+    // stripeSide: +1/-1 lateral offset direction toward the track.
+    function station(px, pz, alongZ, title, sub, deckY, accent, stripeSide) {
+      var L = 8, Wd = 1.7;
+      var w = alongZ ? Wd : L, d = alongZ ? L : Wd;
+      mesh(new THREE.BoxGeometry(w, 0.25, d), mPlat, px, deckY - 0.125, pz);
+      var so = stripeSide * (Wd / 2 - 0.18);
+      mesh(new THREE.BoxGeometry(alongZ ? 0.14 : L, 0.03, alongZ ? L : 0.14), mStripe,
+        px + (alongZ ? so : 0), deckY + 0.015, pz + (alongZ ? 0 : so));
+      for (var i = -1; i <= 1; i += 2) for (var j = -1; j <= 1; j += 2) {
+        mesh(new THREE.BoxGeometry(0.12, 2.6, 0.12), mPole,
+          px + (alongZ ? j * (Wd / 2 - 0.2) : i * (L / 2 - 0.4)), deckY + 1.3,
+          pz + (alongZ ? i * (L / 2 - 0.4) : j * (Wd / 2 - 0.2)));
+      }
+      mesh(new THREE.BoxGeometry(alongZ ? Wd + 0.8 : L + 0.6, 0.12, alongZ ? L + 0.6 : Wd + 0.8),
+        mCanopy, px, deckY + 2.7, pz);
+      mesh(new THREE.BoxGeometry(alongZ ? Wd + 0.85 : L + 0.65, 0.1, 0.1), { color: 0xE85D1A },
+        px, deckY + 2.62, pz + (alongZ ? (L + 0.6) / 2 : 0));
+      var t = signTex(title, sub, accent);
+      var board = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.1, 0.1),
+        [mPole, mPole, mPole, mPole,
+         new THREE.MeshStandardMaterial({ map: t, roughness: 0.7 }),
+         new THREE.MeshStandardMaterial({ map: t, roughness: 0.7 })]);
+      board.position.set(px, deckY + 3.6, pz);
+      if (alongZ) board.rotation.y = Math.PI / 2;
+      g.add(board);
+      mesh(new THREE.CylinderGeometry(0.07, 0.07, 1.0, 8), mPole, px, deckY + 2.6, pz);
+    }
+
+    // ---- Forge Line: C-shaped elevated local line, deck 7.5 m ----
+    var forge = [[22.5, -8], [22.5, 22], [17.5, 27], [-20.6, 27], [-25.6, 22],
+                 [-25.6, -50.5], [-23.0, -56.5], [17.5, -56.5], [22.5, -56.5]];
+    run(forge, { deckY: 7.5, width: 3.4, pylonEvery: 12, lightEvery: 8 });
+    bumper(22.5, -6.2, 0);
+    var bNE = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.1, 2.6), mBumper);
+    bNE.position.set(24.3, 8.05, -56.5); g.add(bNE);
+    station(-23.35, 3, true, 'THINKABIT LAB', 'Forge Line', 7.5, '#E85D1A', -1);
+    station(-23.35, -30, true, 'UM INNOVATION', 'Forge Line', 7.5, '#E85D1A', -1);
+    station(0, 24.1, false, 'RIVERFRONT', 'Forge Line', 7.5, '#E85D1A', 1);
+    station(19.6, 0, true, 'ACADEMY HQ', 'Interchange', 7.5, '#E85D1A', 1);
+
+    // ---- Amtrak high-speed viaduct: 12 m, steel blue, z=32 corridor ----
+    var hsr = [[64, 32], [20, 32]];
+    run(hsr, { deckY: 12, width: 4.2, pylonEvery: 14, lightEvery: 10, hsr: true });
+    var bE = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.1, 3.2), mBumper);
+    bE.position.set(65.3, 12.55, 32); g.add(bE);
+    var bW = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.1, 3.2), mBumper);
+    bW.position.set(18.7, 12.55, 32); g.add(bW);
+    // terminus platform + grand canopy south of the viaduct
+    mesh(new THREE.BoxGeometry(10, 0.25, 2.0), mPlat, 30, 11.875, 28.6);
+    for (var ci = 0; ci < 4; ci++) {
+      mesh(new THREE.BoxGeometry(0.14, 3.0, 0.14), mPole, 26 + ci * 2.7, 13.5, 28.6);
+    }
+    mesh(new THREE.BoxGeometry(11, 0.14, 3.0), mCanopy, 30, 15.1, 28.9);
+    var ht = signTex('AMTRAK INTERCITY', 'PROPOSED · DETROIT — WINDSOR — TORONTO', '#9fc3d8', 6.4, 1.6);
+    var hboard = new THREE.Mesh(new THREE.BoxGeometry(6.4, 1.6, 0.14),
+      [mPole, mPole, mPole, mPole,
+       new THREE.MeshStandardMaterial({ map: ht, roughness: 0.7 }),
+       new THREE.MeshStandardMaterial({ map: ht, roughness: 0.7 })]);
+    hboard.position.set(30, 16.6, 28.6);
+    g.add(hboard);
+    mesh(new THREE.CylinderGeometry(0.09, 0.09, 1.6, 8), mPole, 27.5, 15.9, 28.6);
+    mesh(new THREE.CylinderGeometry(0.09, 0.09, 1.6, 8), mPole, 32.5, 15.9, 28.6);
+    // east-end "proposed extension" marker
+    var et = signTex('TO AMTRAK NETWORK', 'PROPOSED EXTENSION →', '#9fc3d8', 4.8, 1.2);
+    var eboard = new THREE.Mesh(new THREE.BoxGeometry(4.8, 1.2, 0.12),
+      [mPole, mPole, mPole, mPole,
+       new THREE.MeshStandardMaterial({ map: et, roughness: 0.7 }),
+       new THREE.MeshStandardMaterial({ map: et, roughness: 0.7 })]);
+    eboard.position.set(62, 14.2, 32);
+    eboard.rotation.y = Math.PI / 2;
+    g.add(eboard);
+
+    g.traverse(function (o) { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    return g;
+  }
+
   window.DAAArchKit = {
     buildWorkshop: buildWorkshop,
     buildAcademyHQ: buildAcademyHQ,
     buildCorktown: buildCorktown,
     buildInnovation: buildInnovation,
     buildThinkabit: buildThinkabit,
-    buildRiverfront: buildRiverfront
+    buildRiverfront: buildRiverfront,
+    buildGuideway: buildGuideway
   };
 })();
