@@ -488,10 +488,7 @@
     </div>
 
     <div class="interface">
-      <button class="control" id="replay" type="button" aria-label="Replay spotlight animation">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.32 10H3.58A9 9 0 1 0 6 5.5V2L1 7l5 5V8.17A6.97 6.97 0 0 1 12 5Z"/></svg>
-        Replay
-      </button>
+      
       <button class="control" id="pause" type="button" aria-label="Pause spotlight animation" aria-pressed="false">
         <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
         <span>Pause</span>
@@ -564,7 +561,7 @@
         stage.style.display = '';
       }
 
-      replay.addEventListener('click', restart);
+      
       pause.addEventListener('click', function () {
         var isPaused = stage.classList.toggle('paused');
         setPausedUI(isPaused);
