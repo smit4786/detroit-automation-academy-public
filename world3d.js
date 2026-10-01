@@ -106,7 +106,7 @@
     // real load progress on the overlay: 5 STL district parts + the bot +
     // the procedural builds (workshop + corktown + innovation + thinkabit +
     // riverfront via window.DAAArchKit)
-    var loadTotal = PARTS.length + 6;
+    var loadTotal = PARTS.length + 7;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
@@ -192,6 +192,18 @@
     } catch (e) {
       // riverfront stays absent rather than breaking the scene; log for diagnostics
       if (window.console && console.warn) console.warn('[world3d] riverfront build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Forge Line guideway + Amtrak high-speed viaduct: procedural transit build
+    // (proposed rails, in-scene). Synchronous and local; one overlay step.
+    try {
+      if (window.DAAArchKit && window.DAAArchKit.buildGuideway) {
+        scene.add(window.DAAArchKit.buildGuideway(THREE));
+      }
+    } catch (e) {
+      // guideway stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] guideway build failed:', e);
     }
     bumpLoadCount();
 
