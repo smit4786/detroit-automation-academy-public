@@ -55,10 +55,12 @@
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     var ANIM_CLASSES = ['anim-forward', 'anim-back', 'anim-spin', 'anim-scan', 'anim-wave',
-      'anim-dance', 'anim-jump', 'anim-charge'];
+      'anim-dance', 'anim-jump', 'anim-charge', 'anim-turn-left', 'anim-turn-right'];
     var COMMANDS = {
       forward: { anim: 'anim-forward', reply: 'Rolling forward one meter. No excuses.' },
       back:    { anim: 'anim-back',    reply: "Backing up. Even robots check their blind spots." },
+      left:    { anim: 'anim-turn-left',  reply: 'Pivoting left. Forty-five degrees of intent.' },
+      right:   { anim: 'anim-turn-right', reply: 'Pivoting right. Forty-five degrees of intent.' },
       spin:    { anim: 'anim-spin',    reply: "Full 360\u00B0. That's one rotation of confidence." },
       scan:    { anim: 'anim-scan',    reply: 'Scan complete \u2014 path is clear. Build on, Detroit.' },
       wave:    { anim: 'anim-wave',    reply: 'Hello, Detroit. Good to meet a builder.' },
@@ -186,7 +188,7 @@
     }
 
     function printHelp() {
-      printLine('demo-line-out', 'Moves: forward \u00B7 back \u00B7 spin \u00B7 wave \u00B7 dance \u00B7 jump');
+      printLine('demo-line-out', 'Moves: forward \u00B7 back \u00B7 left \u00B7 right \u00B7 spin \u00B7 wave \u00B7 dance \u00B7 jump');
       printLine('demo-line-out', 'Explore: look \u00B7 go <north|east|south|west|place> \u00B7 map \u00B7 status');
       printLine('demo-line-out', 'Upkeep: scan \u00B7 charge');
     }
@@ -210,6 +212,7 @@
       var w3 = world3d();
       if (w3) {
         var act = { forward: function () { w3.nudge(1); }, back: function () { w3.nudge(-1); },
+          left: function () { w3.turn(-1); }, right: function () { w3.turn(1); },
           spin: w3.spin, dance: w3.dance, jump: w3.jump, wave: w3.wave,
           scan: w3.scan, charge: w3.charge }[cmd];
         if (act) act();
@@ -234,11 +237,45 @@
       input.focus();
     });
 
-    document.querySelectorAll('.demo-chip').forEach(function (chip) {
+    document.querySelectorAll('.demo-chip:not(.dpad-btn)').forEach(function (chip) {
       chip.addEventListener('click', function () {
         run(chip.getAttribute('data-cmd'));
         if (!coarsePointer) input.focus();
       });
+    });
+
+    /* D-pad: multi-directional drive. Tap for one step, hold to keep rolling.
+       Screen-relative like WASD; never summons the keyboard or the page scroll. */
+    document.querySelectorAll('.dpad-btn').forEach(function (btn) {
+      var parts = (btn.getAttribute('data-drive') || '0,0').split(',');
+      var mx = parseFloat(parts[0]) || 0, mz = parseFloat(parts[1]) || 0;
+      var timer = null;
+      function step() {
+        var w3 = world3d();
+        if (w3) {
+          w3.drive(mx, mz);
+        } else {
+          clearAnims();
+          void bot.getBoundingClientRect(); // restart the animation
+          if (!reduced) {
+            bot.classList.add(mx ? (mx < 0 ? 'anim-turn-left' : 'anim-turn-right')
+                                 : (mz < 0 ? 'anim-forward' : 'anim-back'));
+          }
+        }
+      }
+      function stop() {
+        if (timer) { clearInterval(timer); timer = null; }
+      }
+      btn.addEventListener('pointerdown', function (e) {
+        e.preventDefault(); // no focus change, no double-tap zoom, no scroll
+        step();
+        stop();
+        timer = setInterval(step, 220);
+      });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
+        btn.addEventListener(ev, stop);
+      });
+      btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     });
 
     bot.addEventListener('animationend', function (e) {
@@ -251,37 +288,61 @@
     printLine('demo-line-out', 'Training bot online. Type "help" \u2014 or "look" to start exploring.');
   })();
 
-  // Full-screen view for the 3D demo (button hidden where the API is missing)
+  // Full-screen view for the 3D demo: native fullscreen on desktop, a fixed
+  // overlay on mobile. Native element fullscreen is flaky or absent on mobile
+  // OSes (iOS Safari exposes no API at all; Android gestures can drop it
+  // mid-session), so coarse-pointer devices get the overlay instead: nothing
+  // dismisses it except the toggle button or Escape, so driving the bot never
+  // kicks the user out of the full view.
   (function () {
     var btn = document.getElementById('demoFullscreen');
     var demo = document.getElementById('demoFull');
     if (!btn || !demo) return;
-    var canFs = (document.fullscreenEnabled || document.webkitFullscreenEnabled) &&
-      (demo.requestFullscreen || demo.webkitRequestFullscreen);
-    if (!canFs) { btn.hidden = true; return; }
+    var enterFs = demo.requestFullscreen || demo.webkitRequestFullscreen;
+    var exitFs = document.exitFullscreen || document.webkitExitFullscreen;
+    var nativeOK = !!(enterFs && exitFs) &&
+      (document.fullscreenEnabled || document.webkitFullscreenEnabled);
+    var coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    var mode = (!coarse && nativeOK) ? 'native' : 'pseudo';
+
     function isOn() {
-      return document.fullscreenElement === demo || document.webkitFullscreenElement === demo;
+      if (mode === 'native') {
+        return document.fullscreenElement === demo || document.webkitFullscreenElement === demo;
+      }
+      return demo.classList.contains('demo-pseudo');
     }
     function label() {
       var on = isOn();
       btn.innerHTML = on ? '&#9974; Exit full screen' : '&#9974; Full screen';
       btn.setAttribute('aria-label', on ? 'Exit full screen view' : 'View the 3D district full screen');
+      btn.setAttribute('aria-expanded', on ? 'true' : 'false');
     }
     // world3d resizes off the window resize event; nudge it on toggle.
-    function nudge() { window.dispatchEvent(new Event('resize')); }
-    btn.addEventListener('click', function () {
-      try {
-        if (isOn()) {
-          if (document.exitFullscreen) document.exitFullscreen();
-          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        } else if (demo.requestFullscreen) {
-          var p = demo.requestFullscreen();
-          if (p && p.then) p.then(nudge, nudge); else nudge();
-        } else if (demo.webkitRequestFullscreen) {
-          demo.webkitRequestFullscreen(); nudge();
-        }
-      } catch (e) { /* stay inline */ }
-    });
+    function nudge() {
+      setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 60);
+    }
+    function set(on) {
+      if (mode === 'native') {
+        try {
+          if (on && !isOn()) {
+            var p = enterFs.call(demo);
+            if (p && p.then) p.then(nudge, nudge); else nudge();
+          } else if (!on && isOn()) {
+            exitFs.call(document);
+          }
+        } catch (e) { /* stay inline */ }
+      } else {
+        demo.classList.toggle('demo-pseudo', on);
+        document.body.classList.toggle('demo-locked', on);
+        label();
+        nudge();
+      }
+    }
+    btn.addEventListener('click', function () { set(!isOn()); });
     document.addEventListener('fullscreenchange', function () { label(); nudge(); });
     document.addEventListener('webkitfullscreenchange', function () { label(); nudge(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && mode === 'pseudo' && isOn()) set(false);
+    });
+    label();
   })();
