@@ -30,13 +30,13 @@
   var PARTS = [
     ['ground', 0x11161c, 1.0, 0.0], ['roads', 0x3a4046, 1.0, 0.0],
     ['water', 0x1a6f8f, 0.35, 0.4],
-    ['riverfront', 0x9AA0A6, 0.9, 0.0],
     ['trees', 0x2f7d4f, 1.0, 0.0], ['street', 0x6a7076, 0.6, 0.4]
   ];
-  // NOTE: 'workshop', 'techtown' and 'thinkabit' are no longer STLs — the
-  // procedural SC3K-standard builds from window.DAAArchKit
+  // NOTE: 'workshop', 'techtown', 'thinkabit' and 'riverfront' are no longer
+  // STLs — the procedural SC3K-standard builds from window.DAAArchKit
   // (site/js/arch-kit.js) replace assets/world/workshop.stl,
-  // assets/world/techtown.stl and assets/world/thinkabit.stl.
+  // assets/world/techtown.stl, assets/world/thinkabit.stl and
+  // assets/world/riverfront.stl.
 
   function fallback() {
     stage.classList.add('world-fallback');
@@ -103,10 +103,10 @@
 
     var manager = new THREE.LoadingManager();
     var loader = new STLLoader(manager);
-    // real load progress on the overlay: 6 STL district parts + the bot +
-    // the procedural builds (workshop + corktown + innovation + thinkabit
-    // via window.DAAArchKit)
-    var loadTotal = PARTS.length + 5;
+    // real load progress on the overlay: 5 STL district parts + the bot +
+    // the procedural builds (workshop + corktown + innovation + thinkabit +
+    // riverfront via window.DAAArchKit)
+    var loadTotal = PARTS.length + 6;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
@@ -180,6 +180,18 @@
     } catch (e) {
       // thinkabit stays absent rather than breaking the scene; log for diagnostics
       if (window.console && console.warn) console.warn('[world3d] thinkabit build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Detroit Riverfront pavilion: procedural butterfly-roof rebuild
+    // (replaces the old riverfront STL). Synchronous and local; one overlay step.
+    try {
+      if (window.DAAArchKit && window.DAAArchKit.buildRiverfront) {
+        scene.add(window.DAAArchKit.buildRiverfront(THREE));
+      }
+    } catch (e) {
+      // riverfront stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] riverfront build failed:', e);
     }
     bumpLoadCount();
 

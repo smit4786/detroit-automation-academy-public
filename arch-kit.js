@@ -1081,11 +1081,221 @@
     return g;
   }
 
+  // Detroit Riverfront pavilion: open-air overlook at the water's edge.
+  // Boardwalk deck, six steel columns, a butterfly roof (high at the eaves,
+  // valley at the center), string lights, kiosk, and railings facing the
+  // river. Local origin at the deck center, ground level; south (+z) faces
+  // the water.
+  function buildRiverfront(THREE) {
+    var g = new THREE.Group();
+    var DW = 26, DD = 14, CH = 7; // deck width/depth, column height
+    var mRoof = std(THREE, tex(THREE, roofCanvas()), 0.95);
+    mRoof.map.wrapS = mRoof.map.wrapT = THREE.RepeatWrapping;
+    var mDark = new THREE.MeshStandardMaterial({ color: 0x14171b, roughness: 1 });
+    var mSteel = new THREE.MeshStandardMaterial({ color: 0x2b2e33, roughness: 0.6, metalness: 0.5 });
+    var mConc = std(THREE, tex(THREE, concreteCanvas(4, 1, 121)), 0.9);
+    var mWood = new THREE.MeshStandardMaterial({ color: 0x8a6a48, roughness: 0.9 });
+    var mLeaf = new THREE.MeshStandardMaterial({ color: 0x3f7d44, roughness: 1 });
+    var mTrunk = new THREE.MeshStandardMaterial({ color: 0x5a4632, roughness: 1 });
+
+    // boardwalk planks canvas
+    function deckCanvas() {
+      var p = cv(DW, DD), gc = p[1], W = p[0].width, H = p[0].height;
+      var R = rnd(201);
+      gc.fillStyle = '#6b4f33';
+      gc.fillRect(0, 0, W, H);
+      var ph = 0.14 * PXM;
+      for (var y = 0; y < H; y += ph) {
+        gc.fillStyle = shade([138, 106, 72], 0.85 + R() * 0.3);
+        gc.fillRect(0, y + 1, W, ph - 2);
+        gc.fillStyle = 'rgba(0,0,0,0.45)';
+        gc.fillRect(0, y, W, 2);
+      }
+      return p[0];
+    }
+    // standing-seam metal roof canvas
+    function seamCanvas() {
+      var p = cv(12, 4), gc = p[1], W = p[0].width, H = p[0].height;
+      gc.fillStyle = '#4a4e54';
+      gc.fillRect(0, 0, W, H);
+      var R = rnd(202);
+      for (var x = 0; x < W; x += 0.5 * PXM) {
+        gc.fillStyle = 'rgba(255,255,255,' + (0.04 + R() * 0.05) + ')';
+        gc.fillRect(x, 0, 3, H);
+        gc.fillStyle = 'rgba(0,0,0,0.4)';
+        gc.fillRect(x + 3, 0, 2, H);
+      }
+      return p[0];
+    }
+
+    // deck + promenade base
+    var mDeck = std(THREE, tex(THREE, deckCanvas()), 0.85);
+    var deck = new THREE.Mesh(new THREE.BoxGeometry(DW, 0.5, DD),
+      [mConc, mConc, mDeck, mDark, mConc, mConc]);
+    deck.position.y = 0.25;
+    g.add(deck);
+    var prom = new THREE.Mesh(new THREE.BoxGeometry(DW + 8, 0.14, 6), mConc);
+    prom.position.set(0, 0.07, -DD / 2 - 3);
+    g.add(prom);
+
+    // six columns with concrete bases, two rows of three
+    [-9, 0, 9].forEach(function (cx) {
+      [-4, 4].forEach(function (cz) {
+        var base = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.8, 0.9), mConc);
+        base.position.set(cx, 0.9, cz);
+        g.add(base);
+        var col = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.34, CH - 0.8, 14), mSteel);
+        col.position.set(cx, 0.8 + (CH - 0.8) / 2, cz);
+        g.add(col);
+      });
+    });
+    // longitudinal beams along each column row (x direction, at z = +/-4)
+    [-4, 4].forEach(function (cz) {
+      var beam = new THREE.Mesh(new THREE.BoxGeometry(20, 0.5, 0.4), mSteel);
+      beam.position.set(0, CH - 0.25, cz);
+      g.add(beam);
+    });
+    // cross beams tying the rows at the valley
+    [-9, 0, 9].forEach(function (cx) {
+      var cb = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.45, 8.6), mSteel);
+      cb.position.set(cx, CH - 0.2, 0);
+      g.add(cb);
+    });
+
+    // butterfly roof: two wings sloping up from a center valley
+    var wingL = 8.6, rise = 1.5;
+    var ang = Math.atan2(rise, wingL);
+    var mSeam = std(THREE, tex(THREE, seamCanvas()), 0.55, 0.35);
+    mSeam.map.wrapS = mSeam.map.wrapT = THREE.RepeatWrapping;
+    [-1, 1].forEach(function (s) {
+      var wing = new THREE.Mesh(
+        new THREE.BoxGeometry(DW - 2, 0.22, wingL),
+        [mSteel, mSteel, mSeam, mDark, mSteel, mSteel]
+      );
+      wing.rotation.x = -s * ang; // outer edge lifts: valley at center
+      // inner (valley) edge at y=CH, outer edge lifted by `rise`
+      wing.position.set(0, CH + rise / 2 + 0.15, s * wingL / 2);
+      g.add(wing);
+      // fascia on the outer edge
+      var fz = s * (wingL - 0.1);
+      var fascia = new THREE.Mesh(new THREE.BoxGeometry(DW - 2, 0.55, 0.14), mSteel);
+      fascia.position.set(0, CH + rise + 0.1, fz);
+      g.add(fascia);
+    });
+    // valley gutter
+    var valley = new THREE.Mesh(new THREE.BoxGeometry(DW - 2, 0.18, 0.5), mDark);
+    valley.position.set(0, CH + 0.05, 0);
+    g.add(valley);
+
+    // sign on the south fascia: DETROIT RIVERFRONT
+    var signTex = tex(THREE, signTextCanvas(14, 1.2, 'DETROIT RIVERFRONT', 'WIND OFF THE WATER'));
+    var sign = new THREE.Mesh(
+      new THREE.PlaneGeometry(14, 1.2),
+      new THREE.MeshStandardMaterial({
+        map: signTex, roughness: 0.6,
+        emissive: 0xffffff, emissiveMap: signTex, emissiveIntensity: 0.3
+      })
+    );
+    sign.position.set(0, CH + rise + 0.1, wingL - 0.02);
+    g.add(sign);
+
+    // string lights: three catenary-ish rows under the roof
+    var mBulb = new THREE.MeshStandardMaterial({
+      color: 0xffe6b0, emissive: 0xffc46b, emissiveIntensity: 2.0, roughness: 0.4
+    });
+    var bulbGeo = new THREE.SphereGeometry(0.09, 8, 8);
+    [-5, 0, 5].forEach(function (cz) {
+      for (var bx = -10; bx <= 10; bx += 2.5) {
+        var sag = 0.35 * (1 - Math.pow(bx / 11, 2));
+        var wire = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 0.1), mDark);
+        wire.position.set(bx, CH - 0.5 - sag, cz);
+        g.add(wire);
+        var bulb = new THREE.Mesh(bulbGeo, mBulb);
+        bulb.position.set(bx, CH - 0.62 - sag, cz);
+        g.add(bulb);
+      }
+    });
+
+    // kiosk: serving hatch, counter, menu board, own little roof
+    var kx = -8.5, kz = -3.5;
+    var kBody = new THREE.Mesh(new THREE.BoxGeometry(4.4, 3.0, 3.2), mConc);
+    kBody.position.set(kx, 2.0, kz);
+    g.add(kBody);
+    var hatch = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 1.3), mDark);
+    hatch.position.set(kx, 2.2, kz + 1.62);
+    g.add(hatch);
+    var counter = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.1, 0.5), mWood);
+    counter.position.set(kx, 1.45, kz + 1.85);
+    g.add(counter);
+    var kRoof = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.18, 4.0), mSteel);
+    kRoof.position.set(kx, 3.65, kz);
+    g.add(kRoof);
+    var kSignTex = tex(THREE, signTextCanvas(3.6, 0.8, 'RIVERFRONT KIOSK'));
+    var kSign = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.8),
+      new THREE.MeshStandardMaterial({ map: kSignTex, roughness: 0.7 }));
+    kSign.position.set(kx, 3.15, kz + 1.62);
+    g.add(kSign);
+
+    // railings on the south (water) edge + returns
+    function railRun(w, x, z, alongX) {
+      var y0 = 0.5;
+      var top = new THREE.Mesh(new THREE.BoxGeometry(alongX ? w : 0.08, 0.08, alongX ? 0.08 : w), mSteel);
+      top.position.set(x, y0 + 1.05, z); g.add(top);
+      var mid = top.clone(); mid.position.y = y0 + 0.6; g.add(mid);
+      var n = Math.max(2, Math.round(w / 2));
+      for (var i = 0; i <= n; i++) {
+        var post = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.05, 0.08), mSteel);
+        var off = -w / 2 + (w * i) / n;
+        post.position.set(alongX ? x + off : x, y0 + 0.52, alongX ? z : z + off);
+        g.add(post);
+      }
+    }
+    railRun(DW - 0.4, 0, DD / 2 - 0.2, true);
+    railRun(4, -DW / 2 + 0.2, DD / 2 - 2.2, false);
+    railRun(4, DW / 2 - 0.2, DD / 2 - 2.2, false);
+
+    // benches facing the water, planters, lamps
+    [-6, 0, 6].forEach(function (bx) {
+      var b = bench(THREE, mWood, mSteel);
+      b.position.set(bx, 0.5, 2.5);
+      g.add(b);
+    });
+    [-11.5, 11.5].forEach(function (px) {
+      var planter = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.7, 1.8), mConc);
+      planter.position.set(px, 0.85, 4.5);
+      g.add(planter);
+      var shrub = new THREE.Mesh(new THREE.IcosahedronGeometry(0.85, 1), mLeaf);
+      shrub.position.set(px, 1.7, 4.5);
+      shrub.scale.y = 0.8;
+      g.add(shrub);
+    });
+    [-12, 12].forEach(function (lx) {
+      var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 4.6, 10), mSteel);
+      pole.position.set(lx, 2.8, -DD / 2 + 1);
+      g.add(pole);
+      var lampHead = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), mBulb);
+      lampHead.position.set(lx, 5.15, -DD / 2 + 1);
+      g.add(lampHead);
+      var cap = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.25, 10), mSteel);
+      cap.position.set(lx, 5.38, -DD / 2 + 1);
+      g.add(cap);
+    });
+    g.add(tree(THREE, -14.5, -DD / 2 - 2, 1.0, mTrunk, mLeaf));
+    g.add(tree(THREE, 14.5, -DD / 2 - 2, 1.0, mTrunk, mLeaf));
+
+    g.position.set(0, 0, 44);
+    g.traverse(function (o) {
+      if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+    });
+    return g;
+  }
+
   window.DAAArchKit = {
     buildWorkshop: buildWorkshop,
     buildAcademyHQ: buildAcademyHQ,
     buildCorktown: buildCorktown,
     buildInnovation: buildInnovation,
-    buildThinkabit: buildThinkabit
+    buildThinkabit: buildThinkabit,
+    buildRiverfront: buildRiverfront
   };
 })();
