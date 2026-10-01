@@ -544,10 +544,15 @@
       if (farStreamed || farStreaming) return;
       farStreaming = true;
       hideFarFieldChip();
+      // Journal the stream: if the tab dies mid-stream, the journal is
+      // still present on the next boot and detectBootMode() drops to
+      // 'safe' instead of re-running the same fatal stream.
+      try { if (window.DAAStability) window.DAAStability.writeJournal('streaming', mode); } catch (e) {}
       var tasks = farFieldTasks();
       extendLoader(tasks.length, 'Streaming the surrounding city');
       function done() {
         farStreaming = false; farStreamed = true;
+        try { if (window.DAAStability) window.DAAStability.clearJournal(); } catch (e) {}
         hideLoader();
       }
       try {
@@ -558,12 +563,11 @@
       }
     }
     function onFirstFrame() {
-      if (mode === 'lite') {
-        // First paint is up and light — stream the far field when idle.
-        try { window.DAAStability.whenIdle(function () { streamFarField(); }, 1500); }
-        catch (e) { setTimeout(streamFarField, 2000); }
-      } else if (mode === 'safe') {
-        // Crash-loop protection: one explicit tap loads the far field.
+      if (mode === 'lite' || mode === 'safe') {
+        // Crash-loop protection: the far field (20 sq mi) loads on one
+        // explicit tap. Auto-streaming it ~1.5 s after first paint kept
+        // killing the tab AFTER the journal was cleared, so the next boot
+        // never entered safe mode — a crash loop with no escape.
         showFarFieldChip();
       }
     }
