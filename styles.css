@@ -439,22 +439,52 @@ a { color: inherit; }
 .demo-fullscreen:hover { border-color: var(--forge); color: var(--forge); }
 .demo-fullscreen[hidden] { display: none; }
 #demoFull:fullscreen, #demoFull:-webkit-full-screen {
-  height: 100vh; width: 100%; margin: 0; padding: 20px; box-sizing: border-box;
-  background: var(--midnight); gap: 16px; overflow: auto;
+  display: block;
+  height: 100vh; width: 100%; margin: 0; padding: 0; box-sizing: border-box;
+  background: var(--midnight); overflow: hidden;
 }
-#demoFull:fullscreen .demo-stage, #demoFull:-webkit-full-screen .demo-stage { min-height: 0; }
-/* Pseudo-fullscreen overlay: the mobile path (iOS has no element fullscreen
-   API) and the fallback anywhere native fullscreen is unavailable. Unlike a
-   native request, no OS gesture or page movement can dismiss it — only the
-   toggle button or Escape. */
+#demoFull:fullscreen .demo-stage, #demoFull:-webkit-full-screen .demo-stage {
+  position: absolute; inset: 0; min-height: 0;
+  border: 0; border-radius: 0;
+}
+#demoFull:fullscreen .demo-term, #demoFull:-webkit-full-screen .demo-term,
+#demoFull.demo-pseudo .demo-term {
+  position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 6;
+  max-height: 44vh; max-height: 44dvh;
+  background: rgba(10, 14, 18, 0.94);
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.55);
+}
+#demoFull:fullscreen .demo-log, #demoFull:-webkit-full-screen .demo-log,
+#demoFull.demo-pseudo .demo-log { min-height: 0; max-height: none; }
+/* Pseudo-fullscreen overlay: the touch-device path. Native element fullscreen
+   on touch OSes is dismissed by OS gestures — a downward orbit drag or the
+   keyboard appearing collapses it mid-session — so touch devices get the fixed
+   overlay instead: nothing dismisses it except the toggle button or Escape. */
 #demoFull.demo-pseudo {
   position: fixed; inset: 0; z-index: 2000;
   height: 100vh; height: 100dvh; width: 100%;
-  margin: 0; padding: 12px; box-sizing: border-box;
-  background: var(--midnight); overflow-y: auto;
+  margin: 0; padding: 0; box-sizing: border-box;
+  background: var(--midnight); overflow: hidden;
 }
-#demoFull.demo-pseudo .demo-stage { min-height: 300px; }
+#demoFull.demo-pseudo .demo-stage {
+  position: absolute; inset: 0; min-height: 0;
+  border: 0; border-radius: 0;
+}
 body.demo-locked { overflow: hidden; }
+/* Terminal collapse toggle: fullscreen only. Lets the 3D view take 100%. */
+.demo-term-toggle {
+  display: none;
+  width: 100%; padding: 6px 12px;
+  background: transparent; border: 0; border-bottom: 1px solid var(--line);
+  color: var(--concrete); font-family: inherit; font-size: 0.75rem;
+  text-align: left; cursor: pointer;
+}
+#demoFull:fullscreen .demo-term-toggle, #demoFull:-webkit-full-screen .demo-term-toggle,
+#demoFull.demo-pseudo .demo-term-toggle { display: block; }
+.demo-term-toggle:hover { color: var(--forge); }
+.demo-term-collapsed .demo-log, .demo-term-collapsed .demo-input-row,
+.demo-term-collapsed .demo-chips { display: none; }
+.demo-term-collapsed .demo-term-toggle { border-bottom: 0; }
 
 /* 3D training district */
 .world3d { position: absolute; inset: 0; z-index: 2; }
