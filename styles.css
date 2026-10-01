@@ -816,6 +816,14 @@ body.demo-locked { overflow: hidden; }
 .bot-antenna { stroke: var(--concrete); stroke-width: 3; stroke-linecap: round; }
 .scan-beam { fill: var(--amber); opacity: 0; transform-box: fill-box; transform-origin: left center; }
 
+/* Quadcopter illustration (phase 2) — same JS animation hooks as the old bot */
+.drone-arm { stroke: var(--forge-deep); stroke-width: 14; stroke-linecap: round; }
+.drone-prop { fill: var(--concrete); opacity: .8; }
+#demoBot .bot-wheel { animation: prop-idle 1.8s linear infinite; }
+#demoBot.anim-forward .bot-wheel, #demoBot.anim-back .bot-wheel,
+#demoBot.anim-dance .bot-wheel { animation: wheel-spin .45s linear infinite; }
+@keyframes prop-idle { to { transform: rotate(360deg); } }
+
 /* Animation anchors */
 .bot-body { transform-box: fill-box; transform-origin: center; }
 .bot-wheel { transform-box: fill-box; transform-origin: center; }
