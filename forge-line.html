@@ -14,7 +14,11 @@
   .forge-map { max-width: 560px; margin: 2rem auto 0; display: block; width: 100%; height: auto; }
   .forge-map .rail { stroke: #E85D1A; stroke-width: 6; fill: none; stroke-linecap: round; }
   .forge-map .hub { fill: #E85D1A; }
-  .forge-map .stop { fill: #FFB000; stroke: #0C1116; stroke-width: 2; }
+  .forge-map .rail-hsr { stroke: #9fc3d8; stroke-width: 6; fill: none; stroke-linecap: round; stroke-dasharray: 14 8; }
+  .forge-map .stop-hsr { fill: #9fc3d8; stroke: #0C1116; stroke-width: 2; }
+  .forge-map .bldg { fill: rgba(245,242,234,.10); stroke: rgba(245,242,234,.25); stroke-width: 1; }
+  .forge-map .tag { font-family: "Inter", sans-serif; font-size: 10px; fill: #9fc3d8; text-transform: uppercase; letter-spacing: .08em; }
+  .forge-map .north { font-family: "Inter", sans-serif; font-size: 11px; fill: #9AA0A6; }
   .forge-map text { font-family: "Space Grotesk", sans-serif; font-size: 13px; fill: #F5F2EA; }
   .forge-map .cap { font-family: "Inter", sans-serif; font-size: 11px; fill: #9AA0A6; }
   .station-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
@@ -73,7 +77,7 @@
     <div class="wrap">
       <p class="kicker">A transit concept from the training district</p>
       <h1>The Forge <span class="accent">Line.</span></h1>
-      <p class="lede">An elevated, automated guideway connecting all five districts of our 3D training district &mdash; hub-and-spoke from the Workshop plaza, modeled on the real transit Detroit already runs.</p>
+      <p class="lede">The first rails of an elevated, automated guideway are standing in our 3D training district &mdash; four stations on the Forge Line, plus a proposed high-speed viaduct connecting to Amtrak intercity service. Modeled on the real transit Detroit already runs.</p>
       <div class="hero-actions">
         <a href="#network" class="btn btn-primary">See the network</a>
         <a href="./#demo" class="btn btn-ghost">Try the 3D demo</a>
@@ -85,26 +89,33 @@
   <section class="section" id="network">
     <div class="wrap">
       <p class="kicker">The network</p>
-      <h2>One hub. <span class="accent">Four spokes.</span></h2>
+      <h2>First rails <span class="accent">in the district.</span></h2>
       <div class="prose">
-        <p>The district&rsquo;s roads form a plus sign, so the Forge Line follows infrastructure that already exists: four elevated spokes run the road corridors out from a Central Interchange at the Workshop plaza. Automated pods ping-pong between the hub and each terminus &mdash; frequent, driverless, zero-fare, like the system it&rsquo;s modeled on.</p>
+        <p>The Forge Line&rsquo;s first rails are standing in the 3D district now: an elevated local line in forge orange running Thinkabit Lab &rarr; UM Center for Innovation &rarr; Detroit Riverfront &rarr; Academy HQ, with four open platforms. Beside it, the steel-blue viaduct is the proposed high-speed connection to Amtrak intercity service &mdash; Detroit &mdash; Windsor &mdash; Toronto &mdash; terminating at the Amtrak Intercity transfer. Solid lines are built in-scene; the dashed line is the proposal.</p>
       </div>
-      <svg class="forge-map" viewBox="-80 0 560 400" role="img" aria-label="Concept diagram of the Forge Line: a central hub with four spokes to the UM Center for Innovation north, Academy HQ east, Detroit Riverfront south, and Thinkabit Lab west">
-        <line class="rail" x1="200" y1="200" x2="200" y2="60"/>
-        <line class="rail" x1="200" y1="200" x2="340" y2="200"/>
-        <line class="rail" x1="200" y1="200" x2="200" y2="340"/>
-        <line class="rail" x1="200" y1="200" x2="60" y2="200"/>
-        <circle class="hub" cx="200" cy="200" r="14"/>
-        <circle class="stop" cx="200" cy="60" r="9"/>
-        <circle class="stop" cx="340" cy="200" r="9"/>
-        <circle class="stop" cx="200" cy="340" r="9"/>
-        <circle class="stop" cx="60" cy="200" r="9"/>
-        <text x="200" y="230" text-anchor="middle">Central Interchange</text>
-        <text x="200" y="44" text-anchor="middle">UM Center for Innovation</text>
-        <text x="352" y="204">Academy HQ</text>
-        <text x="200" y="366" text-anchor="middle">Detroit Riverfront</text>
-        <text x="48" y="204" text-anchor="end">Thinkabit Lab</text>
-        <text class="cap" x="200" y="392" text-anchor="middle">Concept diagram &mdash; not to scale</text>
+      <svg class="forge-map" viewBox="-80 -20 560 440" role="img" aria-label="Schematic of the in-scene transit: the Forge Line elevated guideway serving Thinkabit Lab, UM Center for Innovation, Detroit Riverfront and Academy HQ, plus the proposed Amtrak high-speed viaduct to the Amtrak Intercity terminus">
+        <text class="north" x="452" y="8">N &#8593;</text>
+        <rect class="bldg" x="228" y="208" width="24" height="24" rx="2"/>
+        <rect class="bldg" x="285" y="208" width="24" height="24" rx="2"/>
+        <rect class="bldg" x="228" y="160" width="24" height="24" rx="2"/>
+        <rect class="bldg" x="150" y="208" width="24" height="24" rx="2"/>
+        <rect class="bldg" x="228" y="340" width="24" height="24" rx="2"/>
+        <polyline class="rail" points="307.5,196 307.5,286 292.5,301 178.2,301 163.2,286 163.2,68.5 171,50.5 292.5,50.5 307.5,50.5"/>
+        <line class="rail-hsr" x1="432" y1="316" x2="300" y2="316"/>
+        <circle class="stop" cx="170" cy="229" r="9"/>
+        <circle class="stop" cx="170" cy="130" r="9"/>
+        <circle class="stop" cx="240" cy="292" r="9"/>
+        <circle class="stop" cx="299" cy="220" r="9"/>
+        <circle class="stop-hsr" cx="330" cy="306" r="9"/>
+        <text x="156" y="233" text-anchor="end">Thinkabit Lab</text>
+        <text x="156" y="134" text-anchor="end">UM Center for Innovation</text>
+        <text x="240" y="283" text-anchor="middle">Detroit Riverfront</text>
+        <text x="316" y="224">Academy HQ</text>
+        <text x="316" y="240" class="tag">Interchange</text>
+        <text x="365" y="352" text-anchor="middle">Amtrak Intercity</text>
+        <text x="365" y="366" text-anchor="middle" class="tag">Proposed</text>
+        <text x="470" y="308" text-anchor="end" class="tag">To Amtrak network &#8594;</text>
+        <text class="cap" x="200" y="412" text-anchor="middle">Schematic &mdash; station positions match the 3D district; not to scale</text>
       </svg>
     </div>
   </section>
@@ -113,27 +124,27 @@
   <section class="section section-alt" id="stations">
     <div class="wrap">
       <p class="kicker">Stations</p>
-      <h2>Five stops. <span class="accent">Every district.</span></h2>
+      <h2>Five stops. <span class="accent">Two lines.</span></h2>
       <div class="station-grid">
         <div class="station-card">
-          <h3>Central Interchange <span class="dir">The Workshop &middot; hub</span></h3>
-          <p>The interchange hall on the plaza &mdash; every spoke starts here, in the district&rsquo;s center.</p>
+          <h3>Thinkabit Lab <span class="dir">Forge Line &middot; west</span></h3>
+          <p>Young builders, real tools. The lab stop &mdash; open platform in-scene.</p>
         </div>
         <div class="station-card">
-          <h3>UM Center for Innovation <span class="dir">North spoke</span></h3>
-          <p>U-M&rsquo;s Detroit innovation hub &mdash; six stories of glass leaning into the future. The future gets prototyped here.</p>
+          <h3>UM Center for Innovation <span class="dir">Forge Line &middot; north</span></h3>
+          <p>U-M&rsquo;s Detroit innovation hub &mdash; six stories of glass leaning into the future. Open platform in-scene.</p>
         </div>
         <div class="station-card">
-          <h3>Academy HQ <span class="dir">East spoke</span></h3>
-          <p>The east terminus &mdash; the Academy&rsquo;s front door in Corktown.</p>
+          <h3>Detroit Riverfront <span class="dir">Forge Line &middot; south</span></h3>
+          <p>Where the district meets the water. The greenway stop &mdash; open platform in-scene.</p>
         </div>
         <div class="station-card">
-          <h3>Detroit Riverfront <span class="dir">South spoke</span></h3>
-          <p>Where the district meets the water. The greenway stop.</p>
+          <h3>Academy HQ <span class="dir">Forge Line &middot; interchange</span></h3>
+          <p>The Academy&rsquo;s front door in Corktown &mdash; signed as the interchange where the two lines would meet. Full interchange hall still concept.</p>
         </div>
         <div class="station-card">
-          <h3>Thinkabit Lab <span class="dir">West spoke</span></h3>
-          <p>Young builders, real tools. The lab stop.</p>
+          <h3>Amtrak Intercity <span class="dir">High-speed line &middot; proposed</span></h3>
+          <p>The proposed Detroit &mdash; Windsor &mdash; Toronto terminus: viaduct and transfer platform stand in-scene, the service doesn&rsquo;t exist yet.</p>
         </div>
       </div>
     </div>
@@ -163,6 +174,10 @@
         <li>
           <strong>DDOT / SMART &rarr; the training bot</strong>
           <p>The bot is already an on-demand shuttle (<code>go &lt;place&gt;</code>). The Forge Line is the rapid trunk; the bot is the last-mile Flex &mdash; the same two-layer pattern voters funded on August 4, when Wayne County approved the transit millage 67&ndash;33.</p>
+        </li>
+        <li>
+          <strong>Amtrak &rarr; the intercity connection</strong>
+          <p>The high-speed viaduct is the proposal, drawn from a real one. Amtrak&rsquo;s <em>Wolverine</em> runs Detroit&ndash;Chicago three times daily from 11 W Baltimore Ave in New Center, hitting 110&nbsp;mph on upgraded Michigan segments &mdash; and in October 2025 MDOT, the City of Detroit, and Michigan Central signed a $40M agreement to engineer a multimodal hub by the Corktown station that would extend Wolverine service across the river to Windsor and, via VIA Rail, Toronto, targeting 2028. The in-scene viaduct and Amtrak Intercity platform are the academy&rsquo;s model of that future; the service itself doesn&rsquo;t exist yet. Sources: <a href="https://en.wikipedia.org/wiki/Detroit_station">Detroit station</a>, <a href="https://www.trains.com/pro/passenger/intercity/agreement-seeks-to-develop-transportation-hub-passenger-rail-service-at-michigan-central-station/">Trains.com on the 2025 hub agreement</a>.</p>
         </li>
       </ul>
     </div>
@@ -223,7 +238,7 @@
       <p class="kicker">Build status</p>
       <h2>A concept, <span class="accent">being prototyped.</span></h2>
       <div class="prose">
-        <p>The Forge Line isn&rsquo;t built yet &mdash; not in steel, not in the 3D district. It lives here as the plan, and it&rsquo;s being prototyped as a working model students can drive, argue with, and improve. Every real system started as a model someone could point at. Here&rsquo;s where each piece stands:</p>
+        <p>The Forge Line&rsquo;s first rails are standing &mdash; the elevated guideway and the Amtrak viaduct are in the 3D district now. The vehicles are still prototypes on paper and CAD. Here&rsquo;s where each piece stands:</p>
       </div>
       <div class="status-group">
         <h3>Vehicles <span class="accent">&mdash; prototype series</span></h3>
@@ -250,16 +265,20 @@
         <h3>Infrastructure <span class="accent">&mdash; the fixed plant</span></h3>
         <div class="status-grid">
           <div class="status-card">
-            <h3>Elevated guideway <span class="status-pill status-concept">Concept</span></h3>
-            <p>Four spokes along the road corridors from the Workshop plaza. No steel, no in-scene geometry &mdash; the diagram above is the whole of it so far.</p>
+            <h3>Elevated guideway <span class="status-pill status-rendered">Rendered</span></h3>
+            <p>The Forge Line guideway stands in the 3D district: elevated deck on pylons, four open platforms (Thinkabit Lab, UM Center for Innovation, Detroit Riverfront, Academy HQ). No vehicles run it yet.</p>
+          </div>
+          <div class="status-card">
+            <h3>Amtrak high-speed connection <span class="status-pill status-concept">Concept</span></h3>
+            <p>The viaduct and Amtrak Intercity transfer platform are in-scene; the intercity <em>service</em> is the proposal &mdash; modeled on the real 2025 plan to extend Amtrak&rsquo;s Wolverine to Windsor and Toronto. See the network section for sources.</p>
           </div>
           <div class="status-card">
             <h3>Station buildings <span class="status-pill status-concept">Concept</span></h3>
-            <p>Five stops named, none built. In the 3D demo each district has a marker and an info card; physical station structures are concept-only.</p>
+            <p>Open platforms are in-scene; full station buildings and the Central Interchange hall are still concept-only.</p>
           </div>
           <div class="status-card">
             <h3>Central Interchange <span class="status-pill status-concept">Concept</span></h3>
-            <p>The hub hall on the Workshop plaza where every spoke starts. Sited in the plan, unbuilt in the district.</p>
+            <p>Academy HQ is signed as the interchange where the two lines would meet. The interchange hall itself is sited in the plan, unbuilt in the district.</p>
           </div>
           <div class="status-card">
             <h3>In-scene vehicle <span class="status-pill status-todo">Not started</span></h3>
