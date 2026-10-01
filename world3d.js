@@ -38,6 +38,282 @@
   // assets/world/techtown.stl, assets/world/thinkabit.stl and
   // assets/world/riverfront.stl.
 
+  // [DRONE-PHYSICS-START]
+  // Personal quadcopter flight model — pure math, no THREE or DOM, so the
+  // Node harness (overnight-2026-10-01/drone-physics-harness.js) extracts
+  // this block verbatim and tests it headless. True-scale SI units throughout
+  // (meters, seconds, kilograms). Semi-implicit Euler with substeps (<=1/120 s).
+  function DronePhysics() {
+    function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+    var C = {
+      MASS: 1.8, GRAV: 9.81,
+      MAX_THRUST: 2.2 * 1.8 * 9.81, // T/W = 2.2 — a sporty personal quadcopter
+      DRAG_K: 0.07,                 // quadratic drag coefficient (terminal ~16 m/s)
+      MAX_TILT: 25 * Math.PI / 180, // max commanded tilt, radians
+      GEAR_H: 0.43,                 // body-center height resting on the skids
+      CEILING: 60,                  // max altitude, meters
+      BOUND: 126,                   // district half-extent, meters
+      RADIUS: 0.8                   // collision radius, meters
+    };
+    C.WEIGHT = C.MASS * C.GRAV;
+    C.HOVER = C.WEIGHT / C.MAX_THRUST; // ≈ 0.4545 — throttle that exactly holds weight
+    // Measured building footprints, Oct 2026 (true solids — soft push-out).
+    var BUILDINGS = [
+      { x0: -13.3, x1: 13.3, z0: -10.3, z1: 11.7, top: 14.8 },  // Workshop
+      { x0: -17.4, x1: 17.4, z0: -12.4, z1: 16.1, top: 36.6 },  // Academy HQ
+      { x0: 27.3,  x1: 64.4, z0: -45.2, z1: 22.0, top: 36.6 },  // Corktown
+      { x0: -22.0, x1: 28.8, z0: -53.3, z1: -10.0, top: 24.3 }, // UMCI
+      { x0: -58.5, x1: -29.3, z0: -8.1, z1: 14.0, top: 9.9 },   // Thinkabit
+      { x0: -17.0, x1: 17.0, z0: 31.0, z1: 52.6, top: 9.2 }     // Riverfront
+    ];
+
+    function create(px, pz) {
+      return {
+        px: px || 0, py: C.GEAR_H, pz: (pz === undefined ? 24 : pz),
+        vx: 0, vy: 0, vz: 0,
+        yaw: 0, pitch: 0, roll: 0,
+        throttle: 0, mode: 'ground', armed: false, planT: 0,
+        turnTarget: null, plan: null,
+        gear: 0, gearV: 0 // landing-gear spring compression, meters
+      };
+    }
+
+    function angDiff(a, b) {
+      var d = a - b;
+      while (d > Math.PI) d -= Math.PI * 2;
+      while (d < -Math.PI) d += Math.PI * 2;
+      return d;
+    }
+
+    function startTakeoff(s) {
+      s.armed = true; s.mode = 'takeoff'; s.planT = 0;
+    }
+
+    // Ground contact with downward speed: disarm, kill horizontal energy,
+    // kick the gear spring. Returns a flight-plan completion callback, if any.
+    function touchdown(s, impact) {
+      s.mode = 'ground'; s.armed = false;
+      s.vx *= 0.15; s.vz *= 0.15;
+      s.gearV += Math.min(impact, 4) * 0.35;
+      var done = null;
+      if (s.plan && s.plan.phase === 'descend') { done = s.plan.done; s.plan = null; }
+      return done;
+    }
+
+    // 2D segment vs expanded AABB (cruise-altitude planning)
+    function segHitsBox(x0, z0, x1, z1, b, pad) {
+      for (var i = 0; i <= 24; i++) {
+        var t = i / 24, x = x0 + (x1 - x0) * t, z = z0 + (z1 - z0) * t;
+        if (x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad) return true;
+      }
+      return false;
+    }
+
+    function cruiseFor(x0, z0, x1, z1) {
+      var c = 12;
+      for (var i = 0; i < BUILDINGS.length; i++) {
+        var b = BUILDINGS[i];
+        if (segHitsBox(x0, z0, x1, z1, b, 3) && b.top + 6 > c) c = b.top + 6;
+      }
+      return Math.min(c, C.CEILING - 5);
+    }
+
+    // Flight plan (go <place>) → velocity commands. Called once per frame.
+    function updatePlan(s, cmd) {
+      var p = s.plan;
+      if (!p) return;
+      var dx = p.x - s.px, dz = p.z - s.pz;
+      var dist = Math.sqrt(dx * dx + dz * dz);
+      cmd.cvx = 0; cmd.cvz = 0; cmd.cvy = 0;
+      if (p.phase === 'start') {
+        if (!s.armed && s.mode === 'ground') startTakeoff(s);
+        cmd.cvy = 3;
+        s.turnTarget = Math.atan2(-dx, -dz);
+        if (s.py >= p.cruise - 0.5) p.phase = 'cruise';
+      } else if (p.phase === 'cruise') {
+        if (dist < 2.0) { p.phase = 'descend'; return; }
+        var sp = Math.min(9, dist * 1.2);
+        cmd.cvx = dx / dist * sp; cmd.cvz = dz / dist * sp;
+        cmd.cvy = clamp((p.cruise - s.py) * 1.5, -2, 2);
+        s.turnTarget = Math.atan2(-dx, -dz);
+      } else if (p.phase === 'descend') {
+        if (dist > 0.05) {
+          var sp2 = Math.min(3, Math.max(0.8, dist));
+          cmd.cvx = dx / dist * sp2; cmd.cvz = dz / dist * sp2;
+        }
+        cmd.cvy = -1.2;
+      }
+    }
+
+    // Returns a flight-plan completion callback, or null.
+    // True when (px, pz, py) is inside any building solid other than index skip.
+    function solidAt(px, pz, py, skip) {
+      for (var j = 0; j < BUILDINGS.length; j++) {
+        if (j === skip) continue;
+        var c = BUILDINGS[j];
+        if (px > c.x0 && px < c.x1 && pz > c.z0 && pz < c.z1 && py < c.top) return true;
+      }
+      return false;
+    }
+
+    function substep(s, dt, cmd) {
+      var planDone = null;
+      var airborne = (s.mode !== 'ground');
+      // --- attitude: tilt-to-move. Horizontal velocity error → tilt commands;
+      // thrust follows the tilted body-up axis, which is what actually moves it.
+      if (airborne) {
+        var amax = C.GRAV * Math.tan(C.MAX_TILT);
+        var kV = 3.0;
+        var axc = clamp((cmd.cvx - s.vx) * kV, -amax, amax);
+        var azc = clamp((cmd.cvz - s.vz) * kV, -amax, amax);
+        var sy = Math.sin(s.yaw), cy = Math.cos(s.yaw);
+        var af = -axc * sy - azc * cy; // forward component (+ = forward)
+        var ar = axc * cy - azc * sy;  // right component (+ = right)
+        var pitchT = clamp(-Math.atan(af / C.GRAV), -C.MAX_TILT, C.MAX_TILT);
+        var rollT = clamp(-Math.atan(ar / C.GRAV), -C.MAX_TILT, C.MAX_TILT);
+        var ka = Math.min(1, 10 * dt);
+        s.pitch += (pitchT - s.pitch) * ka;
+        s.roll += (rollT - s.roll) * ka;
+      } else {
+        var kd = Math.min(1, 8 * dt);
+        s.pitch *= (1 - kd); s.roll *= (1 - kd);
+      }
+      // --- yaw ---
+      if (s.turnTarget !== null) {
+        var dd = angDiff(s.turnTarget, s.yaw);
+        var myaw = 2.5 * dt;
+        s.yaw += clamp(dd, -myaw, myaw);
+        if (Math.abs(dd) < 0.02) s.turnTarget = null;
+      }
+      // --- throttle ---
+      var thrT = 0;
+      if (s.mode === 'takeoff') {
+        s.planT += dt;
+        thrT = Math.min(0.85, 0.30 + s.planT * 0.30); // spool-up ramp
+        if (s.py > C.GEAR_H + 0.5) s.mode = 'air';    // liftoff
+      } else if (s.mode === 'air' || s.mode === 'landing') {
+        // vertical-velocity P controller around hover throttle (altitude assist)
+        thrT = clamp(C.HOVER + (cmd.cvy - s.vy) * 0.10, 0.15, 0.95);
+      }
+      s.throttle += (thrT - s.throttle) * Math.min(1, 6 * dt);
+      // --- forces ---
+      if (!airborne) {
+        // taxi: kinematic ground slide, no momentum carried
+        var spd = 3.0;
+        s.px += clamp(cmd.cvx, -spd, spd) * dt;
+        s.pz += clamp(cmd.cvz, -spd, spd) * dt;
+        s.vx = 0; s.vy = 0; s.vz = 0;
+        s.py = C.GEAR_H;
+      } else {
+        // thrust along the body-up axis (yaw/pitch/roll applied YXZ)
+        var sp = Math.sin(s.pitch), cp = Math.cos(s.pitch);
+        var sr = Math.sin(s.roll), cr = Math.cos(s.roll);
+        var syy = Math.sin(s.yaw), cyy = Math.cos(s.yaw);
+        var ux = -sr * cp * cyy + sp * syy;
+        var uy = cr * cp;
+        var uz = sr * cp * syy + sp * cyy;
+        var T = s.throttle * C.MAX_THRUST;
+        var fx = ux * T, fy = uy * T - C.WEIGHT, fz = uz * T;
+        // quadratic aerodynamic drag
+        var vmag = Math.sqrt(s.vx * s.vx + s.vy * s.vy + s.vz * s.vz);
+        var dk = C.DRAG_K * vmag;
+        fx -= dk * s.vx; fy -= dk * s.vy; fz -= dk * s.vz;
+        // semi-implicit Euler
+        s.vx += fx / C.MASS * dt;
+        s.vy += fy / C.MASS * dt;
+        s.vz += fz / C.MASS * dt;
+        s.vy = clamp(s.vy, -6, 6);
+        s.px += s.vx * dt; s.py += s.vy * dt; s.pz += s.vz * dt;
+      }
+      // --- ground collision (skids) ---
+      if (s.py <= C.GEAR_H) {
+        s.py = C.GEAR_H;
+        var impact = -s.vy;
+        s.vy = 0;
+        // sitting on the pad during spool-up is normal — no touchdown event
+        if (impact > 0.05 && airborne && s.mode !== 'takeoff') planDone = touchdown(s, impact);
+      }
+      // --- ceiling ---
+      if (s.py > C.CEILING) { s.py = C.CEILING; if (s.vy > 0) s.vy = 0; }
+      // --- buildings: hard push-out of solids, soft cushion in the margin ---
+      // Expanded footprints can overlap (Workshop/UMCI share a 0.3 m seam), so
+      // a blind push can land inside a neighbor. The hard rule is only ever
+      // "never inside an actual solid"; the margin just kills inbound velocity.
+      for (var pass = 0; pass < 2; pass++) {
+        var settled = true;
+        for (var i = 0; i < BUILDINGS.length; i++) {
+          var b = BUILDINGS[i], r = C.RADIUS;
+          var inX = s.px > b.x0 - r && s.px < b.x1 + r;
+          var inZ = s.pz > b.z0 - r && s.pz < b.z1 + r;
+          if (!(inX && inZ && s.py < b.top + r)) continue;
+          var solidX = s.px > b.x0 && s.px < b.x1;
+          var solidZ = s.pz > b.z0 && s.pz < b.z1;
+          if (solidX && solidZ && s.py < b.top) {
+            // inside the solid: push out along the min-penetration axis whose
+            // landing spot is clear of every other solid (nearest valid first)
+            var dxl = s.px - (b.x0 - r), dxr = (b.x1 + r) - s.px;
+            var dzl = s.pz - (b.z0 - r), dzr = (b.z1 + r) - s.pz;
+            var cands = [
+              { x: b.x0 - r, z: s.pz, d: dxl, axis: 'x', neg: true },
+              { x: b.x1 + r, z: s.pz, d: dxr, axis: 'x', neg: false },
+              { x: s.px, z: b.z0 - r, d: dzl, axis: 'z', neg: true },
+              { x: s.px, z: b.z1 + r, d: dzr, axis: 'z', neg: false }
+            ];
+            cands.sort(function (p, q) { return p.d - q.d; });
+            var placed = false;
+            for (var k = 0; k < cands.length; k++) {
+              var cd = cands[k];
+              if (solidAt(cd.x, cd.z, s.py, i)) continue;
+              s.px = cd.x; s.pz = cd.z;
+              if (cd.axis === 'x' && ((cd.neg && s.vx > 0) || (!cd.neg && s.vx < 0))) s.vx = 0;
+              if (cd.axis === 'z' && ((cd.neg && s.vz > 0) || (!cd.neg && s.vz < 0))) s.vz = 0;
+              placed = true;
+              break;
+            }
+            if (!placed) { s.vx *= 0.5; s.vz *= 0.5; } // boxed in: bleed energy
+            settled = false;
+          } else {
+            // margin cushion: kill velocity heading into the wall, keep position
+            if (inX && s.pz <= b.z0 && s.vz > 0) s.vz = 0; // north of it, moving south
+            if (inX && s.pz >= b.z1 && s.vz < 0) s.vz = 0; // south of it, moving north
+            if (inZ && s.px <= b.x0 && s.vx > 0) s.vx = 0; // west of it, moving east
+            if (inZ && s.px >= b.x1 && s.vx < 0) s.vx = 0; // east of it, moving west
+          }
+        }
+        if (settled) break;
+      }
+      // --- district bounds ---
+      if (s.px < -C.BOUND) { s.px = -C.BOUND; if (s.vx < 0) s.vx = 0; }
+      if (s.px > C.BOUND) { s.px = C.BOUND; if (s.vx > 0) s.vx = 0; }
+      if (s.pz < -C.BOUND) { s.pz = -C.BOUND; if (s.vz < 0) s.vz = 0; }
+      if (s.pz > C.BOUND) { s.pz = C.BOUND; if (s.vz > 0) s.vz = 0; }
+      // --- landing-gear spring-damper (visual compression) ---
+      var ga = -120 * s.gear - 10 * s.gearV;
+      s.gearV += ga * dt;
+      s.gear += s.gearV * dt;
+      if (s.gear < 0) { s.gear = 0; s.gearV = 0; }
+      if (s.gear > 0.15) { s.gear = 0.15; s.gearV = 0; }
+      return planDone;
+    }
+
+    function step(s, h, cmd) {
+      var n = Math.max(1, Math.ceil(h / (1 / 120)));
+      var dt = h / n, done = null;
+      for (var i = 0; i < n; i++) {
+        var r = substep(s, dt, cmd);
+        if (r && !done) done = r;
+      }
+      return done;
+    }
+
+    return {
+      C: C, BUILDINGS: BUILDINGS, create: create, step: step,
+      updatePlan: updatePlan, cruiseFor: cruiseFor,
+      startTakeoff: startTakeoff, touchdown: touchdown, clamp: clamp
+    };
+  }
+  // [DRONE-PHYSICS-END]
+
   function fallback() {
     stage.classList.add('world-fallback');
   }
@@ -106,8 +382,12 @@
     // real load progress on the overlay: 5 STL district parts + the bot +
     // the procedural builds (workshop + corktown + innovation + thinkabit +
     // riverfront + guideway via window.DAAArchKit, plus streetscape,
-    // furniture, vehicles, district-expansion, groundwork and promenade)
-    var loadTotal = PARTS.length + 13;
+    // furniture, vehicles, district-expansion, groundwork, promenade,
+    // region-expansion, chicago-hsr and railways)
+    // Round 3 (2026-10-01, overnight): +3 steps for the new modules below.
+    // Bot/character, tick-loop, API block, script.js dispatch and demo chips
+    // are owned by the parallel drone track — untouched by this change.
+    var loadTotal = PARTS.length + 16;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
@@ -280,6 +560,45 @@
     }
     bumpLoadCount();
 
+    // Round 3 (2026-10-01, overnight): region expansion, Chicago HSR concept,
+    // and railway connect/expand modules. Same try/catch overlay pattern;
+    // each counts one loader step (see loadTotal above).
+    // Region expansion: outer-ring-2 ground, streets, low-rise context
+    // buildings, street trees. Synchronous and local; one overlay step.
+    try {
+      if (window.DAARegionExpansion && window.DAARegionExpansion.buildRegionExpansion) {
+        scene.add(window.DAARegionExpansion.buildRegionExpansion(THREE));
+      }
+    } catch (e) {
+      // region-expansion stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] region-expansion build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Chicago HSR: proposed westward intercity viaduct, Dearborn concept
+    // station, Chicago terminus. Synchronous and local; one overlay step.
+    try {
+      if (window.DAAChicagoHSR && window.DAAChicagoHSR.buildChicagoHSR) {
+        scene.add(window.DAAChicagoHSR.buildChicagoHSR(THREE));
+      }
+    } catch (e) {
+      // chicago-hsr stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] chicago-hsr build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Railways: Forge Line dead-end termini, intercity transfer, Michigan Ave
+    // / 14th St / riverfront spur lines. Synchronous and local; one overlay step.
+    try {
+      if (window.DAARailways && window.DAARailways.buildRailways) {
+        scene.add(window.DAARailways.buildRailways(THREE));
+      }
+    } catch (e) {
+      // railways stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] railways build failed:', e);
+    }
+    bumpLoadCount();
+
     // STL load failures: log which asset failed, then engage the 2D fallback.
     function partError(url) {
       return function (err) {
@@ -341,44 +660,87 @@
       scene.add(sp);
     });
 
-    // the bot
+    // the drone — personal quadcopter, built procedurally in the Forge palette.
+    // Synchronous and local: it counts as one step on the loading overlay,
+    // replacing the progress event the old bot.stl load used to emit.
     var botGroup = new THREE.Group();
     var botTag = makeLabel('TRAINING BOT', 0.55);
-    botTag.position.set(0, 1.9, 0);
+    botTag.position.set(0, 1.35, 0);
     botGroup.add(botTag);
-    // glowing eyes: emissive amber spheres over the STL eye positions.
-    // OpenSCAD (±0.121, 0.181, 0.688) -> three.js (x, z, -y) = (±0.121, 0.688, -0.181).
-    var eyeGeo = new THREE.SphereGeometry(0.066, 12, 12);
-    var eyeMat = new THREE.MeshStandardMaterial({
-      color: 0xFFB000, emissive: 0xFFB000, emissiveIntensity: 2.2, roughness: 0.4
-    });
-    [-0.121, 0.121].forEach(function (ex) {
-      var eye = new THREE.Mesh(eyeGeo, eyeMat);
-      eye.position.set(ex, 0.688, -0.181);
-      botGroup.add(eye);
-    });
-    // headlight beam: translucent cone from the chest, facing -z (bot forward)
-    var beamGeo = new THREE.ConeGeometry(0.30, 1.05, 20, 1, true);
-    var beam = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({
-      color: 0xfff2c0, transparent: true, opacity: 0.16,
-      blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
-    }));
-    beam.rotation.x = Math.PI / 2; // apex -> +z so it sits at the chest
-    beam.position.set(0, 0.40, -0.78); // apex lands at (0, 0.40, -0.255), base at z=-1.3
-    botGroup.add(beam);
-    var botMesh = null;
-    loader.load(base + 'bot.stl', function (geo) {
-      geo.rotateX(-Math.PI / 2);
-      geo.computeVertexNormals();
-      botMesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-        color: 0xE85D1A, roughness: 0.6, metalness: 0.25, emissive: 0x000000
-      }));
-      botMesh.castShadow = true;
-      botGroup.add(botMesh);
-      botGroup.position.set(0, 0.35, 24); // workshop approach point (clear of the building)
-      scene.add(botGroup);
-      ready();
-    }, undefined, partError(base + 'bot.stl'));
+    var botMesh = null;      // drone airframe group (the animatable part)
+    var droneBodyMat = null; // airframe material, for the charge pulse
+    var droneLedMat = null;  // status LED material, for the blink
+    var landingLight = null; // downward cone, fades in with altitude
+    var props = [];          // {grp, disc, dir, ang}
+    (function buildDrone() {
+      var g = new THREE.Group();
+      var bodyMat = new THREE.MeshStandardMaterial({ color: 0xE85D1A, roughness: 0.5, metalness: 0.35 });
+      var darkMat = new THREE.MeshStandardMaterial({ color: 0x161c22, roughness: 0.6, metalness: 0.45 });
+      var glassMat = new THREE.MeshStandardMaterial({ color: 0x0c1116, roughness: 0.25, metalness: 0.6 });
+      droneBodyMat = bodyMat;
+      function M(geo, mat, x, y, z) {
+        var m = new THREE.Mesh(geo, mat);
+        m.position.set(x, y, z);
+        m.castShadow = true;
+        g.add(m);
+        return m;
+      }
+      M(new THREE.BoxGeometry(0.86, 0.26, 0.86), bodyMat, 0, 0, 0);      // airframe
+      var canopy = M(new THREE.SphereGeometry(0.30, 20, 14), glassMat, 0, 0.16, 0);
+      canopy.scale.set(1, 0.55, 1);                                     // sensor canopy
+      M(new THREE.BoxGeometry(0.50, 0.08, 0.50), darkMat, 0, -0.16, 0); // belly plate
+      // sensor eyes: amber, front, facing -z (the drone's forward)
+      var eyeMat = new THREE.MeshStandardMaterial({
+        color: 0xFFB000, emissive: 0xFFB000, emissiveIntensity: 2.2, roughness: 0.4
+      });
+      var eyeGeo = new THREE.SphereGeometry(0.055, 12, 12);
+      M(eyeGeo, eyeMat, -0.14, 0.02, -0.40);
+      M(eyeGeo, eyeMat, 0.14, 0.02, -0.40);
+      // arms, motors, props — X configuration
+      [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(function (d, i) {
+        var ax = d[0], az = d[1];
+        var arm = M(new THREE.BoxGeometry(0.62, 0.07, 0.13), darkMat, ax * 0.30, 0.02, az * 0.30);
+        arm.rotation.y = Math.atan2(-az, ax);
+        var mx = ax * 0.52, mz = az * 0.52;
+        M(new THREE.CylinderGeometry(0.085, 0.105, 0.12, 14), darkMat, mx, 0.08, mz);
+        var prop = new THREE.Group();
+        prop.position.set(mx, 0.17, mz);
+        var b1 = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.014, 0.055), glassMat);
+        var b2 = b1.clone(); b2.rotation.y = Math.PI / 2;
+        var hub = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 8), bodyMat);
+        prop.add(b1); prop.add(b2); prop.add(hub);
+        var disc = new THREE.Mesh(new THREE.CircleGeometry(0.29, 24),
+          new THREE.MeshBasicMaterial({ color: 0x9AA0A6, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
+        disc.rotation.x = -Math.PI / 2;
+        disc.position.y = 0.012;
+        disc.castShadow = false;
+        prop.add(disc);
+        g.add(prop);
+        props.push({ grp: prop, disc: disc, dir: (i % 2 === 0) ? 1 : -1, ang: Math.random() * 6.28 });
+      });
+      // landing skids (rail bottoms at y = -0.425, so GEAR_H = 0.43)
+      [-0.26, 0.26].forEach(function (sx) {
+        M(new THREE.BoxGeometry(0.05, 0.05, 0.72), darkMat, sx, -0.40, 0);
+        M(new THREE.BoxGeometry(0.04, 0.24, 0.04), darkMat, sx, -0.27, 0.22);
+        M(new THREE.BoxGeometry(0.04, 0.24, 0.04), darkMat, sx, -0.27, -0.22);
+      });
+      // status LED, rear
+      droneLedMat = new THREE.MeshStandardMaterial({
+        color: 0xFFB000, emissive: 0xFFB000, emissiveIntensity: 2, roughness: 0.4
+      });
+      M(new THREE.SphereGeometry(0.035, 10, 8), droneLedMat, 0, 0.02, 0.45);
+      botMesh = g;
+    })();
+    // landing light: downward cone from the belly, opacity follows altitude
+    landingLight = new THREE.Mesh(
+      new THREE.ConeGeometry(0.55, 2.4, 20, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0xfff2c0, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })
+    );
+    landingLight.position.y = -1.4; // apex sits just under the belly
+    botGroup.add(landingLight);
+    botGroup.add(botMesh);
+    scene.add(botGroup);
+    bumpLoadCount();
 
     // info card
     var card = document.createElement('div');
@@ -408,10 +770,12 @@
       }
     });
 
-    // ---- bot motion ----
-    var tween = null;      // {x, z, done}
-    var turnT = null;      // target rotation.y for in-place turns
+    // ---- drone motion ----
+    var DRONE = DronePhysics();
+    var st = DRONE.create(0, 24); // physics state; starts at the workshop approach point
+    var cmd = { cvx: 0, cvz: 0, cvy: 0, exp: 0 }; // velocity commands + expiry (ms)
     var anim = null;       // {kind, t0, dur}
+    var camTween = null;   // {p0, p1, t} — camera glide for the focus command
     var keys = {};
     var driveArmed = false;
     mount.addEventListener('pointerenter', function () { driveArmed = true; });
@@ -422,16 +786,6 @@
       keys[e.key.toLowerCase()] = true;
     });
     window.addEventListener('keyup', function (e) { keys[e.key.toLowerCase()] = false; });
-
-    function face(x, z) {
-      if (Math.abs(x) + Math.abs(z) < 0.001) return;
-      var target = Math.atan2(-x, -z); // eyes rest toward -z
-      var cur = botGroup.rotation.y;
-      var d = target - cur;
-      while (d > Math.PI) d -= Math.PI * 2;
-      while (d < -Math.PI) d += Math.PI * 2;
-      botGroup.rotation.y = cur + d * 0.18;
-    }
 
     function playAnim(kind, dur) {
       if (reduced) return;
@@ -453,42 +807,50 @@
       var dt = Math.min(clock.getDelta(), 0.05);
       var now = performance.now();
 
-      // keyboard drive
+      // ---- drone flight ----
+      // Per-frame input: timed velocity commands (nudge/drive/altitude chips),
+      // the keyboard, or the active flight plan. The physics core consumes it.
+      var inp = { cvx: 0, cvz: 0, cvy: 0 };
+      if (now < cmd.exp) { inp.cvx = cmd.cvx; inp.cvz = cmd.cvz; inp.cvy = cmd.cvy; }
+      // keyboard drive → velocity command (manual input cancels a flight plan)
       var mx = (keys['d'] || keys['arrowright'] ? 1 : 0) - (keys['a'] || keys['arrowleft'] ? 1 : 0);
       var mz = (keys['s'] || keys['arrowdown'] ? 1 : 0) - (keys['w'] || keys['arrowup'] ? 1 : 0);
       if (driveArmed && (mx || mz)) {
-        tween = null;
-        var sp = 3 * dt;
-        var nx = THREE.MathUtils.clamp(botGroup.position.x + mx * sp, -58, 58);
-        var nz = THREE.MathUtils.clamp(botGroup.position.z + mz * sp, -58, 58);
-        face(mx, mz);
-        botGroup.position.x = nx;
-        botGroup.position.z = nz;
-        botGroup.position.y = 0.35 + Math.abs(Math.sin(now * 0.02)) * 0.25;
-      } else if (tween) {
-        var dx = tween.x - botGroup.position.x, dz = tween.z - botGroup.position.z;
-        var dist = Math.hypot(dx, dz);
-        if (dist < 0.4) {
-          botGroup.position.y = 0.35;
-          var done = tween.done; tween = null;
-          if (done) done();
-        } else {
-          var step = Math.min(dist, 3.5 * dt);
-          face(dx, dz);
-          botGroup.position.x += dx / dist * step;
-          botGroup.position.z += dz / dist * step;
-          botGroup.position.y = 0.35 + Math.abs(Math.sin(now * 0.02)) * 0.25;
+        st.plan = null;
+        var kspd = st.armed ? 6.0 : 3.0; // sporty in the air, a calm taxi on the skids
+        inp.cvx = mx * kspd; inp.cvz = mz * kspd;
+      }
+      if (st.plan) DRONE.updatePlan(st, inp);
+      else if ((inp.cvx || inp.cvz) && st.turnTarget === null && !reduced) {
+        st.turnTarget = Math.atan2(-inp.cvx, -inp.cvz); // face travel direction
+      }
+      var planDone = DRONE.step(st, dt, inp);
+      if (planDone) planDone();
+      // physics state → meshes
+      botGroup.position.set(st.px, st.py - st.gear * 0.4, st.pz);
+      botGroup.rotation.y = st.yaw;
+      botMesh.rotation.x = st.pitch;
+      botMesh.rotation.z = st.roll;
+      // rotors: spin up with throttle, blur discs fade in
+      if (!reduced && st.armed) {
+        for (var pi = 0; pi < props.length; pi++) {
+          var pr = props[pi];
+          pr.ang += pr.dir * (6 + st.throttle * 34) * dt;
+          pr.grp.rotation.y = pr.ang;
+          pr.disc.material.opacity = Math.min(0.4, st.throttle * 0.5);
         }
       } else {
-        // in-place turn tween (left/right commands, D-pad turns)
-        if (turnT !== null) {
-          var dd = turnT - botGroup.rotation.y;
-          while (dd > Math.PI) dd -= Math.PI * 2;
-          while (dd < -Math.PI) dd += Math.PI * 2;
-          if (Math.abs(dd) < 0.04) { turnT = null; }
-          else botGroup.rotation.y += dd * Math.min(1, 8 * dt);
+        for (var pj = 0; pj < props.length; pj++) {
+          props[pj].disc.material.opacity *= 0.92;
         }
-        botGroup.position.y += (0.35 - botGroup.position.y) * 0.2;
+      }
+      // status LED blink + landing light follows altitude
+      if (droneLedMat && !reduced) {
+        droneLedMat.emissiveIntensity = 1.4 + 1.2 * Math.sin(now * 0.008);
+      }
+      if (landingLight) {
+        var altM = st.py - DRONE.C.GEAR_H;
+        landingLight.material.opacity = st.armed ? Math.min(0.16, altM / 10 * 0.16) : 0;
       }
 
       // procedural animations
@@ -506,8 +868,8 @@
           botMesh.rotation.z = Math.sin(t * Math.PI * 4) * 0.18;
         } else if (anim.kind === 'charge') {
           var e = 0.25 + 0.55 * Math.abs(Math.sin(t * Math.PI * 3));
-          botMesh.material.emissive.setRGB(e * 0.9, e * 0.45, e * 0.08);
-          if (t >= 0.99) botMesh.material.emissive.setRGB(0, 0, 0);
+          droneBodyMat.emissive.setRGB(e * 0.9, e * 0.45, e * 0.08);
+          if (t >= 0.99) droneBodyMat.emissive.setRGB(0, 0, 0);
         }
       }
 
@@ -517,15 +879,24 @@
         var rt = ringT / 1.4;
         if (rt >= 1) { ringT = -1; ring.material.opacity = 0; }
         else {
-          ring.position.set(botGroup.position.x, 0.6, botGroup.position.z);
+          ring.position.set(st.px, st.py + 0.2, st.pz);
           var s = 0.24 + rt * 2.4;
           ring.scale.set(s / 0.24, s / 0.24, 1);
           ring.material.opacity = 0.5 * (1 - rt);
         }
       }
 
-      // camera follows the bot loosely
-      controls.target.lerp(new THREE.Vector3(botGroup.position.x, 2, botGroup.position.z), 0.04);
+      // camera focus glide (the "focus" command): ease toward a close vantage
+      // on the bot, then hand control back. Any manual orbit cancels it.
+      if (camTween) {
+        camTween.t = Math.min(1, camTween.t + dt / 0.9);
+        var ce = 1 - Math.pow(1 - camTween.t, 3);
+        camera.position.lerpVectors(camTween.p0, camTween.p1, ce);
+        if (camTween.t >= 1) camTween = null;
+      }
+
+      // camera follows the drone loosely (tracks altitude too)
+      controls.target.lerp(new THREE.Vector3(st.px, st.py, st.pz), 0.04);
       controls.update();
       try {
         renderer.render(scene, camera);
@@ -567,44 +938,94 @@
         var d = DISTRICT[key];
         if (!d) { if (done) done(); return; }
         showCard(key);
-        if (reduced) {
-          botGroup.position.x = d.pos[0]; botGroup.position.z = d.pos[1];
+        if (reduced) { // teleport: no animation budget
+          st.px = d.pos[0]; st.pz = d.pos[1]; st.py = DRONE.C.GEAR_H;
+          st.vx = st.vy = st.vz = 0;
+          st.mode = 'ground'; st.armed = false; st.throttle = 0; st.plan = null;
           if (done) done();
-        } else {
-          tween = { x: d.pos[0], z: d.pos[1], done: done };
+          return;
         }
+        // flight plan: take off if needed, cruise above the rooftops, land there
+        st.plan = {
+          x: d.pos[0], z: d.pos[1], phase: 'start',
+          cruise: DRONE.cruiseFor(st.px, st.pz, d.pos[0], d.pos[1]),
+          done: done || null
+        };
+        if (st.mode === 'ground' && !st.armed) DRONE.startTakeoff(st);
       },
       nudge: function (dir) { // forward/back relative to facing
-        var f = botGroup.rotation.y;
-        var dx = -Math.sin(f) * 5 * dir, dz = -Math.cos(f) * 5 * dir;
-        turnT = null;
-        tween = {
-          x: THREE.MathUtils.clamp(botGroup.position.x + dx, -58, 58),
-          z: THREE.MathUtils.clamp(botGroup.position.z + dz, -58, 58),
-          done: null
-        };
+        st.plan = null; // manual input overrides a flight plan
+        var dx = -Math.sin(st.yaw) * 4 * dir, dz = -Math.cos(st.yaw) * 4 * dir;
+        cmd.cvx = dx; cmd.cvz = dz; cmd.cvy = 0;
+        cmd.exp = performance.now() + 900;
       },
-      drive: function (mx, mz) { // screen-relative step (D-pad), mirrors WASD
-        turnT = null;
-        var sp = 2.4;
-        tween = {
-          x: THREE.MathUtils.clamp(botGroup.position.x + mx * sp, -58, 58),
-          z: THREE.MathUtils.clamp(botGroup.position.z + mz * sp, -58, 58),
-          done: null
-        };
+      drive: function (mx, mz) { // screen-relative velocity command (D-pad), mirrors WASD
+        st.plan = null;
+        var dspd = st.armed ? 6.0 : 3.0;
+        cmd.cvx = mx * dspd; cmd.cvz = mz * dspd; cmd.cvy = 0;
+        cmd.exp = performance.now() + 350;
       },
-      turn: function (dir) { // -1 = left, +1 = right; smooth 45° in place
-        tween = null;
-        turnT = botGroup.rotation.y + dir * Math.PI / 4;
+      turn: function (dir) { // -1 = left, +1 = right; smooth 45° yaw
+        st.turnTarget = st.yaw + dir * Math.PI / 4;
+      },
+      takeoff: function () {
+        if (reduced || st.mode !== 'ground' || st.armed) return;
+        st.plan = null;
+        DRONE.startTakeoff(st);
+      },
+      land: function () {
+        if (!st.armed || st.mode === 'ground') return;
+        st.plan = null;
+        if (st.py <= DRONE.C.GEAR_H + 0.05) {
+          st.mode = 'ground'; st.armed = false; st.throttle = 0;
+        } else {
+          st.mode = 'landing';
+          cmd.cvx = 0; cmd.cvz = 0; cmd.cvy = -1.2; // controlled descent
+          cmd.exp = performance.now() + 30000;
+        }
+      },
+      altitude: function (dir) { // +1 climb, -1 descend (timed vertical command)
+        if (reduced) return;
+        st.plan = null;
+        if (dir > 0 && !st.armed && st.mode === 'ground') DRONE.startTakeoff(st);
+        cmd.cvy = dir * 2.5;
+        cmd.exp = performance.now() + 4000;
+      },
+      isAirborne: function () { return st.mode !== 'ground'; },
+      powerDraw: function () { return st.armed ? st.throttle : 0; }, // 0..1 throttle load
+      telemetry: function () {
+        return {
+          alt: Math.max(0, st.py - DRONE.C.GEAR_H),
+          airborne: st.mode !== 'ground',
+          throttle: st.throttle
+        };
       },
       dance: function () { playAnim('dance', 1300); },
-      jump: function () { playAnim('jump', 900); },
+      jump: function () {
+        playAnim('jump', 900);
+        if (!reduced) {
+          if (st.mode === 'ground' && !st.armed) DRONE.startTakeoff(st); // jump = liftoff
+          else st.vy += 1.5; // hop while airborne
+        }
+      },
       spin: function () { playAnim('spin', 950); },
       wave: function () { playAnim('wave', 1200); },
       charge: function () { playAnim('charge', 1700); },
       scan: function () { ringT = 0; },
-      look: function (key) { if (key && DISTRICT[key]) showCard(key); }
+      look: function (key) { if (key && DISTRICT[key]) showCard(key); },
+      focus: function () { // zoom the camera in on the drone, wherever it is
+        var dir = new THREE.Vector3(camera.position.x - st.px, 0, camera.position.z - st.pz);
+        if (dir.lengthSq() < 0.01) dir.set(1, 0, 1);
+        dir.normalize();
+        camTween = {
+          p0: camera.position.clone(),
+          p1: new THREE.Vector3(st.px + dir.x * 13, st.py + 5, st.pz + dir.z * 13),
+          t: 0
+        };
+      }
     };
+    // a manual orbit always wins over the focus glide
+    renderer.domElement.addEventListener('pointerdown', function () { camTween = null; });
     window.DAAWorld = api;
   }
 })();
