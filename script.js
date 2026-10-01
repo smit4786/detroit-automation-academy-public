@@ -73,9 +73,9 @@
     var WORLD = {
       workshop:   { name: 'The Workshop',
         desc: 'Home base. Workbenches, spare servos, the smell of solder. Every builder starts here.',
-        exits: { north: 'techtown', east: 'hq', south: 'riverfront', west: 'thinkabit' } },
-      techtown:   { name: 'TechTown Detroit',
-        desc: 'Startups, mentors, whiteboards full of impossible. The future gets prototyped here.',
+        exits: { north: 'innovation', east: 'hq', south: 'riverfront', west: 'thinkabit' } },
+      innovation:   { name: 'UM Center for Innovation',
+        desc: 'U-M\u2019s Detroit innovation hub \u2014 six stories of glass leaning into the future. The portal is open to everyone.',
         exits: { south: 'workshop' } },
       hq:         { name: 'Academy HQ',
         desc: 'The new Detroit Automation Academy headquarters in Corktown — glass, brick, and big plans.',
@@ -139,7 +139,7 @@
         var s = ' ' + label + ' ';
         return key === botLoc ? '[' + s + '*]' : '[' + s + ']';
       }
-      printLine('demo-line-out', '              ' + cell('techtown', 'TechTown'));
+      printLine('demo-line-out', '              ' + cell('innovation', 'Innov'));
       printLine('demo-line-out', '                  |');
       printLine('demo-line-out',
         cell('thinkabit', 'Thinkabit') + '---' + cell('workshop', 'Workshop') + '---' + cell('hq', 'HQ'));
@@ -157,7 +157,7 @@
       var here = WORLD[botLoc];
       var target = here.exits[dest] || null;
       if (!target && dest) {
-        /* allow naming a place directly ("go techtown", "go hq") */
+        /* allow naming a place directly ("go innovation", "go hq") */
         var key = Object.keys(WORLD).filter(function (k) {
           return k === dest || WORLD[k].name.toLowerCase() === dest;
         })[0];

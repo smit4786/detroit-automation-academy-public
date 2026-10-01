@@ -809,9 +809,283 @@
     return g;
   }
 
+  // University of Michigan Center for Innovation — grounded in the real KPF
+  // design approved by the U-M Regents: a six-story forward-leaning glass
+  // form ("Gateway for Innovation"), a public portal cut clean through the
+  // ground floor, and a transparent street level (cafe + public programs)
+  // with graduate research floors above. Local origin at the building
+  // center, ground level; the south (+z) face fronts the plaza.
+  function buildInnovation(THREE) {
+    var g = new THREE.Group();
+    var W = 44, D = 30;
+    var lean = [0, 0.9, 2.0, 3.3, 4.8, 6.5]; // per-floor +x shift: the swoop
+    var hG = 4.5, fh = 3.4, top = hG + 5 * fh; // 21.5 m
+    var PW = 12; // portal width
+    var mRoof = std(THREE, tex(THREE, roofCanvas()), 0.95);
+    mRoof.map.wrapS = mRoof.map.wrapT = THREE.RepeatWrapping;
+    var mDark = new THREE.MeshStandardMaterial({ color: 0x14171b, roughness: 1 });
+    var mSteel = new THREE.MeshStandardMaterial({ color: 0x2b2e33, roughness: 0.6, metalness: 0.5 });
+    var mMaize = new THREE.MeshStandardMaterial({ color: 0xFFCB05, roughness: 0.5, metalness: 0.2 });
+    var mConc = std(THREE, tex(THREE, concreteCanvas(4, 1, 91)), 0.9);
+
+    // curtain-wall glass; warm = interior glow for the public ground floor
+    function glassFace(wM, hM, seed, warm) {
+      var m = std(THREE, tex(THREE, glassCanvas(wM, hM, seed)), 0.32, 0.18);
+      if (warm) {
+        m.emissive = new THREE.Color(0x4a3418);
+        m.emissiveIntensity = 0.28;
+        m.emissiveMap = m.map;
+      }
+      return m;
+    }
+
+    // ground floor: two glass wings with a real through-portal between them
+    [[-22, -PW / 2, 101], [PW / 2, 22, 102]].forEach(function (sg) {
+      var ww = sg[1] - sg[0], cx = (sg[0] + sg[1]) / 2;
+      var mS = glassFace(ww, hG, sg[2], true);
+      var mN = glassFace(ww, hG, sg[2] + 10, true);
+      var mX = glassFace(D, hG, sg[2] + 20, true);
+      var wing = new THREE.Mesh(
+        new THREE.BoxGeometry(ww, hG, D),
+        [mX, mX, mRoof, mDark, mS, mN]
+      );
+      wing.position.set(cx, hG / 2, 0);
+      g.add(wing);
+    });
+    // portal floor + soffit (the cut runs north-south, full depth)
+    var pFloor = new THREE.Mesh(new THREE.BoxGeometry(PW, 0.14, D), mConc);
+    pFloor.position.set(0, 0.07, 0);
+    g.add(pFloor);
+    var soffit = new THREE.Mesh(new THREE.BoxGeometry(PW, 0.3, D), mDark);
+    soffit.position.set(0, hG - 0.15, 0);
+    g.add(soffit);
+    // maize portal frame, both mouths: columns + header beams
+    [-1, 1].forEach(function (s) {
+      [-PW / 2, PW / 2].forEach(function (px) {
+        var col = new THREE.Mesh(new THREE.BoxGeometry(0.5, hG, 0.5), mMaize);
+        col.position.set(px, hG / 2, s * (D / 2));
+        g.add(col);
+      });
+      var header = new THREE.Mesh(new THREE.BoxGeometry(PW + 0.5, 0.7, 0.5), mMaize);
+      header.position.set(0, hG - 0.35, s * (D / 2));
+      g.add(header);
+    });
+
+    // research floors 2-6: full-width glass slabs bridging the portal,
+    // each shifted further +x for the forward-leaning form
+    for (var i = 1; i <= 5; i++) {
+      var y0 = hG + (i - 1) * fh;
+      var mS = glassFace(W, fh, 110 + i, false);
+      var mN = glassFace(W, fh, 120 + i, false);
+      var mX = glassFace(D, fh, 130 + i, false);
+      var slab = new THREE.Mesh(
+        new THREE.BoxGeometry(W, fh, D),
+        [mX, mX, mRoof, mDark, mS, mN]
+      );
+      slab.position.set(lean[i], y0 + fh / 2, 0);
+      g.add(slab);
+      // shadow gap between slabs: thin dark reveal at each floor line
+      var reveal = new THREE.Mesh(new THREE.BoxGeometry(W + 0.1, 0.18, D + 0.1), mDark);
+      reveal.position.set(lean[i], y0 + 0.09, 0);
+      g.add(reveal);
+    }
+
+    // parapet follows the lean; rooftop equipment + glass atrium pavilion
+    var par = new THREE.Mesh(new THREE.BoxGeometry(W + 0.4, 1.0, D + 0.4), mSteel);
+    par.position.set(lean[5], top + 0.5, 0);
+    g.add(par);
+    var trim = new THREE.Mesh(new THREE.BoxGeometry(W + 0.5, 0.18, D + 0.5), mMaize);
+    trim.position.set(lean[5], top + 1.05, 0);
+    g.add(trim);
+    var lx = lean[5];
+    var eq1 = new THREE.Mesh(new THREE.BoxGeometry(3.0, 1.5, 2.0), mSteel);
+    eq1.position.set(lx - 10, top + 0.75, -8); g.add(eq1);
+    var eq2 = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.2, 1.8), mSteel);
+    eq2.position.set(lx - 6, top + 0.6, -8.5); g.add(eq2);
+    var fan = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.1, 16), mSteel);
+    fan.position.set(lx + 8, top + 0.55, -7); g.add(fan);
+    var pav = new THREE.Mesh(new THREE.BoxGeometry(8, 2.6, 6),
+      glassFace(8, 2.6, 140, false));
+    pav.position.set(lx + 2, top + 1.3, 5); g.add(pav);
+    var pavRoof = new THREE.Mesh(new THREE.BoxGeometry(8.4, 0.2, 6.4), mDark);
+    pavRoof.position.set(lx + 2, top + 2.7, 5); g.add(pavRoof);
+
+    // sign band on the second-floor frieze, spanning the portal
+    var signTex = tex(THREE, signTextCanvas(20, 1.7, 'UNIVERSITY OF MICHIGAN', 'CENTER FOR INNOVATION · DETROIT'));
+    var sign = new THREE.Mesh(
+      new THREE.PlaneGeometry(20, 1.7),
+      new THREE.MeshStandardMaterial({
+        map: signTex, roughness: 0.6,
+        emissive: 0xffffff, emissiveMap: signTex, emissiveIntensity: 0.3
+      })
+    );
+    sign.position.set(lean[1], hG + fh / 2, D / 2 + 0.08);
+    g.add(sign);
+
+    // ---- plaza: pavers, cafe tables, trees, benches ----
+    var plaza = new THREE.Mesh(new THREE.BoxGeometry(W, 0.12, 13), mConc);
+    plaza.position.set(0, 0.06, D / 2 + 6.5);
+    g.add(plaza);
+    var mTrunk = new THREE.MeshStandardMaterial({ color: 0x5a4632, roughness: 1 });
+    var mLeaf = new THREE.MeshStandardMaterial({ color: 0x3f7d44, roughness: 1 });
+    var mWood = new THREE.MeshStandardMaterial({ color: 0x8a6a48, roughness: 0.9 });
+    [-18, -6, 6, 18].forEach(function (tx) {
+      g.add(tree(THREE, tx, D / 2 + 11, 0.9, mTrunk, mLeaf));
+    });
+    // cafe tables with umbrellas outside the portal mouth
+    [[-9, 22], [9, 22], [0, 25.5]].forEach(function (tp) {
+      var ttop = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.06, 16), mWood);
+      ttop.position.set(tp[0], 0.75, tp[1]); g.add(ttop);
+      var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.75, 8), mSteel);
+      pole.position.set(tp[0], 0.38, tp[1]); g.add(pole);
+      var umb = new THREE.Mesh(new THREE.ConeGeometry(1.1, 0.5, 12), mMaize);
+      umb.position.set(tp[0], 2.1, tp[1]); g.add(umb);
+      var upole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.4, 8), mSteel);
+      upole.position.set(tp[0], 1.4, tp[1]); g.add(upole);
+    });
+    [-14, 14].forEach(function (bx) {
+      var b = bench(THREE, mWood, mSteel);
+      b.position.set(bx, 0.1, D / 2 + 3);
+      b.rotation.y = Math.PI;
+      g.add(b);
+    });
+
+    g.position.set(0, 0, -38);
+    g.traverse(function (o) {
+      if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+    });
+    return g;
+  }
+
+  // Thinkabit Lab: two-story makerspace. Glass folding-door ground floor
+  // with the shop on display, brick studio floor above with an amber brand
+  // band, a roof monitor for daylight, and a project yard out front.
+  // Local origin at the building center, ground level; south (+z) faces
+  // the district.
+  function buildThinkabit(THREE) {
+    var g = new THREE.Group();
+    var W = 24, D = 16, H1 = 4.2, H2 = 3.6, H = H1 + H2; // 7.8 m
+    var mRoof = std(THREE, tex(THREE, roofCanvas()), 0.95);
+    mRoof.map.wrapS = mRoof.map.wrapT = THREE.RepeatWrapping;
+    var mDark = new THREE.MeshStandardMaterial({ color: 0x14171b, roughness: 1 });
+    var mSteel = new THREE.MeshStandardMaterial({ color: 0x2b2e33, roughness: 0.6, metalness: 0.5 });
+    var mAmber = new THREE.MeshStandardMaterial({ color: 0xFFB000, roughness: 0.55, metalness: 0.2 });
+    var mConc = std(THREE, tex(THREE, concreteCanvas(4, 1, 111)), 0.9);
+
+    // ground floor: warm glass all around, concrete base, folding-door
+    // mullions on the south face (the shop on display)
+    function shopGlass(wM, hM, seed) {
+      var m = std(THREE, tex(THREE, glassCanvas(wM, hM, seed)), 0.35, 0.15);
+      m.emissive = new THREE.Color(0x4a3418);
+      m.emissiveIntensity = 0.3;
+      m.emissiveMap = m.map;
+      return m;
+    }
+    var mGS = shopGlass(W, H1, 151), mGN = shopGlass(W, H1, 152);
+    var mGX = shopGlass(D, H1, 153);
+    var shop = new THREE.Mesh(
+      new THREE.BoxGeometry(W, H1, D),
+      [mGX, mGX, mRoof, mDark, mGS, mGN]
+    );
+    shop.position.y = H1 / 2;
+    g.add(shop);
+    var plinth = new THREE.Mesh(new THREE.BoxGeometry(W + 0.3, 0.7, D + 0.3), mConc);
+    plinth.position.y = 0.35;
+    g.add(plinth);
+    // folding-door frames: verticals every 3 m + head rail, south face
+    for (var dx = -W / 2 + 3; dx < W / 2; dx += 3) {
+      var post = new THREE.Mesh(new THREE.BoxGeometry(0.14, H1 - 0.7, 0.14), mSteel);
+      post.position.set(dx, (H1 + 0.7) / 2, D / 2 + 0.08);
+      g.add(post);
+    }
+    var headRail = new THREE.Mesh(new THREE.BoxGeometry(W, 0.22, 0.16), mSteel);
+    headRail.position.set(0, H1 - 0.15, D / 2 + 0.08);
+    g.add(headRail);
+
+    // studio floor: brick with a ribbon of windows, amber brand band below
+    var floors = [{ sill: 0.9, h: 1.9, w: 2.2 }];
+    var mBriS = std(THREE, tex(THREE, facadeCanvas(W, H2, 154, [133, 70, 50], floors, 3.2)));
+    var mBriN = std(THREE, tex(THREE, facadeCanvas(W, H2, 155, [133, 70, 50], floors, 3.2)));
+    var mBriX = std(THREE, tex(THREE, facadeCanvas(D, H2, 156, [126, 66, 48], floors, 3.2)));
+    var studio = new THREE.Mesh(
+      new THREE.BoxGeometry(W, H2, D),
+      [mBriX, mBriX, mRoof, mDark, mBriS, mBriN]
+    );
+    studio.position.y = H1 + H2 / 2;
+    g.add(studio);
+    var bandS = new THREE.Mesh(new THREE.BoxGeometry(W + 0.12, 0.5, 0.12), mAmber);
+    bandS.position.set(0, H1 + 0.25, D / 2 + 0.05); g.add(bandS);
+    var bandN = bandS.clone(); bandN.position.z = -D / 2 - 0.05; g.add(bandN);
+    var bandE = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.5, D + 0.12), mAmber);
+    bandE.position.set(W / 2 + 0.05, H1 + 0.25, 0); g.add(bandE);
+    var bandW = bandE.clone(); bandW.position.x = -W / 2 - 0.05; g.add(bandW);
+
+    // roof: parapet, daylight monitor with south clerestory, equipment
+    var par = new THREE.Mesh(new THREE.BoxGeometry(W + 0.3, 0.8, D + 0.3), mBriX);
+    par.position.y = H + 0.4;
+    g.add(par);
+    var monW = 10, monD = 4, monH = 1.9;
+    var mon = new THREE.Mesh(new THREE.BoxGeometry(monW, monH, monD), mConc);
+    mon.position.set(-3, H + monH / 2, -2);
+    g.add(mon);
+    var cler = new THREE.Mesh(new THREE.PlaneGeometry(monW - 0.6, monH - 0.5),
+      std(THREE, tex(THREE, glassCanvas(monW - 0.6, monH - 0.5, 157)), 0.35, 0.15));
+    cler.position.set(-3, H + monH / 2, -2 + monD / 2 + 0.03);
+    g.add(cler);
+    var monRoof = new THREE.Mesh(new THREE.BoxGeometry(monW + 0.4, 0.18, monD + 0.4), mDark);
+    monRoof.position.set(-3, H + monH + 0.09, -2);
+    g.add(monRoof);
+    var eq = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.2, 1.6), mSteel);
+    eq.position.set(7, H + 0.6, -4); g.add(eq);
+    var vent = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 1.0, 14), mSteel);
+    vent.position.set(9.5, H + 0.5, 2); g.add(vent);
+
+    // sign band on the studio frieze
+    var signTex = tex(THREE, signTextCanvas(12, 1.4, 'THINKABIT LAB', 'MAKE · TEST · REPEAT'));
+    var sign = new THREE.Mesh(
+      new THREE.PlaneGeometry(12, 1.4),
+      new THREE.MeshStandardMaterial({
+        map: signTex, roughness: 0.6,
+        emissive: 0xffffff, emissiveMap: signTex, emissiveIntensity: 0.3
+      })
+    );
+    sign.position.set(0, H - 1.0, D / 2 + 0.08);
+    g.add(sign);
+
+    // ---- project yard: pavers, work tables, benches, trees ----
+    var yard = new THREE.Mesh(new THREE.BoxGeometry(W - 2, 0.12, 6), mConc);
+    yard.position.set(0, 0.06, D / 2 + 3);
+    g.add(yard);
+    var mTrunk = new THREE.MeshStandardMaterial({ color: 0x5a4632, roughness: 1 });
+    var mLeaf = new THREE.MeshStandardMaterial({ color: 0x3f7d44, roughness: 1 });
+    var mWood = new THREE.MeshStandardMaterial({ color: 0x8a6a48, roughness: 0.9 });
+    [-8, 8].forEach(function (tx) {
+      var wtop = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, 1.1), mWood);
+      wtop.position.set(tx, 0.95, D / 2 + 3); g.add(wtop);
+      [-1, 1].forEach(function (s) {
+        var leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.95, 1.0), mSteel);
+        leg.position.set(tx + s * 1.0, 0.48, D / 2 + 3); g.add(leg);
+      });
+    });
+    var b1 = bench(THREE, mWood, mSteel);
+    b1.position.set(-4, 0.1, D / 2 + 5.2); b1.rotation.y = Math.PI; g.add(b1);
+    var b2 = bench(THREE, mWood, mSteel);
+    b2.position.set(4, 0.1, D / 2 + 5.2); b2.rotation.y = Math.PI; g.add(b2);
+    g.add(tree(THREE, -13, D / 2 + 3, 0.9, mTrunk, mLeaf));
+    g.add(tree(THREE, 13, D / 2 + 3, 0.9, mTrunk, mLeaf));
+
+    g.position.set(-44, 0, 0);
+    g.traverse(function (o) {
+      if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+    });
+    return g;
+  }
+
   window.DAAArchKit = {
     buildWorkshop: buildWorkshop,
     buildAcademyHQ: buildAcademyHQ,
-    buildCorktown: buildCorktown
+    buildCorktown: buildCorktown,
+    buildInnovation: buildInnovation,
+    buildThinkabit: buildThinkabit
   };
 })();

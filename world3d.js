@@ -18,8 +18,8 @@
   var DISTRICT = {
     workshop:   { pos: [0, 24],   name: 'The Workshop',     color: 0xE85D1A,
       desc: 'Home base. Workbenches, spare servos, the smell of solder.' },
-    techtown:   { pos: [0, -28],  name: 'TechTown Detroit', color: 0x8a94a6,
-      desc: 'Startups, mentors, whiteboards full of impossible.' },
+    innovation:   { pos: [0, -16],  name: 'UM Center for Innovation', color: 0x2c5f8a,
+      desc: 'U-M\u2019s Detroit innovation hub \u2014 six stories of glass leaning into the future.' },
     hq:         { pos: [19, 0],   name: 'Academy HQ', color: 0x9fc3d8,
       desc: 'The new Detroit Automation Academy headquarters in Corktown — glass, brick, and big plans.' },
     riverfront: { pos: [0, 30],   name: 'Detroit Riverfront', color: 0x9AA0A6,
@@ -30,12 +30,13 @@
   var PARTS = [
     ['ground', 0x11161c, 1.0, 0.0], ['roads', 0x3a4046, 1.0, 0.0],
     ['water', 0x1a6f8f, 0.35, 0.4],
-    ['techtown', 0x8a94a6, 0.5, 0.6],
-    ['riverfront', 0x9AA0A6, 0.9, 0.0], ['thinkabit', 0xFFB000, 0.85, 0.0],
+    ['riverfront', 0x9AA0A6, 0.9, 0.0],
     ['trees', 0x2f7d4f, 1.0, 0.0], ['street', 0x6a7076, 0.6, 0.4]
   ];
-  // NOTE: 'workshop' is no longer an STL — the procedural SC3K-standard build
-  // from window.DAAArchKit (site/js/arch-kit.js) replaces assets/world/workshop.stl.
+  // NOTE: 'workshop', 'techtown' and 'thinkabit' are no longer STLs — the
+  // procedural SC3K-standard builds from window.DAAArchKit
+  // (site/js/arch-kit.js) replace assets/world/workshop.stl,
+  // assets/world/techtown.stl and assets/world/thinkabit.stl.
 
   function fallback() {
     stage.classList.add('world-fallback');
@@ -102,9 +103,10 @@
 
     var manager = new THREE.LoadingManager();
     var loader = new STLLoader(manager);
-    // real load progress on the overlay: 8 STL district parts + the bot +
-    // the procedural builds (workshop + corktown via window.DAAArchKit)
-    var loadTotal = PARTS.length + 3;
+    // real load progress on the overlay: 6 STL district parts + the bot +
+    // the procedural builds (workshop + corktown + innovation + thinkabit
+    // via window.DAAArchKit)
+    var loadTotal = PARTS.length + 5;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
@@ -154,6 +156,30 @@
     } catch (e) {
       // corktown stays absent rather than breaking the scene; log for diagnostics
       if (window.console && console.warn) console.warn('[world3d] corktown build failed:', e);
+    }
+    bumpLoadCount();
+
+    // UM Center for Innovation: procedural KPF-inspired build
+    // (replaces the old techtown STL). Synchronous and local; one overlay step.
+    try {
+      if (window.DAAArchKit && window.DAAArchKit.buildInnovation) {
+        scene.add(window.DAAArchKit.buildInnovation(THREE));
+      }
+    } catch (e) {
+      // innovation stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] innovation build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Thinkabit Lab: procedural makerspace rebuild
+    // (replaces the old thinkabit STL). Synchronous and local; one overlay step.
+    try {
+      if (window.DAAArchKit && window.DAAArchKit.buildThinkabit) {
+        scene.add(window.DAAArchKit.buildThinkabit(THREE));
+      }
+    } catch (e) {
+      // thinkabit stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] thinkabit build failed:', e);
     }
     bumpLoadCount();
 
@@ -208,7 +234,7 @@
       return sp;
     }
     var LABEL_AT = { // [x, z, y] per district, from cad/world.scad
-      workshop:   [0, 0, 21], techtown: [0, -44, 35], hq: [47, -20, 42],
+      workshop:   [0, 0, 21], innovation: [0, -38, 27], hq: [47, -20, 42],
       riverfront: [0, 44, 12], thinkabit: [-44, 0, 17]
     };
     Object.keys(DISTRICT).forEach(function (key) {
