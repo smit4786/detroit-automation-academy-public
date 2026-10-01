@@ -250,3 +250,38 @@
 
     printLine('demo-line-out', 'Training bot online. Type "help" \u2014 or "look" to start exploring.');
   })();
+
+  // Full-screen view for the 3D demo (button hidden where the API is missing)
+  (function () {
+    var btn = document.getElementById('demoFullscreen');
+    var demo = document.getElementById('demoFull');
+    if (!btn || !demo) return;
+    var canFs = (document.fullscreenEnabled || document.webkitFullscreenEnabled) &&
+      (demo.requestFullscreen || demo.webkitRequestFullscreen);
+    if (!canFs) { btn.hidden = true; return; }
+    function isOn() {
+      return document.fullscreenElement === demo || document.webkitFullscreenElement === demo;
+    }
+    function label() {
+      var on = isOn();
+      btn.innerHTML = on ? '&#9974; Exit full screen' : '&#9974; Full screen';
+      btn.setAttribute('aria-label', on ? 'Exit full screen view' : 'View the 3D district full screen');
+    }
+    // world3d resizes off the window resize event; nudge it on toggle.
+    function nudge() { window.dispatchEvent(new Event('resize')); }
+    btn.addEventListener('click', function () {
+      try {
+        if (isOn()) {
+          if (document.exitFullscreen) document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } else if (demo.requestFullscreen) {
+          var p = demo.requestFullscreen();
+          if (p && p.then) p.then(nudge, nudge); else nudge();
+        } else if (demo.webkitRequestFullscreen) {
+          demo.webkitRequestFullscreen(); nudge();
+        }
+      } catch (e) { /* stay inline */ }
+    });
+    document.addEventListener('fullscreenchange', function () { label(); nudge(); });
+    document.addEventListener('webkitfullscreenchange', function () { label(); nudge(); });
+  })();

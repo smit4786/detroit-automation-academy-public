@@ -34,6 +34,18 @@
   .vehicle-card h3 .use { color: #FFB000; font-weight: 500; font-size: .85rem; display: block; margin-top: .15rem; }
   .vehicle-card .specs { margin: .4rem 0 .5rem; color: #9AA0A6; font-size: .85rem; }
   .vehicle-card p { margin: 0; color: #9AA0A6; font-size: .95rem; }
+  .build-status { margin-top: .7rem !important; font-size: .85rem !important; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .status-pill { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+  .status-concept { color: #FFB000; border: 1px solid rgba(255,176,0,.5); }
+  .status-rendered { color: #E85D1A; border: 1px solid rgba(232,93,26,.55); }
+  .status-todo { color: #9AA0A6; border: 1px solid rgba(154,160,166,.5); }
+  .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .status-card { border: 1px solid rgba(245,242,234,.14); border-radius: 12px; padding: 1rem 1.2rem; background: rgba(245,242,234,.03); }
+  .status-card h3 { margin: 0 0 .5rem; font-size: 1rem; display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+  .status-card p { margin: 0; color: #9AA0A6; font-size: .9rem; }
+  .status-group { margin-top: 2rem; }
+  .status-group > h3 { font-size: 1.15rem; margin: 0 0 .25rem; }
+  .status-group > h3 .accent { color: #E85D1A; }
 </style>
 </head>
 <body>
@@ -171,6 +183,7 @@
             <h3>Forge Pod <span class="use">Passenger</span></h3>
             <p class="specs">6.0 &times; 2.6 &times; 2.7 m &middot; 6 riders</p>
             <p>Spoke service: Central Interchange to every district. Automated, 90-second headways, zero-fare.</p>
+            <p class="build-status"><span class="status-pill status-rendered">Rendered</span> CAD model + site render &middot; not yet in the 3D district</p>
           </div>
         </div>
         <div class="vehicle-card">
@@ -179,6 +192,7 @@
             <h3>Forge Hauler <span class="use">Cargo</span></h3>
             <p class="specs">5.0 &times; 2.6 &times; 3.0 m &middot; 800 kg</p>
             <p>Moves equipment and materials between the Workshop and the labs on the same guideway.</p>
+            <p class="build-status"><span class="status-pill status-rendered">Rendered</span> CAD model + site render &middot; not yet in the 3D district</p>
           </div>
         </div>
         <div class="vehicle-card">
@@ -187,6 +201,7 @@
             <h3>Line Tender <span class="use">Maintenance</span></h3>
             <p class="specs">4.0 &times; 2.4 m flatbed &middot; crew of 2</p>
             <p>Guideway inspection and repair: sensor mast, railed work platform, amber beacon.</p>
+            <p class="build-status"><span class="status-pill status-rendered">Rendered</span> CAD model + site render &middot; not yet in the 3D district</p>
           </div>
         </div>
         <div class="vehicle-card">
@@ -195,6 +210,7 @@
             <h3>Heritage Car <span class="use">Streetcar &middot; Phase 2</span></h3>
             <p class="specs">8.3 &times; 2.6 &times; 5.1 m &middot; 24 riders</p>
             <p>At-grade plaza loop. A QLINE homage in cream and green, trolley pole and all.</p>
+            <p class="build-status"><span class="status-pill status-rendered">Rendered</span> CAD model + site render &middot; Phase 2, not yet in the 3D district</p>
           </div>
         </div>
       </div>
@@ -204,12 +220,58 @@
   <!-- STATUS -->
   <section class="section section-alt" id="status">
     <div class="wrap">
-      <p class="kicker">Status</p>
+      <p class="kicker">Build status</p>
       <h2>A concept, <span class="accent">being prototyped.</span></h2>
       <div class="prose">
-        <p>The Forge Line isn&rsquo;t built yet &mdash; not in steel, not in the 3D district. It lives here as the plan, and it&rsquo;s being prototyped as a working model students can drive, argue with, and improve. Every real system started as a model someone could point at.</p>
+        <p>The Forge Line isn&rsquo;t built yet &mdash; not in steel, not in the 3D district. It lives here as the plan, and it&rsquo;s being prototyped as a working model students can drive, argue with, and improve. Every real system started as a model someone could point at. Here&rsquo;s where each piece stands:</p>
       </div>
-      <div class="hero-actions">
+      <div class="status-group">
+        <h3>Vehicles <span class="accent">&mdash; prototype series</span></h3>
+        <div class="status-grid">
+          <div class="status-card">
+            <h3>Forge Pod <span class="status-pill status-rendered">Rendered</span></h3>
+            <p>Passenger pod, 6 riders. CAD model at true scale (<code>cad/transit.scad</code>) with the site render above. No in-scene vehicle yet.</p>
+          </div>
+          <div class="status-card">
+            <h3>Forge Hauler <span class="status-pill status-rendered">Rendered</span></h3>
+            <p>Cargo pod, 800 kg. CAD model + render done. Shares the guideway with passenger service in the plan; nothing placed in-scene.</p>
+          </div>
+          <div class="status-card">
+            <h3>Line Tender <span class="status-pill status-rendered">Rendered</span></h3>
+            <p>Maintenance flatbed, crew of 2. CAD model + render done. Inspection routines are still on paper.</p>
+          </div>
+          <div class="status-card">
+            <h3>Heritage Car <span class="status-pill status-rendered">Rendered</span></h3>
+            <p>Phase 2 streetcar, 24 riders. CAD model + render done. The at-grade plaza loop it would run on is reserved, not built.</p>
+          </div>
+        </div>
+      </div>
+      <div class="status-group">
+        <h3>Infrastructure <span class="accent">&mdash; the fixed plant</span></h3>
+        <div class="status-grid">
+          <div class="status-card">
+            <h3>Elevated guideway <span class="status-pill status-concept">Concept</span></h3>
+            <p>Four spokes along the road corridors from the Workshop plaza. No steel, no in-scene geometry &mdash; the diagram above is the whole of it so far.</p>
+          </div>
+          <div class="status-card">
+            <h3>Station buildings <span class="status-pill status-concept">Concept</span></h3>
+            <p>Five stops named, none built. In the 3D demo each district has a marker and an info card; physical station structures are concept-only.</p>
+          </div>
+          <div class="status-card">
+            <h3>Central Interchange <span class="status-pill status-concept">Concept</span></h3>
+            <p>The hub hall on the Workshop plaza where every spoke starts. Sited in the plan, unbuilt in the district.</p>
+          </div>
+          <div class="status-card">
+            <h3>In-scene vehicle <span class="status-pill status-todo">Not started</span></h3>
+            <p>No Forge Line vehicle runs in the 3D district yet. The training bot (<code>go &lt;place&gt;</code>) is the working transit for now.</p>
+          </div>
+          <div class="status-card">
+            <h3><code>ride</code> command <span class="status-pill status-todo">Not started</span></h3>
+            <p>Boarding the Forge Line from the terminal isn&rsquo;t implemented. It&rsquo;s specced as the natural next step once a vehicle exists in-scene.</p>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions" style="margin-top: 2rem;">
         <a href="./#demo" class="btn btn-primary">Drive the training district</a>
       </div>
     </div>

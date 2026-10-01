@@ -98,11 +98,12 @@
       <div class="prose">
         <p>This is what day one feels like at the academy: you tell a machine what to do, and it does it. The training bot is listening &mdash; go ahead. Drag to orbit the 3D training district, tap a building to visit it, or drive with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>.</p>
       </div>
-      <div class="demo">
+      <div class="demo" id="demoFull">
         <div class="demo-stage" id="demoStage">
           <div id="world3d" class="world3d" role="img" aria-label="Interactive 3D training district. Drag to orbit, scroll to zoom, tap a building to visit it.">
             <div class="world3d-loading"><span></span>Building the district <b class="world3d-count"></b>&hellip;</div>
           </div>
+          <button type="button" class="demo-fullscreen" id="demoFullscreen" aria-label="View the 3D district full screen">&#9974; Full screen</button>
           <svg class="demo-bot" id="demoBot" viewBox="0 0 220 220" role="img" aria-label="A small orange training robot that responds to typed commands">
             <ellipse cx="110" cy="198" rx="54" ry="10" class="bot-shadow"/>
             <g class="bot-body">
@@ -255,9 +256,9 @@
   </div>
 </footer>
 
-<script src="script.js?v=20261001-0139"></script>
-<script src="arch-kit.js?v=20261001-0139" defer></script>
-    <script src="world3d.js?v=20261001-0139" defer></script>
+<script src="script.js?v=20261001-0150"></script>
+<script src="arch-kit.js?v=20261001-0150" defer></script>
+    <script src="world3d.js?v=20261001-0150" defer></script>
 <script src="owner.js" defer></script>
 </body>
 </html>

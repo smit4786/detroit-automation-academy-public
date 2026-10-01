@@ -429,6 +429,21 @@ a { color: inherit; }
 }
 .demo-bot { width: 230px; height: 230px; position: relative; z-index: 1; }
 
+/* Full-screen view for the 3D demo */
+.demo-fullscreen {
+  position: absolute; top: 10px; right: 10px; z-index: 5;
+  padding: 6px 12px; font-size: 0.8rem; font-family: inherit; line-height: 1.4;
+  color: var(--paper); background: rgba(12, 17, 22, 0.78);
+  border: 1px solid var(--line); border-radius: 8px; cursor: pointer;
+}
+.demo-fullscreen:hover { border-color: var(--forge); color: var(--forge); }
+.demo-fullscreen[hidden] { display: none; }
+#demoFull:fullscreen, #demoFull:-webkit-full-screen {
+  height: 100vh; width: 100%; margin: 0; padding: 20px; box-sizing: border-box;
+  background: var(--midnight); gap: 16px; overflow: auto;
+}
+#demoFull:fullscreen .demo-stage, #demoFull:-webkit-full-screen .demo-stage { min-height: 0; }
+
 /* 3D training district */
 .world3d { position: absolute; inset: 0; z-index: 2; }
 .world3d canvas { display: block; width: 100%; height: 100%; touch-action: none; }
