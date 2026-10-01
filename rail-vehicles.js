@@ -1,12 +1,11 @@
-/* Detroit Automation Academy — rail vehicle prototypes (LOCAL ONLY).
+/* Detroit Automation Academy — rail vehicles.
  *
  * Classic IIFE; exposes window.DAARailVehicles = { init: function(THREE, scene, opts) }.
  * init returns { update: function(dt), setReduced: function(b), vehicleCount, getState: function() }.
  * opts = { reduced: bool } — when true, vehicles park at their first station and never move.
  *
- * Three prototype services traverse the authoritative track geometry from
- * railways.js (Forge Line C-loop, Michigan Ave Line, intercity corridor).
- * Motion model: arc-length-parameterized polylines (0.5 m resample), smooth
+ * Three services traverse the authoritative track geometry from railways.js
+ * (Forge Line C-loop, Michigan Ave Line, intercity corridor). Motion model: arc-length-parameterized polylines (0.5 m resample), smooth
  * accel/decel, station dwell (4 s), terminus pause (2 s) then reverse.
  *
  * NOTE: R3 INTERCITY is a CONCEPT service. Its track is the in-scene
