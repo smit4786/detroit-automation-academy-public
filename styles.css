@@ -482,9 +482,9 @@ body.demo-locked { overflow: hidden; }
 #demoFull:fullscreen .demo-term-toggle, #demoFull:-webkit-full-screen .demo-term-toggle,
 #demoFull.demo-pseudo .demo-term-toggle { display: block; }
 .demo-term-toggle:hover { color: var(--forge); }
-.demo-term-collapsed .demo-log, .demo-term-collapsed .demo-input-row,
-.demo-term-collapsed .demo-chips { display: none; }
-.demo-term-collapsed .demo-term-toggle { border-bottom: 0; }
+/* Compact mode (fullscreen default): the log rolls up so the environment shows
+   through; input + chips stay live so the bot remains drivable. */
+.demo-term-collapsed .demo-log { display: none; }
 
 /* 3D training district */
 .world3d { position: absolute; inset: 0; z-index: 2; }
