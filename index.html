@@ -6,6 +6,17 @@
 <title>Detroit Automation Academy — Where Detroit Builds What's Next</title>
 <meta name="description" content="Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.">
 <link rel="icon" type="image/webp" href="assets/logo.webp">
+<link rel="icon" type="image/png" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Detroit Automation Academy">
+<meta property="og:title" content="Detroit Automation Academy — Where Detroit Builds What's Next">
+<meta property="og:description" content="Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.">
+<meta property="og:image" content="https://www.detroitautomationacademy.com/assets/social/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Detroit Automation Academy — Where Detroit Builds What's Next">
+<meta name="twitter:description" content="Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.">
+<meta name="twitter:image" content="https://www.detroitautomationacademy.com/assets/social/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -96,7 +107,7 @@
       <p class="kicker">Try it</p>
       <h2 id="demo-heading">Type a command. <span class="accent">Watch it move.</span></h2>
       <div class="prose">
-        <p>This is what day one feels like at the academy: you tell a machine what to do, and it does it. The training bot is listening &mdash; go ahead. Drag to orbit the 3D training district, tap a building to visit it, drive with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> on desktop or the D-pad on touch.</p>
+        <p>This is what day one feels like at the academy: you tell a machine what to do, and it does it. The training bot is listening &mdash; go ahead. Drag to orbit the 3D training district, tap a building to visit it, drive with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> on desktop or the D-pad on touch. Type &ldquo;takeoff&rdquo; and it flies as a quadcopter &mdash; the same controls steer it in the air.</p>
       </div>
       <div class="demo" id="demoFull">
         <div class="demo-stage" id="demoStage">
@@ -104,24 +115,34 @@
             <div class="world3d-loading"><span></span>Building the district <b class="world3d-count"></b>&hellip;</div>
           </div>
           <button type="button" class="demo-fullscreen" id="demoFullscreen" aria-label="View the 3D district full screen">&#9974; Full screen</button>
-          <svg class="demo-bot" id="demoBot" viewBox="0 0 220 220" role="img" aria-label="A small orange training robot that responds to typed commands">
-            <ellipse cx="110" cy="198" rx="54" ry="10" class="bot-shadow"/>
+          <svg class="demo-bot" id="demoBot" viewBox="0 0 220 220" role="img" aria-label="A small orange quadcopter drone that responds to typed commands">
+            <ellipse cx="110" cy="200" rx="58" ry="9" class="bot-shadow"/>
             <g class="bot-body">
-              <circle cx="88" cy="178" r="15" class="bot-wheel"/>
-              <circle cx="132" cy="178" r="15" class="bot-wheel"/>
-              <rect x="52" y="104" width="12" height="46" rx="6" class="bot-arm"/>
+              <line x1="88" y1="134" x2="80" y2="170" class="bot-antenna"/>
+              <line x1="132" y1="134" x2="140" y2="170" class="bot-antenna"/>
+              <line x1="62" y1="170" x2="98" y2="170" class="bot-antenna"/>
+              <line x1="122" y1="170" x2="158" y2="170" class="bot-antenna"/>
+              <line x1="110" y1="108" x2="60" y2="66" class="drone-arm"/>
+              <line x1="110" y1="108" x2="160" y2="66" class="drone-arm"/>
+              <line x1="110" y1="116" x2="54" y2="158" class="drone-arm"/>
               <g class="bot-arm-wave">
-                <rect x="156" y="104" width="12" height="46" rx="6" class="bot-arm"/>
+                <line x1="110" y1="116" x2="166" y2="158" class="drone-arm"/>
+                <circle cx="166" cy="158" r="9" class="bot-wheel"/>
+                <g class="bot-wheel"><rect x="142" y="154.5" width="48" height="7" rx="3.5" class="drone-prop"/></g>
               </g>
-              <rect x="68" y="92" width="84" height="72" rx="20" class="bot-torso"/>
-              <rect x="94" y="114" width="32" height="24" rx="7" class="bot-panel"/>
-              <circle cx="110" cy="126" r="5" class="bot-light"/>
-              <rect x="72" y="36" width="76" height="62" rx="26" class="bot-head"/>
-              <circle cx="96" cy="66" r="9" class="bot-eye"/>
-              <circle cx="124" cy="66" r="9" class="bot-eye"/>
-              <line x1="110" y1="36" x2="110" y2="18" class="bot-antenna"/>
-              <circle cx="110" cy="14" r="6" class="bot-eye"/>
-              <polygon points="148,66 214,34 214,98" class="scan-beam"/>
+              <g class="bot-wheel"><rect x="36" y="62.5" width="48" height="7" rx="3.5" class="drone-prop"/></g>
+              <circle cx="60" cy="66" r="9" class="bot-wheel"/>
+              <g class="bot-wheel"><rect x="136" y="62.5" width="48" height="7" rx="3.5" class="drone-prop"/></g>
+              <circle cx="160" cy="66" r="9" class="bot-wheel"/>
+              <g class="bot-wheel"><rect x="30" y="154.5" width="48" height="7" rx="3.5" class="drone-prop"/></g>
+              <circle cx="54" cy="158" r="9" class="bot-wheel"/>
+              <rect x="76" y="90" width="68" height="44" rx="16" class="bot-torso"/>
+              <ellipse cx="110" cy="88" rx="22" ry="11" class="bot-head"/>
+              <circle cx="97" cy="84" r="7" class="bot-eye"/>
+              <circle cx="123" cy="84" r="7" class="bot-eye"/>
+              <rect x="97" y="104" width="26" height="16" rx="5" class="bot-panel"/>
+              <circle cx="110" cy="112" r="4" class="bot-light"/>
+              <polygon points="120,88 208,48 208,128" class="scan-beam"/>
             </g>
           </svg>
         </div>
@@ -143,8 +164,12 @@
             <button type="button" class="demo-chip" data-cmd="dance">dance</button>
             <button type="button" class="demo-chip" data-cmd="look">look</button>
             <button type="button" class="demo-chip" data-cmd="focus">focus</button>
+            <button type="button" class="demo-chip" data-cmd="takeoff">takeoff</button>
+            <button type="button" class="demo-chip" data-cmd="land">land</button>
             <button type="button" class="demo-chip" data-cmd="scan">scan</button>
             <button type="button" class="demo-chip" data-cmd="wave">wave</button>
+            <button type="button" class="demo-chip" data-cmd="up">up</button>
+            <button type="button" class="demo-chip" data-cmd="down">down</button>
           </div>
         </div>
       </div>
@@ -204,7 +229,7 @@
       <p class="kicker">The Signal</p>
       <h2 id="signal-heading">Notes on automation, robotics, <span class="accent">and the Detroiters building the future.</span></h2>
       <div class="signal-animation">
-        <iframe src="signal-animation.html?v=20261001-0245" title="The Signal logo animation — a spotlight sweeping the night sky until it lights up the Forge D" loading="lazy"></iframe>
+        <iframe src="signal-animation.html?v=20261001-0300" title="The Signal logo animation — a spotlight sweeping the night sky until it lights up the Forge D" loading="lazy"></iframe>
       </div>
       <div class="prose">
         <p><strong>The Signal</strong> is the academy's monthly newsletter — game-season analysis, cohort work, and industry notes for builders, parents, and partners. Free to read, built to forward.</p>
@@ -341,15 +366,18 @@
   </div>
 </footer>
 
-<script src="script.js?v=20261001-0245"></script>
-<script src="arch-kit.js?v=20261001-0245" defer></script>
-<script src="streetscape.js?v=20261001-0245" defer></script>
-<script src="furniture.js?v=20261001-0245" defer></script>
-<script src="vehicles.js?v=20261001-0245" defer></script>
-<script src="district-expansion.js?v=20261001-0245" defer></script>
-<script src="groundwork.js?v=20261001-0245" defer></script>
-<script src="promenade.js?v=20261001-0245" defer></script>
-    <script src="world3d.js?v=20261001-0245" defer></script>
+<script src="script.js?v=20261001-0300"></script>
+<script src="arch-kit.js?v=20261001-0300" defer></script>
+<script src="streetscape.js?v=20261001-0300" defer></script>
+<script src="furniture.js?v=20261001-0300" defer></script>
+<script src="vehicles.js?v=20261001-0300" defer></script>
+<script src="district-expansion.js?v=20261001-0300" defer></script>
+<script src="groundwork.js?v=20261001-0300" defer></script>
+<script src="promenade.js?v=20261001-0300" defer></script>
+    <script src="region-expansion.js?v=20261001-0300" defer></script>
+<script src="chicago-hsr.js?v=20261001-0300" defer></script>
+<script src="railways.js?v=20261001-0300" defer></script>
+    <script src="world3d.js?v=20261001-0300" defer></script>
 <script src="owner.js" defer></script>
 <script>
 /* Signal animation: scroll owns replay. When the animation scrolls back into
