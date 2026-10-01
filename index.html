@@ -112,7 +112,7 @@
       <div class="demo" id="demoFull">
         <div class="demo-stage" id="demoStage">
           <div id="world3d" class="world3d" role="img" aria-label="Interactive 3D training district. Drag to orbit, scroll to zoom, tap a building to visit it.">
-            <div class="world3d-loading"><span></span>Building the district <b class="world3d-count"></b>&hellip;</div>
+            <div class="world3d-loading"><span></span><span class="world3d-loadlabel">Building the district</span> <b class="world3d-count"></b>&hellip;</div>
           </div>
           <button type="button" class="demo-fullscreen" id="demoFullscreen" aria-label="View the 3D district full screen">&#9974; Full screen</button>
           <svg class="demo-bot" id="demoBot" viewBox="0 0 220 220" role="img" aria-label="A small orange quadcopter drone that responds to typed commands">
@@ -171,6 +171,7 @@
             <button type="button" class="demo-chip" data-cmd="up">up</button>
             <button type="button" class="demo-chip" data-cmd="down">down</button>
             <button type="button" class="demo-chip theme-toggle" id="themeToggle" aria-pressed="false" aria-label="Play the site theme music">♪ Theme: off</button>
+            <button type="button" class="demo-chip farfield-chip" id="farFieldChip" hidden>Load full district</button>
           </div>
           <audio id="themeAudio" loop preload="none" aria-label="Site theme music">
             <source src="assets/audio/theme-loop.ogg" type="audio/ogg">
