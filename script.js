@@ -148,12 +148,18 @@
         cell('thinkabit', 'Thinkabit') + '---' + cell('workshop', 'Workshop') + '---' + cell('hq', 'HQ'));
       printLine('demo-line-out', '                  |');
       printLine('demo-line-out', '              ' + cell('riverfront', 'Riverfront'));
-      printLine('demo-line-out', '* marks where you are. Battery ' + battery + '%.');
+      printLine('demo-line-out', '* marks where you are. Battery ' + Math.round(battery) + '%.');
     }
 
     function status() {
+      var w3 = world3d();
+      var extra = '';
+      if (w3 && typeof w3.telemetry === 'function') {
+        var t = w3.telemetry();
+        extra = t.airborne ? ' Airborne at ' + t.alt.toFixed(1) + ' m.' : ' On the ground.';
+      }
       printLine('demo-line-out',
-        'Battery ' + battery + '%. Location: ' + WORLD[botLoc].name + '. Morale: Detroit.');
+        'Battery ' + Math.round(battery) + '%. Location: ' + WORLD[botLoc].name + '.' + extra + ' Morale: Detroit.');
     }
 
     function travel(dest) {
@@ -176,8 +182,8 @@
       }
       battery -= MOVE_COST;
       botLoc = target;
-      printLine('demo-line-ok', 'Rolling to ' + WORLD[target].name + '.');
       var w3 = world3d();
+      printLine('demo-line-ok', (w3 ? 'Lifting off to ' : 'Rolling to ') + WORLD[target].name + '.');
       if (w3) {
         w3.goTo(target, look); // describe the stop when the bot arrives
       } else {
@@ -188,10 +194,45 @@
       }
     }
 
+    /* Flight commands. The training bot is a quadcopter in the 3D district:
+       takeoff / land / up / down fly it; forward/back/left/right move it
+       horizontally when airborne and taxi it when it is on its skids. */
+    function need3d() {
+      var w3 = world3d();
+      if (!w3) printLine('demo-line-out', 'The 3D district is still loading — the drone needs it.');
+      return w3;
+    }
+    function takeoffDrone() {
+      var w3 = need3d(); if (!w3) return;
+      if (reduced) { printLine('demo-line-out', 'Reduced motion is on — the drone stays grounded.'); return; }
+      if (w3.isAirborne()) { printLine('demo-line-out', 'Already airborne.'); return; }
+      if (battery < 15) { printLine('demo-line-out', 'Battery too low to take off. Type "charge".'); return; }
+      w3.takeoff();
+      printLine('demo-line-ok', 'Motors armed. Lifting off.');
+    }
+    function landDrone() {
+      var w3 = need3d(); if (!w3) return;
+      if (!w3.isAirborne()) { printLine('demo-line-out', 'Already on the ground.'); return; }
+      w3.land();
+      printLine('demo-line-ok', 'Landing.');
+    }
+    function altitudeNudge(cmd) {
+      var w3 = need3d(); if (!w3) return;
+      if (reduced) { printLine('demo-line-out', 'Reduced motion is on — the drone stays grounded.'); return; }
+      var dir = (cmd === 'up') ? 1 : -1;
+      if (dir < 0 && !w3.isAirborne()) { printLine('demo-line-out', 'Already on the ground.'); return; }
+      if (dir > 0 && !w3.isAirborne() && battery < 15) {
+        printLine('demo-line-out', 'Battery too low to take off. Type "charge".'); return;
+      }
+      w3.altitude(dir);
+      printLine('demo-line-ok', dir > 0 ? 'Climbing.' : 'Descending.');
+    }
+
     function printHelp() {
-      printLine('demo-line-out', 'Moves: forward \u00B7 back \u00B7 left \u00B7 right \u00B7 spin \u00B7 wave \u00B7 dance \u00B7 jump');
-      printLine('demo-line-out', 'Explore: look \u00B7 focus \u00B7 go <north|east|south|west|place> \u00B7 map \u00B7 status');
-      printLine('demo-line-out', 'Upkeep: scan \u00B7 charge');
+      printLine('demo-line-out', 'Moves: forward · back · left · right · spin · wave · dance · jump');
+      printLine('demo-line-out', 'Fly: takeoff · land · up · down (the bot is a quadcopter now)');
+      printLine('demo-line-out', 'Explore: look · focus · go <north|east|south|west|place> · map · status');
+      printLine('demo-line-out', 'Upkeep: scan · charge');
     }
 
     function run(raw) {
@@ -202,6 +243,9 @@
       if (cmd === 'look') { look(); return; }
       if (cmd === 'map') { showMap(); return; }
       if (cmd === 'status') { status(); return; }
+      if (cmd === 'takeoff') { takeoffDrone(); return; }
+      if (cmd === 'land') { landDrone(); return; }
+      if (cmd === 'up' || cmd === 'down') { altitudeNudge(cmd); return; }
       var parts = cmd.split(/\s+/);
       if (parts[0] === 'go') { travel(parts.slice(1).join(' ')); return; }
       if (parts.length === 1 && DIRS.indexOf(parts[0]) !== -1) { travel(parts[0]); return; }
@@ -278,6 +322,21 @@
       });
       btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     });
+
+    /* Battery drains with throttle load while the drone flies; a low battery
+       forces a landing. The SVG fallback has no motors, so nothing drains. */
+    setInterval(function () {
+      var w3 = world3d();
+      if (!w3 || typeof w3.powerDraw !== 'function') return;
+      var draw = w3.powerDraw();
+      if (draw > 0.02 && battery > 0) {
+        battery = Math.max(0, battery - draw * 0.8);
+        if (battery <= 8 && w3.isAirborne()) {
+          w3.land();
+          printLine('demo-line-out', 'Battery low — landing now. Type "charge" after touchdown.');
+        }
+      }
+    }, 1000);
 
     bot.addEventListener('animationend', function (e) {
       var c = e.target.classList;
