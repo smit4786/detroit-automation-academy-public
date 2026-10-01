@@ -358,11 +358,15 @@
   var HOUSE_PALETTE = ['#b8a88f', '#9fb2ba', '#c09a7e', '#a8a8a0', '#b5988a', '#8fa39a', '#c2b49a'];
 
   // ---------------- ground ----------------
-  function buildGround(THREE, group) {
+  // px: canvas pixels per slab side. 2048 is the full-quality default; 1024
+  // quarters the backing-store + GPU cost (16.8MB -> 4.2MB per slab) for
+  // constrained devices streaming the far field after first frame.
+  function buildGround(THREE, group, px) {
+    var PX = px || 2048;
     for (var i = 0; i < ZONES.length; i++) {
       var zn = ZONES[i];
-      var c = cv(2048, 2048), g = c[1];
-      paintGround(g, 2048, 2048, zn, 5000 + i);
+      var c = cv(PX, PX), g = c[1];
+      paintGround(g, PX, PX, zn, 5000 + i);
       var m = new THREE.Mesh(
         new THREE.PlaneGeometry(zn.x1 - zn.x0, zn.z1 - zn.z0),
         std(THREE, tex(THREE, c[0]), 0xffffff, 0.96)
@@ -777,35 +781,49 @@
   // ---------------- main build ----------------
   var STATS = null;
 
-  function buildRegionExpansionR5(THREE) {
+  // Phased build: the 20 sq mi ring is the heaviest single module (40k
+  // placed objects + 3 large canvas-painted ground slabs). Building it in
+  // one synchronous call is what kills mobile tabs, so the boot path runs
+  // one phase per sliced task — the browser paints, runs GC, and keeps the
+  // loader honest between phases. opts: { groundPx } (default 2048).
+  function createPhased(THREE, opts) {
+    opts = opts || {};
+    var groundPx = opts.groundPx || 2048;
     var group = new THREE.Group();
     group.userData.part = 'r5-root';
+    var spots = null;
+    function finishStats() {
+      var drawCalls = 0;
+      group.traverse(function (o) { if (o.isMesh || o.isInstancedMesh) drawCalls++; });
+      STATS = {
+        houses: spots.houses.length,
+        masses: spots.masses.length,
+        trees: spots.trees.length,
+        lamps: spots.lamps.length,
+        landmarks: 6,
+        signs: SIGNS.length,
+        groundSlabs: 3,
+        groundPx: groundPx,
+        drawCalls: drawCalls,
+        zones: ZONES.map(function (z) { return z.name; })
+      };
+    }
+    var phases = [
+      { name: 'r5-spots',  run: function () { spots = collectSpots(); } },
+      { name: 'r5-ground', run: function () { buildGround(THREE, group, groundPx); } },
+      { name: 'r5-masses', run: function () { buildMasses(THREE, group, spots.masses); } },
+      { name: 'r5-houses', run: function () { buildHouses(THREE, group, spots.houses); } },
+      { name: 'r5-trees',  run: function () { buildTrees(THREE, group, spots.trees); } },
+      { name: 'r5-lamps',  run: function () { buildLamps(THREE, group, spots.lamps); } },
+      { name: 'r5-detail', run: function () { buildLandmarks(THREE, group); buildSigns(THREE, group); finishStats(); } }
+    ];
+    return { group: group, phases: phases, stats: function () { return STATS; } };
+  }
 
-    buildGround(THREE, group);
-    var spots = collectSpots();
-    buildMasses(THREE, group, spots.masses);
-    buildHouses(THREE, group, spots.houses);
-    buildTrees(THREE, group, spots.trees);
-    buildLamps(THREE, group, spots.lamps);
-    buildLandmarks(THREE, group);
-    buildSigns(THREE, group);
-
-    // draw-call estimate: count meshes + instanced meshes (each = 1 draw call)
-    var drawCalls = 0;
-    group.traverse(function (o) { if (o.isMesh || o.isInstancedMesh) drawCalls++; });
-
-    STATS = {
-      houses: spots.houses.length,
-      masses: spots.masses.length,
-      trees: spots.trees.length,
-      lamps: spots.lamps.length,
-      landmarks: 6,
-      signs: SIGNS.length,
-      groundSlabs: 3,
-      drawCalls: drawCalls,
-      zones: ZONES.map(function (z) { return z.name; })
-    };
-    return group;
+  function buildRegionExpansionR5(THREE, opts) {
+    var ph = createPhased(THREE, opts);
+    for (var i = 0; i < ph.phases.length; i++) ph.phases[i].run();
+    return ph.group;
   }
 
   // Clamp ROW rects to the buildable area (keeps the water-band check clean).
@@ -818,6 +836,7 @@
 
   window.DAARegionExpansionR5 = {
     buildRegionExpansionR5: buildRegionExpansionR5,
+    createPhased: createPhased,
     ROWS: ROWS,
     ZONES: ZONES,
     R4RECT: R4,
