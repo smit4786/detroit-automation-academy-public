@@ -385,9 +385,10 @@
     // furniture, vehicles, district-expansion, groundwork, promenade,
     // region-expansion, chicago-hsr and railways)
     // Round 3 (2026-10-01, overnight): +3 steps for the new modules below.
-    // Bot/character, tick-loop, API block, script.js dispatch and demo chips
+    // Round 4 (2026-10-01, overnight): +1 step for region-expansion-r4
+    // (far-field fabric to 1+ sq mi) below. Bot/character, tick-loop, API block, script.js dispatch and demo chips
     // are owned by the parallel drone track — untouched by this change.
-    var loadTotal = PARTS.length + 16;
+    var loadTotal = PARTS.length + 17;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
@@ -596,6 +597,20 @@
     } catch (e) {
       // railways stays absent rather than breaking the scene; log for diagnostics
       if (window.console && console.warn) console.warn('[world3d] railways build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Round 4 (2026-10-01, overnight): region expansion round 4 — far-field
+    // fabric (houses, corner stores, mid-ring buildings, landmarks, arterial
+    // grid) taking the district footprint past 1 sq mi. Synchronous and
+    // local; one overlay step.
+    try {
+      if (window.DAARegionExpansionR4 && window.DAARegionExpansionR4.buildRegionExpansionR4) {
+        scene.add(window.DAARegionExpansionR4.buildRegionExpansionR4(THREE));
+      }
+    } catch (e) {
+      // region-expansion-r4 stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] region-expansion-r4 build failed:', e);
     }
     bumpLoadCount();
 
