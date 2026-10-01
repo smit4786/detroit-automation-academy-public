@@ -509,6 +509,8 @@ body.demo-locked { overflow: hidden; }
 .signal-card-points li::marker { color: var(--forge); }
 .signal-card-link { margin-top: auto; font-weight: 600; color: var(--forge); text-decoration: none; }
 .signal-card-link:hover { text-decoration: underline; }
+.signal-card-sources { margin: 0 0 12px; font-size: 0.8rem; color: var(--concrete); }
+.signal-card-sources a { color: inherit; }
 .signal-card-forthcoming { border-style: dashed; opacity: 0.85; }
 .signal-card-forthcoming .signal-card-kicker { color: var(--amber); }
 
