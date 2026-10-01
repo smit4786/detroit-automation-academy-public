@@ -377,6 +377,27 @@
     sun.shadow.camera.top = 80; sun.shadow.camera.bottom = -80;
     scene.add(sun);
 
+    // Stability: adaptive quality, context-loss handling, background-tab
+    // pause. Lives in site/stability.js; the scene runs fine without it.
+    var stab = null;
+    if (window.DAAStability && window.DAAStability.create) {
+      try {
+        stab = window.DAAStability.create({
+          renderer: renderer, sun: sun, mount: mount,
+          onPause: function (p) {
+            loopHalted = p;
+            if (!p) {
+              try { clock.getDelta(); } catch (e) {} // flush the hidden-tab gap
+              if (!rafId) tick();
+            }
+          }
+        });
+      } catch (e) {
+        stab = null;
+        if (window.console && console.warn) console.warn('[world3d] stability init failed:', e);
+      }
+    }
+
     var manager = new THREE.LoadingManager();
     var loader = new STLLoader(manager);
     // real load progress on the overlay: 5 STL district parts + the bot +
@@ -388,7 +409,14 @@
     // Round 4 (2026-10-01, overnight): +1 step for region-expansion-r4
     // (far-field fabric to 1+ sq mi) below. Bot/character, tick-loop, API block, script.js dispatch and demo chips
     // are owned by the parallel drone track — untouched by this change.
-    var loadTotal = PARTS.length + 17;
+    // Round 5 (2026-10-01, overnight): +2 steps for the rail-vehicle and
+    // drone-autonomy prototype inits below. (heritage-car.js and
+    // drone-variants.js are builder libraries with no loader step.)
+    // Round 5b (2026-10-01, overnight): +1 step for the rail-multilevel
+    // prototype init below (multilayer rail + maglev).
+    // Round 5c (2026-10-01, overnight): +1 step for region-expansion-r5
+    // (far-field fabric ring to ~20 sq mi) below.
+    var loadTotal = PARTS.length + 21;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
@@ -603,14 +631,83 @@
     // Round 4 (2026-10-01, overnight): region expansion round 4 — far-field
     // fabric (houses, corner stores, mid-ring buildings, landmarks, arterial
     // grid) taking the district footprint past 1 sq mi. Synchronous and
-    // local; one overlay step.
+    // local; one overlay step. The group handle feeds the adaptive-quality
+    // governor (far-field density step) in site/stability.js.
+    var farFieldGroup = null;
     try {
       if (window.DAARegionExpansionR4 && window.DAARegionExpansionR4.buildRegionExpansionR4) {
-        scene.add(window.DAARegionExpansionR4.buildRegionExpansionR4(THREE));
+        farFieldGroup = window.DAARegionExpansionR4.buildRegionExpansionR4(THREE);
+        scene.add(farFieldGroup);
       }
     } catch (e) {
       // region-expansion-r4 stays absent rather than breaking the scene; log for diagnostics
       if (window.console && console.warn) console.warn('[world3d] region-expansion-r4 build failed:', e);
+    }
+    bumpLoadCount();
+    if (stab) stab.setFarField(farFieldGroup);
+
+    // Round 5 (2026-10-01, overnight): region expansion round 5 — far-field
+    // fabric ring (houses, archetype masses, landmarks, arterial grid) taking
+    // the district footprint to ~20 sq mi. Synchronous and local; one overlay
+    // step. Stays resident under the adaptive-quality governor (the R4
+    // far-field handle above remains the governed one).
+    var farFieldGroupR5 = null;
+    try {
+      if (window.DAARegionExpansionR5 && window.DAARegionExpansionR5.buildRegionExpansionR5) {
+        farFieldGroupR5 = window.DAARegionExpansionR5.buildRegionExpansionR5(THREE);
+        scene.add(farFieldGroupR5);
+      }
+    } catch (e) {
+      // region-expansion-r5 stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] region-expansion-r5 build failed:', e);
+    }
+    bumpLoadCount();
+
+    // Round 5 (2026-10-01, overnight): rail vehicle prototypes — heritage car,
+    // Forge Pod and intercity concept services traversing the railways.js
+    // track geometry. Synchronous and local; one overlay step.
+    var railVehicles = null;
+    try {
+      if (window.DAARailVehicles && window.DAARailVehicles.init) {
+        railVehicles = window.DAARailVehicles.init(THREE, scene, { reduced: reduced });
+      }
+    } catch (e) {
+      // rail vehicles stay absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] rail-vehicles init failed:', e);
+    }
+    bumpLoadCount();
+
+    // Round 5 (2026-10-01, overnight): autonomous drone fleet — bee + scout
+    // variants with patrol / follow / return-to-pad behaviors. Synchronous
+    // and local; one overlay step. (drone-variants.js is the builder library;
+    // no separate step.) getTrainingPos only reads the training drone's
+    // physics state; it is invoked from tick(), after st exists.
+    var droneAutonomy = null;
+    try {
+      if (window.DAADroneAutonomy && window.DAADroneAutonomy.init) {
+        droneAutonomy = window.DAADroneAutonomy.init(THREE, scene, {
+          reduced: reduced,
+          getTrainingPos: function () { return { x: st.px, y: st.py, z: st.pz }; }
+        });
+      }
+    } catch (e) {
+      // autonomy stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] drone-autonomy init failed:', e);
+    }
+    bumpLoadCount();
+
+    // Round 5b (2026-10-01, overnight): multilayer rail + maglev prototypes —
+    // surface/trench Forge Line extension with the Northside interchange,
+    // and the CONCEPT maglev guideway with its interchange tower.
+    // Synchronous and local; one overlay step.
+    var railMultilevel = null;
+    try {
+      if (window.DAAMultilevel && window.DAAMultilevel.init) {
+        railMultilevel = window.DAAMultilevel.init(THREE, scene, { reduced: reduced });
+      }
+    } catch (e) {
+      // multilevel stays absent rather than breaking the scene; log for diagnostics
+      if (window.console && console.warn) console.warn('[world3d] rail-multilevel init failed:', e);
     }
     bumpLoadCount();
 
@@ -731,7 +828,7 @@
         disc.castShadow = false;
         prop.add(disc);
         g.add(prop);
-        props.push({ grp: prop, disc: disc, dir: (i % 2 === 0) ? 1 : -1, ang: Math.random() * 6.28 });
+        props.push({ grp: prop, disc: disc, dir: (i % 2 === 0) ? 1 : -1, ang: (i * 2.4) % 6.28 });
       });
       // landing skids (rail bottoms at y = -0.425, so GEAR_H = 0.43)
       [-0.26, 0.26].forEach(function (sx) {
@@ -817,30 +914,50 @@
     var ringT = -1;
 
     var clock = new THREE.Clock();
+    var _tgtV = new THREE.Vector3(); // reused every frame — never allocate in tick()
+    var _inp = { cvx: 0, cvz: 0, cvy: 0 }; // input scratch — reused every frame
+    var rafId = 0, loopHalted = false; // background-tab / context-loss pause
     function tick() {
-      requestAnimationFrame(tick);
+      rafId = 0;
+      if (loopHalted) return;
+      rafId = requestAnimationFrame(tick);
       var dt = Math.min(clock.getDelta(), 0.05);
+      if (stab) stab.sample(dt * 1000);
       var now = performance.now();
 
       // ---- drone flight ----
       // Per-frame input: timed velocity commands (nudge/drive/altitude chips),
       // the keyboard, or the active flight plan. The physics core consumes it.
-      var inp = { cvx: 0, cvz: 0, cvy: 0 };
-      if (now < cmd.exp) { inp.cvx = cmd.cvx; inp.cvz = cmd.cvz; inp.cvy = cmd.cvy; }
+      _inp.cvx = 0; _inp.cvz = 0; _inp.cvy = 0;
+      if (now < cmd.exp) { _inp.cvx = cmd.cvx; _inp.cvz = cmd.cvz; _inp.cvy = cmd.cvy; }
       // keyboard drive → velocity command (manual input cancels a flight plan)
       var mx = (keys['d'] || keys['arrowright'] ? 1 : 0) - (keys['a'] || keys['arrowleft'] ? 1 : 0);
       var mz = (keys['s'] || keys['arrowdown'] ? 1 : 0) - (keys['w'] || keys['arrowup'] ? 1 : 0);
       if (driveArmed && (mx || mz)) {
         st.plan = null;
         var kspd = st.armed ? 6.0 : 3.0; // sporty in the air, a calm taxi on the skids
-        inp.cvx = mx * kspd; inp.cvz = mz * kspd;
+        _inp.cvx = mx * kspd; _inp.cvz = mz * kspd;
       }
-      if (st.plan) DRONE.updatePlan(st, inp);
-      else if ((inp.cvx || inp.cvz) && st.turnTarget === null && !reduced) {
-        st.turnTarget = Math.atan2(-inp.cvx, -inp.cvz); // face travel direction
+      if (st.plan) DRONE.updatePlan(st, _inp);
+      else if ((_inp.cvx || _inp.cvz) && st.turnTarget === null && !reduced) {
+        st.turnTarget = Math.atan2(-_inp.cvx, -_inp.cvz); // face travel direction
       }
-      var planDone = DRONE.step(st, dt, inp);
+      var planDone = DRONE.step(st, dt, _inp);
       if (planDone) planDone();
+      // round-5 prototypes: rail vehicles + autonomous drone fleet (kinematic).
+      // A failed update disables its module rather than spamming the console.
+      if (railVehicles) {
+        try { railVehicles.update(dt); }
+        catch (e) { railVehicles = null; if (window.console && console.warn) console.warn('[world3d] rail-vehicles update failed:', e); }
+      }
+      if (droneAutonomy) {
+        try { droneAutonomy.update(dt, now); }
+        catch (e) { droneAutonomy = null; if (window.console && console.warn) console.warn('[world3d] drone-autonomy update failed:', e); }
+      }
+      if (railMultilevel) {
+        try { railMultilevel.update(dt); }
+        catch (e) { railMultilevel = null; if (window.console && console.warn) console.warn('[world3d] rail-multilevel update failed:', e); }
+      }
       // physics state → meshes
       botGroup.position.set(st.px, st.py - st.gear * 0.4, st.pz);
       botGroup.rotation.y = st.yaw;
@@ -911,7 +1028,7 @@
       }
 
       // camera follows the drone loosely (tracks altitude too)
-      controls.target.lerp(new THREE.Vector3(st.px, st.py, st.pz), 0.04);
+      controls.target.lerp(_tgtV.set(st.px, st.py, st.pz), 0.04);
       controls.update();
       try {
         renderer.render(scene, camera);
@@ -1008,6 +1125,7 @@
       },
       isAirborne: function () { return st.mode !== 'ground'; },
       powerDraw: function () { return st.armed ? st.throttle : 0; }, // 0..1 throttle load
+      perf: function () { return stab ? stab.perf() : null; }, // draw calls, tris, frame ms, tier
       telemetry: function () {
         return {
           alt: Math.max(0, st.py - DRONE.C.GEAR_H),
@@ -1037,7 +1155,10 @@
           p1: new THREE.Vector3(st.px + dir.x * 13, st.py + 5, st.pz + dir.z * 13),
           t: 0
         };
-      }
+      },
+      patrol: function () { if (droneAutonomy) droneAutonomy.setMode('patrol'); },
+      follow: function () { if (droneAutonomy) droneAutonomy.setMode('follow'); },
+      rtp: function () { if (droneAutonomy) droneAutonomy.setMode('rtp'); }
     };
     // a manual orbit always wins over the focus glide
     renderer.domElement.addEventListener('pointerdown', function () { camTween = null; });
