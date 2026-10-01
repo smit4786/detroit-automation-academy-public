@@ -443,6 +443,18 @@ a { color: inherit; }
   background: var(--midnight); gap: 16px; overflow: auto;
 }
 #demoFull:fullscreen .demo-stage, #demoFull:-webkit-full-screen .demo-stage { min-height: 0; }
+/* Pseudo-fullscreen overlay: the mobile path (iOS has no element fullscreen
+   API) and the fallback anywhere native fullscreen is unavailable. Unlike a
+   native request, no OS gesture or page movement can dismiss it — only the
+   toggle button or Escape. */
+#demoFull.demo-pseudo {
+  position: fixed; inset: 0; z-index: 2000;
+  height: 100vh; height: 100dvh; width: 100%;
+  margin: 0; padding: 12px; box-sizing: border-box;
+  background: var(--midnight); overflow-y: auto;
+}
+#demoFull.demo-pseudo .demo-stage { min-height: 300px; }
+body.demo-locked { overflow: hidden; }
 
 /* 3D training district */
 .world3d { position: absolute; inset: 0; z-index: 2; }
@@ -580,7 +592,7 @@ a { color: inherit; }
 .demo-prompt { color: var(--forge); font-weight: 700; font-family: ui-monospace, Menlo, Consolas, monospace; }
 #demoInput {
   flex: 1; background: transparent; border: 0; outline: 0;
-  color: var(--paper); font-size: 0.95rem;
+  color: var(--paper); font-size: 16px; /* >=16px stops iOS auto-zoom on focus */
   font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 #demoInput::placeholder { color: var(--concrete); opacity: 0.6; }
@@ -593,6 +605,30 @@ a { color: inherit; }
   transition: border-color 0.2s, color 0.2s;
 }
 .demo-chip:hover { border-color: var(--forge); color: var(--forge); }
+/* D-pad: multi-directional drive control (replaces the single "forward" chip) */
+.dpad {
+  display: grid; grid-template-columns: repeat(3, 46px); grid-auto-rows: 36px;
+  gap: 4px; align-content: center; margin-right: 4px;
+}
+.dpad-btn {
+  padding: 2px 0; font-size: 1rem; line-height: 1;
+  touch-action: none; user-select: none; -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.dpad-up { grid-area: 1 / 2; }
+.dpad-left { grid-area: 2 / 1; }
+.dpad-down { grid-area: 2 / 2; }
+.dpad-right { grid-area: 2 / 3; }
+.anim-turn-left .bot-body { animation: bot-turn-left 0.7s ease; }
+.anim-turn-right .bot-body { animation: bot-turn-right 0.7s ease; }
+@keyframes bot-turn-left {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-16deg); }
+}
+@keyframes bot-turn-right {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(16deg); }
+}
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
