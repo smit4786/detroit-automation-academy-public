@@ -316,18 +316,46 @@
 
   function fallback() {
     stage.classList.add('world-fallback');
+    // Graceful degradation is a successful outcome, not a crash: a journal
+    // left here would wrongly force the next boot into 'safe' mode.
+    try { if (window.DAAStability) window.DAAStability.clearJournal(); } catch (e) {}
   }
 
   // Only boot when the demo scrolls into view; never block page load.
   var booted = false;
+  var bootMode = 'full'; // 'full' | 'lite' | 'safe' — decided before three.js loads
+  function importMapOK() {
+    // Import maps need iOS 16.4+; older WebKit falls back to the 2D SVG.
+    try {
+      return ('HTMLScriptElement' in window) && ('supports' in HTMLScriptElement) &&
+        HTMLScriptElement.supports('importmap');
+    } catch (e) { return false; }
+  }
   function boot() {
     if (booted) return;
     booted = true;
+    // The boot journal + tier decision happen BEFORE the first byte of
+    // geometry: a constrained device (every iPhone) boots a reduced district
+    // and streams the far field later — never 20 sq mi up front.
+    try {
+      if (window.DAAStability && window.DAAStability.detectBootMode) {
+        bootMode = window.DAAStability.detectBootMode();
+        window.DAAStability.writeJournal('boot', bootMode);
+      }
+    } catch (e) {}
+    if (!importMapOK()) {
+      if (window.console && console.warn) console.warn('[world3d] no importmap support; using 2D fallback');
+      fallback();
+      return;
+    }
     Promise.all([
       import('three'),
       import('three/addons/controls/OrbitControls.js'),
       import('three/addons/loaders/STLLoader.js')
-    ]).then(function (m) { init(m[0], m[1].OrbitControls, m[2].STLLoader); })
+    ]).then(function (m) {
+        try { if (window.DAAStability) window.DAAStability.writeJournal('three', bootMode); } catch (e) {}
+        init(m[0], m[1].OrbitControls, m[2].STLLoader, bootMode);
+      })
       .catch(function (e) {
         if (window.console && console.error) console.error('[world3d] init failed:', e);
         fallback();
@@ -343,11 +371,15 @@
     boot();
   }
 
-  function init(THREE, OrbitControls, STLLoader) {
+  function init(THREE, OrbitControls, STLLoader, mode) {
     var W = mount.clientWidth || 600, H = mount.clientHeight || 420;
+    // 'lite'/'safe': constrained device or a previous crash — reduced
+    // district, no MSAA (halves the framebuffer), far field streams later
+    // or on tap instead of building 20 sq mi synchronously.
+    var lite = (mode === 'lite' || mode === 'safe');
     var renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer = new THREE.WebGLRenderer({ antialias: !lite, alpha: true });
     } catch (e) { fallback(); return; }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(W, H);
@@ -405,18 +437,11 @@
     // riverfront + guideway via window.DAAArchKit, plus streetscape,
     // furniture, vehicles, district-expansion, groundwork, promenade,
     // region-expansion, chicago-hsr and railways)
-    // Round 3 (2026-10-01, overnight): +3 steps for the new modules below.
-    // Round 4 (2026-10-01, overnight): +1 step for region-expansion-r4
-    // (far-field fabric to 1+ sq mi) below. Bot/character, tick-loop, API block, script.js dispatch and demo chips
-    // are owned by the parallel drone track — untouched by this change.
-    // Round 5 (2026-10-01, overnight): +2 steps for the rail-vehicle and
-    // drone-autonomy prototype inits below. (heritage-car.js and
-    // drone-variants.js are builder libraries with no loader step.)
-    // Round 5b (2026-10-01, overnight): +1 step for the rail-multilevel
-    // prototype init below (multilayer rail + maglev).
-    // Round 5c (2026-10-01, overnight): +1 step for region-expansion-r5
-    // (far-field fabric ring to ~20 sq mi) below.
-    var loadTotal = PARTS.length + 21;
+    // Stability rescue (2026-10-01): the loader total is computed from the
+    // assembled build queue below — the count differs by boot mode, because
+    // 'lite'/'safe' defer the far-field rings (R4 + R5 phases) until after
+    // first frame instead of building 20 sq mi up front.
+    var loadTotal = 0;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
     function paintLoadCount(done) {
@@ -428,6 +453,120 @@
     }
     paintLoadCount(0);
     manager.onProgress = function () { bumpLoadCount(); };
+
+    // ---- sliced construction ----
+    // Every module build is one task in a time-sliced queue (8 ms/frame via
+    // site/stability.js). The browser paints, runs GC, and keeps the loader
+    // honest between modules instead of dying inside one giant synchronous
+    // build — the failure mode that killed mobile tabs. A failed module logs
+    // and continues; one bad build never strands the district.
+    var buildTasks = [];
+    function buildStep(name, fn) {
+      buildTasks.push(function () {
+        try { fn(); } catch (e) {
+          if (window.console && console.warn) console.warn('[world3d] ' + name + ' build failed:', e);
+        }
+        bumpLoadCount();
+      });
+    }
+
+    // ---- far field: R4 (1 sq mi ring) + R5 (20 sq mi ring) ----
+    // 'full' mode builds these as sliced tasks in the initial queue.
+    // 'lite' boots the reduced district and streams them after first frame
+    // on idle; 'safe' waits for the user's tap. The R4 group handle feeds
+    // the adaptive-quality governor (far-field density step).
+    var farFieldGroup = null;
+    var farFieldGroupR5 = null;
+    var r5GroundPx = lite ? 1024 : 2048; // 1024 quarters ground texture memory
+    function farFieldTasks() {
+      var tasks = [];
+      tasks.push(function () {
+        try {
+          if (window.DAARegionExpansionR4 && window.DAARegionExpansionR4.buildRegionExpansionR4) {
+            farFieldGroup = window.DAARegionExpansionR4.buildRegionExpansionR4(THREE);
+            scene.add(farFieldGroup);
+          }
+        } catch (e) {
+          if (window.console && console.warn) console.warn('[world3d] region-expansion-r4 build failed:', e);
+        }
+        if (stab) { try { stab.setFarField(farFieldGroup); } catch (e) {} }
+        bumpLoadCount();
+      });
+      var r5p = null;
+      try {
+        if (window.DAARegionExpansionR5 && window.DAARegionExpansionR5.createPhased) {
+          r5p = window.DAARegionExpansionR5.createPhased(THREE, { groundPx: r5GroundPx });
+          scene.add(r5p.group);
+        }
+      } catch (e) {
+        if (window.console && console.warn) console.warn('[world3d] region-expansion-r5 setup failed:', e);
+        r5p = null;
+      }
+      if (r5p) {
+        farFieldGroupR5 = r5p.group;
+        r5p.phases.forEach(function (ph) {
+          tasks.push(function () {
+            try { ph.run(); } catch (e) {
+              if (window.console && console.warn) console.warn('[world3d] ' + ph.name + ' build failed:', e);
+            }
+            bumpLoadCount();
+          });
+        });
+      }
+      return tasks;
+    }
+
+    // ---- far-field streaming (lite/safe modes) ----
+    var farStreamed = false, farStreaming = false;
+    function extendLoader(n, label) {
+      loadTotal += n;
+      var l = mount.querySelector('.world3d-loading');
+      if (l) {
+        l.style.display = '';
+        var t = l.querySelector('.world3d-loadlabel');
+        if (t && label) t.textContent = label;
+      }
+      paintLoadCount(loadDone);
+    }
+    function hideLoader() {
+      var l = mount.querySelector('.world3d-loading');
+      if (l) l.style.display = 'none';
+    }
+    function showFarFieldChip() {
+      var b = document.getElementById('farFieldChip');
+      if (b) b.hidden = false;
+    }
+    function hideFarFieldChip() {
+      var b = document.getElementById('farFieldChip');
+      if (b) b.hidden = true;
+    }
+    function streamFarField() {
+      if (farStreamed || farStreaming) return;
+      farStreaming = true;
+      hideFarFieldChip();
+      var tasks = farFieldTasks();
+      extendLoader(tasks.length, 'Streaming the surrounding city');
+      function done() {
+        farStreaming = false; farStreamed = true;
+        hideLoader();
+      }
+      try {
+        window.DAAStability.runSliced(tasks, 8, done);
+      } catch (e) {
+        for (var i = 0; i < tasks.length; i++) { try { tasks[i](); } catch (e2) {} }
+        done();
+      }
+    }
+    function onFirstFrame() {
+      if (mode === 'lite') {
+        // First paint is up and light — stream the far field when idle.
+        try { window.DAAStability.whenIdle(function () { streamFarField(); }, 1500); }
+        catch (e) { setTimeout(streamFarField, 2000); }
+      } else if (mode === 'safe') {
+        // Crash-loop protection: one explicit tap loads the far field.
+        showFarFieldChip();
+      }
+    }
     var base = 'assets/world/';
     var clickTargets = [];
 
@@ -447,269 +586,170 @@
 
     // The Workshop: procedural SC3K-standard build (replaces workshop.stl).
     // Synchronous and local; counts as one step on the loading overlay.
-    try {
+    buildStep('workshop', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildWorkshop) {
         scene.add(window.DAAArchKit.buildWorkshop(THREE));
       }
-    } catch (e) {
-      // workshop stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] workshop build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Corktown: procedural Academy HQ + rowhouses + pocket park
     // (replaces the old station STL). Synchronous and local; one overlay step.
-    try {
+    buildStep('corktown', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildCorktown) {
         scene.add(window.DAAArchKit.buildCorktown(THREE));
       }
-    } catch (e) {
-      // corktown stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] corktown build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // UM Center for Innovation: procedural KPF-inspired build
     // (replaces the old techtown STL). Synchronous and local; one overlay step.
-    try {
+    buildStep('innovation', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildInnovation) {
         scene.add(window.DAAArchKit.buildInnovation(THREE));
       }
-    } catch (e) {
-      // innovation stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] innovation build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Thinkabit Lab: procedural makerspace rebuild
     // (replaces the old thinkabit STL). Synchronous and local; one overlay step.
-    try {
+    buildStep('thinkabit', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildThinkabit) {
         scene.add(window.DAAArchKit.buildThinkabit(THREE));
       }
-    } catch (e) {
-      // thinkabit stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] thinkabit build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Detroit Riverfront pavilion: procedural butterfly-roof rebuild
     // (replaces the old riverfront STL). Synchronous and local; one overlay step.
-    try {
+    buildStep('riverfront', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildRiverfront) {
         scene.add(window.DAAArchKit.buildRiverfront(THREE));
       }
-    } catch (e) {
-      // riverfront stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] riverfront build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Forge Line guideway + Amtrak high-speed viaduct: procedural transit build
     // (proposed rails, in-scene). Synchronous and local; one overlay step.
-    try {
+    buildStep('guideway', function () {
       if (window.DAAArchKit && window.DAAArchKit.buildGuideway) {
         scene.add(window.DAAArchKit.buildGuideway(THREE));
       }
-    } catch (e) {
-      // guideway stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] guideway build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Streetscape: curbs, sidewalks, lane markings, crosswalks, plaza pavers.
     // Synchronous and local; one overlay step.
-    try {
+    buildStep('streetscape', function () {
       if (window.DAAStreetscape && window.DAAStreetscape.buildStreetscape) {
         scene.add(window.DAAStreetscape.buildStreetscape(THREE));
       }
-    } catch (e) {
-      // streetscape stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] streetscape build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Street furniture: lamps, benches, planters, bollards, trees.
     // Synchronous and local; one overlay step.
-    try {
+    buildStep('furniture', function () {
       if (window.DAAFurniture && window.DAAFurniture.buildFurniture) {
         scene.add(window.DAAFurniture.buildFurniture(THREE));
       }
-    } catch (e) {
-      // furniture stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] furniture build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Vehicles: Forge Pod on the guideway, parked Hauler/Tender/sedans.
     // Synchronous and local; one overlay step.
-    try {
+    buildStep('vehicles', function () {
       if (window.DAAVehicles && window.DAAVehicles.buildVehicles) {
         scene.add(window.DAAVehicles.buildVehicles(THREE));
       }
-    } catch (e) {
-      // vehicles stay absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] vehicles build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // District expansion: outer-ring ground, street extensions, low-rise
     // context buildings, street trees. Synchronous and local; one overlay step.
-    try {
+    buildStep('district-expansion', function () {
       if (window.DAADistrictExpansion && window.DAADistrictExpansion.buildDistrictExpansion) {
         scene.add(window.DAADistrictExpansion.buildDistrictExpansion(THREE));
       }
-    } catch (e) {
-      // expansion stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] district-expansion build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Groundwork: terrain variation, texture transitions, river detail,
     // building-base grounding decals. Synchronous and local; one overlay step.
-    try {
+    buildStep('groundwork', function () {
       if (window.DAAGroundwork && window.DAAGroundwork.buildGroundwork) {
         scene.add(window.DAAGroundwork.buildGroundwork(THREE));
       }
-    } catch (e) {
-      // groundwork stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] groundwork build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Promenade: riverfront boardwalk, connectors, pocket-park detailing.
     // Synchronous and local; one overlay step.
-    try {
+    buildStep('promenade', function () {
       if (window.DAAPromenade && window.DAAPromenade.buildPromenade) {
         scene.add(window.DAAPromenade.buildPromenade(THREE));
       }
-    } catch (e) {
-      // promenade stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] promenade build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Round 3 (2026-10-01, overnight): region expansion, Chicago HSR concept,
     // and railway connect/expand modules. Same try/catch overlay pattern;
     // each counts one loader step (see loadTotal above).
     // Region expansion: outer-ring-2 ground, streets, low-rise context
     // buildings, street trees. Synchronous and local; one overlay step.
-    try {
+    buildStep('region-expansion', function () {
       if (window.DAARegionExpansion && window.DAARegionExpansion.buildRegionExpansion) {
         scene.add(window.DAARegionExpansion.buildRegionExpansion(THREE));
       }
-    } catch (e) {
-      // region-expansion stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] region-expansion build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Chicago HSR: proposed westward intercity viaduct, Dearborn concept
     // station, Chicago terminus. Synchronous and local; one overlay step.
-    try {
+    buildStep('chicago-hsr', function () {
       if (window.DAAChicagoHSR && window.DAAChicagoHSR.buildChicagoHSR) {
         scene.add(window.DAAChicagoHSR.buildChicagoHSR(THREE));
       }
-    } catch (e) {
-      // chicago-hsr stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] chicago-hsr build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Railways: Forge Line dead-end termini, intercity transfer, Michigan Ave
     // / 14th St / riverfront spur lines. Synchronous and local; one overlay step.
-    try {
+    buildStep('railways', function () {
       if (window.DAARailways && window.DAARailways.buildRailways) {
         scene.add(window.DAARailways.buildRailways(THREE));
       }
-    } catch (e) {
-      // railways stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] railways build failed:', e);
-    }
-    bumpLoadCount();
+    });
 
-    // Round 4 (2026-10-01, overnight): region expansion round 4 — far-field
-    // fabric (houses, corner stores, mid-ring buildings, landmarks, arterial
-    // grid) taking the district footprint past 1 sq mi. Synchronous and
-    // local; one overlay step. The group handle feeds the adaptive-quality
-    // governor (far-field density step) in site/stability.js.
-    var farFieldGroup = null;
-    try {
-      if (window.DAARegionExpansionR4 && window.DAARegionExpansionR4.buildRegionExpansionR4) {
-        farFieldGroup = window.DAARegionExpansionR4.buildRegionExpansionR4(THREE);
-        scene.add(farFieldGroup);
-      }
-    } catch (e) {
-      // region-expansion-r4 stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] region-expansion-r4 build failed:', e);
+    // Far field (R4 + R5): 'full' mode builds the rings as sliced tasks in
+    // the initial queue; 'lite'/'safe' defer them to streamFarField() after
+    // first frame (idle) or on the user's tap. See farFieldTasks() above.
+    if (!lite) {
+      farFieldTasks().forEach(function (t) { buildTasks.push(t); });
+      farStreamed = true;
     }
-    bumpLoadCount();
-    if (stab) stab.setFarField(farFieldGroup);
-
-    // Round 5 (2026-10-01, overnight): region expansion round 5 — far-field
-    // fabric ring (houses, archetype masses, landmarks, arterial grid) taking
-    // the district footprint to ~20 sq mi. Synchronous and local; one overlay
-    // step. Stays resident under the adaptive-quality governor (the R4
-    // far-field handle above remains the governed one).
-    var farFieldGroupR5 = null;
-    try {
-      if (window.DAARegionExpansionR5 && window.DAARegionExpansionR5.buildRegionExpansionR5) {
-        farFieldGroupR5 = window.DAARegionExpansionR5.buildRegionExpansionR5(THREE);
-        scene.add(farFieldGroupR5);
-      }
-    } catch (e) {
-      // region-expansion-r5 stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] region-expansion-r5 build failed:', e);
-    }
-    bumpLoadCount();
 
     // Round 5 (2026-10-01, overnight): rail vehicle prototypes — heritage car,
     // Forge Pod and intercity concept services traversing the railways.js
-    // track geometry. Synchronous and local; one overlay step.
+    // track geometry. One sliced step.
     var railVehicles = null;
-    try {
+    buildStep('rail-vehicles', function () {
       if (window.DAARailVehicles && window.DAARailVehicles.init) {
         railVehicles = window.DAARailVehicles.init(THREE, scene, { reduced: reduced });
       }
-    } catch (e) {
-      // rail vehicles stay absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] rail-vehicles init failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Round 5 (2026-10-01, overnight): autonomous drone fleet — bee + scout
-    // variants with patrol / follow / return-to-pad behaviors. Synchronous
-    // and local; one overlay step. (drone-variants.js is the builder library;
-    // no separate step.) getTrainingPos only reads the training drone's
-    // physics state; it is invoked from tick(), after st exists.
+    // variants with patrol / follow / return-to-pad behaviors. One sliced
+    // step. (drone-variants.js is the builder library; no separate step.)
+    // getTrainingPos only reads the training drone's physics state; it is
+    // invoked from tick(), after st exists.
     var droneAutonomy = null;
-    try {
+    buildStep('drone-autonomy', function () {
       if (window.DAADroneAutonomy && window.DAADroneAutonomy.init) {
         droneAutonomy = window.DAADroneAutonomy.init(THREE, scene, {
           reduced: reduced,
           getTrainingPos: function () { return { x: st.px, y: st.py, z: st.pz }; }
         });
       }
-    } catch (e) {
-      // autonomy stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] drone-autonomy init failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // Round 5b (2026-10-01, overnight): multilayer rail + maglev prototypes —
     // surface/trench Forge Line extension with the Northside interchange,
     // and the CONCEPT maglev guideway with its interchange tower.
-    // Synchronous and local; one overlay step.
+    // One sliced step.
     var railMultilevel = null;
-    try {
+    buildStep('rail-multilevel', function () {
       if (window.DAAMultilevel && window.DAAMultilevel.init) {
         railMultilevel = window.DAAMultilevel.init(THREE, scene, { reduced: reduced });
       }
-    } catch (e) {
-      // multilevel stays absent rather than breaking the scene; log for diagnostics
-      if (window.console && console.warn) console.warn('[world3d] rail-multilevel init failed:', e);
-    }
-    bumpLoadCount();
+    });
 
     // STL load failures: log which asset failed, then engage the 2D fallback.
     function partError(url) {
@@ -720,14 +760,16 @@
     }
 
     // clickable district markers (invisible hit discs at each stop)
-    var hitGeo = new THREE.CylinderGeometry(13, 13, 6, 12);
-    Object.keys(DISTRICT).forEach(function (key) {
-      var d = DISTRICT[key];
-      var hit = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
-      hit.position.set(d.pos[0], 3, d.pos[1]);
-      hit.userData.district = key;
-      scene.add(hit);
-      clickTargets.push(hit);
+    buildStep('hit-discs', function () {
+      var hitGeo = new THREE.CylinderGeometry(13, 13, 6, 12);
+      Object.keys(DISTRICT).forEach(function (key) {
+        var d = DISTRICT[key];
+        var hit = new THREE.Mesh(hitGeo, new THREE.MeshBasicMaterial({ visible: false }));
+        hit.position.set(d.pos[0], 3, d.pos[1]);
+        hit.userData.district = key;
+        scene.add(hit);
+        clickTargets.push(hit);
+      });
     });
 
     // floating name labels (canvas sprites; positions are building centers
@@ -765,26 +807,33 @@
       workshop:   [0, 0, 21], innovation: [0, -38, 27], hq: [47, -20, 42],
       riverfront: [0, 44, 12], thinkabit: [-44, 0, 17]
     };
-    Object.keys(DISTRICT).forEach(function (key) {
-      var p = LABEL_AT[key];
-      var sp = makeLabel(DISTRICT[key].name);
-      sp.position.set(p[0], p[2], p[1]);
-      scene.add(sp);
+    buildStep('labels', function () {
+      Object.keys(DISTRICT).forEach(function (key) {
+        var p = LABEL_AT[key];
+        var sp = makeLabel(DISTRICT[key].name);
+        sp.position.set(p[0], p[2], p[1]);
+        scene.add(sp);
+      });
     });
 
     // the drone — personal quadcopter, built procedurally in the Forge palette.
-    // Synchronous and local: it counts as one step on the loading overlay,
-    // replacing the progress event the old bot.stl load used to emit.
+    // One sliced step on the loading overlay; replaces the progress event
+    // the old bot.stl load used to emit.
     var botGroup = new THREE.Group();
-    var botTag = makeLabel('TRAINING BOT', 0.55);
-    botTag.position.set(0, 1.35, 0);
-    botGroup.add(botTag);
     var botMesh = null;      // drone airframe group (the animatable part)
     var droneBodyMat = null; // airframe material, for the charge pulse
     var droneLedMat = null;  // status LED material, for the blink
     var landingLight = null; // downward cone, fades in with altitude
     var props = [];          // {grp, disc, dir, ang}
-    (function buildDrone() {
+    // Physics state handle: assigned in onCoreDone, but the drone-autonomy
+    // build task (above) closes over it for getTrainingPos — so the binding
+    // lives at init scope and is only *read* after the queue drains.
+    var st = null;
+    buildStep('drone', function () {
+      var botTag = makeLabel('TRAINING BOT', 0.55);
+      botTag.position.set(0, 1.35, 0);
+      botGroup.add(botTag);
+      (function buildDrone() {
       var g = new THREE.Group();
       var bodyMat = new THREE.MeshStandardMaterial({ color: 0xE85D1A, roughness: 0.5, metalness: 0.35 });
       var darkMat = new THREE.MeshStandardMaterial({ color: 0x161c22, roughness: 0.6, metalness: 0.45 });
@@ -852,8 +901,13 @@
     botGroup.add(landingLight);
     botGroup.add(botMesh);
     scene.add(botGroup);
-    bumpLoadCount();
+    });
 
+    // ---- post-build: input, physics, loop, API ----
+    // Runs after the sliced build queue drains, so every module
+    // handle above is assigned before the first frame.
+    function onCoreDone() {
+      try { if (window.DAAStability) window.DAAStability.writeJournal('core', mode); } catch (e) {}
     // info card
     var card = document.createElement('div');
     card.className = 'world-card';
@@ -884,7 +938,7 @@
 
     // ---- drone motion ----
     var DRONE = DronePhysics();
-    var st = DRONE.create(0, 24); // physics state; starts at the workshop approach point
+    st = DRONE.create(0, 24); // physics state; starts at the workshop approach point
     var cmd = { cvx: 0, cvz: 0, cvy: 0, exp: 0 }; // velocity commands + expiry (ms)
     var anim = null;       // {kind, t0, dur}
     var camTween = null;   // {p0, p1, t} — camera glide for the focus command
@@ -917,6 +971,7 @@
     var _tgtV = new THREE.Vector3(); // reused every frame — never allocate in tick()
     var _inp = { cvx: 0, cvz: 0, cvy: 0 }; // input scratch — reused every frame
     var rafId = 0, loopHalted = false; // background-tab / context-loss pause
+    var firstFrameDone = false;
     function tick() {
       rafId = 0;
       if (loopHalted) return;
@@ -1032,6 +1087,14 @@
       controls.update();
       try {
         renderer.render(scene, camera);
+        if (!firstFrameDone) {
+          // The boot journal clears here: reaching first frame proves this
+          // boot survived construction. A journal left behind means the tab
+          // died mid-build -> next boot enters 'safe' mode.
+          firstFrameDone = true;
+          try { if (window.DAAStability) window.DAAStability.clearJournal(); } catch (e) {}
+          onFirstFrame();
+        }
       } catch (e) {
         // one bad frame must never kill the loop silently; the ready backstop
         // (installed below, before the first frame) still fires.
@@ -1158,10 +1221,27 @@
       },
       patrol: function () { if (droneAutonomy) droneAutonomy.setMode('patrol'); },
       follow: function () { if (droneAutonomy) droneAutonomy.setMode('follow'); },
-      rtp: function () { if (droneAutonomy) droneAutonomy.setMode('rtp'); }
+      rtp: function () { if (droneAutonomy) droneAutonomy.setMode('rtp'); },
+      // Far-field streaming: auto-invoked on idle in 'lite' mode, or by the
+      // "Load full district" chip in 'safe' mode. No-op once streamed.
+      loadFarField: function () { streamFarField(); },
+      farFieldReady: function () { return farStreamed; }
     };
     // a manual orbit always wins over the focus glide
     renderer.domElement.addEventListener('pointerdown', function () { camTween = null; });
     window.DAAWorld = api;
+  }
+  
+    // Loader total follows the assembled queue: PARTS.length STL steps plus
+    // one step per build task. Far-field streaming extends it later.
+    loadTotal = PARTS.length + buildTasks.length;
+    paintLoadCount(0);
+    try {
+      window.DAAStability.runSliced(buildTasks, 8, onCoreDone);
+    } catch (e) {
+      // runSliced is best-effort; without it, run the queue inline (old behavior).
+      for (var bi = 0; bi < buildTasks.length; bi++) { try { buildTasks[bi](); } catch (e2) {} }
+      onCoreDone();
+    }
   }
 })();
