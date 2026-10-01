@@ -25,11 +25,16 @@
   // window (~1.5 s); steps back up after ~10 s of headroom. Shadow toggling
   // flips a light flag (one shader re-key, no scene rebuild); far-field
   // density hides the single R4 group. All transitions are rare by design.
+  // iPadOS: the launch tier is DPR 1 with shadows OFF on every device.
+  // Higher fidelity is EARNED — stepUp() only fires after ~10 s of measured
+  // frame-time headroom, so a device never pays for pixels or shadow maps
+  // it can't afford. Over-budget frames step back down just as fast.
   var TIERS = [
-    { dpr: 2,   shadows: true,  farField: true  }, // 0 — full
-    { dpr: 1.5, shadows: true,  farField: true  }, // 1
-    { dpr: 1,   shadows: false, farField: true  }, // 2
-    { dpr: 1,   shadows: false, farField: false }  // 3 — minimal
+    { dpr: 1,   shadows: false, farField: true  }, // 0 — launch (DPR 1, no shadows)
+    { dpr: 1,   shadows: true,  farField: true  }, // 1 — shadows earned
+    { dpr: 1.5, shadows: true,  farField: true  }, // 2 — DPR 1.5 earned
+    { dpr: 2,   shadows: true,  farField: true  }, // 3 — full fidelity, earned
+    { dpr: 1,   shadows: false, farField: false }  // 4 — minimal (sustained over-budget)
   ];
   var OVER_MS = 24, UNDER_MS = 13;      // frame-time EMA thresholds
   var OVER_FRAMES = 90, UNDER_FRAMES = 600;
@@ -43,8 +48,10 @@
     var paused = false, notice = null;
 
     var deviceTier = detectTier();
-    if (deviceTier === 'low') tierIndex = 2;      // start conservative
-    else if (deviceTier === 'mid') tierIndex = 1;
+    // Every device launches at tier 0 (DPR 1, no shadows): fidelity is
+    // earned through measured headroom, never assumed. deviceTier is still
+    // reported via deviceTier() for telemetry.
+    tierIndex = 0;
 
     function devicePR() {
       try { return window.devicePixelRatio || 1; } catch (e) { return 1; }
@@ -241,11 +248,11 @@
   // 'full': desktop-class device, no crash history — build everything.
   // 'lite': constrained device (all iPhones land here: WebKit reports
   //   hardwareConcurrency <= 4 and deviceMemory is undefined) — boot the
-  //   core + near-field district, stream the far-field rings after first
-  //   frame on idle.
+  //   core district, stream the 1 sq mi surrounding ring after first frame
+  //   on idle.
   // 'safe': the journal says the last boot died before first frame — boot
-  //   the reduced district and do NOT auto-stream; the user taps once to
-  //   load the far field. Never build 20 sq mi synchronously on a phone.
+  //   the core district only; the surrounding ring is skipped. Never build
+  //   the far field synchronously on a phone.
   function detectBootMode() {
     try {
       var j = readJournal();
