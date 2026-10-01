@@ -1,5 +1,5 @@
 // Detroit Automation Academy — railways: audit, connections, expansion (round 3, overnight).
-// LOCAL ONLY. Classic IIFE; exposes window.DAARailways.buildRailways(THREE).
+// Classic IIFE; exposes window.DAARailways.buildRailways(THREE).
 // No external assets, no network, deterministic. Units meters; x = east, z = south, y = up.
 //
 // ============ STEP 1 — RAIL AUDIT (existing network, read from arch-kit.js / chicago-hsr.js) ============
