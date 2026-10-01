@@ -96,7 +96,7 @@
       <p class="kicker">Try it</p>
       <h2 id="demo-heading">Type a command. <span class="accent">Watch it move.</span></h2>
       <div class="prose">
-        <p>This is what day one feels like at the academy: you tell a machine what to do, and it does it. The training bot is listening &mdash; go ahead. Drag to orbit the 3D training district, tap a building to visit it, or drive with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>.</p>
+        <p>This is what day one feels like at the academy: you tell a machine what to do, and it does it. The training bot is listening &mdash; go ahead. Drag to orbit the 3D training district, tap a building to visit it, drive with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> on desktop or the D-pad on touch.</p>
       </div>
       <div class="demo" id="demoFull">
         <div class="demo-stage" id="demoStage">
@@ -132,7 +132,12 @@
             <input id="demoInput" type="text" aria-label="Type a command" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="look, dance, map, help…" maxlength="24">
           </form>
           <div class="demo-chips">
-            <button type="button" class="demo-chip" data-cmd="forward">forward</button>
+            <div class="dpad" role="group" aria-label="Drive the bot">
+              <button type="button" class="demo-chip dpad-btn dpad-up" data-drive="0,-1" aria-label="Drive forward">&#9650;</button>
+              <button type="button" class="demo-chip dpad-btn dpad-left" data-drive="-1,0" aria-label="Drive left">&#9664;</button>
+              <button type="button" class="demo-chip dpad-btn dpad-down" data-drive="0,1" aria-label="Drive backward">&#9660;</button>
+              <button type="button" class="demo-chip dpad-btn dpad-right" data-drive="1,0" aria-label="Drive right">&#9654;</button>
+            </div>
             <button type="button" class="demo-chip" data-cmd="spin">spin</button>
             <button type="button" class="demo-chip" data-cmd="dance">dance</button>
             <button type="button" class="demo-chip" data-cmd="look">look</button>
@@ -256,9 +261,9 @@
   </div>
 </footer>
 
-<script src="script.js?v=20261001-0150"></script>
-<script src="arch-kit.js?v=20261001-0150" defer></script>
-    <script src="world3d.js?v=20261001-0150" defer></script>
+<script src="script.js?v=20261001-0220"></script>
+<script src="arch-kit.js?v=20261001-0220" defer></script>
+    <script src="world3d.js?v=20261001-0220" defer></script>
 <script src="owner.js" defer></script>
 </body>
 </html>
