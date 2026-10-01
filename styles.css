@@ -741,6 +741,13 @@ body.demo-locked { overflow: hidden; }
   box-shadow: 0 10px 36px rgba(0, 0, 0, 0.55);
 }
 #demoFull:fullscreen .demo-log, #demoFull:-webkit-full-screen .demo-log,
+/* Safe-area: keep the floating terminal clear of the home indicator / notch
+   in fullscreen and inside the WKWebView. Zero-op where insets are unsupported. */
+#demoFull:fullscreen .demo-term, #demoFull:-webkit-full-screen .demo-term,
+#demoFull.demo-pseudo .demo-term {
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
 #demoFull.demo-pseudo .demo-log { min-height: 0; max-height: none; }
 /* Pseudo-fullscreen overlay: the touch-device path. Native element fullscreen
    on touch OSes is dismissed by OS gestures — a downward orbit drag or the
@@ -927,8 +934,17 @@ body.demo-locked { overflow: hidden; }
   border: 1px solid var(--line); border-radius: 999px;
   color: var(--concrete); padding: 6px 14px; cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
+  touch-action: manipulation; /* no double-tap zoom delay on iOS */
+  -webkit-tap-highlight-color: transparent;
 }
 .demo-chip:hover { border-color: var(--forge); color: var(--forge); }
+/* Theme audio toggle: a chip that shows its on/off state. Default off. */
+.demo-chip.theme-toggle[aria-pressed="true"] {
+  border-color: var(--forge);
+  color: var(--forge);
+  background: rgba(232, 93, 26, 0.08);
+}
+.demo-chip.theme-toggle:disabled { opacity: 0.45; cursor: default; }
 /* D-pad: multi-directional drive control (replaces the single "forward" chip) */
 .dpad {
   display: grid; grid-template-columns: repeat(3, 46px); grid-auto-rows: 36px;
