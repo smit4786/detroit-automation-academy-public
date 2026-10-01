@@ -334,9 +334,11 @@
   function boot() {
     if (booted) return;
     booted = true;
+    var bootT0 = (window.performance && window.performance.now) ? window.performance.now() : 0;
+    boot._t0 = bootT0; // picked up by the first-frame block for the boot-time log
     // The boot journal + tier decision happen BEFORE the first byte of
     // geometry: a constrained device (every iPhone) boots a reduced district
-    // and streams the far field later — never 20 sq mi up front.
+    // and streams the surrounding ring later — never the far field up front.
     try {
       if (window.DAAStability && window.DAAStability.detectBootMode) {
         bootMode = window.DAAStability.detectBootMode();
@@ -374,14 +376,17 @@
   function init(THREE, OrbitControls, STLLoader, mode) {
     var W = mount.clientWidth || 600, H = mount.clientHeight || 420;
     // 'lite'/'safe': constrained device or a previous crash — reduced
-    // district, no MSAA (halves the framebuffer), far field streams later
-    // or on tap instead of building 20 sq mi synchronously.
+    // district, no MSAA (halves the framebuffer). 'lite' streams the 1 sq mi
+    // surrounding ring after first frame on idle; 'safe' skips it entirely.
     var lite = (mode === 'lite' || mode === 'safe');
     var renderer;
     try {
       renderer = new THREE.WebGLRenderer({ antialias: !lite, alpha: true });
     } catch (e) { fallback(); return; }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    // iPadOS: start at DPR 1. The stability governor (stability.js) owns the
+    // pixel ratio after boot and raises it only on measured frame-time
+    // headroom — never speculatively.
+    renderer.setPixelRatio(1);
     renderer.setSize(W, H);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -436,11 +441,11 @@
     // the procedural builds (workshop + corktown + innovation + thinkabit +
     // riverfront + guideway via window.DAAArchKit, plus streetscape,
     // furniture, vehicles, district-expansion, groundwork, promenade,
-    // region-expansion, chicago-hsr and railways)
-    // Stability rescue (2026-10-01): the loader total is computed from the
-    // assembled build queue below — the count differs by boot mode, because
-    // 'lite'/'safe' defer the far-field rings (R4 + R5 phases) until after
-    // first frame instead of building 20 sq mi up front.
+    // region-expansion, chicago-hsr, railways and stations)
+    // Rescope (2026-10-01): one square mile. The loader total is computed
+    // from the assembled build queue below — the count differs by boot mode,
+    // because 'lite' streams the R4 surrounding ring after first frame and
+    // 'safe' skips it, instead of building it up front.
     var loadTotal = 0;
     var loadDone = 0;
     var loadCountEl = mount.querySelector('.world3d-count');
@@ -470,14 +475,14 @@
       });
     }
 
-    // ---- far field: R4 (1 sq mi ring) + R5 (20 sq mi ring) ----
-    // 'full' mode builds these as sliced tasks in the initial queue.
-    // 'lite' boots the reduced district and streams them after first frame
-    // on idle; 'safe' waits for the user's tap. The R4 group handle feeds
-    // the adaptive-quality governor (far-field density step).
+    // ---- surrounding ring: R4 (the 1 sq mi district fabric) ----
+    // 'full' mode builds it as a sliced task in the initial queue. 'lite'
+    // boots the core district and streams it after first frame on idle;
+    // 'safe' (a previous boot died) skips it — the core district alone must
+    // load. The R4 group handle feeds the adaptive-quality governor
+    // (far-field density step). (Round 5's outer ring was removed in the
+    // 2026-10-01 one-square-mile rescope.)
     var farFieldGroup = null;
-    var farFieldGroupR5 = null;
-    var r5GroundPx = lite ? 1024 : 2048; // 1024 quarters ground texture memory
     function farFieldTasks() {
       var tasks = [];
       tasks.push(function () {
@@ -492,27 +497,6 @@
         if (stab) { try { stab.setFarField(farFieldGroup); } catch (e) {} }
         bumpLoadCount();
       });
-      var r5p = null;
-      try {
-        if (window.DAARegionExpansionR5 && window.DAARegionExpansionR5.createPhased) {
-          r5p = window.DAARegionExpansionR5.createPhased(THREE, { groundPx: r5GroundPx });
-          scene.add(r5p.group);
-        }
-      } catch (e) {
-        if (window.console && console.warn) console.warn('[world3d] region-expansion-r5 setup failed:', e);
-        r5p = null;
-      }
-      if (r5p) {
-        farFieldGroupR5 = r5p.group;
-        r5p.phases.forEach(function (ph) {
-          tasks.push(function () {
-            try { ph.run(); } catch (e) {
-              if (window.console && console.warn) console.warn('[world3d] ' + ph.name + ' build failed:', e);
-            }
-            bumpLoadCount();
-          });
-        });
-      }
       return tasks;
     }
 
@@ -532,18 +516,13 @@
       var l = mount.querySelector('.world3d-loading');
       if (l) l.style.display = 'none';
     }
-    function showFarFieldChip() {
-      var b = document.getElementById('farFieldChip');
-      if (b) b.hidden = false;
-    }
-    function hideFarFieldChip() {
-      var b = document.getElementById('farFieldChip');
-      if (b) b.hidden = true;
-    }
+    // Stream the surrounding ring after first frame ('lite' mode). The
+    // journal entry is written BEFORE the first streamed task runs and
+    // 'firstFrame' is marked after it completes: a tab killed mid-stream
+    // reboots into 'safe' instead of re-running the same fatal stream.
     function streamFarField() {
       if (farStreamed || farStreaming) return;
       farStreaming = true;
-      hideFarFieldChip();
       // Journal the stream: if the tab dies mid-stream, the journal is
       // still present on the next boot and detectBootMode() drops to
       // 'safe' instead of re-running the same fatal stream.
@@ -563,12 +542,28 @@
       }
     }
     function onFirstFrame() {
-      if (mode === 'lite' || mode === 'safe') {
-        // Crash-loop protection: the far field (20 sq mi) loads on one
-        // explicit tap. Auto-streaming it ~1.5 s after first paint kept
-        // killing the tab AFTER the journal was cleared, so the next boot
-        // never entered safe mode — a crash loop with no escape.
-        showFarFieldChip();
+      // Draw-call budget (iPadOS): ~80 initial draw calls. One log per
+      // boot — a warn, never a crash, when the initial scene exceeds it.
+      try {
+        var dcalls = renderer.info && renderer.info.render ? renderer.info.render.calls : -1;
+        if (window.console && dcalls >= 0) {
+          var dmsg = '[world3d] initial draw calls: ' + dcalls + ' (budget ~80)';
+          if (dcalls > 80) window.console.warn(dmsg); else window.console.info(dmsg);
+        }
+      } catch (e) {}
+      if (mode === 'lite') {
+        // Crash-loop protection: the surrounding ring streams on ONE idle
+        // callback after first frame. The stream journals BEFORE it starts
+        // (see streamFarField): a tab killed mid-stream reboots into 'safe'
+        // instead of re-running the same fatal stream — a crash loop with
+        // no escape. 'safe' never streams: the core district alone must load.
+        try {
+          if (window.DAAStability && window.DAAStability.whenIdle) {
+            window.DAAStability.whenIdle(streamFarField);
+          } else {
+            setTimeout(streamFarField, 1500);
+          }
+        } catch (e) {}
       }
     }
     var base = 'assets/world/';
@@ -711,10 +706,20 @@
       }
     });
 
-    // Far field (R4 + R5): 'full' mode builds the rings as sliced tasks in
-    // the initial queue; 'lite'/'safe' defer them to streamFarField() after
-    // first frame (idle) or on the user's tap. See farFieldTasks() above.
-    if (!lite) {
+    // Stations: enclosed station buildings on the four open C-loop
+    // platforms, the Central Interchange hall at Academy HQ, and the
+    // intercity transfer building completion. Synchronous and local;
+    // one overlay step.
+    buildStep('stations', function () {
+      if (window.DAAStations && window.DAAStations.buildStations) {
+        scene.add(window.DAAStations.buildStations(THREE));
+      }
+    });
+
+    // Surrounding ring (R4): 'full' mode builds it as a sliced task in the
+    // initial queue; 'lite' streams it after first frame (see onFirstFrame);
+    // 'safe' skips it. See farFieldTasks() above.
+    if (mode === 'full') {
       farFieldTasks().forEach(function (t) { buildTasks.push(t); });
       farStreamed = true;
     }
@@ -946,6 +951,7 @@
     var cmd = { cvx: 0, cvz: 0, cvy: 0, exp: 0 }; // velocity commands + expiry (ms)
     var anim = null;       // {kind, t0, dur}
     var camTween = null;   // {p0, p1, t} — camera glide for the focus command
+    var rideState = null;  // { name } while the camera is aboard a vehicle
     var keys = {};
     var driveArmed = false;
     mount.addEventListener('pointerenter', function () { driveArmed = true; });
@@ -1017,6 +1023,22 @@
         try { railMultilevel.update(dt); }
         catch (e) { railMultilevel = null; if (window.console && console.warn) console.warn('[world3d] rail-multilevel update failed:', e); }
       }
+      // Ride mode: the camera travels with the boarded vehicle. The vehicle
+      // list is tiny (3 services), so a per-frame state lookup is fine.
+      if (rideState && railVehicles && typeof railVehicles.getState === 'function') {
+        try {
+          var _rsv = railVehicles.getState(), _cur = null;
+          for (var _ri = 0; _ri < _rsv.length; _ri++) {
+            if (_rsv[_ri].name === rideState.name) { _cur = _rsv[_ri]; break; }
+          }
+          if (_cur) {
+            var _fx = Math.sin(_cur.yaw), _fz = Math.cos(_cur.yaw);
+            camera.position.set(_cur.x - _fx * 5.5, _cur.y + 3.4, _cur.z - _fz * 5.5);
+            camera.lookAt(_cur.x + _fx * 9, _cur.y + 1.2, _cur.z + _fz * 9);
+            controls.target.set(_cur.x, _cur.y, _cur.z);
+          }
+        } catch (e) {}
+      }
       // physics state → meshes
       botGroup.position.set(st.px, st.py - st.gear * 0.4, st.pz);
       botGroup.rotation.y = st.yaw;
@@ -1086,9 +1108,12 @@
         if (camTween.t >= 1) camTween = null;
       }
 
-      // camera follows the drone loosely (tracks altitude too)
-      controls.target.lerp(_tgtV.set(st.px, st.py, st.pz), 0.04);
-      controls.update();
+      // camera follows the drone loosely (tracks altitude too) — unless the
+      // camera is aboard a vehicle (ride mode drives the camera itself)
+      if (!rideState) {
+        controls.target.lerp(_tgtV.set(st.px, st.py, st.pz), 0.04);
+        controls.update();
+      }
       try {
         renderer.render(scene, camera);
         if (!firstFrameDone) {
@@ -1097,6 +1122,15 @@
           // died mid-build -> next boot enters 'safe' mode.
           firstFrameDone = true;
           try { if (window.DAAStability) window.DAAStability.clearJournal(); } catch (e) {}
+          // Boot-time log (iPadOS): first-frame target is ~3 s on iPad-class
+          // hardware. One line per boot — measure, don't guess.
+          try {
+            if (window.console && boot._t0) {
+              window.console.info('[world3d] first frame in ' +
+                Math.round(window.performance.now() - boot._t0) +
+                ' ms (mode ' + mode + ', target ~3000)');
+            }
+          } catch (e) {}
           onFirstFrame();
         }
       } catch (e) {
@@ -1226,13 +1260,38 @@
       patrol: function () { if (droneAutonomy) droneAutonomy.setMode('patrol'); },
       follow: function () { if (droneAutonomy) droneAutonomy.setMode('follow'); },
       rtp: function () { if (droneAutonomy) droneAutonomy.setMode('rtp'); },
-      // Far-field streaming: auto-invoked on idle in 'lite' mode, or by the
-      // "Load full district" chip in 'safe' mode. No-op once streamed.
-      loadFarField: function () { streamFarField(); },
-      farFieldReady: function () { return farStreamed; }
+      // Ride the Forge Line: boards the Forge Pod — the camera rides with the
+      // vehicle until hopoff(). Boarding is explicit (the `ride` command or
+      // chip); grabbing the canvas (orbit) also hands the camera back.
+      ride: function () {
+        if (!railVehicles || typeof railVehicles.getState !== 'function') return 'none';
+        var svcs = railVehicles.getState(), pick = null, i;
+        for (i = 0; i < svcs.length; i++) {
+          if (svcs[i].name.indexOf('FORGE POD') >= 0 && svcs[i].state !== 'parked') { pick = svcs[i]; break; }
+        }
+        if (!pick) {
+          for (i = 0; i < svcs.length; i++) {
+            if (svcs[i].state !== 'parked') { pick = svcs[i]; break; }
+          }
+        }
+        if (!pick) return 'parked';
+        rideState = { name: pick.name };
+        controls.enabled = false;
+        return 'riding';
+      },
+      hopoff: function () {
+        if (!rideState) return 'already';
+        rideState = null;
+        controls.enabled = true;
+        return 'off';
+      },
+      riding: function () { return !!rideState; }
     };
-    // a manual orbit always wins over the focus glide
-    renderer.domElement.addEventListener('pointerdown', function () { camTween = null; });
+    // a manual orbit always wins over the focus glide — and over ride mode
+    renderer.domElement.addEventListener('pointerdown', function () {
+      camTween = null;
+      if (rideState) api.hopoff();
+    });
     window.DAAWorld = api;
   }
   
