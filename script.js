@@ -288,12 +288,13 @@
     printLine('demo-line-out', 'Training bot online. Type "help" \u2014 or "look" to start exploring.');
   })();
 
-  // Full-screen view for the 3D demo: native fullscreen on desktop, a fixed
-  // overlay on mobile. Native element fullscreen is flaky or absent on mobile
-  // OSes (iOS Safari exposes no API at all; Android gestures can drop it
-  // mid-session), so coarse-pointer devices get the overlay instead: nothing
-  // dismisses it except the toggle button or Escape, so driving the bot never
-  // kicks the user out of the full view.
+  // Full-screen view for the 3D demo: native fullscreen on fine-pointer
+  // desktops, a fixed overlay on touch devices. Native element fullscreen is
+  // flaky or absent on touch OSes — iOS Safari exposes no API at all, and on
+  // iPadOS a downward orbit drag or the keyboard appearing dismisses it
+  // mid-session — so any touch-capable device gets the overlay instead:
+  // nothing dismisses it except the toggle button or Escape, so driving the
+  // bot never kicks the user out of the full view.
   (function () {
     var btn = document.getElementById('demoFullscreen');
     var demo = document.getElementById('demoFull');
@@ -303,7 +304,8 @@
     var nativeOK = !!(enterFs && exitFs) &&
       (document.fullscreenEnabled || document.webkitFullscreenEnabled);
     var coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
-    var mode = (!coarse && nativeOK) ? 'native' : 'pseudo';
+    var touchCapable = (navigator.maxTouchPoints > 0) || ('ontouchstart' in window);
+    var mode = (!coarse && !touchCapable && nativeOK) ? 'native' : 'pseudo';
 
     function isOn() {
       if (mode === 'native') {
@@ -344,5 +346,25 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && mode === 'pseudo' && isOn()) set(false);
     });
+    // Terminal collapse toggle (fullscreen only): lets the 3D stage take 100%.
+    // Resets when fullscreen closes so the inline layout is never left collapsed.
+    var termToggle = document.getElementById('demoTermToggle');
+    var term = demo.querySelector('.demo-term');
+    function termReset() {
+      if (!term || !termToggle) return;
+      term.classList.remove('demo-term-collapsed');
+      termToggle.setAttribute('aria-expanded', 'true');
+      termToggle.innerHTML = '&#9662; Terminal';
+    }
+    if (termToggle && term) {
+      termToggle.addEventListener('click', function () {
+        var collapsed = term.classList.toggle('demo-term-collapsed');
+        termToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        termToggle.innerHTML = (collapsed ? '&#9656;' : '&#9662;') + ' Terminal';
+        nudge();
+      });
+      var _set = set;
+      set = function (on) { if (!on) termReset(); _set(on); };
+    }
     label();
   })();
