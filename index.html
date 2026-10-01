@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Detroit Automation Academy — Where Detroit Builds What's Next</title>
 <meta name="description" content="Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.">
 <link rel="icon" type="image/webp" href="assets/logo.webp">
@@ -170,7 +170,12 @@
             <button type="button" class="demo-chip" data-cmd="wave">wave</button>
             <button type="button" class="demo-chip" data-cmd="up">up</button>
             <button type="button" class="demo-chip" data-cmd="down">down</button>
+            <button type="button" class="demo-chip theme-toggle" id="themeToggle" aria-pressed="false" aria-label="Play the site theme music">♪ Theme: off</button>
           </div>
+          <audio id="themeAudio" loop preload="none" aria-label="Site theme music">
+            <source src="assets/audio/theme-loop.ogg" type="audio/ogg">
+            <source src="assets/audio/theme-loop.mp3" type="audio/mpeg">
+          </audio>
         </div>
       </div>
     </div>
@@ -366,19 +371,26 @@
   </div>
 </footer>
 
-<script src="script.js?v=20261001-0300"></script>
-<script src="arch-kit.js?v=20261001-0300" defer></script>
-<script src="streetscape.js?v=20261001-0300" defer></script>
-<script src="furniture.js?v=20261001-0300" defer></script>
-<script src="vehicles.js?v=20261001-0300" defer></script>
-<script src="district-expansion.js?v=20261001-0300" defer></script>
-<script src="groundwork.js?v=20261001-0300" defer></script>
-<script src="promenade.js?v=20261001-0300" defer></script>
-    <script src="region-expansion.js?v=20261001-0300" defer></script>
-<script src="chicago-hsr.js?v=20261001-0300" defer></script>
-<script src="railways.js?v=20261001-0300" defer></script>
-    <script src="region-expansion-r4.js?v=20261001-0345" defer></script>
-    <script src="world3d.js?v=20261001-0345" defer></script>
+<script src="script.js?v=20261001-0430"></script>
+<script src="arch-kit.js?v=20261001-0430" defer></script>
+<script src="streetscape.js?v=20261001-0430" defer></script>
+<script src="furniture.js?v=20261001-0430" defer></script>
+<script src="vehicles.js?v=20261001-0430" defer></script>
+<script src="district-expansion.js?v=20261001-0430" defer></script>
+<script src="groundwork.js?v=20261001-0430" defer></script>
+<script src="promenade.js?v=20261001-0430" defer></script>
+    <script src="region-expansion.js?v=20261001-0430" defer></script>
+<script src="chicago-hsr.js?v=20261001-0430" defer></script>
+<script src="railways.js?v=20261001-0430" defer></script>
+    <script src="region-expansion-r4.js?v=20261001-0430" defer></script>
+    <script src="region-expansion-r5.js?v=20261001-0430" defer></script>
+    <script src="heritage-car.js?v=20261001-0430" defer></script>
+    <script src="rail-vehicles.js?v=20261001-0430" defer></script>
+    <script src="drone-variants.js?v=20261001-0430" defer></script>
+    <script src="drone-autonomy.js?v=20261001-0430" defer></script>
+    <script src="rail-multilevel.js?v=20261001-0430" defer></script>
+    <script src="stability.js?v=20261001-0430" defer></script>
+    <script src="world3d.js?v=20261001-0430" defer></script>
 <script src="owner.js" defer></script>
 <script>
 /* Signal animation: scroll owns replay. When the animation scrolls back into
