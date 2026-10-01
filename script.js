@@ -235,8 +235,30 @@
       printLine('demo-line-out', 'Moves: forward · back · left · right · spin · wave · dance · jump');
       printLine('demo-line-out', 'Fly: takeoff · land · up · down (the bot is a quadcopter now)');
       printLine('demo-line-out', 'Explore: look · focus · go <north|east|south|west|place> · map · status');
+      printLine('demo-line-out', 'Ride: ride · hop off (board the Forge Pod on the Forge Line)');
       printLine('demo-line-out', 'Upkeep: scan · charge');
       printLine('demo-line-out', 'Fleet: patrol · follow · rtp (autonomous bee + scout drones)');
+    }
+
+    /* Ride the Forge Line: the camera boards the Forge Pod and travels with
+       it; `hop off` (or grabbing the canvas) hands the camera back. */
+    function rideLine() {
+      var w3 = need3d(); if (!w3) return;
+      if (w3.riding && w3.riding()) { printLine('demo-line-out', 'Already aboard — "hop off" steps you back.'); return; }
+      var res = w3.ride();
+      if (res === 'riding') {
+        printLine('demo-line-ok', 'Boarding the Forge Pod — riding the line. "hop off" steps you back.');
+      } else if (res === 'parked') {
+        printLine('demo-line-out', 'The line is parked right now.');
+      } else {
+        printLine('demo-line-out', 'The Forge Line is not running yet.');
+      }
+    }
+    function hopOff() {
+      var w3 = need3d(); if (!w3) return;
+      if (!w3.riding || !w3.riding()) { printLine('demo-line-out', 'Not aboard anything.'); return; }
+      w3.hopoff();
+      printLine('demo-line-ok', 'Hopped off. Mind the gap.');
     }
 
     function run(raw) {
@@ -250,6 +272,8 @@
       if (cmd === 'takeoff') { takeoffDrone(); return; }
       if (cmd === 'land') { landDrone(); return; }
       if (cmd === 'up' || cmd === 'down') { altitudeNudge(cmd); return; }
+      if (cmd === 'ride') { rideLine(); return; }
+      if (cmd === 'hop off' || cmd === 'hopoff' || cmd === 'alight') { hopOff(); return; }
       var parts = cmd.split(/\s+/);
       if (parts[0] === 'go') { travel(parts.slice(1).join(' ')); return; }
       if (parts.length === 1 && DIRS.indexOf(parts[0]) !== -1) { travel(parts[0]); return; }
@@ -287,27 +311,12 @@
       input.focus();
     });
 
-    document.querySelectorAll('.demo-chip:not(.dpad-btn):not(.theme-toggle):not(.farfield-chip)').forEach(function (chip) {
+    document.querySelectorAll('.demo-chip:not(.dpad-btn):not(.theme-toggle)').forEach(function (chip) {
       chip.addEventListener('click', function () {
         run(chip.getAttribute('data-cmd'));
         if (!coarsePointer) input.focus();
       });
     });
-
-    /* Far-field chip: shown only in 'safe' boot mode (a previous boot died
-       before first frame). One tap streams the R4/R5 far-field rings; the
-       chip hides itself once streaming starts. */
-    (function () {
-      var btn = document.getElementById('farFieldChip');
-      if (!btn) return;
-      btn.addEventListener('click', function () {
-        btn.disabled = true;
-        btn.textContent = 'Loading district…';
-        try {
-          if (window.DAAWorld && window.DAAWorld.loadFarField) window.DAAWorld.loadFarField();
-        } catch (e) {}
-      });
-    })();
 
     /* Theme audio: a visible toggle, default off, no autoplay ever.
        Starts only on the user's click; under reduced motion it stays inert. */
