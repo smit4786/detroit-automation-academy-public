@@ -10,6 +10,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=20261001-1500">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 <style>
   .forge-map { max-width: 560px; margin: 2rem auto 0; display: block; width: 100%; height: auto; }
   .forge-map .rail { stroke: #E85D1A; stroke-width: 6; fill: none; stroke-linecap: round; }
@@ -30,6 +38,13 @@
   .roots-list li { border-left: 3px solid #E85D1A; padding: .2rem 0 .2rem 1rem; }
   .roots-list strong { display: block; margin-bottom: .2rem; }
   .roots-list p { margin: 0; color: #9AA0A6; }
+  #transit-3d { width: 100%; height: 480px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(245,242,234,.14); background: #0C1116; margin-top: 1.25rem; }
+  #transit-3d canvas { display: block; width: 100% !important; height: 100% !important; }
+  .transit-3d-fallback { padding: 3rem 1.5rem; text-align: center; color: #9AA0A6; }
+  .route-legend { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; margin-top: .9rem; }
+  .route-legend span { display: inline-flex; align-items: center; gap: .45rem; font-size: .9rem; color: #F5F2EA; }
+  .route-legend i { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; }
+  #transit-3d-status { margin: .9rem 0 0; }
   .vehicle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
   .vehicle-card { border: 1px solid rgba(245,242,234,.14); border-radius: 12px; overflow: hidden; background: rgba(245,242,234,.03); }
   .vehicle-card img { display: block; width: 100%; height: auto; }
@@ -237,12 +252,22 @@
       <p class="kicker">Real Detroit today</p>
       <h2>The buses are <span class="accent">already running.</span></h2>
       <div class="prose">
-        <p>The Forge Line is modeled on the real transit Detroit already runs. Below: a live count of DDOT buses on Vernor, Woodward, Greenfield and Dexter right now, refreshed every minute from the agency&rsquo;s own vehicle feed.</p>
+        <p>The Forge Line is modeled on the real transit Detroit already runs. Below: a live count of DDOT buses on Vernor, Woodward, Greenfield and Dexter right now, refreshed every minute from the agency&rsquo;s own vehicle feed &mdash; plus a 3D map of the actual routes with live bus positions.</p>
       </div>
       <div id="live-transit" hidden>
         <p class="live-transit-line">Loading live positions&hellip;</p>
       </div>
-      <p class="fine">Live data: DDOT via Clever Devices BusTime. SMART live feed in progress.</p>
+      <div id="transit-3d-block">
+        <p class="live-transit-line" id="transit-3d-status">Loading 3D route map&hellip;</p>
+        <div id="transit-3d" role="img" aria-label="3D map of DDOT routes 1, 4, 10 and 16 with live bus positions"></div>
+        <div class="route-legend" aria-label="Route legend">
+          <span><i style="background:#E85D1A"></i>1 &middot; Vernor</span>
+          <span><i style="background:#FFB000"></i>4 &middot; Woodward</span>
+          <span><i style="background:#2ECC71"></i>10 &middot; Greenfield</span>
+          <span><i style="background:#4D96FF"></i>16 &middot; Dexter</span>
+        </div>
+      </div>
+      <p class="fine">Route shapes: DDOT GTFS. Live data: DDOT via Clever Devices BusTime. SMART live feed in progress.</p>
     </div>
   </section>
 
@@ -326,6 +351,7 @@
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
 <script src="forge-line-live.js?v=20261002-1845" defer></script>
+<script type="module" src="transit-3d.js?v=20261002-1900"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
