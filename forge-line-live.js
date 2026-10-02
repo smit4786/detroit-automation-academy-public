@@ -30,7 +30,7 @@
       var parts = Object.keys(byAgency).sort().map(function (a) {
         return a.toUpperCase() + ' ' + byAgency[a];
       });
-      var when = d.updated_at ? new Date(d.updated_at) : null;
+      var when = d.generated_at || d.updated_at ? new Date(d.generated_at || d.updated_at) : null;
       el.innerHTML =
         '<p class="live-transit-line"><strong>' + d.count + '</strong> buses on the road right now' +
         (parts.length ? ' (' + parts.join(' · ') + ')' : '') +
