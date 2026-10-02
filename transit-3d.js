@@ -14,7 +14,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-1900';
+  var STAMP = '20261002-1915';
   var POLL_MS = 60000;
   var MAX_BUS = 240;
   var DEG = Math.PI / 180;
@@ -43,7 +43,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   scene.fog = new THREE.Fog(0x0c1116, 30000, 70000);
 
   var camera = new THREE.PerspectiveCamera(42, 1, 100, 120000);
-  camera.position.set(0, 15000, 17500);
+  camera.position.set(0, 11800, 13800);
 
   var controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 0, 0);
@@ -68,7 +68,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var grid = new THREE.GridHelper(24000, 24, 0x2a3542, 0x182029);
   grid.position.y = 0.5;
   grid.material.transparent = true;
-  grid.material.opacity = 0.55;
+  grid.material.opacity = 0.3;
   scene.add(grid);
 
   function ribbonGeometry(pts, width, y) {
@@ -125,8 +125,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
 
   var busMesh = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(5, 4, 16),
-    new THREE.MeshLambertMaterial({ color: 0xffffff }),
+    new THREE.BoxGeometry(60, 42, 150),
+    new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x222222 }),
     MAX_BUS
   );
   busMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -142,7 +142,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var v = vehicles[i];
       if (v.lat == null || v.lon == null) continue;
       var p = project(v.lat, v.lon);
-      dummy.position.set(p[0], 12, p[1]);
+      dummy.position.set(p[0], 75, p[1]);
       dummy.rotation.set(0, Math.PI - (v.bearing || 0) * DEG, 0);
       dummy.updateMatrix();
       busMesh.setMatrixAt(n, dummy.matrix);
@@ -201,8 +201,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         var longest = null;
         route.paths.forEach(function (path) {
           if (path.length < 2) return;
-          scene.add(new THREE.Mesh(ribbonGeometry(path, 30, 3), casingMat));
-          scene.add(new THREE.Mesh(ribbonGeometry(path, 17, 4), mat));
+          scene.add(new THREE.Mesh(ribbonGeometry(path, 95, 5), casingMat));
+          scene.add(new THREE.Mesh(ribbonGeometry(path, 58, 6), mat));
           if (!longest || path.length > longest.length) longest = path;
         });
         if (longest) {
