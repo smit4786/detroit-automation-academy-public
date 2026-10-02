@@ -14,7 +14,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-1915';
+  var STAMP = '20261002-1925';
   var POLL_MS = 60000;
   var MAX_BUS = 240;
   var DEG = Math.PI / 180;
@@ -43,7 +43,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   scene.fog = new THREE.Fog(0x0c1116, 30000, 70000);
 
   var camera = new THREE.PerspectiveCamera(42, 1, 100, 120000);
-  camera.position.set(0, 11800, 13800);
+  camera.position.set(0, 14500, 9500);
 
   var controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 0, 0);
@@ -68,7 +68,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var grid = new THREE.GridHelper(24000, 24, 0x2a3542, 0x182029);
   grid.position.y = 0.5;
   grid.material.transparent = true;
-  grid.material.opacity = 0.3;
+  grid.material.opacity = 0.45;
   scene.add(grid);
 
   function ribbonGeometry(pts, width, y) {
@@ -124,35 +124,58 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return [(lon - proj.lon0) * proj.mLon, -(lat - proj.lat0) * proj.mLat];
   }
 
-  var busMesh = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(60, 42, 150),
-    new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x222222 }),
-    MAX_BUS
-  );
-  busMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  busMesh.count = 0;
-  busMesh.frustumCulled = false;
-  scene.add(busMesh);
-  var dummy = new THREE.Object3D();
-  var tmpColor = new THREE.Color();
+  // Live bus markers: pooled glow-dot sprites (always face camera, route-colored).
+  var DOT_MAX = MAX_BUS;
+
+  function makeDotTexture() {
+    var c = document.createElement('canvas');
+    c.width = c.height = 128;
+    var x = c.getContext('2d');
+    var g = x.createRadialGradient(64, 64, 4, 64, 64, 62);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.35, 'rgba(255,255,255,0.95)');
+    g.addColorStop(0.62, 'rgba(255,255,255,0.28)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g;
+    x.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  }
+  var dotTex = makeDotTexture();
+  var dotMats = {};
+  function dotMatFor(routeId) {
+    if (!dotMats[routeId]) {
+      var c = routeColors[routeId];
+      dotMats[routeId] = new THREE.SpriteMaterial({
+        map: dotTex,
+        color: c ? c.clone() : new THREE.Color(0xf5f2ea),
+        transparent: true, opacity: 0.95,
+        depthWrite: false, blending: THREE.AdditiveBlending
+      });
+    }
+    return dotMats[routeId];
+  }
+  var dotPool = [];
+  for (var di = 0; di < DOT_MAX; di++) {
+    var ds = new THREE.Sprite(dotMatFor('__default'));
+    ds.scale.set(340, 340, 1);
+    ds.visible = false;
+    scene.add(ds);
+    dotPool.push(ds);
+  }
 
   function updateBuses(vehicles) {
     var n = 0;
-    for (var i = 0; i < vehicles.length && n < MAX_BUS; i++) {
+    for (var i = 0; i < vehicles.length && n < DOT_MAX; i++) {
       var v = vehicles[i];
       if (v.lat == null || v.lon == null) continue;
       var p = project(v.lat, v.lon);
-      dummy.position.set(p[0], 75, p[1]);
-      dummy.rotation.set(0, Math.PI - (v.bearing || 0) * DEG, 0);
-      dummy.updateMatrix();
-      busMesh.setMatrixAt(n, dummy.matrix);
-      var c = routeColors[v.route_id];
-      busMesh.setColorAt(n, c ? tmpColor.copy(c) : tmpColor.set(0xf5f2ea));
+      var s = dotPool[n];
+      s.position.set(p[0], 30, p[1]);
+      s.material = dotMatFor(v.route_id);
+      s.visible = true;
       n++;
     }
-    busMesh.count = n;
-    busMesh.instanceMatrix.needsUpdate = true;
-    if (busMesh.instanceColor) busMesh.instanceColor.needsUpdate = true;
+    for (var j = n; j < DOT_MAX; j++) dotPool[j].visible = false;
     return n;
   }
 
@@ -193,16 +216,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         mLat: 111320,
         mLon: 111320 * Math.cos(data.projection.lat0 * DEG)
       };
-      var casingMat = new THREE.MeshBasicMaterial({ color: 0x0c1116, transparent: true, opacity: 0.9 });
+      var casingMat = new THREE.MeshBasicMaterial({ color: 0x0c1116, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
       data.routes.forEach(function (route) {
         var color = new THREE.Color(route.color);
         routeColors[route.id] = color;
-        var mat = new THREE.MeshBasicMaterial({ color: color });
+        var mat = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
         var longest = null;
         route.paths.forEach(function (path) {
           if (path.length < 2) return;
-          scene.add(new THREE.Mesh(ribbonGeometry(path, 95, 5), casingMat));
-          scene.add(new THREE.Mesh(ribbonGeometry(path, 58, 6), mat));
+          scene.add(new THREE.Mesh(ribbonGeometry(path, 95, 4), casingMat));
+          scene.add(new THREE.Mesh(ribbonGeometry(path, 58, 8), mat));
           if (!longest || path.length > longest.length) longest = path;
         });
         if (longest) {
