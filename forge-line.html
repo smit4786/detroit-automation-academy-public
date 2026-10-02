@@ -232,6 +232,20 @@
     </div>
   </section>
 
+  <section class="section" id="live">
+    <div class="wrap">
+      <p class="kicker">Real Detroit today</p>
+      <h2>The buses are <span class="accent">already running.</span></h2>
+      <div class="prose">
+        <p>The Forge Line is modeled on the real transit Detroit already runs. Below: a live count of DDOT buses on Vernor, Woodward, Greenfield and Dexter right now, refreshed every minute from the agency&rsquo;s own vehicle feed.</p>
+      </div>
+      <div id="live-transit" hidden>
+        <p class="live-transit-line">Loading live positions&hellip;</p>
+      </div>
+      <p class="fine">Live data: DDOT via Clever Devices BusTime. SMART live feed in progress.</p>
+    </div>
+  </section>
+
   <!-- STATUS -->
   <section class="section section-alt" id="status">
     <div class="wrap">
@@ -308,6 +322,10 @@
   </div>
 </footer>
 
+<script>
+  window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
+</script>
+<script src="forge-line-live.js?v=20261002-1815" defer></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
