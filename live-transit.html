@@ -79,6 +79,17 @@
   .map-tools button { width: 2.75rem; height: 2.75rem; border-radius: 50%; background: rgba(12,17,22,.85); border: 1px solid rgba(245,242,234,.2); color: #F5F2EA; font-size: 1.3rem; line-height: 1; cursor: pointer; touch-action: manipulation; backdrop-filter: blur(6px); font-family: "Inter", sans-serif; padding: 0; }
   .map-tools button:hover { border-color: #E85D1A; color: #E85D1A; }
   .map-tools button:active { background: #E85D1A; border-color: #E85D1A; color: #0C1116; }
+  .nav-overlay { position: absolute; inset: 0; z-index: 8; display: flex; align-items: center; justify-content: center; background: rgba(6,9,12,.72); backdrop-filter: blur(3px); }
+  .nav-overlay[hidden] { display: none; }
+  .nav-card { position: relative; width: 22rem; max-width: calc(100% - 3rem); max-height: calc(100% - 4rem); overflow-y: auto; background: rgba(12,17,22,.96); border: 1px solid rgba(245,242,234,.18); border-radius: 16px; padding: 1.2rem 1.3rem; font-family: "Inter", sans-serif; }
+  .nav-card h2 { font-family: "Space Grotesk", sans-serif; color: #F5F2EA; font-size: 1.1rem; margin: 0 0 .9rem; }
+  .nav-card .close { position: absolute; top: .5rem; right: .7rem; background: none; border: none; color: #9AA0A6; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: .4rem; touch-action: manipulation; }
+  .nav-card .close:hover { color: #F5F2EA; }
+  .nav-step { display: flex; gap: .8rem; align-items: flex-start; margin-bottom: .8rem; }
+  .nav-step:last-child { margin-bottom: 0; }
+  .nav-step .ico { flex: none; width: 2rem; height: 2rem; border-radius: 10px; background: rgba(232,93,26,.14); border: 1px solid rgba(232,93,26,.5); color: #E85D1A; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+  .nav-step b { display: block; color: #F5F2EA; font-size: .88rem; font-weight: 600; }
+  .nav-step span:last-child { color: #9AA0A6; font-size: .8rem; }
   .bus-card { position: absolute; left: 1.25rem; top: 5.5rem; width: 17rem; max-width: calc(100% - 2.5rem); background: rgba(12,17,22,.9); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: 1rem 1.1rem; backdrop-filter: blur(8px); }
   .bus-card[hidden] { display: none; }
   .bus-card h2 { font-family: "Space Grotesk", sans-serif; font-size: 1.05rem; margin: 0 0 .4rem; color: #F5F2EA; display: flex; align-items: center; gap: .5rem; }
@@ -164,9 +175,17 @@
       </div>
       <div class="map-hint">drag&nbsp;·&nbsp;orbit&nbsp;&nbsp;&nbsp;scroll&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;click bus&nbsp;·&nbsp;details</div>
       <div class="map-tools" role="group" aria-label="Map navigation">
+        <button id="nav-help" aria-label="Navigation help" aria-expanded="false">?</button>
         <button id="zoom-in" aria-label="Zoom in">+</button>
         <button id="zoom-out" aria-label="Zoom out">&minus;</button>
         <button id="view-reset" aria-label="Reset view">&#8962;</button>
+      </div>
+      <div class="nav-overlay" id="nav-overlay" hidden>
+        <div class="nav-card" role="dialog" aria-label="Map navigation help">
+          <button class="close" id="nav-close" aria-label="Close navigation help">&times;</button>
+          <h2>Navigating the map</h2>
+          <div id="nav-steps"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -197,7 +216,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2330"></script>
+<script type="module" src="live-transit.js?v=20261002-2340"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
