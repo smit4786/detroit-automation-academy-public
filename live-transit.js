@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2405';
+  var STAMP = '20261002-2410';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -362,7 +362,21 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var raycaster = new THREE.Raycaster();
   var pointerNDC = new THREE.Vector2();
   var downPos = null;
-  function pickBus(cx, cy) {
+  // Nearest bus within a touch-friendly screen radius (fingers are imprecise).
+  function pickNearestScreen(cx, cy, r) {
+    var best = null, bestD2 = 32 * 32;
+    for (var i = 0; i < busSlots.length; i++) {
+      var s = busSlots[i];
+      _p3.set(s.x, PILLAR_H / 2, s.z).project(camera);
+      if (_p3.z > 1 || _p3.z < -1) continue;
+      var sx = (_p3.x * 0.5 + 0.5) * r.width + r.left;
+      var sy = (-_p3.y * 0.5 + 0.5) * r.height + r.top;
+      var dx = sx - cx, dy = sy - cy, d2 = dx * dx + dy * dy;
+      if (d2 < bestD2) { bestD2 = d2; best = s.vehicle; }
+    }
+    return best;
+  }
+  function pickBus(cx, cy, touchSlop) {
     var r = renderer.domElement.getBoundingClientRect();
     pointerNDC.set(
       ((cx - r.left) / r.width) * 2 - 1,
@@ -376,12 +390,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         if (d && d.group.visible) bodies.push(d.body);
       }
       var hits = raycaster.intersectObjects(bodies);
-      return hits.length ? hits[0].object.userData.detail.vehicle : null;
+      if (hits.length) return hits[0].object.userData.detail.vehicle;
+    } else {
+      // Beacon heads are the visible target; cores are thin shafts.
+      var ih = raycaster.intersectObjects([pillarBeaconIM, pillarCoreIM]);
+      if (ih.length && ih[0].instanceId != null && busSlots[ih[0].instanceId]) {
+        return busSlots[ih[0].instanceId].vehicle;
+      }
     }
-    var ih = raycaster.intersectObject(pillarCoreIM);
-    if (ih.length && ih[0].instanceId != null && busSlots[ih[0].instanceId]) {
-      return busSlots[ih[0].instanceId].vehicle;
-    }
+    if (touchSlop) return pickNearestScreen(cx, cy, r);
     return null;
   }
   renderer.domElement.addEventListener('pointerdown', function (e) {
@@ -391,8 +408,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (!downPos) return;
     var dx = e.clientX - downPos[0], dy = e.clientY - downPos[1];
     downPos = null;
-    if (dx * dx + dy * dy > 36) return; // was a drag
-    var v = pickBus(e.clientX, e.clientY);
+    var isTouch = e.pointerType === 'touch';
+    if (dx * dx + dy * dy > (isTouch ? 169 : 36)) return; // was a drag (13px touch slop)
+    var v = pickBus(e.clientX, e.clientY, isTouch);
     if (v) showBus(v); else hideBus();
   });
   renderer.domElement.addEventListener('pointermove', function (e) {
