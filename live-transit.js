@@ -1091,21 +1091,46 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     stopIM.count = list.length;
     stopIM.instanceMatrix.needsUpdate = true;
     if (stopIM.instanceColor) stopIM.instanceColor.needsUpdate = true;
+    // Rebuilds recolor every instance: re-apply the selection highlight.
+    selectedStopIndex = selectedStop ? list.indexOf(selectedStop) : -1;
+    if (selectedStopIndex < 0 && selectedStop) hideStop();
+    else setStopSelectedColor(selectedStopIndex, true);
   }
 
-  // Selected-stop highlight: pulsing ground ring, same rate as everything else.
+  // Selected-stop highlight: a narrow pulsing ring hugging the pylon base
+  // plus the pylon itself painted white — unambiguous at any zoom.
   var selectedStop = null;
+  var selectedStopIndex = -1;
   var stopHighlight = new THREE.Mesh(
-    new THREE.RingGeometry(110, 175, 40),
+    new THREE.RingGeometry(30, 52, 40),
     new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false })
   );
   stopHighlight.rotation.x = -Math.PI / 2;
   stopHighlight.visible = false;
   scene.add(stopHighlight);
 
+  // Paint the selected pylon white (restore its route/paper color after).
+  // Called on select, deselect, and rebuild (toggles recolor everything).
+  function setStopSelectedColor(idx, on) {
+    if (idx < 0 || idx >= stopPickList.length || !stopIM.instanceColor) return;
+    var s = stopPickList[idx];
+    if (on) {
+      _stopTmpColor.set(0xffffff);
+    } else if (s.r.length > 1) {
+      _stopTmpColor.set(0xf5f2ea);
+    } else {
+      var rc = routeColors[s.r[0]];
+      if (rc) _stopTmpColor.copy(rc); else _stopTmpColor.set(0xf5f2ea);
+    }
+    stopIM.setColorAt(idx, _stopTmpColor);
+    stopIM.instanceColor.needsUpdate = true;
+  }
   function showStop(st) {
     if (!st) return;
+    setStopSelectedColor(selectedStopIndex, false);
     selectedStop = st;
+    selectedStopIndex = stopPickList.indexOf(st);
+    setStopSelectedColor(selectedStopIndex, true);
     $('stop-title').textContent = st.n || 'Stop';
     $('stop-id').textContent = st.id || '–';
     $('stop-nroutes').textContent = (st.r || []).length + ((st.r || []).length === 1 ? ' route' : ' routes');
@@ -1124,7 +1149,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       host.appendChild(chip);
     });
     $('stop-card').hidden = false;
-    stopHighlight.position.set(st.x, 26, st.z);
+    stopHighlight.position.set(st.x, 20, st.z);
     stopHighlight.visible = true;
     renderStopLive();
   }
@@ -1163,6 +1188,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     });
   }
   function hideStop() {
+    setStopSelectedColor(selectedStopIndex, false);
+    selectedStopIndex = -1;
     selectedStop = null;
     $('stop-card').hidden = true;
     stopHighlight.visible = false;
