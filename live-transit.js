@@ -859,7 +859,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   scene.add(stopGroup);
   var STOP_LOD_DIST = 15000;
 
+  var lastStopSig = null;
   function rebuildStops() {
+    // Stops only depend on route toggles: skip the full rebuild when the
+    // visible route set hasn't changed (e.g. polls that only flip dimming).
+    var sig = routeOrder.map(function (rid) { return routeIsOn(rid) ? '1' : '0'; }).join('');
+    if (sig === lastStopSig) return;
+    lastStopSig = sig;
     for (var i = stopGroup.children.length - 1; i >= 0; i--) {
       var c = stopGroup.children[i];
       stopGroup.remove(c);
@@ -939,9 +945,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (!g || !g.userData.guideMats) return;
     var dim = runningState[rid] === 'not-running' && !filterState.hideIdle && g.visible;
     g.userData.guideMats.forEach(function (e) {
+      if (e.dimmed === dim) return; // unchanged: never touch the material (needsUpdate forces a shader recompile)
+      e.dimmed = dim;
       e.mat.transparent = dim ? true : false;
       e.mat.opacity = dim ? DIM_OPACITY : e.opacity;
-      e.mat.needsUpdate = true;
     });
   }
 
