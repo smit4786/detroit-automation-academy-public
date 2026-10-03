@@ -117,6 +117,10 @@
   .bus-card dd { margin: 0; color: #F5F2EA; font-variant-numeric: tabular-nums; }
   .bus-card .close { position: absolute; top: .5rem; right: .6rem; background: none; border: none; color: #9AA0A6; font-size: 1.1rem; cursor: pointer; line-height: 1; padding: .25rem; }
   .bus-card .close:hover { color: #F5F2EA; }
+  .stop-routes { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem; }
+  .stop-route { display: inline-flex; align-items: center; gap: .35rem; background: rgba(245,242,234,.08); border: 1px solid rgba(245,242,234,.14); color: #F5F2EA; border-radius: 999px; padding: .3rem .6rem; font-size: .78rem; font-family: "Inter", sans-serif; }
+  .stop-route i { width: .65rem; height: .65rem; border-radius: 3px; display: inline-block; flex: none; }
+  .stop-route b { font-weight: 600; }
   .map-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #9AA0A6; padding: 2rem; text-align: center; }
   .page-note { border-top: 1px solid rgba(245,242,234,.1); }
   .page-note .fine { margin-top: 1rem; }
@@ -197,6 +201,11 @@
           <dt>Updated</dt><dd id="bus-card-updated">–</dd>
         </dl>
       </div>
+      <div class="bus-card" id="stop-card" hidden>
+        <button class="close" id="stop-close" aria-label="Close stop details">×</button>
+        <h2><span id="stop-title">Stop</span></h2>
+        <div class="stop-routes" id="stop-routes"></div>
+      </div>
       <div class="map-hint">drag&nbsp;·&nbsp;orbit&nbsp;&nbsp;&nbsp;scroll&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;click bus&nbsp;·&nbsp;details</div>
       <div class="map-tools" role="group" aria-label="Map navigation">
         <button id="nav-help" aria-label="Navigation help" aria-expanded="false">?</button>
@@ -243,7 +252,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2540"></script>
+<script type="module" src="live-transit.js?v=20261002-2550"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
