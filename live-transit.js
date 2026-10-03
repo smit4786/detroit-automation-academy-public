@@ -701,7 +701,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   function showBus(v) {
     if (!v) return;
-    hideStop();
     selectedVehicleId = v.vehicle_id;
     renderBusInstances(); // expand the selected indicator
     var sn = v.route_id;
@@ -1107,8 +1106,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function showStop(st) {
     if (!st) return;
     selectedStop = st;
-    selectedVehicleId = null;
-    renderBusInstances();
     $('stop-title').textContent = st.n || 'Stop';
     var host = $('stop-routes');
     host.innerHTML = '';
@@ -1124,7 +1121,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       chip.appendChild(b);
       host.appendChild(chip);
     });
-    $('bus-card').hidden = true;
     $('stop-card').hidden = false;
     stopHighlight.position.set(st.x, 26, st.z);
     stopHighlight.visible = true;
