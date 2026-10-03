@@ -242,7 +242,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   scene.add(dirArrowIM);
   var pillarMeshes = [pillarGlowIM, pillarCoreIM, pillarBeaconIM, pillarRingIM, dirArrowIM];
 
-  // Per-bus route badges (sprites): route number + destination, LOD-gated to street zooms.
+  // Per-bus route badges: number-only chips. Destinations live in the bus
+  // card (title + Destination row) — the floating badge stays compact.
   var badgeTexCache = {};
   function titleCase(s) {
     return String(s || '').toLowerCase().replace(/(?:^|\s)\S/g, function (m) { return m.toUpperCase(); });
@@ -255,14 +256,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (dShort.length > 24) dShort = dShort.slice(0, 23) + '…';
     return dShort;
   }
-  function routeBadgeTexture(rid, dest) {
-    var key = rid + '|' + (dest || '');
-    var t = badgeTexCache[key];
+  function routeBadgeTexture(rid) {
+    var t = badgeTexCache[rid];
     if (t) return t;
     var rc = routeColors[rid];
     var col = '#' + (rc ? rc.getHexString() : '9aa0a6');
-    var dShort = formatDest(rid, dest);
-    var label = String(rid) + (dShort ? ' · ' + dShort : '');
+    var label = String(rid);
     var c = document.createElement('canvas');
     var mc = c.getContext('2d');
     mc.font = '700 36px system-ui, -apple-system, sans-serif';
@@ -281,7 +280,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var tex = new THREE.CanvasTexture(c);
     tex.anisotropy = 4;
     t = { tex: tex, aspect: c.width / c.height };
-    badgeTexCache[key] = t;
+    badgeTexCache[rid] = t;
     return t;
   }
   var badgePool = [];
@@ -335,7 +334,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     streetLabelPool.push(_sl);
   }
   var lastStreetLabelUpdate = 0;
-  var MAX_STREET_LABELS = 8;
+  var MAX_STREET_LABELS = 6;
   function updateStreetLabels() {
     var now = performance.now();
     if (now - lastStreetLabelUpdate < 350) return;
@@ -345,7 +344,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     var labels = streetNameData && streetNameData.labels;
     var camDist = camera.position.distanceTo(controls.target);
-    var showMajor = camDist < 12000, showLocal = camDist < 6000;
+    var showMajor = camDist < 10000, showLocal = camDist < 5000;
     if (!labels || (!showMajor && !showLocal)) { clearLabels(); return; }
     var tx = controls.target.x, tz = controls.target.z;
     var R = camDist * 0.55, R2 = R * R;
@@ -364,7 +363,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     arr.sort(function (a, b) { return a.d2 - b.d2; });
     // Nearest-first placement with screen-space collision: no overlapping labels.
     var placed = [];
-    var h = camDist * 0.024;
+    var h = camDist * 0.02;
     var rw = renderer.domElement.clientWidth, rh = renderer.domElement.clientHeight;
     var pxPerM = rh / (2 * camDist * Math.tan(camera.fov * 0.5 * DEG));
     clearLabels();
@@ -535,20 +534,39 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
 
   // Per-bus route badges: one sprite per bus, shown only at close street-level zooms.
+  // Badge size tracks zoom (constant screen presence) via updateBadgeScales.
+  function badgeHeight() {
+    var camDist = camera.position.distanceTo(controls.target);
+    return Math.max(60, Math.min(170, camDist * 0.045));
+  }
   function updateBusBadges(n, yBase) {
     var show = camera.position.distanceTo(controls.target) < 7000;
+    var h = badgeHeight();
     for (var bi = 0; bi < BUS_MAX; bi++) {
       var sp = badgePool[bi];
       if (bi < n && show) {
         var bs = busSlots[bi];
-        var bt = routeBadgeTexture(bs.vehicle.route_id, bs.vehicle.destination);
+        var bt = routeBadgeTexture(bs.vehicle.route_id);
         if (sp.material.map !== bt.tex) { sp.material.map = bt.tex; sp.material.needsUpdate = true; }
-        sp.scale.set(150 * bt.aspect, 150, 1);
+        sp.userData.aspect = bt.aspect;
+        sp.scale.set(h * bt.aspect, h, 1);
         sp.position.set(bs.x, yBase, bs.z);
         sp.visible = true;
       } else {
         sp.visible = false;
       }
+    }
+  }
+  var lastBadgeScaleUpdate = 0;
+  function updateBadgeScales() {
+    var now = performance.now();
+    if (now - lastBadgeScaleUpdate < 500) return;
+    lastBadgeScaleUpdate = now;
+    var h = badgeHeight();
+    for (var i = 0; i < badgePool.length; i++) {
+      var sp = badgePool[i];
+      if (!sp.visible || !sp.userData.aspect) continue;
+      sp.scale.set(h * sp.userData.aspect, h, 1);
     }
   }
 
@@ -1560,6 +1578,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
             ((liveCounts[L.routeId] > 0) || camDist > 15000);
         }
         updateStreetLabels();
+        updateBadgeScales();
         renderer.render(scene, camera);
       });
     })
