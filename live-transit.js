@@ -183,7 +183,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var DIM_OPACITY = 0.22;
   var proj = null;
   var streetData = null; // vector streets (assets/detroit-streets.json)
+  var streetNameData = null; // street name anchors (assets/detroit-street-names.json)
   var stopData = null;   // raw stops array from ddot-routes-3d.json
+  var stopCloudMeta = []; // [{points, list}] parallel to stopGroup children, for tap picking
 
   function project(lat, lon) {
     return [(lon - proj.lon0) * proj.mLon, -(lat - proj.lat0) * proj.mLat];
@@ -296,6 +298,81 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var _e3 = new THREE.Euler();
   var chevGeo = new THREE.CircleGeometry(30, 3);
   chevGeo.rotateX(-Math.PI / 2);
+
+  // Street name labels: pooled sprites fed from detroit-street-names.json.
+  // Freeway/arterial names under 20 km, local names under 6 km, deduped by
+  // name within view, nearest 14 win.
+  var streetLabelCache = {};
+  function streetLabelTexture(name) {
+    var t = streetLabelCache[name];
+    if (t) return t;
+    var c = document.createElement('canvas');
+    var mc = c.getContext('2d');
+    mc.font = '500 34px system-ui, -apple-system, sans-serif';
+    var tw = Math.ceil(mc.measureText(name).width);
+    c.width = tw + 44; c.height = 56;
+    var x = c.getContext('2d');
+    x.fillStyle = 'rgba(9,13,17,0.72)';
+    x.beginPath();
+    if (x.roundRect) x.roundRect(2, 2, c.width - 4, 52, 12); else x.rect(2, 2, c.width - 4, 52);
+    x.fill();
+    x.fillStyle = '#c9ced4';
+    x.font = '500 34px system-ui, -apple-system, sans-serif';
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(name, c.width / 2, 29);
+    t = new THREE.CanvasTexture(c);
+    t.anisotropy = 4;
+    var o = { tex: t, aspect: c.width / c.height };
+    streetLabelCache[name] = o;
+    return o;
+  }
+  var streetLabelPool = [];
+  for (var _sli = 0; _sli < 14; _sli++) {
+    var _sl = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false, depthWrite: false, transparent: true, opacity: 0.95 }));
+    _sl.visible = false;
+    _sl.renderOrder = 35;
+    scene.add(_sl);
+    streetLabelPool.push(_sl);
+  }
+  var lastStreetLabelUpdate = 0;
+  function updateStreetLabels() {
+    var now = performance.now();
+    if (now - lastStreetLabelUpdate < 350) return;
+    lastStreetLabelUpdate = now;
+    var labels = streetNameData && streetNameData.labels;
+    var camDist = camera.position.distanceTo(controls.target);
+    var showMajor = camDist < 20000, showLocal = camDist < 6000;
+    if (!labels || (!showMajor && !showLocal)) {
+      for (var i = 0; i < streetLabelPool.length; i++) streetLabelPool[i].visible = false;
+      return;
+    }
+    var tx = controls.target.x, tz = controls.target.z;
+    var R = camDist * 0.55, R2 = R * R;
+    var best = {};
+    for (var j = 0; j < labels.length; j++) {
+      var l = labels[j];
+      if (l[3] === 2 ? !showLocal : !showMajor) continue;
+      var dx = l[1] - tx, dz = l[2] - tz;
+      var d2 = dx * dx + dz * dz;
+      if (d2 > R2) continue;
+      var e = best[l[0]];
+      if (!e || d2 < e.d2) best[l[0]] = { d2: d2, l: l };
+    }
+    var arr = [];
+    for (var k in best) arr.push(best[k]);
+    arr.sort(function (a, b) { return a.d2 - b.d2; });
+    var h = camDist * 0.042;
+    for (var s = 0; s < streetLabelPool.length; s++) {
+      var sp = streetLabelPool[s];
+      if (s < arr.length) {
+        var lt = streetLabelTexture(arr[s].l[0]);
+        if (sp.material.map !== lt.tex) { sp.material.map = lt.tex; sp.material.needsUpdate = true; }
+        sp.scale.set(h * lt.aspect, h, 1);
+        sp.position.set(arr[s].l[1], 90, arr[s].l[2]);
+        sp.visible = true;
+      } else sp.visible = false;
+    }
+  }
   pillarMeshes.forEach(function (im) {
     im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     im.count = 0;
@@ -506,6 +583,27 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     return best;
   }
+  // Tap a stop dot: raycast the stop point clouds, report name + routes.
+  function pickStop(cx, cy) {
+    if (!stopGroup || !stopGroup.visible || !stopCloudMeta.length) return null;
+    var r = renderer.domElement.getBoundingClientRect();
+    pointerNDC.set(
+      ((cx - r.left) / r.width) * 2 - 1,
+      -((cy - r.top) / r.height * 2 + 1)
+    );
+    raycaster.setFromCamera(pointerNDC, camera);
+    raycaster.params.Points.threshold = 90;
+    var objs = [];
+    for (var i = 0; i < stopCloudMeta.length; i++) objs.push(stopCloudMeta[i].points);
+    var hits = raycaster.intersectObjects(objs);
+    if (!hits.length || hits[0].index == null) return null;
+    for (var j = 0; j < stopCloudMeta.length; j++) {
+      if (stopCloudMeta[j].points === hits[0].object) {
+        return stopCloudMeta[j].list[hits[0].index] || null;
+      }
+    }
+    return null;
+  }
   function pickBus(cx, cy, touchSlop) {
     var r = renderer.domElement.getBoundingClientRect();
     pointerNDC.set(
@@ -541,7 +639,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var isTouch = e.pointerType === 'touch';
     if (dx * dx + dy * dy > (isTouch ? 169 : 36)) return; // was a drag (13px touch slop)
     var v = pickBus(e.clientX, e.clientY, isTouch);
-    if (v) showBus(v); else hideBus();
+    if (v) { showBus(v); return; }
+    var st = pickStop(e.clientX, e.clientY);
+    if (st) {
+      var rn = (st.r || []).join(', ');
+      showToast(st.n + (rn ? ' · routes ' + rn : ''));
+    } else hideBus();
   });
   renderer.domElement.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'mouse' || downPos) return;
@@ -900,6 +1003,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var sig = routeOrder.map(function (rid) { return routeIsOn(rid) ? '1' : '0'; }).join('');
     if (sig === lastStopSig) return;
     lastStopSig = sig;
+    stopCloudMeta = [];
     for (var i = stopGroup.children.length - 1; i >= 0; i--) {
       var c = stopGroup.children[i];
       stopGroup.remove(c);
@@ -938,6 +1042,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var p = new THREE.Points(g, m);
       p.frustumCulled = false;
       stopGroup.add(p);
+      stopCloudMeta.push({ points: p, list: list });
     }
     makeCloud(reg, 130, null);
     makeCloud(hub, 210, 0xf5f2ea);
@@ -1259,12 +1364,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       .catch(function () { return null; }),
     fetch('assets/detroit-streets.json?v=' + STAMP, { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }),
+    fetch('assets/detroit-street-names.json?v=' + STAMP, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
   ])
     .then(function (all) {
       var data = all[0];
       fleetData = all[1];
       streetData = all[2];
+      streetNameData = all[3];
       proj = {
         lat0: data.projection.lat0,
         lon0: data.projection.lon0,
@@ -1433,6 +1542,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           L.sprite.visible = runningState[L.routeId] !== 'not-running' &&
             ((liveCounts[L.routeId] > 0) || camDist > 15000);
         }
+        updateStreetLabels();
         renderer.render(scene, camera);
       });
     })
