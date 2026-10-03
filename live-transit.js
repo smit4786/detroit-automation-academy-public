@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2355';
+  var STAMP = '20261002-2400';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -447,12 +447,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
 
   // --- navigation tutorial overlay ---------------------------------------------
+  var ICO_FINDME = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>';
+  var ICO_FULL = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
   var NAV_STEPS_TOUCH = [
     ['\u2194', 'Drag', 'Move around the city'],
     ['+', 'Pinch', 'Zoom in and out'],
     ['\u27F3', 'Two-finger twist', 'Rotate the view'],
     ['\u25CF', 'Tap a bus', 'Vehicle number, model, speed and heading'],
-    ['\u2316', 'Find me', 'Center the map on your location'],
+    [ICO_FINDME, 'Find me', 'Center the map on your location'],
+    [ICO_FULL, 'Fullscreen', 'Fill the screen with the map'],
     ['\u29E9', 'Routes', 'Filter by group or individual route'],
     ['\u2302', 'Reset view', 'Return to the full-system view']
   ];
@@ -461,7 +464,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     ['+', 'Scroll', 'Zoom in and out'],
     ['\u2194', 'Right-drag', 'Pan across the city'],
     ['\u25CF', 'Click a bus', 'Vehicle number, model, speed and heading'],
-    ['\u2316', 'Find me', 'Center the map on your location'],
+    [ICO_FINDME, 'Find me', 'Center the map on your location'],
+    [ICO_FULL, 'Fullscreen', 'Fill the screen with the map'],
     ['\u29E9', 'Routes', 'Filter by group or individual route'],
     ['\u2302', 'Reset view', 'Return to the full-system view']
   ];
