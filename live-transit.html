@@ -68,6 +68,7 @@
   .f-box { width: .85rem; height: .85rem; border-radius: 4px; border: 1px solid #E85D1A; background: #E85D1A; flex: none; }
   .f-group-head[aria-pressed="false"] .f-box { background: transparent; }
   .f-group-head[aria-pressed="mixed"] .f-box { background: transparent; position: relative; }
+  .f-near { margin-bottom: .6rem; border-color: rgba(232,93,26,.45); }
   .f-group-head[aria-pressed="mixed"] .f-box::after { content: ""; position: absolute; left: 2px; right: 2px; top: 50%; height: 2px; margin-top: -1px; background: #E85D1A; border-radius: 1px; }
   .f-group.off .f-routes { opacity: .35; }
   .f-routes { display: flex; flex-wrap: wrap; gap: .4rem; padding: .55rem .1rem 0; }
@@ -188,6 +189,7 @@
           </span>
         </div>
         <div class="f-body">
+          <button class="f-group-head f-near" id="nearme-toggle" aria-pressed="false" title="Show only routes with a stop within 800 m of you"><span class="f-box"></span><b>Routes near me</b><span class="f-count">800 m</span></button>
         <div class="f-idle-row">
           <button id="hide-idle-toggle" aria-pressed="true"><span class="f-box"></span><b>Hide non-running routes</b></button>
         </div>
@@ -270,7 +272,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2630"></script>
+<script type="module" src="live-transit.js?v=20261002-2640"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
