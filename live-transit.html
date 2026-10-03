@@ -76,6 +76,7 @@
   .f-check[aria-pressed="false"] .f-box { background: transparent; }
   .f-check[aria-pressed="mixed"] .f-box { background: transparent; position: relative; }
   .f-near { margin-bottom: .6rem; border-color: rgba(232,93,26,.45); }
+  .f-near[aria-pressed="false"] .f-box { background: transparent; }
   .f-check[aria-pressed="mixed"] .f-box::after { content: ""; position: absolute; left: 2px; right: 2px; top: 50%; height: 2px; margin-top: -1px; background: #E85D1A; border-radius: 1px; }
   .f-group.off .f-routes { opacity: .35; }
   .f-routes { display: flex; flex-wrap: wrap; gap: .4rem; padding: .55rem .1rem 0; }
@@ -326,7 +327,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2700"></script>
+<script type="module" src="live-transit.js?v=20261002-2710"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
