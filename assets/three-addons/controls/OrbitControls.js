@@ -463,6 +463,12 @@ class OrbitControls extends EventDispatcher {
 		const rotateEnd = new Vector2();
 		const rotateDelta = new Vector2();
 
+		// DAA patch: true two-finger twist-to-rotate. Stock OrbitControls
+		// maps the two-finger *midpoint translation* to rotation, so a twist
+		// gesture produces jerky, direction-dependent motion. We track the
+		// inter-pointer angle instead and rotate 1:1 with the fingers.
+		let twistStart = 0;
+
 		const panStart = new Vector2();
 		const panEnd = new Vector2();
 		const panDelta = new Vector2();
@@ -891,6 +897,16 @@ class OrbitControls extends EventDispatcher {
 
 			if ( scope.enableRotate ) handleTouchStartRotate( event );
 
+			if ( pointers.length === 2 ) twistStart = getTwistAngle();
+
+		}
+
+		function getTwistAngle() {
+
+			const p0 = pointerPositions[ pointers[ 0 ] ];
+			const p1 = pointerPositions[ pointers[ 1 ] ];
+			return Math.atan2( p1.y - p0.y, p1.x - p0.x );
+
 		}
 
 		function handleTouchMoveRotate( event ) {
@@ -983,7 +999,22 @@ class OrbitControls extends EventDispatcher {
 
 			if ( scope.enableZoom ) handleTouchMoveDolly( event );
 
-			if ( scope.enableRotate ) handleTouchMoveRotate( event );
+			if ( scope.enableRotate ) handleTouchMoveTwist( event );
+
+		}
+
+		function handleTouchMoveTwist( event ) {
+
+			if ( pointers.length < 2 ) return;
+
+			const a = getTwistAngle();
+			let d = a - twistStart;
+			while ( d > Math.PI ) d -= 2 * Math.PI;
+			while ( d < -Math.PI ) d += 2 * Math.PI;
+			// Screen coords (y down): clockwise finger twist gives d > 0,
+			// and rotateLeft(positive) moves content with the fingers.
+			rotateLeft( d * scope.rotateSpeed );
+			twistStart = a;
 
 		}
 
