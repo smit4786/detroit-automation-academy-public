@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2310';
+  var STAMP = '20261002-2320';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -171,7 +171,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var routeOrder = [];
   var groupOrder = [];
   var labelSprites = [];  // { sprite, routeId }
-  var liveCounts = {};    // route id -> live bus count (visible)
+  var liveCounts = {};    // route id -> live bus count (raw, pre-filter)
   // Smart disabling: per-route running state. 'unknown' until the first live
   // poll (history paint never marks routes not-running). A route flips to
   // 'not-running' only after 3 consecutive polls with zero buses (grace
@@ -556,11 +556,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     el.className = warn ? 'feed-warn' : '';
   }
 
-  function updateCounts(perRoute) {
-    liveCounts = perRoute;
+  function updateCounts() {
     routeOrder.forEach(function (rid) {
       var el = $('cnt-' + rid);
-      if (el) el.textContent = String(perRoute[rid] || 0);
+      if (el) el.textContent = String(liveCounts[rid] || 0);
       var nr = runningState[rid] === 'not-running';
       var chip = document.querySelector('.f-chip[data-route="' + rid + '"]');
       if (chip) chip.classList.toggle('not-running', nr);
@@ -602,8 +601,22 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return changed;
   }
 
+  // Raw per-route bus counts from the live feed, BEFORE any visibility
+  // filtering. The running-state engine must see the street, not the render:
+  // counting only visible routes meant a hidden route could never recover,
+  // and user filtering ("All off") falsely marked running routes not-running.
+  function countByRoute(vehicles) {
+    var m = {};
+    for (var i = 0; i < vehicles.length; i++) {
+      var v = vehicles[i];
+      if (v.lat == null || v.lon == null) continue;
+      if (!routeById[v.route_id]) continue;
+      m[v.route_id] = (m[v.route_id] || 0) + 1;
+    }
+    return m;
+  }
+
   function updateBuses(vehicles) {
-    var perRoute = {};
     busSlots = [];
     for (var i = 0; i < vehicles.length && busSlots.length < BUS_MAX; i++) {
       var v = vehicles[i];
@@ -618,10 +631,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         rotY: rotY,
         color: routeColors[v.route_id] || new THREE.Color(0xf5f2ea)
       });
-      perRoute[v.route_id] = (perRoute[v.route_id] || 0) + 1;
     }
     renderBusInstances();
-    updateCounts(perRoute);
     return busSlots.length;
   }
 
@@ -637,11 +648,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         if (!d || !Array.isArray(d.vehicles)) throw new Error('bad payload');
         lastVehicles = d.vehicles;
         liveEverOk = true;
+        liveCounts = countByRoute(d.vehicles); // raw counts first: filters must not starve the state engine
         var n = updateBuses(d.vehicles);
         if (updateRunningState()) {
           applyFilters();   // re-applies visibility + dimming, re-renders buses
           syncFilterUI();
         }
+        updateCounts();
         lastTotal = n;
         setHeader(n, 'updated ' + fmtTime(d.generated_at ? new Date(d.generated_at) : null), false);
       })
