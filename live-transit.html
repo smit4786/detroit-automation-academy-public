@@ -85,6 +85,9 @@
   .map-tools button { width: 2.75rem; height: 2.75rem; border-radius: 50%; background: rgba(12,17,22,.85); border: 1px solid rgba(245,242,234,.2); color: #F5F2EA; font-size: 1.3rem; line-height: 1; cursor: pointer; touch-action: manipulation; backdrop-filter: blur(6px); font-family: "Inter", sans-serif; padding: 0; }
   .map-tools button:hover { border-color: #E85D1A; color: #E85D1A; }
   .map-tools button:active { background: #E85D1A; border-color: #E85D1A; color: #0C1116; }
+  #view-full[aria-pressed="true"] { background: rgba(232,93,26,.2); border-color: #E85D1A; color: #E85D1A; }
+  .map-stage.pseudo-full { position: fixed; inset: 0; height: 100vh; height: 100dvh; z-index: 60; }
+  body.pseudo-full-lock { overflow: hidden; }
   .nav-overlay { position: absolute; inset: 0; z-index: 8; display: flex; align-items: center; justify-content: center; background: rgba(6,9,12,.72); backdrop-filter: blur(3px); }
   .nav-overlay[hidden] { display: none; }
   .nav-card { position: relative; width: 22rem; max-width: calc(100% - 3rem); max-height: calc(100% - 4rem); overflow-y: auto; background: rgba(12,17,22,.96); border: 1px solid rgba(245,242,234,.18); border-radius: 16px; padding: 1.2rem 1.3rem; font-family: "Inter", sans-serif; }
@@ -190,6 +193,7 @@
         <button id="zoom-in" aria-label="Zoom in">+</button>
         <button id="zoom-out" aria-label="Zoom out">&minus;</button>
         <button id="view-reset" aria-label="Reset view">&#8962;</button>
+        <button id="view-full" aria-label="Toggle fullscreen" aria-pressed="false">&#9956;</button>
       </div>
       <div class="nav-overlay" id="nav-overlay" hidden>
         <div class="nav-card" role="dialog" aria-label="Map navigation help">
@@ -227,7 +231,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2345"></script>
+<script type="module" src="live-transit.js?v=20261002-2350"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
