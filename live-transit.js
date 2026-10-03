@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2400';
+  var STAMP = '20261002-2405';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -593,23 +593,80 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return lat <= STREET_BOUNDS.latN && lat >= STREET_BOUNDS.latS &&
            lon >= STREET_BOUNDS.lonW && lon <= STREET_BOUNDS.lonE;
   }
+  // --- 3D user representation (scaffold) -----------------------------------------
+  // Branded "you are here" marker: Forge Orange beam + floating Forge D badge.
+  // Built to extend: heading wedge, accuracy disc, and label hooks live here.
+  var YOU_BADGE_Y = 1250, YOU_BADGE_BOB = 70;
   var youMarker = (function () {
     var g = new THREE.Group();
-    var dot = new THREE.Mesh(
-      new THREE.SphereGeometry(70, 16, 12),
-      new THREE.MeshBasicMaterial({ color: 0xE85D1A })
+
+    var beam = new THREE.Mesh(
+      new THREE.CylinderGeometry(30, 30, 1000, 12, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0xE85D1A, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })
     );
-    dot.position.y = 130;
+    beam.position.y = 500;
+    g.add(beam);
+
     var ring = new THREE.Mesh(
-      new THREE.RingGeometry(110, 155, 32),
-      new THREE.MeshBasicMaterial({ color: 0xE85D1A, transparent: true, opacity: 0.7, side: THREE.DoubleSide })
+      new THREE.RingGeometry(120, 170, 40),
+      new THREE.MeshBasicMaterial({ color: 0xE85D1A, transparent: true, opacity: 0.65, side: THREE.DoubleSide, depthWrite: false })
     );
     ring.rotation.x = -Math.PI / 2;
-    ring.position.y = 60;
-    g.add(dot); g.add(ring);
+    ring.position.y = 40;
+    g.add(ring);
+
+    var accDisc = new THREE.Mesh(
+      new THREE.CircleGeometry(200, 40),
+      new THREE.MeshBasicMaterial({ color: 0xE85D1A, transparent: true, opacity: 0.12, depthWrite: false })
+    );
+    accDisc.rotation.x = -Math.PI / 2;
+    accDisc.position.y = 30;
+    g.add(accDisc);
+
+    var badge = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, depthTest: false }));
+    badge.scale.set(760, 760, 1);
+    badge.position.y = YOU_BADGE_Y;
+    g.add(badge);
+
     g.visible = false;
     scene.add(g);
-    return { group: g, ring: ring };
+
+    // Paint the Forge D badge; falls back to a serif "D" if the logo can't load.
+    function paintBadge(img) {
+      var S = 256, c = document.createElement('canvas');
+      c.width = c.height = S;
+      var x = c.getContext('2d');
+      x.beginPath(); x.arc(S / 2, S / 2, S / 2 - 4, 0, Math.PI * 2);
+      x.fillStyle = '#0C1116'; x.fill();
+      x.save();
+      x.beginPath(); x.arc(S / 2, S / 2, S / 2 - 16, 0, Math.PI * 2); x.clip();
+      if (img) { x.drawImage(img, 0, 0, S, S); }
+      else {
+        x.fillStyle = '#E85D1A';
+        x.font = '700 150px Georgia, "Times New Roman", serif';
+        x.textAlign = 'center'; x.textBaseline = 'middle';
+        x.fillText('D', S / 2, S / 2 + 10);
+      }
+      x.restore();
+      x.lineWidth = 10; x.strokeStyle = '#E85D1A';
+      x.beginPath(); x.arc(S / 2, S / 2, S / 2 - 10, 0, Math.PI * 2); x.stroke();
+      var tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = 4;
+      badge.material.map = tex;
+      badge.material.needsUpdate = true;
+    }
+    var logoImg = new Image();
+    logoImg.onload = function () { paintBadge(logoImg); };
+    logoImg.onerror = function () { paintBadge(null); };
+    logoImg.src = 'assets/logo.webp?v=' + STAMP;
+
+    return {
+      group: g, badge: badge, ring: ring, beam: beam,
+      setAccuracy: function (meters) {
+        var r = Math.max(60, Math.min(2000, meters || 200));
+        accDisc.scale.set(r / 200, r / 200, 1);
+      }
+    };
   })();
   var toastTimer = null;
   function hideToast() { $('map-toast').hidden = true; clearTimeout(toastTimer); }
@@ -634,7 +691,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   $('map-toast').addEventListener('click', hideToast);
   var locateBtn = $('view-locate'), locating = false;
-  function onLocated(lat, lon) {
+  function onLocated(lat, lon, accMeters) {
     if (!proj) { showToast('Map is still loading — try again in a moment.'); return; }
     if (!inCoverage(lat, lon)) {
       youMarker.group.visible = false;
@@ -648,6 +705,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     controls.target.set(p[0], 0, p[1]);
     camera.position.copy(controls.target).add(off);
     youMarker.group.position.set(p[0], 0, p[1]);
+    youMarker.setAccuracy(accMeters);
     youMarker.group.visible = true;
     locateBtn.setAttribute('aria-pressed', 'true');
   }
@@ -659,7 +717,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     navigator.geolocation.getCurrentPosition(
       function (pos) {
         locating = false;
-        onLocated(pos.coords.latitude, pos.coords.longitude);
+        onLocated(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
       },
       function (err) {
         locating = false;
@@ -1090,8 +1148,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         controls.update();
         updateLOD();
         if (youMarker.group.visible) {
-          var s = 1 + 0.25 * Math.sin(performance.now() / 400);
+          var t = performance.now();
+          var s = 1 + 0.22 * Math.sin(t / 420);
           youMarker.ring.scale.set(s, s, s);
+          youMarker.badge.position.y = YOU_BADGE_Y + YOU_BADGE_BOB * Math.sin(t / 650);
         }
         if (busMode !== lastBusMode) {
           lastBusMode = busMode;
