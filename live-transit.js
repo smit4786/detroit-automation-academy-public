@@ -1038,7 +1038,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var stopGroup = new THREE.Group();
   stopGroup.visible = false; // LOD-gated in the animation loop
   scene.add(stopGroup);
-  var STOP_LOD_DIST = 15000;
+  var STOP_LOD_DIST = 20000; // above the ~18.6km default home view: stops visible on load
 
   // Stop markers: one instanced pylon per stop. Height encodes importance:
   // 75m + 28m per serving route, so a 13-route mega-hub towers over a
