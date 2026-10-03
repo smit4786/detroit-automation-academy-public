@@ -350,6 +350,34 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     });
   }
 
+  // Pulse rate shared with the user-location ring: 1 + 0.22*sin(t/420).
+  function busPulse() { return 1 + 0.22 * Math.sin(performance.now() / 420); }
+
+  function writeBusMatrices(k, b, pulse) {
+    var isSel = !!selectedVehicleId && b.vehicle.vehicle_id === selectedVehicleId;
+    var exz = (isSel ? 1.55 : 1) * (isSel ? pulse : 1); // selected bus expands + pulses
+    _p3.set(b.x, PILLAR_H / 2, b.z);
+    _q3.identity();
+    _s3.set(exz, 1, exz);
+    _m4.compose(_p3, _q3, _s3);
+    pillarGlowIM.setMatrixAt(k, _m4);
+    pillarCoreIM.setMatrixAt(k, _m4);
+    _p3.set(b.x, PILLAR_H + 40, b.z);
+    _m4.compose(_p3, _q3, _s3);
+    pillarBeaconIM.setMatrixAt(k, _m4);
+    _p3.set(b.x, 6, b.z);
+    _s3.set(exz * 1.35, exz * 1.35, 1);
+    _m4.compose(_p3, _ringQ, _s3);
+    pillarRingIM.setMatrixAt(k, _m4);
+    // Direction arrowhead: flat triangle ahead of the pillar, apex forward.
+    _q3.setFromEuler(_e3.set(0, b.rotY, 0));
+    var fwdX = Math.cos(b.rotY), fwdZ = -Math.sin(b.rotY);
+    _p3.set(b.x + fwdX * 190, 24, b.z + fwdZ * 190);
+    _s3.set(exz, 1, exz);
+    _m4.compose(_p3, _q3, _s3);
+    dirArrowIM.setMatrixAt(k, _m4);
+  }
+
   function renderBusInstances() {
     var n = busSlots.length;
     if (busMode) {
@@ -394,32 +422,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     pillarMeshes.forEach(function (im) { im.visible = true; });
     for (var k = 0; k < n; k++) {
       var b = busSlots[k];
-      var isSel = !!selectedVehicleId && b.vehicle.vehicle_id === selectedVehicleId;
-      var exz = isSel ? 1.55 : 1; // selected bus expands
-      _p3.set(b.x, PILLAR_H / 2, b.z);
-      _q3.identity();
-      _s3.set(exz, 1, exz);
-      _m4.compose(_p3, _q3, _s3);
-      pillarGlowIM.setMatrixAt(k, _m4);
-      pillarCoreIM.setMatrixAt(k, _m4);
-      _p3.set(b.x, PILLAR_H + 40, b.z);
-      _m4.compose(_p3, _q3, _s3);
-      pillarBeaconIM.setMatrixAt(k, _m4);
-      _p3.set(b.x, 6, b.z);
-      _s3.set(exz * 1.35, exz * 1.35, 1);
-      _m4.compose(_p3, _ringQ, _s3);
-      pillarRingIM.setMatrixAt(k, _m4);
+      writeBusMatrices(k, b, 1);
       pillarGlowIM.setColorAt(k, b.color);
       pillarCoreIM.setColorAt(k, b.color);
       pillarBeaconIM.setColorAt(k, b.color);
       pillarRingIM.setColorAt(k, b.color);
-      // Direction arrowhead: flat triangle ahead of the pillar, apex forward.
-      _q3.setFromEuler(_e3.set(0, b.rotY, 0));
-      var fwdX = Math.cos(b.rotY), fwdZ = -Math.sin(b.rotY);
-      _p3.set(b.x + fwdX * 190, 24, b.z + fwdZ * 190);
-      _s3.set(exz, 1, exz);
-      _m4.compose(_p3, _q3, _s3);
-      dirArrowIM.setMatrixAt(k, _m4);
       dirArrowIM.setColorAt(k, b.color);
     }
     pillarMeshes.forEach(function (im) {
@@ -1363,6 +1370,26 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           var s = 1 + 0.22 * Math.sin(t / 420);
           youMarker.ring.scale.set(s, s, s);
           youMarker.badge.position.y = YOU_BADGE_Y + YOU_BADGE_BOB * Math.sin(t / 650);
+        }
+        // Selected bus pulses at the same rate as the user-location ring.
+        if (selectedVehicleId) {
+          var pulse = busPulse();
+          if (busMode) {
+            for (var pi = 0; pi < DETAIL_MAX; pi++) {
+              var pd = detailPool[pi];
+              if (pd && pd.group.visible && pd.vehicle && pd.vehicle.vehicle_id === selectedVehicleId) {
+                pd.group.scale.set(1.45 * pulse, 1.45 * pulse, 1.45 * pulse);
+              }
+            }
+          } else {
+            for (var si = 0; si < busSlots.length; si++) {
+              if (busSlots[si].vehicle.vehicle_id === selectedVehicleId) {
+                writeBusMatrices(si, busSlots[si], pulse);
+                break;
+              }
+            }
+            pillarMeshes.forEach(function (im) { im.instanceMatrix.needsUpdate = true; });
+          }
         }
         if (busMode !== lastBusMode) {
           lastBusMode = busMode;
