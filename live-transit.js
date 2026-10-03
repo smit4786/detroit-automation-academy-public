@@ -371,7 +371,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     for (var q = 0; q < arr.length && shown < MAX_STREET_LABELS; q++) {
       var lt = streetLabelTexture(arr[q].l[0]);
       var lw = h * lt.aspect * pxPerM, lh = h * pxPerM;
-      _p3.set(arr[q].l[1], 90, arr[q].l[2]).project(camera);
+      _p3.set(arr[q].l[1], 34, arr[q].l[2]).project(camera);
       if (_p3.z > 1 || _p3.z < -1) continue;
       var cxp = (_p3.x * 0.5 + 0.5) * rw, cyp = (-_p3.y * 0.5 + 0.5) * rh;
       var clash = false;
@@ -385,7 +385,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var sp = streetLabelPool[shown++];
       if (sp.material.map !== lt.tex) { sp.material.map = lt.tex; sp.material.needsUpdate = true; }
       sp.scale.set(h * lt.aspect, h, 1);
-      sp.position.set(arr[q].l[1], 90, arr[q].l[2]);
+      sp.position.set(arr[q].l[1], 34, arr[q].l[2]);
       sp.visible = true;
     }
   }
@@ -619,18 +619,35 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return best;
   }
   // Tap a stop pylon: raycast the instanced markers, report name + routes.
-  function pickStop(cx, cy) {
-    if (!stopGroup || !stopGroup.visible) return null;
+  // Touch gets a 44px screen-space nearest fallback so finger taps are
+  // forgiving at far zooms (mirrors the bus pillar fallback).
+  var _stopV3 = null;
+  function pickStop(cx, cy, isTouch) {
+    if (!stopGroup || !stopGroup.visible || !stopPickList.length) return null;
     var r = renderer.domElement.getBoundingClientRect();
     pointerNDC.set(
       ((cx - r.left) / r.width) * 2 - 1,
-      -((cy - r.top) / r.height * 2 + 1)
+      -(((cy - r.top) / r.height) * 2 - 1)
     );
     raycaster.setFromCamera(pointerNDC, camera);
-    var hits = raycaster.intersectObjects([stopRegIM, stopHubIM]);
-    if (!hits.length || hits[0].instanceId == null) return null;
-    var list = hits[0].object === stopHubIM ? stopPickLists[1] : stopPickLists[0];
-    return list[hits[0].instanceId] || null;
+    var hits = raycaster.intersectObject(stopIM);
+    if (hits.length && hits[0].instanceId != null) {
+      return stopPickList[hits[0].instanceId] || null;
+    }
+    if (!isTouch) return null;
+    if (!_stopV3) _stopV3 = new THREE.Vector3();
+    var sx = cx - r.left, sy = cy - r.top;
+    var best = null, bestD = 44;
+    for (var i = 0; i < stopPickList.length; i++) {
+      var s = stopPickList[i];
+      _stopV3.set(s.x, STOP_BASE_Y + stopHeight(s.r.length) / 2, s.z).project(camera);
+      if (_stopV3.z > 1) continue;
+      var px = (_stopV3.x * 0.5 + 0.5) * r.width;
+      var py = (-_stopV3.y * 0.5 + 0.5) * r.height;
+      var d = Math.hypot(px - sx, py - sy);
+      if (d < bestD) { bestD = d; best = s; }
+    }
+    return best;
   }
   function pickBus(cx, cy, touchSlop) {
     var r = renderer.domElement.getBoundingClientRect();
@@ -668,7 +685,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (dx * dx + dy * dy > (isTouch ? 169 : 36)) return; // was a drag (13px touch slop)
     var v = pickBus(e.clientX, e.clientY, isTouch);
     if (v) { showBus(v); return; }
-    var st = pickStop(e.clientX, e.clientY);
+    var st = pickStop(e.clientX, e.clientY, isTouch);
     if (st) showStop(st);
     else { hideBus(); hideStop(); }
   });
@@ -1023,64 +1040,58 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   scene.add(stopGroup);
   var STOP_LOD_DIST = 15000;
 
-  // Stop markers: instanced 3D pylons that rise above the elevated guideway
-  // (deck ~66-74m), so stops read as stations on the line instead of dots
-  // buried under it. Single-route stops take their route's color;
-  // multi-route hubs draw paper-white and taller. Two draw calls total.
+  // Stop markers: one instanced pylon per stop. Height encodes importance:
+  // 75m + 28m per serving route, so a 13-route mega-hub towers over a
+  // single-route stop the way it should. Single-route pylons take their
+  // route's color; multi-route hubs draw paper-white. One draw call.
   var STOP_MAX = 5120;
-  var stopRegIM = new THREE.InstancedMesh(
-    new THREE.CylinderGeometry(13, 17, 110, 8),
+  var stopIM = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(14, 18, 1, 8),
     new THREE.MeshLambertMaterial({ color: 0xffffff }), STOP_MAX);
-  var stopHubIM = new THREE.InstancedMesh(
-    new THREE.CylinderGeometry(20, 26, 150, 10),
-    new THREE.MeshLambertMaterial({ color: 0xffffff }), STOP_MAX);
-  stopRegIM.frustumCulled = false;
-  stopHubIM.frustumCulled = false;
-  stopRegIM.count = 0;
-  stopHubIM.count = 0;
-  stopGroup.add(stopRegIM);
-  stopGroup.add(stopHubIM);
-  var stopPickLists = [[], []];
+  stopIM.frustumCulled = false;
+  stopIM.count = 0;
+  stopGroup.add(stopIM);
+  var stopPickList = [];
+  var STOP_BASE_Y = 18; // street level: above the street lines, below casing
 
   var lastStopSig = null;
   var _stopTmpColor = new THREE.Color();
-  function fillStopInstances(im, list, fixedColor, yCenter) {
-    for (var i = 0; i < list.length; i++) {
-      var s = list[i];
-      _p3.set(s.x, yCenter, s.z);
-      _q3.identity();
-      _s3.set(1, 1, 1);
-      _m4.compose(_p3, _q3, _s3);
-      im.setMatrixAt(i, _m4);
-      if (fixedColor != null) _stopTmpColor.set(fixedColor);
-      else {
-        var rc = routeColors[s.r[0]];
-        if (rc) _stopTmpColor.copy(rc); else _stopTmpColor.set(0xf5f2ea);
-      }
-      im.setColorAt(i, _stopTmpColor);
-    }
-    im.count = list.length;
-    im.instanceMatrix.needsUpdate = true;
-    if (im.instanceColor) im.instanceColor.needsUpdate = true;
-  }
+  function stopHeight(nRoutes) { return 75 + 28 * nRoutes; }
   function rebuildStops() {
     // Stops only depend on route toggles: skip the full rebuild when the
     // visible route set hasn't changed (e.g. polls that only flip dimming).
     var sig = routeOrder.map(function (rid) { return routeIsOn(rid) ? '1' : '0'; }).join('');
     if (sig === lastStopSig) return;
     lastStopSig = sig;
-    var reg = [], hub = [];
+    var list = [];
     if (stopData && stopData.length) {
       stopData.forEach(function (s) {
         if (!s.r || !s.r.length) return;
         var on = s.r.some(function (rid) { return routeIsOn(rid); });
         if (!on) return;
-        (s.r.length > 1 ? hub : reg).push(s);
+        list.push(s);
       });
     }
-    stopPickLists = [reg, hub];
-    fillStopInstances(stopRegIM, reg, null, 55);
-    fillStopInstances(stopHubIM, hub, 0xf5f2ea, 75);
+    stopPickList = list;
+    for (var i = 0; i < list.length; i++) {
+      var s = list[i];
+      var h = stopHeight(s.r.length);
+      _p3.set(s.x, STOP_BASE_Y + h / 2, s.z);
+      _q3.identity();
+      _s3.set(1, h, 1);
+      _m4.compose(_p3, _q3, _s3);
+      stopIM.setMatrixAt(i, _m4);
+      if (s.r.length > 1) {
+        _stopTmpColor.set(0xf5f2ea);
+      } else {
+        var rc = routeColors[s.r[0]];
+        if (rc) _stopTmpColor.copy(rc); else _stopTmpColor.set(0xf5f2ea);
+      }
+      stopIM.setColorAt(i, _stopTmpColor);
+    }
+    stopIM.count = list.length;
+    stopIM.instanceMatrix.needsUpdate = true;
+    if (stopIM.instanceColor) stopIM.instanceColor.needsUpdate = true;
   }
 
   // Selected-stop highlight: pulsing ground ring, same rate as everything else.
@@ -1493,9 +1504,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           scene.add(lines);
           return lines;
         }
-        addTier(streetData.freeway, 0x8a94a0, 0.95, 6);
-        addTier(streetData.arterial, 0x4d5763, 0.9, 5);
-        streetLocal = addTier(streetData.local, 0x333c46, 0.8, 4);
+        addTier(streetData.freeway, 0x8a94a0, 0.95, 16);
+        addTier(streetData.arterial, 0x4d5763, 0.9, 15);
+        streetLocal = addTier(streetData.local, 0x333c46, 0.8, 14);
       })();
 
       var casingMat = new THREE.MeshBasicMaterial({ color: 0x0c1116, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
@@ -1519,9 +1530,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         // Stagger ribbon heights per route: coplanar overlapping guideways
         // at crossings z-fight and flicker; a few meters of separation is
         // invisible but kills the shimmer.
+        // Deliberate layer cake (meters): glow 2-11, streets 14-16,
+        // casing 24-28, street labels 34, deck 66-74. No two layers share
+        // a height where they can overlap.
         var yDeck = 66 + (ri % 5) * 2;
         var yGlow = 2 + (ri % 7) * 1.5;
-        var yCase = 4 + (ri % 5) * 1;
+        var yCase = 24 + (ri % 5) * 1;
         // Elevated guideway: the ribbon deck floats at y=66 with solid
         // skirts to the ground, so routes read as 3D structures. Lambert
         // materials let the directional light shade deck vs. sides.
