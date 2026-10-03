@@ -111,6 +111,12 @@
   .bus-card[hidden] { display: none; }
   .sel-eyebrow { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: #9AA0A6; margin: 0 0 .35rem; font-weight: 600; }
   #stop-card { top: auto; bottom: 4.5rem; }
+  .stop-live { margin-top: .6rem; }
+  .stop-live[hidden] { display: none; }
+  .stop-live-row { display: flex; align-items: center; gap: .5rem; font-size: .85rem; padding: .22rem 0; color: #F5F2EA; }
+  .stop-live-row i { width: .7rem; height: .7rem; border-radius: 3px; display: inline-block; flex: none; }
+  .stop-live-row b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stop-live-row span { margin-left: auto; color: #9AA0A6; font-size: .75rem; flex: none; font-variant-numeric: tabular-nums; }
   .bus-card h2 { font-family: "Space Grotesk", sans-serif; font-size: 1.05rem; margin: 0 0 .4rem; color: #F5F2EA; display: flex; align-items: center; gap: .5rem; padding-right: 1.7rem; }
   .bus-card h2 span { overflow-wrap: break-word; min-width: 0; }
   .bus-card h2 i { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; }
@@ -208,7 +214,15 @@
         <button class="close" id="stop-close" aria-label="Close stop details">×</button>
         <div class="sel-eyebrow">Stop</div>
         <h2><span id="stop-title">Stop</span></h2>
+        <dl>
+          <dt>Stop ID</dt><dd id="stop-id">–</dd>
+          <dt>Serving</dt><dd id="stop-nroutes">–</dd>
+        </dl>
         <div class="stop-routes" id="stop-routes"></div>
+        <div class="stop-live" id="stop-live" hidden>
+          <div class="sel-eyebrow">Live on these routes</div>
+          <div id="stop-live-list"></div>
+        </div>
       </div>
       <div class="map-hint">drag&nbsp;·&nbsp;orbit&nbsp;&nbsp;&nbsp;scroll&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;tap bus or stop&nbsp;·&nbsp;details</div>
       <div class="map-tools" role="group" aria-label="Map navigation">
@@ -256,7 +270,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2600"></script>
+<script type="module" src="live-transit.js?v=20261002-2610"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
