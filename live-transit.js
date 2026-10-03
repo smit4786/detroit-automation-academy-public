@@ -468,15 +468,37 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var pointerNDC = new THREE.Vector2();
   var downPos = null;
   // Nearest bus within a touch-friendly screen radius (fingers are imprecise).
+  // Pillar mode: distance to the pillar's full screen segment (base -> beacon),
+  // so tapping anywhere along the visible column selects the bus. Bus mode:
+  // distance to the model position on the ground.
   function pickNearestScreen(cx, cy, r) {
-    var best = null, bestD2 = 32 * 32;
+    var best = null, bestD2 = 48 * 48;
     for (var i = 0; i < busSlots.length; i++) {
       var s = busSlots[i];
-      _p3.set(s.x, PILLAR_H / 2, s.z).project(camera);
-      if (_p3.z > 1 || _p3.z < -1) continue;
-      var sx = (_p3.x * 0.5 + 0.5) * r.width + r.left;
-      var sy = (-_p3.y * 0.5 + 0.5) * r.height + r.top;
-      var dx = sx - cx, dy = sy - cy, d2 = dx * dx + dy * dy;
+      var d2;
+      if (busMode) {
+        _p3.set(s.x, 40, s.z).project(camera);
+        if (_p3.z > 1 || _p3.z < -1) continue;
+        var sx = (_p3.x * 0.5 + 0.5) * r.width + r.left;
+        var sy = (-_p3.y * 0.5 + 0.5) * r.height + r.top;
+        var ddx = sx - cx, ddy = sy - cy;
+        d2 = ddx * ddx + ddy * ddy;
+      } else {
+        _p3.set(s.x, 0, s.z).project(camera);
+        if (_p3.z > 1 || _p3.z < -1) continue;
+        var ax = (_p3.x * 0.5 + 0.5) * r.width + r.left;
+        var ay = (-_p3.y * 0.5 + 0.5) * r.height + r.top;
+        _p3.set(s.x, PILLAR_H + 40, s.z).project(camera);
+        if (_p3.z > 1 || _p3.z < -1) continue;
+        var bx = (_p3.x * 0.5 + 0.5) * r.width + r.left;
+        var by = (-_p3.y * 0.5 + 0.5) * r.height + r.top;
+        var vx = bx - ax, vy = by - ay;
+        var len2 = vx * vx + vy * vy;
+        var tt = len2 ? ((cx - ax) * vx + (cy - ay) * vy) / len2 : 0;
+        tt = tt < 0 ? 0 : (tt > 1 ? 1 : tt);
+        var px = ax + tt * vx - cx, py = ay + tt * vy - cy;
+        d2 = px * px + py * py;
+      }
       if (d2 < bestD2) { bestD2 = d2; best = s.vehicle; }
     }
     return best;
@@ -497,8 +519,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var hits = raycaster.intersectObjects(bodies);
       if (hits.length) return hits[0].object.userData.detail.vehicle;
     } else {
-      // Beacon heads are the visible target; cores are thin shafts.
-      var ih = raycaster.intersectObjects([pillarBeaconIM, pillarCoreIM]);
+      // Beacon heads, the visible glow column, then thin cores.
+      var ih = raycaster.intersectObjects([pillarBeaconIM, pillarGlowIM, pillarCoreIM]);
       if (ih.length && ih[0].instanceId != null && busSlots[ih[0].instanceId]) {
         return busSlots[ih[0].instanceId].vehicle;
       }
