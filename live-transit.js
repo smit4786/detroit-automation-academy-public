@@ -743,7 +743,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   if (isTouch) {
     var hint = document.querySelector('.map-hint');
     if (hint) {
-      hint.innerHTML = 'drag&nbsp;·&nbsp;move&nbsp;&nbsp;&nbsp;pinch&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;tap bus&nbsp;·&nbsp;details';
+      hint.innerHTML = 'drag&nbsp;·&nbsp;move&nbsp;&nbsp;&nbsp;pinch&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;tap bus or stop&nbsp;·&nbsp;details';
       hint.classList.add('touch');
     }
   }
