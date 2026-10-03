@@ -100,6 +100,8 @@
         <h2><i id="bus-chip"></i><span id="bus-title">Bus</span></h2>
         <dl>
           <dt>Vehicle</dt><dd id="bus-id">–</dd>
+          <dt>Model</dt><dd id="bus-model">–</dd>
+          <dt>Capacity</dt><dd id="bus-cap">–</dd>
           <dt>Speed</dt><dd id="bus-speed">–</dd>
           <dt>Heading</dt><dd id="bus-heading">–</dd>
           <dt>Updated</dt><dd id="bus-updated">–</dd>
@@ -114,9 +116,9 @@
       <p class="kicker">About this map</p>
       <h2>Real routes, <span class="accent">real buses.</span></h2>
       <div class="prose">
-        <p>Route shapes and stop positions come from DDOT&rsquo;s published GTFS schedule data; the bus markers are live vehicle positions from the agency&rsquo;s own feed, refreshed every 60 seconds. This is the same live layer behind the count on the <a href="forge-line.html#live">Forge Line page</a> — the Forge Line concept itself is modeled on the transit Detroit already runs.</p>
+        <p>Route shapes and stop positions come from DDOT&rsquo;s published GTFS schedule data; the bus markers are live vehicle positions from the agency&rsquo;s own feed, refreshed every 60 seconds. Zoom in close and the markers resolve into true-scale bus models — each bus is matched to its fleet model (dimensions and seating from the DDOT fleet roster) and oriented to its reported heading. This is the same live layer behind the count on the <a href="forge-line.html#live">Forge Line page</a> — the Forge Line concept itself is modeled on the transit Detroit already runs.</p>
       </div>
-      <p class="fine">Route shapes &amp; stops: DDOT GTFS. Street underlay: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors. Live data: DDOT via Clever Devices BusTime. SMART live feed in progress. Developers: see the <a href="api.html">transit data API</a>.</p>
+      <p class="fine">Route shapes &amp; stops: DDOT GTFS. Bus dimensions &amp; seating: DDOT fleet roster via <a href="https://cptdb.ca/wiki/index.php/Detroit_Department_of_Transportation">CPTDB wiki</a>. Street underlay: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors. Live data: DDOT via Clever Devices BusTime. SMART live feed in progress. Developers: see the <a href="api.html">transit data API</a>.</p>
     </div>
   </section>
 </main>
@@ -135,7 +137,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2225"></script>
+<script type="module" src="live-transit.js?v=20261002-2245"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
