@@ -691,14 +691,17 @@ const GUIDE = {
   ballotQuestions: [
     {
       title: "Constitutional convention question",
+      short: "Constitutional convention",
       text: "The constitutionally required every-16-years question: shall Michigan hold a convention to revise the state constitution? A 'yes' vote calls the convention; a 'no' vote keeps the current constitution."
     },
     {
       title: "Campaign-finance initiative (utilities and government contractors)",
+      short: "Campaign finance",
       text: "An initiated law on the November ballot (official designation: Michigan Utility and Government Contractor Campaign Finance Regulations Initiative). It would prohibit regulated electric and gas utilities, contractors with over $250,000 annually in government contracts, and people and organizations with substantial connections to them from making campaign contributions to officeholders who impact them, and expand donor-disclosure rules for political communications. Signatures certified July 2026; ballot language approved August 2026."
     },
     {
       title: "Southeast Michigan Public Historical Museum Authority millage (Wayne & Oakland counties)",
+      short: "Museum millage",
       text: "A 0.2-mill property tax (20 cents per $1,000 of taxable value) for ten years, 2026 through 2035. About $30 per year on a home with a $300,000 market value; Oakland County estimates about $16 million collected in the first year. The Authority's Articles of Incorporation — adopted by both county commissions in July 2026 — lock in the revenue split: 15% of each county's collections goes to that county for other public historical museums there (though either county may redirect its share to the two main museums); of the remainder, 60% to the Charles H. Wright Museum of African American History and 40% to the Detroit Historical Museum and Dossin Great Lakes Museum. No millage revenue may pay for maintenance deferred before the Articles were adopted. The Authority must meet under the Open Meetings Act, comply with FOIA, and obtain an annual audit under government auditing standards; its museum contracts must include free general admission for county residents, free tours, programming and transportation for schools and seniors, and teacher curriculum support. If voters in either county reject the millage, the Authority dissolves. Official ballot language not yet published — verify the wording on your sample ballot before voting.",
       support: "The campaign, Yes to Our Story (a ballot question committee registered with the Wayne County Clerk, funded by the two museums), says the millage delivers ten years of stable funding, free access for residents, students, and seniors, and support for dozens of smaller local history museums.",
       oppose: "No organized Vote No committee found. The recorded opposition: State Reps. Mike Harris, Donni Steele, and Tom Kuhn (all R) spoke against the 2024 enabling bill — Harris called it a tax on Oakland homeowners \u201cto subsidize museums in Detroit that they may not ever visit\u201d; Steele said people who don't visit museums shouldn't have to pay; Kuhn's transparency amendments (Open Meetings Act, FOIA, annual audits) were rejected before the bill passed 56-53. Note: the Authority's adopted Articles now bind it to the Open Meetings Act, FOIA, and annual government-standard audits. The Oakland County Board approved the Articles 11-6 on July 16, 2026 (no votes: Commissioners Hoffman, Joliat, Long, Smiley, Spisz, Weipert).",
