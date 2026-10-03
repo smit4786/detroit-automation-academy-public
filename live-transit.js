@@ -317,10 +317,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     x.textAlign = 'center'; x.textBaseline = 'middle';
     x.fillStyle = '#ffffff';
     x.font = '700 34px system-ui, -apple-system, sans-serif';
-    x.fillText(line1, c.width / 2, 42);
+    x.fillText(line1, c.width / 2 - 14, 42);
     x.fillStyle = '#c9ced4';
     x.font = '500 28px system-ui, -apple-system, sans-serif';
-    x.fillText(line2, c.width / 2, 88);
+    x.fillText(line2, c.width / 2 - 14, 88);
+    // Dismiss × — the whole pill is tappable, this is the affordance.
+    x.strokeStyle = '#9AA0A6'; x.lineWidth = 5; x.lineCap = 'round';
+    var xx = c.width - 36, xy = 34;
+    x.beginPath(); x.arc(xx, xy, 16, 0, Math.PI * 2); x.stroke();
+    x.beginPath();
+    x.moveTo(xx - 6, xy - 6); x.lineTo(xx + 6, xy + 6);
+    x.moveTo(xx + 6, xy - 6); x.lineTo(xx - 6, xy + 6);
+    x.stroke();
     if (busInfoSprite.material.map) busInfoSprite.material.map.dispose();
     var tex = new THREE.CanvasTexture(c);
     tex.anisotropy = 4;
@@ -335,17 +343,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     for (var i = 0; i < busSlots.length; i++) {
       var s = busSlots[i];
       if (s.vehicle && s.vehicle.vehicle_id === selectedVehicleId) {
-        // Beside the bus, not over it: offset in world units, above the
-        // deck in pillar mode, just over the roof in bus mode.
-        var y = busMode ? 150 : 300;
+        // Upper third of the column, clear of the route badge (y=430):
+        // reads as a unit with the badge without covering the pillar.
+        var y = busMode ? 150 : 540;
         busInfoSprite.position.set(s.x + 420, y, s.z);
         return;
       }
     }
     busInfoSprite.visible = false; // bus left the visible set
   }
-  function refreshBusInfo() {
-    if (!selectedVehicleId) { busInfoSprite.visible = false; return; }
+  function refreshBusInfo() {    if (!selectedVehicleId) { busInfoSprite.visible = false; return; }
     for (var i = 0; i < busSlots.length; i++) {
       var s = busSlots[i];
       if (s.vehicle && s.vehicle.vehicle_id === selectedVehicleId) {
@@ -399,32 +406,62 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   var lastStreetLabelUpdate = 0;
   var MAX_STREET_LABELS = 6;
+  // Street-label stability: without memory the picker churns — the nearest
+  // anchor per street jumps as you pan and the nearest-N set reshuffles, so
+  // labels pop and swap. We keep the previously shown anchor per street
+  // (within a 1.3x radius hysteresis) and place previously shown streets
+  // first, so the set only changes when it has to.
+  var prevStreetNames = []; // names shown last update, in placement order
+  var streetAnchorIdx = {}; // name -> index into streetNameData.labels
   function updateStreetLabels() {
     var now = performance.now();
     if (now - lastStreetLabelUpdate < 350) return;
     lastStreetLabelUpdate = now;
     function clearLabels() {
       for (var i = 0; i < streetLabelPool.length; i++) streetLabelPool[i].visible = false;
+      prevStreetNames = [];
+      streetAnchorIdx = {};
     }
     var labels = streetNameData && streetNameData.labels;
     var camDist = camera.position.distanceTo(controls.target);
     var showMajor = camDist < 10000, showLocal = camDist < 5000;
     if (!labels || (!showMajor && !showLocal)) { clearLabels(); return; }
     var tx = controls.target.x, tz = controls.target.z;
-    var R = camDist * 0.55, R2 = R * R;
+    var R = camDist * 0.55, R2 = R * R, keepR2 = R2 * 1.69; // 1.3x hysteresis
     var best = {};
     for (var j = 0; j < labels.length; j++) {
       var l = labels[j];
       if (l[3] === 2 ? !showLocal : !showMajor) continue;
+      // Stable anchor: keep showing the same point for this street while
+      // it's still reasonably close, instead of jumping anchor to anchor.
+      var kj = streetAnchorIdx[l[0]];
+      if (kj !== undefined && labels[kj] && labels[kj][0] === l[0] &&
+          (labels[kj][3] === 2 ? showLocal : showMajor)) {
+        var kdx = labels[kj][1] - tx, kdz = labels[kj][2] - tz;
+        var kd2 = kdx * kdx + kdz * kdz;
+        if (kd2 < keepR2 && !best[l[0]]) {
+          best[l[0]] = { d2: kd2, l: labels[kj], j: kj };
+          continue;
+        }
+      }
       var dx = l[1] - tx, dz = l[2] - tz;
       var d2 = dx * dx + dz * dz;
       if (d2 > R2) continue;
       var e = best[l[0]];
-      if (!e || d2 < e.d2) best[l[0]] = { d2: d2, l: l };
+      if (!e || d2 < e.d2) best[l[0]] = { d2: d2, l: l, j: j };
     }
     var arr = [];
     for (var k in best) arr.push(best[k]);
-    arr.sort(function (a, b) { return a.d2 - b.d2; });
+    // Stable order: streets already on screen keep their slots; newcomers
+    // fill by distance. Kills the reshuffle when the camera drifts.
+    var prevPos = {};
+    for (var pi = 0; pi < prevStreetNames.length; pi++) prevPos[prevStreetNames[pi]] = pi;
+    arr.sort(function (a, b) {
+      var pa = (a.l[0] in prevPos) ? prevPos[a.l[0]] : 1e9;
+      var pb = (b.l[0] in prevPos) ? prevPos[b.l[0]] : 1e9;
+      if (pa !== pb) return pa - pb;
+      return a.d2 - b.d2;
+    });
     // Nearest-first placement with screen-space collision: no overlapping labels.
     var placed = [];
     var h = camDist * 0.02;
@@ -451,6 +488,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       sp.scale.set(h * lt.aspect, h, 1);
       sp.position.set(arr[q].l[1], 34, arr[q].l[2]);
       sp.visible = true;
+      // Remember what's on screen so the next pass prefers stability.
+      prevStreetNames.push(arr[q].l[0]);
+      streetAnchorIdx[arr[q].l[0]] = arr[q].j;
     }
   }
   pillarMeshes.forEach(function (im) {
@@ -728,12 +768,25 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   renderer.domElement.addEventListener('pointerdown', function (e) {
     downPos = [e.clientX, e.clientY];
   });
+  // Tapping the info pill dismisses it (the × is the affordance; the
+  // whole pill is the target — fingers are imprecise).
+  function tapHitsBusInfo(cx, cy) {
+    if (!busInfoSprite.visible) return false;
+    var r = renderer.domElement.getBoundingClientRect();
+    pointerNDC.set(
+      ((cx - r.left) / r.width) * 2 - 1,
+      -(((cy - r.top) / r.height) * 2 - 1)
+    );
+    raycaster.setFromCamera(pointerNDC, camera);
+    return raycaster.intersectObject(busInfoSprite).length > 0;
+  }
   renderer.domElement.addEventListener('pointerup', function (e) {
     if (!downPos) return;
     var dx = e.clientX - downPos[0], dy = e.clientY - downPos[1];
     downPos = null;
     var isTouch = e.pointerType === 'touch';
     if (dx * dx + dy * dy > (isTouch ? 169 : 36)) return; // was a drag (13px touch slop)
+    if (tapHitsBusInfo(e.clientX, e.clientY)) { hideBus(); return; }
     var v = pickBus(e.clientX, e.clientY, isTouch);
     if (v) { showBus(v); return; }
     var st = pickStop(e.clientX, e.clientY, isTouch);
