@@ -1107,6 +1107,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (!st) return;
     selectedStop = st;
     $('stop-title').textContent = st.n || 'Stop';
+    $('stop-id').textContent = st.id || '–';
+    $('stop-nroutes').textContent = (st.r || []).length + ((st.r || []).length === 1 ? ' route' : ' routes');
     var host = $('stop-routes');
     host.innerHTML = '';
     (st.r || []).forEach(function (rid) {
@@ -1124,6 +1126,41 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     $('stop-card').hidden = false;
     stopHighlight.position.set(st.x, 26, st.z);
     stopHighlight.visible = true;
+    renderStopLive();
+  }
+  // Live arrivals on the selected stop's routes, refreshed on every poll.
+  function renderStopLive() {
+    var host = $('stop-live'), list = $('stop-live-list');
+    if (!host || !list) return;
+    if (!selectedStop || !lastVehicles || !lastVehicles.length) {
+      host.hidden = true; return;
+    }
+    var rows = [];
+    for (var i = 0; i < lastVehicles.length; i++) {
+      var v = lastVehicles[i];
+      if (selectedStop.r.indexOf(v.route_id) >= 0) rows.push(v);
+    }
+    if (!rows.length) { host.hidden = true; return; }
+    host.hidden = false;
+    list.innerHTML = '';
+    var now = Date.now();
+    rows.slice(0, 5).forEach(function (v) {
+      var row = document.createElement('div');
+      row.className = 'stop-live-row';
+      var dot = document.createElement('i');
+      var rc = routeColors[v.route_id];
+      dot.style.background = rc ? '#' + rc.getHexString() : '#F5F2EA';
+      row.appendChild(dot);
+      var b = document.createElement('b');
+      b.textContent = v.route_id + ' · ' + (formatDest(v.route_id, v.destination) || (routeNames[v.route_id] || 'DDOT'));
+      row.appendChild(b);
+      var t = document.createElement('span');
+      var when = v.updated_at ? new Date(v.updated_at) : null;
+      var mins = (when && !isNaN(when)) ? Math.max(0, Math.round((now - when.getTime()) / 60000)) : null;
+      t.textContent = mins == null ? '' : (mins < 1 ? 'just now' : mins + 'm ago');
+      row.appendChild(t);
+      list.appendChild(row);
+    });
   }
   function hideStop() {
     selectedStop = null;
@@ -1368,6 +1405,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       });
     }
     renderBusInstances();
+    if (selectedStop) renderStopLive();
     return busSlots.length;
   }
 
