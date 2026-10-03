@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2345';
+  var STAMP = '20261002-2350';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -535,6 +535,51 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   grip.addEventListener('pointerup', function () { endResize(true); });
   grip.addEventListener('pointercancel', function () { endResize(false); });
+
+  // --- fullscreen toggle (native API, CSS fallback for iOS Safari) -----------------
+  var stage = document.querySelector('.map-stage');
+  var fullBtn = $('view-full');
+  function nativeFsEl() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
+  function fsActive() { return !!nativeFsEl() || stage.classList.contains('pseudo-full'); }
+  function setFsBtn() {
+    var on = fsActive();
+    fullBtn.setAttribute('aria-pressed', String(on));
+    fullBtn.setAttribute('aria-label', on ? 'Exit fullscreen' : 'Enter fullscreen');
+  }
+  function setPseudoFull(on) {
+    stage.classList.toggle('pseudo-full', on);
+    document.body.classList.toggle('pseudo-full-lock', on);
+    setFsBtn();
+    notifyMapResize();
+  }
+  fullBtn.addEventListener('click', function () {
+    if (nativeFsEl()) {
+      var exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit) exit.call(document);
+      return;
+    }
+    if (stage.classList.contains('pseudo-full')) { setPseudoFull(false); return; }
+    var el = document.documentElement;
+    var req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (req) {
+      try {
+        var p = req.call(el);
+        if (p && p.catch) p.catch(function () { setPseudoFull(true); });
+      } catch (e) { setPseudoFull(true); }
+    } else {
+      setPseudoFull(true);
+    }
+    setFsBtn();
+  });
+  function notifyMapResize() {
+    try { window.dispatchEvent(new Event('resize')); } catch (e) {}
+  }
+  function onFsChange() { setFsBtn(); notifyMapResize(); }
+  document.addEventListener('fullscreenchange', onFsChange);
+  document.addEventListener('webkitfullscreenchange', onFsChange);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && stage.classList.contains('pseudo-full')) setPseudoFull(false);
+  });
 
   // --- filters ---------------------------------------------------------------
   // filterState.groups[gid] + filterState.routes[rid]; a route shows when both.
