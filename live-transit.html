@@ -82,7 +82,8 @@
   .map-hint { position: absolute; left: 1.25rem; bottom: 1.25rem; color: #9AA0A6; font-size: .75rem; background: rgba(12,17,22,.7); padding: .45rem .7rem; border-radius: 8px; border: 1px solid rgba(245,242,234,.1); }
   .map-hint.touch { display: block; }
   .map-tools { position: absolute; right: 1.25rem; bottom: 1.25rem; display: flex; flex-direction: column; gap: .5rem; z-index: 4; }
-  .map-tools button { width: 2.75rem; height: 2.75rem; border-radius: 50%; background: rgba(12,17,22,.85); border: 1px solid rgba(245,242,234,.2); color: #F5F2EA; font-size: 1.3rem; line-height: 1; cursor: pointer; touch-action: manipulation; backdrop-filter: blur(6px); font-family: "Inter", sans-serif; padding: 0; }
+  .map-tools button { width: 2.75rem; height: 2.75rem; border-radius: 50%; background: rgba(12,17,22,.85); border: 1px solid rgba(245,242,234,.2); color: #F5F2EA; font-size: 1.3rem; line-height: 1; cursor: pointer; touch-action: manipulation; backdrop-filter: blur(6px); font-family: "Inter", sans-serif; padding: 0; display: flex; align-items: center; justify-content: center; }
+  .map-tools button svg { display: block; }
   .map-tools button:hover { border-color: #E85D1A; color: #E85D1A; }
   .map-tools button:active { background: #E85D1A; border-color: #E85D1A; color: #0C1116; }
   #view-full[aria-pressed="true"] { background: rgba(232,93,26,.2); border-color: #E85D1A; color: #E85D1A; }
@@ -101,6 +102,7 @@
   .nav-step { display: flex; gap: .8rem; align-items: flex-start; margin-bottom: .8rem; }
   .nav-step:last-child { margin-bottom: 0; }
   .nav-step .ico { flex: none; width: 2rem; height: 2rem; border-radius: 10px; background: rgba(232,93,26,.14); border: 1px solid rgba(232,93,26,.5); color: #E85D1A; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+  .nav-step .ico svg { display: block; }
   .nav-step b { display: block; color: #F5F2EA; font-size: .88rem; font-weight: 600; }
   .nav-step span:last-child { color: #9AA0A6; font-size: .8rem; }
   .bus-card { position: absolute; left: 1.25rem; top: 5.5rem; width: 17rem; max-width: calc(100% - 2.5rem); background: rgba(12,17,22,.9); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: 1rem 1.1rem; backdrop-filter: blur(8px); }
@@ -197,8 +199,8 @@
         <button id="zoom-in" aria-label="Zoom in">+</button>
         <button id="zoom-out" aria-label="Zoom out">&minus;</button>
         <button id="view-reset" aria-label="Reset view">&#8962;</button>
-        <button id="view-full" aria-label="Toggle fullscreen" aria-pressed="false">&#9956;</button>
-        <button id="view-locate" aria-label="Find my location" aria-pressed="false">&#8982;</button>
+        <button id="view-full" aria-label="Enter fullscreen" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+        <button id="view-locate" aria-label="Find my location" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
       </div>
       <div class="map-toast" id="map-toast" hidden></div>
       <div class="nav-overlay" id="nav-overlay" hidden>
@@ -237,7 +239,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2355"></script>
+<script type="module" src="live-transit.js?v=20261002-2400"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
