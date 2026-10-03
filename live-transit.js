@@ -1003,6 +1003,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     hideToast();
     var p = project(lat, lon);
+    userXZ = p;
     var off = camera.position.clone().sub(controls.target);
     controls.target.set(p[0], 0, p[1]);
     camera.position.copy(controls.target).add(off);
@@ -1010,6 +1011,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     youMarker.setAccuracy(accMeters);
     youMarker.group.visible = true;
     locateBtn.setAttribute('aria-pressed', 'true');
+    if (pendingNearMe) {
+      setNearMe(true);
+    } else if (filterState.nearMe) {
+      computeNearMe();
+      applyFilters();
+      syncFilterUI();
+    }
   }
   locateBtn.addEventListener('click', function () {
     if (!('geolocation' in navigator)) { showToast('Location services are not available on this device.'); return; }
@@ -1023,6 +1031,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       },
       function (err) {
         locating = false;
+        pendingNearMe = false;
         if (err && err.code === 1) showToast('Location access denied — allow it in your browser settings to use this.');
         else showToast('Could not get your location — please try again.');
       },
@@ -1059,14 +1068,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function rebuildStops() {
     // Stops only depend on route toggles: skip the full rebuild when the
     // visible route set hasn't changed (e.g. polls that only flip dimming).
-    var sig = routeOrder.map(function (rid) { return routeIsOn(rid) ? '1' : '0'; }).join('');
+    var sig = routeOrder.map(function (rid) { return routeIsOn(rid) ? '1' : '0'; }).join('') +
+      '|nm:' + (filterState.nearMe ? Object.keys(nearMeSet || {}).sort().join(',') : 'off');
     if (sig === lastStopSig) return;
     lastStopSig = sig;
     var list = [];
     if (stopData && stopData.length) {
       stopData.forEach(function (s) {
         if (!s.r || !s.r.length) return;
-        var on = s.r.some(function (rid) { return routeIsOn(rid); });
+        var on = s.r.some(function (rid) { return routeIsOn(rid) && routeNearOk(rid); });
         if (!on) return;
         list.push(s);
       });
@@ -1201,7 +1211,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // toggled on its own, no group header required. Group headers are bulk
   // setters (all on / all off); they never gate individual routes.
   // filterState.hideIdle (default ON): fully hide routes confirmed not-running.
-  var filterState = { groups: {}, routes: {}, hideIdle: true };
+  // filterState.nearMe: only routes with a stop within NEAR_ME_M of you.
+  var filterState = { groups: {}, routes: {}, hideIdle: true, nearMe: false };
+  var NEAR_ME_M = 800;
+  var nearMeSet = null;   // rid -> true, rebuilt when you move or toggle
+  var userXZ = null;      // your projected position, set by onLocated
+  var pendingNearMe = false;
+
+  // True when the near-me filter lets this route through (or is off).
+  function routeNearOk(rid) {
+    return !filterState.nearMe || !!(nearMeSet && nearMeSet[rid]);
+  }
 
   function routeIsOn(rid) {
     var r = routeById[rid];
@@ -1223,8 +1243,37 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // dimmed when it is off. 'unknown' (pre-first-poll) never hides.
   function routeShown(rid) {
     if (!routeIsOn(rid)) return false;
+    if (!routeNearOk(rid)) return false;
     if (filterState.hideIdle && runningState[rid] === 'not-running') return false;
     return true;
+  }
+
+  function computeNearMe() {
+    nearMeSet = {};
+    if (!userXZ || !stopData) return;
+    var r2 = NEAR_ME_M * NEAR_ME_M;
+    for (var i = 0; i < stopData.length; i++) {
+      var s = stopData[i];
+      var dx = s.x - userXZ[0], dz = s.z - userXZ[1];
+      if (dx * dx + dz * dz > r2) continue;
+      for (var j = 0; j < s.r.length; j++) nearMeSet[s.r[j]] = true;
+    }
+  }
+
+  function setNearMe(on) {
+    filterState.nearMe = on;
+    pendingNearMe = false;
+    var t = $('nearme-toggle');
+    if (t) t.setAttribute('aria-pressed', String(on));
+    if (on) computeNearMe();
+    applyFilters();
+    syncFilterUI();
+    if (on) {
+      var n = nearMeSet ? Object.keys(nearMeSet).length : 0;
+      showToast(n ? n + ' routes within ' + NEAR_ME_M + ' m of you.' : 'No routes within ' + NEAR_ME_M + ' m of you.', !n);
+    } else {
+      hideToast();
+    }
   }
 
   function applyDim(rid) {
@@ -1328,6 +1377,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       filterState.hideIdle = !filterState.hideIdle;
       applyFilters();
       syncFilterUI();
+    });
+    $('nearme-toggle').addEventListener('click', function () {
+      if (filterState.nearMe) { setNearMe(false); return; }
+      if (userXZ) { setNearMe(true); return; }
+      // No fix yet: run the locate flow; it enables near-me on success.
+      pendingNearMe = true;
+      locateBtn.click();
     });
   }
 
@@ -1700,7 +1756,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         for (var i = 0; i < labelSprites.length; i++) {
           var L = labelSprites[i];
           var lvis = runningState[L.routeId] !== 'not-running' &&
-            ((liveCounts[L.routeId] > 0) || camDist > 15000) && camDist > 7000;
+            ((liveCounts[L.routeId] > 0) || camDist > 15000) && camDist > 7000 &&
+            routeNearOk(L.routeId);
           L.sprite.visible = lvis;
           if (L.tether) L.tether.visible = lvis;
         }
