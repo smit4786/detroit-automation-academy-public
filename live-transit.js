@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2410';
+  var STAMP = '20261002-2415';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -747,13 +747,26 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   });
 
   // --- filters ---------------------------------------------------------------
-  // filterState.groups[gid] + filterState.routes[rid]; a route shows when both.
+  // filterState.routes[rid] is the ONLY visibility gate: any route can be
+  // toggled on its own, no group header required. Group headers are bulk
+  // setters (all on / all off); they never gate individual routes.
   // filterState.hideIdle (default ON): fully hide routes confirmed not-running.
   var filterState = { groups: {}, routes: {}, hideIdle: true };
 
   function routeIsOn(rid) {
     var r = routeById[rid];
-    return !!(r && filterState.groups[r.group] && filterState.routes[rid]);
+    return !!(r && filterState.routes[rid]);
+  }
+
+  // 'all' | 'none' | 'mixed' — derived from the routes, never stored.
+  function groupSelState(gid) {
+    var rids = groupRoutes[gid] || [];
+    if (!rids.length) return 'none';
+    var on = 0;
+    rids.forEach(function (rid) { if (filterState.routes[rid]) on++; });
+    if (on === 0) return 'none';
+    if (on === rids.length) return 'all';
+    return 'mixed';
   }
 
   // Smart disabling: non-running routes are hidden when hideIdle is on,
@@ -781,17 +794,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       applyDim(rid);
     });
     groupOrder.forEach(function (gid) {
-      if (groupObjs[gid]) groupObjs[gid].visible = !!filterState.groups[gid];
+      if (groupObjs[gid]) groupObjs[gid].visible = groupSelState(gid) !== 'none';
     });
     if (lastVehicles) updateBuses(lastVehicles);
   }
 
   function syncFilterUI() {
     groupOrder.forEach(function (gid) {
+      var st = groupSelState(gid);
       var head = document.querySelector('.f-group-head[data-group="' + gid + '"]');
       var sec = document.querySelector('.f-group[data-group="' + gid + '"]');
-      if (head) head.setAttribute('aria-pressed', String(!!filterState.groups[gid]));
-      if (sec) sec.classList.toggle('off', !filterState.groups[gid]);
+      if (head) head.setAttribute('aria-pressed', st === 'mixed' ? 'mixed' : String(st === 'all'));
+      if (sec) sec.classList.toggle('off', st === 'none');
     });
     routeOrder.forEach(function (rid) {
       var b = document.querySelector('.f-chip[data-route="' + rid + '"]');
@@ -816,7 +830,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       head.innerHTML = '<span class="f-box"></span><b>' + g.name + '</b>' +
         '<span class="f-count" id="fgc-' + g.id + '">–</span>';
       head.addEventListener('click', function () {
-        var on = !filterState.groups[g.id];
+        var on = groupSelState(g.id) !== 'all'; // all-on -> switch off; else switch on
         filterState.groups[g.id] = on;
         g.routes.forEach(function (rid) { filterState.routes[rid] = on; });
         applyFilters();
