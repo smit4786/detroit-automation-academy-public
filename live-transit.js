@@ -50,6 +50,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   controls.target.set(0, 0, 0);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
+  // Pinch/wheel zoom anchors to the fingers/cursor, not the orbit target —
+  // otherwise the point you meant to zoom into drifts away mid-gesture.
+  // (r160 already implements this; it just ships disabled by default.)
+  controls.zoomToCursor = true;
   controls.maxPolarAngle = 1.35;
   controls.minDistance = 1200;
   controls.maxDistance = 55000;
