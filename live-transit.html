@@ -103,28 +103,14 @@
   .map-toast { position: absolute; left: 50%; bottom: 5.5rem; transform: translateX(-50%); z-index: 9; display: flex; align-items: center; gap: .6rem; background: rgba(12,17,22,.95); border: 1px solid rgba(232,93,26,.6); color: #F5F2EA; border-radius: 999px; padding: .55rem 1rem; font-size: .82rem; font-family: "Inter", sans-serif; max-width: calc(100% - 3rem); cursor: pointer; white-space: nowrap; }
   .toast-btn { background: #E85D1A; border: none; color: #0C1116; font-weight: 700; font-size: .78rem; border-radius: 999px; padding: .35rem .8rem; cursor: pointer; font-family: "Inter", sans-serif; flex: none; }
   .toast-btn-quiet { background: transparent; color: #9AA0A6; font-weight: 500; }
-  .intro-overlay { position: absolute; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; background: rgba(6,9,12,.72); backdrop-filter: blur(4px); padding: 1.25rem; }
-  .intro-overlay[hidden] { display: none; }
-  .intro-card { position: relative; width: 22rem; max-width: 100%; background: rgba(12,17,22,.96); border: 1px solid rgba(232,93,26,.45); border-radius: 16px; padding: 1.4rem 1.4rem 1.1rem; font-family: "Inter", sans-serif; }
-  .intro-card .close { position: absolute; top: .5rem; right: .6rem; background: none; border: none; color: #9AA0A6; font-size: 1.2rem; cursor: pointer; line-height: 1; padding: .25rem; }
-  .intro-card .close:hover { color: #F5F2EA; }
-  .intro-slide[hidden] { display: none; }
-  .intro-slide h2 { font-family: "Space Grotesk", sans-serif; font-size: 1.3rem; color: #F5F2EA; margin: 0 0 .5rem; padding-right: 1.5rem; }
-  .intro-slide p { color: #c9ced4; font-size: .92rem; line-height: 1.55; margin: 0; }
-  .intro-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 1.1rem; gap: .8rem; }
-  .intro-dots { display: flex; gap: .4rem; }
-  .intro-dot { width: .55rem; height: .55rem; border-radius: 50%; background: rgba(245,242,234,.2); border: none; padding: 0; cursor: pointer; }
-  .intro-dot.on { background: #E85D1A; }
-  .intro-btns { display: flex; gap: .5rem; }
-  .intro-btn { background: #E85D1A; border: none; color: #0C1116; font-weight: 700; font-size: .85rem; border-radius: 999px; padding: .55rem 1.1rem; cursor: pointer; font-family: "Inter", sans-serif; }
-  .intro-btn-ghost { background: transparent; color: #9AA0A6; font-weight: 500; border: 1px solid rgba(245,242,234,.2); }
   .map-toast[hidden] { display: none; }
   .map-toast button { background: none; border: none; color: #9AA0A6; font-size: 1.2rem; cursor: pointer; line-height: 1; padding: .2rem .3rem; touch-action: manipulation; }
   .map-toast button:hover { color: #F5F2EA; }
   .nav-overlay { position: absolute; inset: 0; z-index: 8; display: flex; align-items: center; justify-content: center; background: rgba(6,9,12,.72); backdrop-filter: blur(3px); }
   .nav-overlay[hidden] { display: none; }
   .nav-card { position: relative; width: 22rem; max-width: calc(100% - 3rem); max-height: calc(100% - 4rem); overflow-y: auto; background: rgba(12,17,22,.96); border: 1px solid rgba(245,242,234,.18); border-radius: 16px; padding: 1.2rem 1.3rem; font-family: "Inter", sans-serif; }
-  .nav-card h2 { font-family: "Space Grotesk", sans-serif; color: #F5F2EA; font-size: 1.1rem; margin: 0 0 .9rem; }
+  .nav-card h2 { font-family: "Space Grotesk", sans-serif; color: #F5F2EA; font-size: 1.1rem; margin: 0 0 .5rem; padding-right: 1.5rem; }
+  .nav-card h3 { font-family: "Space Grotesk", sans-serif; color: #F5F2EA; font-size: .92rem; margin: 1rem 0 .4rem; }
   .nav-card .close { position: absolute; top: .5rem; right: .7rem; background: none; border: none; color: #9AA0A6; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: .4rem; touch-action: manipulation; }
   .nav-card .close:hover { color: #F5F2EA; }
   .nav-step { display: flex; gap: .8rem; align-items: flex-start; margin-bottom: .8rem; }
@@ -133,6 +119,8 @@
   .nav-step .ico svg { display: block; }
   .nav-step b { display: block; color: #F5F2EA; font-size: .88rem; font-weight: 600; }
   .nav-step span:last-child { color: #9AA0A6; font-size: .8rem; }
+  .nav-lede { color: #c9ced4; font-size: .86rem; line-height: 1.55; margin: 0 0 .2rem; }
+  .nav-fine { color: #9AA0A6; font-size: .76rem; line-height: 1.5; margin: 1rem 0 0; padding-top: .8rem; border-top: 1px solid rgba(245,242,234,.1); }
   .bus-card { position: absolute; left: 1.25rem; top: 5.5rem; width: 17rem; max-width: calc(100% - 2.5rem); background: rgba(12,17,22,.9); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: 1rem 1.1rem; backdrop-filter: blur(8px); }
   .bus-card[hidden] { display: none; }
   .sel-eyebrow { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: #9AA0A6; margin: 0 0 .35rem; font-weight: 600; }
@@ -262,39 +250,16 @@
       </div>
       <div class="map-toast" id="map-toast" hidden></div>
       <div class="nav-overlay" id="nav-overlay" hidden>
-        <div class="nav-card" role="dialog" aria-label="Map navigation help">
-          <button class="close" id="nav-close" aria-label="Close navigation help">&times;</button>
-          <h2>Navigating the map</h2>
+        <div class="nav-card" role="dialog" aria-label="Help">
+          <button class="close" id="nav-close" aria-label="Close help">&times;</button>
+          <div class="sel-eyebrow">Detroit || else™</div>
+          <h2>Every DDOT bus, live in 3D.</h2>
+          <p class="nav-lede">37 routes and 5,120 stops drawn on the actual streets of Detroit — with live bus positions, refreshed every 60 seconds.</p>
+          <h3>How to read it</h3>
+          <p class="nav-lede">Pillars are buses. Pylons are stops — taller pylon, more routes. Tap a bus for its route, destination, speed and data age, shown right beside it. Tap a stop for its routes and live buses.</p>
+          <h3>Navigating the map</h3>
           <div id="nav-steps"></div>
-        </div>
-      </div>
-      <div class="intro-overlay" id="intro-overlay" hidden>
-        <div class="intro-card" role="dialog" aria-label="Welcome to Live Transit">
-          <button class="close" id="intro-close" aria-label="Dismiss">&times;</button>
-          <div class="intro-slides" id="intro-slides">
-            <section class="intro-slide">
-              <div class="sel-eyebrow">Detroit || else™</div>
-              <h2>Every DDOT bus, live in 3D.</h2>
-              <p>37 routes and 5,120 stops drawn on the actual streets of Detroit — with live bus positions, refreshed every 60 seconds.</p>
-            </section>
-            <section class="intro-slide">
-              <div class="sel-eyebrow">How to read it</div>
-              <h2>Pillars are buses. Pylons are stops.</h2>
-              <p>Taller pylon, more routes. Tap anything for details — tap a stop to see which buses are actually coming.</p>
-            </section>
-            <section class="intro-slide">
-              <div class="sel-eyebrow">Private by design</div>
-              <h2>No account. No tracking.</h2>
-              <p>Your location never leaves this device. Free, no sign-up, works on your phone.</p>
-            </section>
-          </div>
-          <div class="intro-nav">
-            <div class="intro-dots" id="intro-dots"></div>
-            <div class="intro-btns">
-              <button id="intro-locate" class="intro-btn intro-btn-ghost">Enable location</button>
-              <button id="intro-go" class="intro-btn">Next</button>
-            </div>
-          </div>
+          <p class="nav-fine">No account. No tracking. Your location never leaves this device.</p>
         </div>
       </div>
     </div>
@@ -327,7 +292,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2730"></script>
+<script type="module" src="live-transit.js?v=20261002-2740"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
