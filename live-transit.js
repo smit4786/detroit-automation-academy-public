@@ -335,17 +335,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     streetLabelPool.push(_sl);
   }
   var lastStreetLabelUpdate = 0;
+  var MAX_STREET_LABELS = 8;
   function updateStreetLabels() {
     var now = performance.now();
     if (now - lastStreetLabelUpdate < 350) return;
     lastStreetLabelUpdate = now;
+    function clearLabels() {
+      for (var i = 0; i < streetLabelPool.length; i++) streetLabelPool[i].visible = false;
+    }
     var labels = streetNameData && streetNameData.labels;
     var camDist = camera.position.distanceTo(controls.target);
-    var showMajor = camDist < 20000, showLocal = camDist < 6000;
-    if (!labels || (!showMajor && !showLocal)) {
-      for (var i = 0; i < streetLabelPool.length; i++) streetLabelPool[i].visible = false;
-      return;
-    }
+    var showMajor = camDist < 12000, showLocal = camDist < 6000;
+    if (!labels || (!showMajor && !showLocal)) { clearLabels(); return; }
     var tx = controls.target.x, tz = controls.target.z;
     var R = camDist * 0.55, R2 = R * R;
     var best = {};
@@ -361,16 +362,32 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var arr = [];
     for (var k in best) arr.push(best[k]);
     arr.sort(function (a, b) { return a.d2 - b.d2; });
-    var h = camDist * 0.042;
-    for (var s = 0; s < streetLabelPool.length; s++) {
-      var sp = streetLabelPool[s];
-      if (s < arr.length) {
-        var lt = streetLabelTexture(arr[s].l[0]);
-        if (sp.material.map !== lt.tex) { sp.material.map = lt.tex; sp.material.needsUpdate = true; }
-        sp.scale.set(h * lt.aspect, h, 1);
-        sp.position.set(arr[s].l[1], 90, arr[s].l[2]);
-        sp.visible = true;
-      } else sp.visible = false;
+    // Nearest-first placement with screen-space collision: no overlapping labels.
+    var placed = [];
+    var h = camDist * 0.024;
+    var rw = renderer.domElement.clientWidth, rh = renderer.domElement.clientHeight;
+    var pxPerM = rh / (2 * camDist * Math.tan(camera.fov * 0.5 * DEG));
+    clearLabels();
+    var shown = 0;
+    for (var q = 0; q < arr.length && shown < MAX_STREET_LABELS; q++) {
+      var lt = streetLabelTexture(arr[q].l[0]);
+      var lw = h * lt.aspect * pxPerM, lh = h * pxPerM;
+      _p3.set(arr[q].l[1], 90, arr[q].l[2]).project(camera);
+      if (_p3.z > 1 || _p3.z < -1) continue;
+      var cxp = (_p3.x * 0.5 + 0.5) * rw, cyp = (-_p3.y * 0.5 + 0.5) * rh;
+      var clash = false;
+      for (var c = 0; c < placed.length; c++) {
+        var pr = placed[c];
+        if (Math.abs(cxp - pr.x) < (lw + pr.w) / 2 + 10 &&
+            Math.abs(cyp - pr.y) < (lh + pr.h) / 2 + 8) { clash = true; break; }
+      }
+      if (clash) continue;
+      placed.push({ x: cxp, y: cyp, w: lw, h: lh });
+      var sp = streetLabelPool[shown++];
+      if (sp.material.map !== lt.tex) { sp.material.map = lt.tex; sp.material.needsUpdate = true; }
+      sp.scale.set(h * lt.aspect, h, 1);
+      sp.position.set(arr[q].l[1], 90, arr[q].l[2]);
+      sp.visible = true;
     }
   }
   pillarMeshes.forEach(function (im) {
