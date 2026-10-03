@@ -213,7 +213,7 @@
           </span>
         </div>
         <div class="f-body">
-          <button class="f-group-head f-near" id="nearme-toggle" aria-pressed="false" title="Show only routes with a stop within 800 m of you"><span class="f-box"></span><b>Routes near me</b><span class="f-count">800 m</span></button>
+          <button class="f-group-head f-near" id="nearme-toggle" aria-pressed="false" title="Show only routes with a stop within 800 m of you"><span class="f-box"></span><b>Routes near me</b><span class="f-count" id="nearme-sub">800 m</span></button>
         <div class="f-idle-row">
           <button id="hide-idle-toggle" aria-pressed="true"><span class="f-box"></span><b>Hide non-running routes</b></button>
         </div>
@@ -326,7 +326,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2680"></script>
+<script type="module" src="live-transit.js?v=20261002-2690"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
