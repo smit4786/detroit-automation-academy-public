@@ -10,7 +10,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2030';
+  var STAMP = '20261002-2045';
   var POLL_MS = 60000;
   var DOT_MAX = 240;
   var DEG = Math.PI / 180;
@@ -279,8 +279,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function poll() {
     var proxy = (window.FORGE_LIVE_PROXY || '').replace(/\/$/, '');
     if (!proxy) { setHeader(null, null, true); return; }
-    fetch(proxy + '/api/vehicles', { cache: 'no-store' })
-      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 20000);
+    fetch(proxy + '/api/vehicles', { cache: 'no-store', signal: ctrl.signal })
+      .then(function (r) { clearTimeout(timer); if (!r.ok) throw new Error('http ' + r.status); return r.json(); },
+            function (e) { clearTimeout(timer); throw e; })
       .then(function (d) {
         if (!d || !Array.isArray(d.vehicles)) throw new Error('bad payload');
         var n = updateBuses(d.vehicles);
