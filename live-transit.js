@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2138';
+  var STAMP = '20261002-2245';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -172,6 +172,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var groupOrder = [];
   var labelSprites = [];  // { sprite, routeId }
   var liveCounts = {};    // route id -> live bus count (visible)
+  // Smart disabling: per-route running state. 'unknown' until the first live
+  // poll (history paint never marks routes not-running). A route flips to
+  // 'not-running' only after 3 consecutive polls with zero buses (grace
+  // against brief feed dropouts); any bus resets the streak immediately.
+  var runningState = {};  // rid -> 'unknown' | 'running' | 'not-running'
+  var quietStreak = {};   // rid -> consecutive polls with zero buses
+  var DIM_OPACITY = 0.22;
   var proj = null;
 
   function project(lat, lon) {
@@ -408,16 +415,37 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   // --- filters ---------------------------------------------------------------
   // filterState.groups[gid] + filterState.routes[rid]; a route shows when both.
-  var filterState = { groups: {}, routes: {} };
+  // filterState.hideIdle (default ON): fully hide routes confirmed not-running.
+  var filterState = { groups: {}, routes: {}, hideIdle: true };
 
   function routeIsOn(rid) {
     var r = routeById[rid];
     return !!(r && filterState.groups[r.group] && filterState.routes[rid]);
   }
 
+  // Smart disabling: non-running routes are hidden when hideIdle is on,
+  // dimmed when it is off. 'unknown' (pre-first-poll) never hides.
+  function routeShown(rid) {
+    if (!routeIsOn(rid)) return false;
+    if (filterState.hideIdle && runningState[rid] === 'not-running') return false;
+    return true;
+  }
+
+  function applyDim(rid) {
+    var g = routeGroups[rid];
+    if (!g || !g.userData.guideMats) return;
+    var dim = runningState[rid] === 'not-running' && !filterState.hideIdle && g.visible;
+    g.userData.guideMats.forEach(function (e) {
+      e.mat.transparent = dim ? true : false;
+      e.mat.opacity = dim ? DIM_OPACITY : e.opacity;
+      e.mat.needsUpdate = true;
+    });
+  }
+
   function applyFilters() {
     routeOrder.forEach(function (rid) {
-      if (routeGroups[rid]) routeGroups[rid].visible = routeIsOn(rid);
+      if (routeGroups[rid]) routeGroups[rid].visible = routeShown(rid);
+      applyDim(rid);
     });
     groupOrder.forEach(function (gid) {
       if (groupObjs[gid]) groupObjs[gid].visible = !!filterState.groups[gid];
@@ -436,6 +464,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var b = document.querySelector('.f-chip[data-route="' + rid + '"]');
       if (b) b.setAttribute('aria-pressed', String(!!filterState.routes[rid]));
     });
+    var idle = $('hide-idle-toggle');
+    if (idle) idle.setAttribute('aria-pressed', String(!!filterState.hideIdle));
   }
 
   function buildFilterPanel(groups) {
@@ -468,7 +498,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         b.setAttribute('aria-pressed', 'true');
         b.dataset.route = rid;
         b.innerHTML = '<i style="background:' + route.color + '"></i><b>' +
-          rid + ' · ' + route.name + '</b><span class="cnt" id="cnt-' + rid + '">–</span>';
+          rid + ' · ' + route.name + '</b><span class="cnt" id="cnt-' + rid + '">–</span>' +
+          '<span class="idle-tag" id="idle-' + rid + '" hidden>not running</span>';
         b.addEventListener('click', function () {
           filterState.routes[rid] = !filterState.routes[rid];
           applyFilters();
@@ -483,6 +514,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     $('filter-all').addEventListener('click', function () {
       groupOrder.forEach(function (gid) { filterState.groups[gid] = true; });
       routeOrder.forEach(function (rid) { filterState.routes[rid] = true; });
+      applyFilters();
+      syncFilterUI();
+    });
+    $('hide-idle-toggle').addEventListener('click', function () {
+      filterState.hideIdle = !filterState.hideIdle;
       applyFilters();
       syncFilterUI();
     });
@@ -517,18 +553,46 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     routeOrder.forEach(function (rid) {
       var el = $('cnt-' + rid);
       if (el) el.textContent = String(perRoute[rid] || 0);
+      var nr = runningState[rid] === 'not-running';
+      var chip = document.querySelector('.f-chip[data-route="' + rid + '"]');
+      if (chip) chip.classList.toggle('not-running', nr);
+      var tag = $('idle-' + rid);
+      if (tag) tag.hidden = !nr;
     });
     groupOrder.forEach(function (gid) {
       var el = $('fgc-' + gid);
       if (!el) return;
-      var t = 0;
-      groupRoutes[gid].forEach(function (rid) { t += perRoute[rid] || 0; });
-      el.textContent = t + ' buses';
+      if (!liveEverOk) { el.textContent = '–'; return; }
+      var run = 0;
+      var tot = (groupRoutes[gid] || []).length;
+      (groupRoutes[gid] || []).forEach(function (rid) {
+        if (runningState[rid] === 'running') run++;
+      });
+      el.textContent = run + ' of ' + tot + ' running';
     });
   }
 
   var groupRoutes = {}; // gid -> [route ids]
   var lastVehicles = null;
+
+  // Recompute per-route running state from the latest live counts.
+  // Returns true if any route flipped between running/not-running.
+  function updateRunningState() {
+    var changed = false;
+    routeOrder.forEach(function (rid) {
+      var buses = liveCounts[rid] || 0;
+      if (buses > 0) {
+        quietStreak[rid] = 0;
+        if (runningState[rid] !== 'running') { runningState[rid] = 'running'; changed = true; }
+      } else {
+        quietStreak[rid] = (quietStreak[rid] || 0) + 1;
+        if (quietStreak[rid] >= 3 && runningState[rid] !== 'not-running') {
+          runningState[rid] = 'not-running'; changed = true;
+        }
+      }
+    });
+    return changed;
+  }
 
   function updateBuses(vehicles) {
     var perRoute = {};
@@ -564,8 +628,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       .then(function (d) {
         if (!d || !Array.isArray(d.vehicles)) throw new Error('bad payload');
         lastVehicles = d.vehicles;
-        var n = updateBuses(d.vehicles);
         liveEverOk = true;
+        var n = updateBuses(d.vehicles);
+        if (updateRunningState()) {
+          applyFilters();   // re-applies visibility + dimming, re-renders buses
+          syncFilterUI();
+        }
         lastTotal = n;
         setHeader(n, 'updated ' + fmtTime(d.generated_at ? new Date(d.generated_at) : null), false);
       })
@@ -671,6 +739,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         // materials let the directional light shade deck vs. sides.
         var deckMat = new THREE.MeshLambertMaterial({ color: color, side: THREE.DoubleSide });
         var skirtMat = new THREE.MeshLambertMaterial({ color: color.clone().multiplyScalar(0.38), side: THREE.DoubleSide });
+        // Kept for smart disabling: dim the guideway when the route is not running.
+        grp.userData.guideMats = [
+          { mat: deckMat, opacity: deckMat.opacity },
+          { mat: skirtMat, opacity: skirtMat.opacity }
+        ];
         var glowMat = new THREE.MeshBasicMaterial({
           color: color, transparent: true, opacity: 0.13,
           blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
@@ -742,12 +815,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           lastBusMode = busMode;
           renderBusInstances();
         }
-        // Label rule: group on (via parent visibility) AND (live buses on the
-        // route OR zoomed far out). Tethers always follow the route.
+        // Label rule: route enabled, not confirmed not-running, AND (live buses
+        // on the route OR zoomed far out). Tethers always follow the route.
         var camDist = camera.position.distanceTo(controls.target);
         for (var i = 0; i < labelSprites.length; i++) {
           var L = labelSprites[i];
-          L.sprite.visible = (liveCounts[L.routeId] > 0) || camDist > 15000;
+          L.sprite.visible = runningState[L.routeId] !== 'not-running' &&
+            ((liveCounts[L.routeId] > 0) || camDist > 15000);
         }
         renderer.render(scene, camera);
       });
