@@ -10,7 +10,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2225';
+  var STAMP = '20261002-2245';
   var POLL_MS = 60000;
   var DOT_MAX = 240;
   var DEG = Math.PI / 180;
@@ -46,7 +46,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.maxPolarAngle = 1.35;
-  controls.minDistance = 3000;
+  controls.minDistance = 1200;
   controls.maxDistance = 55000;
 
   scene.add(new THREE.HemisphereLight(0xf5f2ea, 0x0c1116, 0.9));
@@ -168,12 +168,43 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return [(lon - proj.lon0) * proj.mLon, -(lat - proj.lat0) * proj.mLat];
   }
 
+  // --- fleet data: vehicle number -> model, dimensions, seating ----------------
+  // Source: CPTDB Wiki DDOT fleet roster (ddot-fleet.json). Dimensions are
+  // nominal manufacturer figures for the model — accurate per model, not
+  // per individual bus. Unknown numbers fall back to a standard 40-ft bus.
+  var fleetData = null;
+  function fleetLookup(vehicleId) {
+    var fallback = { model: '40-ft transit bus', detail: 'model assumed', length_m: 12.19, width_m: 2.59, height_m: 3.3, seats: null, assumed: true };
+    if (!fleetData || !fleetData.ranges) return fallback;
+    var m = String(vehicleId == null ? '' : vehicleId).match(/^(\d+)/);
+    if (!m) return fallback;
+    var num = parseInt(m[1], 10);
+    for (var i = 0; i < fleetData.ranges.length; i++) {
+      var r = fleetData.ranges[i];
+      if (num >= r.from && num <= r.to) {
+        return {
+          model: r.model,
+          detail: r.year + (r.note ? ' · ' + r.note : ''),
+          length_m: r.length_m, width_m: r.width_m, height_m: r.height_m,
+          seats: r.seats, assumed: false
+        };
+      }
+    }
+    return fallback;
+  }
+
   // --- bus markers: real 3D pillars, not camera-facing billboards ---------------
   var PILLAR_H = 620;
   var glowPillarGeo = new THREE.CylinderGeometry(58, 58, PILLAR_H, 12, 1, true);
   var corePillarGeo = new THREE.CylinderGeometry(20, 27, PILLAR_H, 10);
   var beaconGeo = new THREE.SphereGeometry(64, 16, 12);
   var ringGeo = new THREE.RingGeometry(72, 124, 28);
+  // True-scale bus geometry (unit box scaled per model; shown when zoomed in).
+  var busBodyGeo = new THREE.BoxGeometry(1, 1, 1);
+  var busWinGeo = new THREE.BoxGeometry(1, 1, 1);
+  var wheelGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.4, 12);
+  var busWinMat = new THREE.MeshBasicMaterial({ color: 0x10161c });
+  var wheelMat = new THREE.MeshBasicMaterial({ color: 0x05070a });
 
   var busMats = {};
   function busMatsFor(routeId) {
@@ -202,10 +233,26 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     ring.rotation.x = -Math.PI / 2;
     ring.position.y = 6;
     g.add(glow); g.add(core); g.add(beacon); g.add(ring);
+    // True-scale bus model (busMode): body + window band + 4 wheels, scaled
+    // per the fleet lookup and rotated to the reported bearing.
+    var busG = new THREE.Group();
+    var body = new THREE.Mesh(busBodyGeo, dm.core);
+    var wins = new THREE.Mesh(busWinGeo, busWinMat);
+    var wheels = [];
+    for (var wi = 0; wi < 4; wi++) {
+      var wh = new THREE.Mesh(wheelGeo, wheelMat);
+      wh.rotation.x = Math.PI / 2;
+      wheels.push(wh);
+      busG.add(wh);
+    }
+    busG.add(body); busG.add(wins);
+    busG.visible = false;
+    g.add(busG);
     g.visible = false;
     g.userData.vehicle = null;
     g.userData.hit = core;
-    g.userData.parts = [glow, core, beacon, ring];
+    g.userData.pillarParts = [glow, core, beacon, ring];
+    g.userData.busMeshes = { group: busG, body: body, wins: wins, wheels: wheels };
     core.userData.markerGroup = g;
     scene.add(g);
     return g;
@@ -220,6 +267,21 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (busPool[i].visible) arr.push(busPool[i].userData.hit);
     }
     return arr;
+  }
+
+  // Zoom LOD: wide view shows the symbolic pillars; zoomed in past ~2.6 km
+  // the markers resolve into true-scale bus models. Hysteresis avoids flicker.
+  var busMode = false;
+  function applyBusLOD(m) {
+    var showPillar = !busMode;
+    var pp = m.userData.pillarParts;
+    for (var i = 0; i < pp.length; i++) pp[i].visible = showPillar;
+    m.userData.busMeshes.group.visible = busMode;
+  }
+  function updateLOD() {
+    var d = camera.position.distanceTo(controls.target);
+    if (!busMode && d < 2600) busMode = true;
+    else if (busMode && d > 3400) busMode = false;
   }
 
   var raycaster = new THREE.Raycaster();
@@ -268,6 +330,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     $('bus-id').textContent = v.vehicle_id || '–';
     $('bus-speed').textContent = (v.speed_mph != null && !isNaN(v.speed_mph)) ? Math.round(v.speed_mph) + ' mph' : '–';
     $('bus-heading').textContent = compass(v.bearing);
+    var fi = fleetLookup(v.vehicle_id);
+    $('bus-model').textContent = fi.model + ' · ' + fi.detail;
+    $('bus-cap').textContent = (fi.seats != null ? fi.seats + ' seats · ' : '') + fi.length_m.toFixed(1) + ' m long';
     var when = v.updated_at ? new Date(v.updated_at) : null;
     $('bus-updated').textContent = (when && !isNaN(when)) ? when.toLocaleTimeString() : '–';
     $('bus-card').hidden = false;
@@ -323,11 +388,29 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var m = busPool[n];
       m.position.set(p[0], 0, p[1]);
       var bm = busMatsFor(v.route_id);
-      var parts = m.userData.parts;
-      parts[0].material = bm.glow;
-      parts[1].material = bm.core;
-      parts[2].material = bm.beacon;
-      parts[3].material = bm.ring;
+      var pp = m.userData.pillarParts;
+      pp[0].material = bm.glow;
+      pp[1].material = bm.core;
+      pp[2].material = bm.beacon;
+      pp[3].material = bm.ring;
+      // True-scale bus: dimensions from the fleet lookup, heading from bearing.
+      var fi = fleetLookup(v.vehicle_id);
+      var bsh = m.userData.busMeshes;
+      bsh.body.scale.set(fi.length_m, fi.height_m, fi.width_m);
+      bsh.body.position.y = fi.height_m / 2 + 0.35;
+      bsh.body.material = bm.core;
+      bsh.wins.scale.set(fi.length_m * 0.88, fi.height_m * 0.32, fi.width_m * 1.02);
+      bsh.wins.position.y = fi.height_m * 0.72 + 0.35;
+      var wx = fi.length_m * 0.32, wz = fi.width_m / 2;
+      bsh.wheels[0].position.set(wx, 0.55, wz);
+      bsh.wheels[1].position.set(wx, 0.55, -wz);
+      bsh.wheels[2].position.set(-wx, 0.55, wz);
+      bsh.wheels[3].position.set(-wx, 0.55, -wz);
+      if (v.bearing != null && !isNaN(v.bearing)) {
+        m.rotation.y = (90 - v.bearing) * DEG;
+      }
+      m.userData.fleet = fi;
+      applyBusLOD(m);
       m.userData.vehicle = v;
       m.visible = true;
       perRoute[v.route_id] = (perRoute[v.route_id] || 0) + 1;
@@ -371,9 +454,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   window.addEventListener('resize', resize);
 
-  fetch('ddot-routes-3d.json?v=' + STAMP, { cache: 'no-store' })
-    .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-    .then(function (data) {
+  Promise.all([
+    fetch('ddot-routes-3d.json?v=' + STAMP, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); }),
+    fetch('ddot-fleet.json?v=' + STAMP, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+  ])
+    .then(function (all) {
+      var data = all[0];
+      fleetData = all[1];
       proj = {
         lat0: data.projection.lat0,
         lon0: data.projection.lon0,
@@ -460,7 +550,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       setHeader(null, null, true);
       poll();
       setInterval(poll, POLL_MS);
-      renderer.setAnimationLoop(function () { controls.update(); renderer.render(scene, camera); });
+      var lastBusMode = null;
+      renderer.setAnimationLoop(function () {
+        controls.update();
+        updateLOD();
+        if (busMode !== lastBusMode) {
+          lastBusMode = busMode;
+          for (var i = 0; i < busPool.length; i++) {
+            if (busPool[i].visible) applyBusLOD(busPool[i]);
+          }
+        }
+        renderer.render(scene, camera);
+      });
     })
     .catch(function () {
       fail('Could not load route data. Please check your connection and reload.');
