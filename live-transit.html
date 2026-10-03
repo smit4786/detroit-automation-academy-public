@@ -109,6 +109,8 @@
   .nav-step span:last-child { color: #9AA0A6; font-size: .8rem; }
   .bus-card { position: absolute; left: 1.25rem; top: 5.5rem; width: 17rem; max-width: calc(100% - 2.5rem); background: rgba(12,17,22,.9); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: 1rem 1.1rem; backdrop-filter: blur(8px); }
   .bus-card[hidden] { display: none; }
+  .sel-eyebrow { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: #9AA0A6; margin: 0 0 .35rem; font-weight: 600; }
+  #stop-card { top: auto; bottom: 4.5rem; }
   .bus-card h2 { font-family: "Space Grotesk", sans-serif; font-size: 1.05rem; margin: 0 0 .4rem; color: #F5F2EA; display: flex; align-items: center; gap: .5rem; padding-right: 1.7rem; }
   .bus-card h2 span { overflow-wrap: break-word; min-width: 0; }
   .bus-card h2 i { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; }
@@ -190,6 +192,7 @@
       </div>
       <div class="bus-card" id="bus-card" hidden>
         <button class="close" id="bus-close" aria-label="Close bus details">×</button>
+        <div class="sel-eyebrow">Bus</div>
         <h2><i id="bus-chip"></i><span id="bus-title">Bus</span></h2>
         <dl>
           <dt>Vehicle</dt><dd id="bus-id">–</dd>
@@ -203,10 +206,11 @@
       </div>
       <div class="bus-card" id="stop-card" hidden>
         <button class="close" id="stop-close" aria-label="Close stop details">×</button>
+        <div class="sel-eyebrow">Stop</div>
         <h2><span id="stop-title">Stop</span></h2>
         <div class="stop-routes" id="stop-routes"></div>
       </div>
-      <div class="map-hint">drag&nbsp;·&nbsp;orbit&nbsp;&nbsp;&nbsp;scroll&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;click bus&nbsp;·&nbsp;details</div>
+      <div class="map-hint">drag&nbsp;·&nbsp;orbit&nbsp;&nbsp;&nbsp;scroll&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;tap bus or stop&nbsp;·&nbsp;details</div>
       <div class="map-tools" role="group" aria-label="Map navigation">
         <button id="nav-help" aria-label="Navigation help" aria-expanded="false">?</button>
         <button id="zoom-in" aria-label="Zoom in">+</button>
@@ -252,7 +256,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2580"></script>
+<script type="module" src="live-transit.js?v=20261002-2590"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
