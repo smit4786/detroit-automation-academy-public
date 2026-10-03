@@ -1039,6 +1039,39 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     );
   });
 
+  // Soft location prompt at load: one quiet toast offering the locate flow,
+  // never the raw system dialog uninvited. Silent when already located,
+  // unsupported, or previously denied.
+  var locPrompted = false;
+  function maybePromptLocation() {
+    if (locPrompted || userXZ || !('geolocation' in navigator)) return;
+    locPrompted = true;
+    var show = function () {
+      var t = $('map-toast');
+      t.innerHTML = '';
+      var s = document.createElement('span');
+      s.textContent = 'See routes near you?';
+      var go = document.createElement('button');
+      go.textContent = 'Enable location';
+      go.className = 'toast-btn';
+      go.addEventListener('click', function (e) { e.stopPropagation(); hideToast(); locateBtn.click(); });
+      var no = document.createElement('button');
+      no.textContent = 'Not now';
+      no.className = 'toast-btn toast-btn-quiet';
+      no.addEventListener('click', function (e) { e.stopPropagation(); hideToast(); });
+      t.appendChild(s); t.appendChild(go); t.appendChild(no);
+      t.hidden = false;
+    };
+    try {
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: 'geolocation' }).then(function (res) {
+          if (res.state === 'granted') locateBtn.click();
+          else if (res.state === 'prompt') show();
+        }, function () { show(); });
+      } else { show(); }
+    } catch (e) { show(); }
+  }
+
   // --- stops ---------------------------------------------------------------
   // Stops follow individual route filters (not groups). Single-route stops
   // take their route's color; multi-route stops ("hubs") draw paper-white
@@ -1303,9 +1336,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function syncFilterUI() {
     groupOrder.forEach(function (gid) {
       var st = groupSelState(gid);
-      var head = document.querySelector('.f-group-head[data-group="' + gid + '"]');
+      var check = document.querySelector('.f-group-head[data-group="' + gid + '"] .f-check');
       var sec = document.querySelector('.f-group[data-group="' + gid + '"]');
-      if (head) head.setAttribute('aria-pressed', st === 'mixed' ? 'mixed' : String(st === 'all'));
+      if (check) check.setAttribute('aria-pressed', st === 'mixed' ? 'mixed' : String(st === 'all'));
       if (sec) sec.classList.toggle('off', st === 'none');
     });
     routeOrder.forEach(function (rid) {
@@ -1320,29 +1353,45 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var host = $('filter-groups');
     host.innerHTML = '';
     groups.forEach(function (g) {
-      filterState.groups[g.id] = true;
+      // Calm default: only the ConnectTen core network is on. The panel
+      // opens as an accordion (3 rows); route chips expand per group.
+      var gOn = (g.id === 'connect-ten');
+      filterState.groups[g.id] = gOn;
       var sec = document.createElement('div');
       sec.className = 'f-group';
       sec.dataset.group = g.id;
-      var head = document.createElement('button');
+      var head = document.createElement('div');
       head.className = 'f-group-head';
       head.dataset.group = g.id;
-      head.setAttribute('aria-pressed', 'true');
-      head.innerHTML = '<span class="f-box"></span><b>' + g.name + '</b>' +
-        '<span class="f-count" id="fgc-' + g.id + '">–</span>';
-      head.addEventListener('click', function () {
+      var check = document.createElement('button');
+      check.className = 'f-check';
+      check.setAttribute('aria-label', 'Toggle all ' + g.name + ' routes');
+      check.innerHTML = '<span class="f-box"></span>';
+      check.addEventListener('click', function () {
         var on = groupSelState(g.id) !== 'all'; // all-on -> switch off; else switch on
         filterState.groups[g.id] = on;
         g.routes.forEach(function (rid) { filterState.routes[rid] = on; });
         applyFilters();
         syncFilterUI();
       });
+      var label = document.createElement('button');
+      label.className = 'f-label';
+      label.setAttribute('aria-expanded', 'false');
+      label.setAttribute('aria-label', 'Expand ' + g.name + ' routes');
+      label.innerHTML = '<b>' + g.name + '</b>' +
+        '<span class="f-count" id="fgc-' + g.id + '">–</span><span class="f-chev">▾</span>';
+      label.addEventListener('click', function () {
+        var open = sec.classList.toggle('open');
+        label.setAttribute('aria-expanded', String(open));
+      });
+      head.appendChild(check);
+      head.appendChild(label);
       var list = document.createElement('div');
       list.className = 'f-routes';
       g.routes.forEach(function (rid) {
         var route = routeById[rid];
         if (!route) return;
-        filterState.routes[rid] = true;
+        filterState.routes[rid] = gOn;
         var b = document.createElement('button');
         b.className = 'route-chip f-chip';
         b.setAttribute('aria-pressed', 'true');
@@ -1700,7 +1749,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       stopData = data.stops || [];
 
       buildFilterPanel(data.groups);
+      applyFilters();
+      syncFilterUI();
       rebuildStops();
+      setTimeout(maybePromptLocation, 4000); // soft location ask, once the map has settled
       $('filter-btn').addEventListener('click', function () { togglePanel(); });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') togglePanel(false);
