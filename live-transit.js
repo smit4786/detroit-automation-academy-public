@@ -10,7 +10,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2015';
+  var STAMP = '20261002-2030';
   var POLL_MS = 60000;
   var DOT_MAX = 240;
   var DEG = Math.PI / 180;
@@ -69,26 +69,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   var glowTex = radialTex('rgba(255,255,255,1)', 'rgba(255,255,255,0.35)');
 
-  function groundTexture() {
-    var c = document.createElement('canvas');
-    c.width = c.height = 512;
-    var x = c.getContext('2d');
-    var g = x.createRadialGradient(256, 256, 40, 256, 256, 256);
-    g.addColorStop(0, '#161e2a');
-    g.addColorStop(0.55, '#10161f');
-    g.addColorStop(1, '#0c1116');
-    x.fillStyle = g;
-    x.fillRect(0, 0, 512, 512);
-    var t = new THREE.CanvasTexture(c);
-    return t;
-  }
-
-  var ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(28000, 28000),
-    new THREE.MeshBasicMaterial({ map: groundTexture() })
-  );
-  ground.rotation.x = -Math.PI / 2;
-  scene.add(ground);
+  // Street-map underlay bounds (WGS84 corners of the z12 tile mosaic).
+  var STREET_BOUNDS = { lonW: -83.3203125, lonE: -82.96875, latN: 42.48830197960225, latS: 42.293564192170074 };
+  var streetTex = new THREE.TextureLoader().load('assets/detroit-streets-z12.png?v=' + STAMP);
+  streetTex.anisotropy = 8;
+  streetTex.colorSpace = THREE.SRGBColorSpace;
 
   var grid = new THREE.GridHelper(24000, 24, 0x2a3542, 0x1a2330);
   grid.position.y = 0.5;
@@ -327,6 +312,21 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         mLat: 111320,
         mLon: 111320 * Math.cos(data.projection.lat0 * DEG)
       };
+
+      // Georeferenced street-map underlay: project the tile mosaic corners
+      // through the same transform as the routes so streets sit true.
+      (function addStreetUnderlay() {
+        var nw = project(STREET_BOUNDS.latN, STREET_BOUNDS.lonW);
+        var se = project(STREET_BOUNDS.latS, STREET_BOUNDS.lonE);
+        var w = se[0] - nw[0], h = se[1] - nw[1];
+        var ground = new THREE.Mesh(
+          new THREE.PlaneGeometry(w, h),
+          new THREE.MeshBasicMaterial({ map: streetTex })
+        );
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.set(nw[0] + w / 2, 0, nw[1] + h / 2);
+        scene.add(ground);
+      })();
 
       var casingMat = new THREE.MeshBasicMaterial({ color: 0x0c1116, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
 
