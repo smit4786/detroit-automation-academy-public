@@ -260,19 +260,19 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     var c = document.createElement('canvas');
     var mc = c.getContext('2d');
-    mc.font = '700 42px system-ui, -apple-system, sans-serif';
+    mc.font = '700 36px system-ui, -apple-system, sans-serif';
     var tw = Math.ceil(mc.measureText(label).width);
-    c.width = tw + 76; c.height = 84;
+    c.width = tw + 60; c.height = 72;
     var x = c.getContext('2d');
-    x.fillStyle = 'rgba(9,13,17,0.92)';
+    x.fillStyle = 'rgba(9,13,17,0.88)';
     x.beginPath();
-    if (x.roundRect) x.roundRect(4, 4, c.width - 8, 76, 20); else x.rect(4, 4, c.width - 8, 76);
+    if (x.roundRect) x.roundRect(4, 4, c.width - 8, 64, 16); else x.rect(4, 4, c.width - 8, 64);
     x.fill();
-    x.lineWidth = 5; x.strokeStyle = col; x.stroke();
+    x.lineWidth = 4; x.strokeStyle = col; x.stroke();
     x.fillStyle = '#ffffff';
-    x.font = '700 42px system-ui, -apple-system, sans-serif';
+    x.font = '700 36px system-ui, -apple-system, sans-serif';
     x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillText(label, c.width / 2, 44);
+    x.fillText(label, c.width / 2, 38);
     var tex = new THREE.CanvasTexture(c);
     tex.anisotropy = 4;
     t = { tex: tex, aspect: c.width / c.height };
@@ -430,16 +430,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     updateBusBadges(n, PILLAR_H + 360);
   }
 
-  // Per-bus route badges: one sprite per bus, shown only at street-level zooms.
+  // Per-bus route badges: one sprite per bus, shown only at close street-level zooms.
   function updateBusBadges(n, yBase) {
-    var show = camera.position.distanceTo(controls.target) < 12000;
+    var show = camera.position.distanceTo(controls.target) < 7000;
     for (var bi = 0; bi < BUS_MAX; bi++) {
       var sp = badgePool[bi];
       if (bi < n && show) {
         var bs = busSlots[bi];
         var bt = routeBadgeTexture(bs.vehicle.route_id, bs.vehicle.destination);
         if (sp.material.map !== bt.tex) { sp.material.map = bt.tex; sp.material.needsUpdate = true; }
-        sp.scale.set(240 * bt.aspect, 240, 1);
+        sp.scale.set(150 * bt.aspect, 150, 1);
         sp.position.set(bs.x, yBase, bs.z);
         sp.visible = true;
       } else {
