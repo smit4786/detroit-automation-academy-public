@@ -187,6 +187,10 @@ a { color: inherit; }
 .bq { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; margin-top: 16px; }
 .bq h3 { color: var(--amber); }
 .bq p { color: #d8d4c8; font-size: var(--step-0); }
+.bq h4 { color: var(--paper); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; margin: 16px 0 6px; }
+.bq .src { margin-top: 14px; font-size: 0.78rem; line-height: 1.9; }
+.bq .src a { color: var(--concrete); margin-right: 14px; }
+.bq .src a:hover { color: var(--forge); }
 
 /* quiz */
 .quiz-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; margin-top: 24px; }
