@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2330';
+  var STAMP = '20261002-2340';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -445,6 +445,45 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       hint.classList.add('touch');
     }
   }
+
+  // --- navigation tutorial overlay ---------------------------------------------
+  var NAV_STEPS_TOUCH = [
+    ['\u2194', 'Drag', 'Move around the city'],
+    ['+', 'Pinch', 'Zoom in and out'],
+    ['\u27F3', 'Two-finger twist', 'Rotate the view'],
+    ['\u25CF', 'Tap a bus', 'Vehicle number, model, speed and heading'],
+    ['\u29E9', 'Routes', 'Filter by group or individual route'],
+    ['\u2302', 'Reset view', 'Return to the full-system view']
+  ];
+  var NAV_STEPS_DESK = [
+    ['\u27F3', 'Drag', 'Orbit the view'],
+    ['+', 'Scroll', 'Zoom in and out'],
+    ['\u2194', 'Right-drag', 'Pan across the city'],
+    ['\u25CF', 'Click a bus', 'Vehicle number, model, speed and heading'],
+    ['\u29E9', 'Routes', 'Filter by group or individual route'],
+    ['\u2302', 'Reset view', 'Return to the full-system view']
+  ];
+  function buildNavOverlay() {
+    var host = $('nav-steps');
+    host.innerHTML = '';
+    (isTouch ? NAV_STEPS_TOUCH : NAV_STEPS_DESK).forEach(function (s) {
+      var d = document.createElement('div');
+      d.className = 'nav-step';
+      d.innerHTML = '<span class="ico">' + s[0] + '</span><div><b>' + s[1] + '</b><span>' + s[2] + '</span></div>';
+      host.appendChild(d);
+    });
+  }
+  function toggleNavOverlay(force) {
+    var ov = $('nav-overlay');
+    var show = (typeof force === 'boolean') ? force : ov.hidden;
+    if (show) buildNavOverlay();
+    ov.hidden = !show;
+    $('nav-help').setAttribute('aria-expanded', String(show));
+  }
+  $('nav-help').addEventListener('click', function () { toggleNavOverlay(); });
+  $('nav-close').addEventListener('click', function () { toggleNavOverlay(false); });
+  $('nav-overlay').addEventListener('click', function (e) { if (e.target === this) toggleNavOverlay(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggleNavOverlay(false); });
 
   // --- filters ---------------------------------------------------------------
   // filterState.groups[gid] + filterState.routes[rid]; a route shows when both.
