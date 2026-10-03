@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2245';
+  var STAMP = '20261002-2300';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -514,6 +514,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     $('filter-all').addEventListener('click', function () {
       groupOrder.forEach(function (gid) { filterState.groups[gid] = true; });
       routeOrder.forEach(function (rid) { filterState.routes[rid] = true; });
+      applyFilters();
+      syncFilterUI();
+    });
+    $('filter-none').addEventListener('click', function () {
+      groupOrder.forEach(function (gid) { filterState.groups[gid] = false; });
+      routeOrder.forEach(function (rid) { filterState.routes[rid] = false; });
       applyFilters();
       syncFilterUI();
     });
