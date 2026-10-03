@@ -10,7 +10,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2045';
+  var STAMP = '20261002-2225';
   var POLL_MS = 60000;
   var DOT_MAX = 240;
   var DEG = Math.PI / 180;
@@ -39,7 +39,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   scene.fog = new THREE.Fog(0x0c1116, 32000, 75000);
 
   var camera = new THREE.PerspectiveCamera(42, 1, 100, 140000);
-  camera.position.set(0, 14500, 9500);
+  camera.position.set(0, 8500, 16500);
 
   var controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 0, 0);
@@ -105,6 +105,38 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return g;
   }
 
+  // Vertical skirts under an elevated ribbon: turns a flat strip into a solid
+  // 3D guideway. One skirt per edge, from y=0 up to yTop.
+  function skirtGeometry(pts, width, yTop) {
+    var n = pts.length;
+    var pos = [];
+    var idx = [];
+    function edgePt(i, side, y) {
+      var p = pts[i];
+      var a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)];
+      var dx = b[0] - a[0], dz = b[1] - a[1];
+      var len = Math.hypot(dx, dz) || 1;
+      var nx = -dz / len, nz = dx / len, hw = width / 2;
+      return [p[0] + nx * hw * side, y, p[1] + nz * hw * side];
+    }
+    [1, -1].forEach(function (side) {
+      var base = pos.length / 3;
+      for (var i = 0; i < n; i++) {
+        var b = edgePt(i, side, 0), t = edgePt(i, side, yTop);
+        pos.push(b[0], b[1], b[2], t[0], t[1], t[2]);
+        if (i < n - 1) {
+          var k = base + i * 2;
+          idx.push(k, k + 2, k + 1, k + 1, k + 2, k + 3);
+        }
+      }
+    });
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pos), 3));
+    g.setIndex(idx);
+    g.computeVertexNormals();
+    return g;
+  }
+
   function makeLabel(text, colorHex) {
     var c = document.createElement('canvas');
     c.width = 512; c.height = 128;
@@ -136,28 +168,58 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return [(lon - proj.lon0) * proj.mLon, -(lat - proj.lat0) * proj.mLat];
   }
 
-  // --- bus sprites ----------------------------------------------------------
-  var dotMats = {};
-  function dotMatFor(routeId) {
-    if (!dotMats[routeId]) {
-      var c = routeColors[routeId];
-      dotMats[routeId] = new THREE.SpriteMaterial({
-        map: glowTex,
-        color: c ? c.clone() : new THREE.Color(0xf5f2ea),
-        transparent: true, opacity: 0.95,
-        depthWrite: false, blending: THREE.AdditiveBlending
-      });
+  // --- bus markers: real 3D pillars, not camera-facing billboards ---------------
+  var PILLAR_H = 620;
+  var glowPillarGeo = new THREE.CylinderGeometry(58, 58, PILLAR_H, 12, 1, true);
+  var corePillarGeo = new THREE.CylinderGeometry(20, 27, PILLAR_H, 10);
+  var beaconGeo = new THREE.SphereGeometry(64, 16, 12);
+  var ringGeo = new THREE.RingGeometry(72, 124, 28);
+
+  var busMats = {};
+  function busMatsFor(routeId) {
+    if (!busMats[routeId]) {
+      var c = routeColors[routeId] || new THREE.Color(0xf5f2ea);
+      busMats[routeId] = {
+        glow: new THREE.MeshBasicMaterial({ color: c.clone(), transparent: true, opacity: 0.30, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
+        core: new THREE.MeshLambertMaterial({ color: c.clone() }),
+        beacon: new THREE.MeshBasicMaterial({ color: c.clone() }),
+        ring: new THREE.MeshBasicMaterial({ color: c.clone(), transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })
+      };
     }
-    return dotMats[routeId];
+    return busMats[routeId];
   }
-  var dotPool = [];
-  for (var di = 0; di < DOT_MAX; di++) {
-    var ds = new THREE.Sprite(dotMatFor('__default'));
-    ds.scale.set(340, 340, 1);
-    ds.visible = false;
-    ds.userData.vehicle = null;
-    scene.add(ds);
-    dotPool.push(ds);
+
+  function makeBusMarker() {
+    var g = new THREE.Group();
+    var dm = busMatsFor('__default');
+    var glow = new THREE.Mesh(glowPillarGeo, dm.glow);
+    glow.position.y = PILLAR_H / 2;
+    var core = new THREE.Mesh(corePillarGeo, dm.core);
+    core.position.y = PILLAR_H / 2;
+    var beacon = new THREE.Mesh(beaconGeo, dm.beacon);
+    beacon.position.y = PILLAR_H + 40;
+    var ring = new THREE.Mesh(ringGeo, dm.ring);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 6;
+    g.add(glow); g.add(core); g.add(beacon); g.add(ring);
+    g.visible = false;
+    g.userData.vehicle = null;
+    g.userData.hit = core;
+    g.userData.parts = [glow, core, beacon, ring];
+    core.userData.markerGroup = g;
+    scene.add(g);
+    return g;
+  }
+
+  var busPool = [];
+  for (var di = 0; di < DOT_MAX; di++) busPool.push(makeBusMarker());
+
+  function visibleHitMeshes() {
+    var arr = [];
+    for (var i = 0; i < busPool.length; i++) {
+      if (busPool[i].visible) arr.push(busPool[i].userData.hit);
+    }
+    return arr;
   }
 
   var raycaster = new THREE.Raycaster();
@@ -177,9 +239,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       -((e.clientY - r.top) / r.height) * 2 + 1
     );
     raycaster.setFromCamera(pointerNDC, camera);
-    var vis = dotPool.filter(function (s) { return s.visible; });
-    var hits = raycaster.intersectObjects(vis);
-    if (hits.length) showBus(hits[0].object.userData.vehicle);
+    var hits = raycaster.intersectObjects(visibleHitMeshes());
+    if (hits.length) showBus(hits[0].object.userData.markerGroup.userData.vehicle);
     else hideBus();
   });
   renderer.domElement.addEventListener('pointermove', function (e) {
@@ -190,9 +251,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       -((e.clientY - r.top) / r.height) * 2 + 1
     );
     raycaster.setFromCamera(pointerNDC, camera);
-    var vis = dotPool.filter(function (s) { return s.visible; });
     renderer.domElement.style.cursor =
-      raycaster.intersectObjects(vis).length ? 'pointer' : 'grab';
+      raycaster.intersectObjects(visibleHitMeshes()).length ? 'pointer' : 'grab';
   });
 
   function compass(bearing) {
@@ -260,15 +320,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var grp = routeGroups[v.route_id];
       if (grp && !grp.visible) continue;
       var p = project(v.lat, v.lon);
-      var s = dotPool[n];
-      s.position.set(p[0], 30, p[1]);
-      s.material = dotMatFor(v.route_id);
-      s.userData.vehicle = v;
-      s.visible = true;
+      var m = busPool[n];
+      m.position.set(p[0], 0, p[1]);
+      var bm = busMatsFor(v.route_id);
+      var parts = m.userData.parts;
+      parts[0].material = bm.glow;
+      parts[1].material = bm.core;
+      parts[2].material = bm.beacon;
+      parts[3].material = bm.ring;
+      m.userData.vehicle = v;
+      m.visible = true;
       perRoute[v.route_id] = (perRoute[v.route_id] || 0) + 1;
       n++;
     }
-    for (var j = n; j < DOT_MAX; j++) { dotPool[j].visible = false; dotPool[j].userData.vehicle = null; }
+    for (var j = n; j < DOT_MAX; j++) { busPool[j].visible = false; busPool[j].userData.vehicle = null; }
     routeOrder.forEach(function (id) {
       var el = $('cnt-' + id);
       if (el) el.textContent = (perRoute[id] || 0) + ' buses';
@@ -339,7 +404,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         routeNames[route.id] = route.name;
         routeOrder.push(route.id);
         var grp = new THREE.Group();
-        var mat = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
+        // Elevated guideway: the ribbon deck floats at y=66 with solid
+        // skirts to the ground, so routes read as 3D structures. Lambert
+        // materials let the directional light shade deck vs. sides.
+        var deckMat = new THREE.MeshLambertMaterial({ color: color, side: THREE.DoubleSide });
+        var skirtMat = new THREE.MeshLambertMaterial({ color: color.clone().multiplyScalar(0.38), side: THREE.DoubleSide });
         var glowMat = new THREE.MeshBasicMaterial({
           color: color, transparent: true, opacity: 0.13,
           blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
@@ -349,14 +418,22 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           if (path.length < 2) return;
           grp.add(new THREE.Mesh(ribbonGeometry(path, 230, 2), glowMat));
           grp.add(new THREE.Mesh(ribbonGeometry(path, 95, 4), casingMat));
-          grp.add(new THREE.Mesh(ribbonGeometry(path, 58, 8), mat));
+          var deckGeo = ribbonGeometry(path, 72, 66);
+          deckGeo.computeVertexNormals();
+          grp.add(new THREE.Mesh(deckGeo, deckMat));
+          grp.add(new THREE.Mesh(skirtGeometry(path, 72, 66), skirtMat));
           if (!longest || path.length > longest.length) longest = path;
         });
         if (longest) {
           var mid = longest[Math.floor(longest.length / 2)];
           var label = makeLabel(route.id + ' · ' + route.name, route.color);
-          label.position.set(mid[0], 520, mid[1]);
+          label.position.set(mid[0], 1050, mid[1]);
           grp.add(label);
+          var tetherGeo = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(mid[0], 70, mid[1]),
+            new THREE.Vector3(mid[0], 980, mid[1])
+          ]);
+          grp.add(new THREE.Line(tetherGeo, new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.45 })));
         }
         scene.add(grp);
         routeGroups[route.id] = grp;
