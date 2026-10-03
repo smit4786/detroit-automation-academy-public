@@ -239,27 +239,44 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   scene.add(dirArrowIM);
   var pillarMeshes = [pillarGlowIM, pillarCoreIM, pillarBeaconIM, pillarRingIM, dirArrowIM];
 
-  // Per-bus route-number badges (sprites), LOD-gated to street-level zooms.
+  // Per-bus route badges (sprites): route number + destination, LOD-gated to street zooms.
   var badgeTexCache = {};
-  function routeBadgeTexture(rid) {
-    var t = badgeTexCache[rid];
+  function titleCase(s) {
+    return String(s || '').toLowerCase().replace(/(?:^|\s)\S/g, function (m) { return m.toUpperCase(); });
+  }
+  function routeBadgeTexture(rid, dest) {
+    var key = rid + '|' + (dest || '');
+    var t = badgeTexCache[key];
     if (t) return t;
     var rc = routeColors[rid];
     var col = '#' + (rc ? rc.getHexString() : '9aa0a6');
-    var c = document.createElement('canvas'); c.width = 160; c.height = 80;
+    var label = String(rid);
+    if (dest) {
+      // BusTime destination signs often repeat the route ("10 to Fairlane") — strip it.
+      var dRaw = String(dest).trim().replace(new RegExp('^' + rid + '\\s*(to\\s+)?', 'i'), '');
+      var dShort = titleCase(dRaw);
+      if (dShort.length > 24) dShort = dShort.slice(0, 23) + '…';
+      if (dShort) label += ' · ' + dShort;
+    }
+    var c = document.createElement('canvas');
+    var mc = c.getContext('2d');
+    mc.font = '700 42px system-ui, -apple-system, sans-serif';
+    var tw = Math.ceil(mc.measureText(label).width);
+    c.width = tw + 76; c.height = 84;
     var x = c.getContext('2d');
     x.fillStyle = 'rgba(9,13,17,0.92)';
     x.beginPath();
-    if (x.roundRect) x.roundRect(5, 5, 150, 70, 18); else x.rect(5, 5, 150, 70);
+    if (x.roundRect) x.roundRect(4, 4, c.width - 8, 76, 20); else x.rect(4, 4, c.width - 8, 76);
     x.fill();
     x.lineWidth = 5; x.strokeStyle = col; x.stroke();
     x.fillStyle = '#ffffff';
     x.font = '700 42px system-ui, -apple-system, sans-serif';
     x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillText(String(rid), 80, 43);
-    t = new THREE.CanvasTexture(c);
-    t.anisotropy = 4;
-    badgeTexCache[rid] = t;
+    x.fillText(label, c.width / 2, 44);
+    var tex = new THREE.CanvasTexture(c);
+    tex.anisotropy = 4;
+    t = { tex: tex, aspect: c.width / c.height };
+    badgeTexCache[key] = t;
     return t;
   }
   var badgePool = [];
@@ -319,6 +336,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   // busSlots[i]: one entry per currently visible bus (index == instance id).
   var busSlots = [];
+  var selectedVehicleId = null; // tapped bus; its indicator renders expanded
 
   var _m4 = new THREE.Matrix4();
   var _p3 = new THREE.Vector3();
@@ -349,6 +367,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           d.body.material.color.copy(s.color);
           d.chev.material.color.copy(s.color);
           d.chev.position.set(fi.length_m / 2 + 30, 8, 0);
+          var isSelD = !!selectedVehicleId && s.vehicle.vehicle_id === selectedVehicleId;
+          var dsc = isSelD ? 1.45 : 1; // selected bus expands
+          d.group.scale.set(dsc, dsc, dsc);
           d.wins.scale.set(fi.length_m * 0.88, fi.height_m * 0.32, fi.width_m * 1.02);
           d.wins.position.y = fi.height_m * 0.72 + 0.35;
           var wx = fi.length_m * 0.32, wz = fi.width_m / 2;
@@ -373,8 +394,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     pillarMeshes.forEach(function (im) { im.visible = true; });
     for (var k = 0; k < n; k++) {
       var b = busSlots[k];
+      var isSel = !!selectedVehicleId && b.vehicle.vehicle_id === selectedVehicleId;
+      var exz = isSel ? 1.55 : 1; // selected bus expands
       _p3.set(b.x, PILLAR_H / 2, b.z);
       _q3.identity();
+      _s3.set(exz, 1, exz);
       _m4.compose(_p3, _q3, _s3);
       pillarGlowIM.setMatrixAt(k, _m4);
       pillarCoreIM.setMatrixAt(k, _m4);
@@ -382,6 +406,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       _m4.compose(_p3, _q3, _s3);
       pillarBeaconIM.setMatrixAt(k, _m4);
       _p3.set(b.x, 6, b.z);
+      _s3.set(exz * 1.35, exz * 1.35, 1);
       _m4.compose(_p3, _ringQ, _s3);
       pillarRingIM.setMatrixAt(k, _m4);
       pillarGlowIM.setColorAt(k, b.color);
@@ -392,7 +417,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       _q3.setFromEuler(_e3.set(0, b.rotY, 0));
       var fwdX = Math.cos(b.rotY), fwdZ = -Math.sin(b.rotY);
       _p3.set(b.x + fwdX * 190, 24, b.z + fwdZ * 190);
-      _s3.set(1, 1, 1);
+      _s3.set(exz, 1, exz);
       _m4.compose(_p3, _q3, _s3);
       dirArrowIM.setMatrixAt(k, _m4);
       dirArrowIM.setColorAt(k, b.color);
@@ -412,8 +437,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var sp = badgePool[bi];
       if (bi < n && show) {
         var bs = busSlots[bi];
-        var tex = routeBadgeTexture(bs.vehicle.route_id);
-        if (sp.material.map !== tex) { sp.material.map = tex; sp.material.needsUpdate = true; }
+        var bt = routeBadgeTexture(bs.vehicle.route_id, bs.vehicle.destination);
+        if (sp.material.map !== bt.tex) { sp.material.map = bt.tex; sp.material.needsUpdate = true; }
+        sp.scale.set(240 * bt.aspect, 240, 1);
         sp.position.set(bs.x, yBase, bs.z);
         sp.visible = true;
       } else {
@@ -497,6 +523,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   function showBus(v) {
     if (!v) return;
+    selectedVehicleId = v.vehicle_id;
+    renderBusInstances(); // expand the selected indicator
     var sn = v.route_id;
     $('bus-chip').style.background = routeColors[sn] ? '#' + routeColors[sn].getHexString() : '#F5F2EA';
     $('bus-title').textContent = sn + ' · ' + (routeNames[sn] || 'DDOT');
@@ -510,7 +538,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     $('bus-card-updated').textContent = (when && !isNaN(when)) ? when.toLocaleTimeString() : '–';
     $('bus-card').hidden = false;
   }
-  function hideBus() { $('bus-card').hidden = true; }
+  function hideBus() {
+    selectedVehicleId = null;
+    $('bus-card').hidden = true;
+    renderBusInstances(); // shrink the indicator back
+  }
   $('bus-close').addEventListener('click', hideBus);
 
   // --- map navigation tools ----------------------------------------------------
