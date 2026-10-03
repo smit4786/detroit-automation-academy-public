@@ -229,9 +229,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     new THREE.RingGeometry(72, 124, 28),
     new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     BUS_MAX);
-  // Direction-of-travel arrowheads (flat triangles; apex +X = forward), one per bus.
-  var arrowGeo = new THREE.CircleGeometry(95, 3);
-  arrowGeo.rotateX(-Math.PI / 2);
+  // Direction-of-travel arrowheads (cones; apex +X = forward), one per bus.
+  // Floated at upper-pillar height so they read above the raised guideways.
+  var arrowGeo = new THREE.ConeGeometry(100, 220, 14);
+  arrowGeo.rotateZ(-Math.PI / 2);
   var dirArrowIM = new THREE.InstancedMesh(arrowGeo,
     new THREE.MeshBasicMaterial({ color: 0xffffff }), BUS_MAX);
   dirArrowIM.frustumCulled = false;
@@ -244,20 +245,22 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function titleCase(s) {
     return String(s || '').toLowerCase().replace(/(?:^|\s)\S/g, function (m) { return m.toUpperCase(); });
   }
+  function formatDest(rid, dest) {
+    if (!dest) return '';
+    // BusTime destination signs often repeat the route ("10 to Fairlane") — strip it.
+    var dRaw = String(dest).trim().replace(new RegExp('^' + rid + '\\s*(to\\s+)?', 'i'), '');
+    var dShort = titleCase(dRaw);
+    if (dShort.length > 24) dShort = dShort.slice(0, 23) + '…';
+    return dShort;
+  }
   function routeBadgeTexture(rid, dest) {
     var key = rid + '|' + (dest || '');
     var t = badgeTexCache[key];
     if (t) return t;
     var rc = routeColors[rid];
     var col = '#' + (rc ? rc.getHexString() : '9aa0a6');
-    var label = String(rid);
-    if (dest) {
-      // BusTime destination signs often repeat the route ("10 to Fairlane") — strip it.
-      var dRaw = String(dest).trim().replace(new RegExp('^' + rid + '\\s*(to\\s+)?', 'i'), '');
-      var dShort = titleCase(dRaw);
-      if (dShort.length > 24) dShort = dShort.slice(0, 23) + '…';
-      if (dShort) label += ' · ' + dShort;
-    }
+    var dShort = formatDest(rid, dest);
+    var label = String(rid) + (dShort ? ' · ' + dShort : '');
     var c = document.createElement('canvas');
     var mc = c.getContext('2d');
     mc.font = '700 36px system-ui, -apple-system, sans-serif';
@@ -369,10 +372,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     _s3.set(exz * 1.35, exz * 1.35, 1);
     _m4.compose(_p3, _ringQ, _s3);
     pillarRingIM.setMatrixAt(k, _m4);
-    // Direction arrowhead: flat triangle ahead of the pillar, apex forward.
+    // Direction arrowhead: cone floating ahead of the upper pillar, apex forward.
     _q3.setFromEuler(_e3.set(0, b.rotY, 0));
     var fwdX = Math.cos(b.rotY), fwdZ = -Math.sin(b.rotY);
-    _p3.set(b.x + fwdX * 190, 24, b.z + fwdZ * 190);
+    _p3.set(b.x + fwdX * 230, PILLAR_H - 150, b.z + fwdZ * 230);
     _s3.set(exz, 1, exz);
     _m4.compose(_p3, _q3, _s3);
     dirArrowIM.setMatrixAt(k, _m4);
@@ -558,6 +561,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     $('bus-chip').style.background = routeColors[sn] ? '#' + routeColors[sn].getHexString() : '#F5F2EA';
     $('bus-title').textContent = sn + ' · ' + (routeNames[sn] || 'DDOT');
     $('bus-id').textContent = v.vehicle_id || '–';
+    $('bus-dest').textContent = formatDest(sn, v.destination) || '–';
     $('bus-speed').textContent = (v.speed_mph != null && !isNaN(v.speed_mph)) ? Math.round(v.speed_mph) + ' mph' : '–';
     $('bus-heading').textContent = compass(v.bearing);
     var fi = fleetLookup(v.vehicle_id);
