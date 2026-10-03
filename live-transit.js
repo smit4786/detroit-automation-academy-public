@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2340';
+  var STAMP = '20261002-2345';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -484,6 +484,57 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   $('nav-close').addEventListener('click', function () { toggleNavOverlay(false); });
   $('nav-overlay').addEventListener('click', function (e) { if (e.target === this) toggleNavOverlay(false); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggleNavOverlay(false); });
+
+  // --- routes panel: minimize + resize -----------------------------------------
+  var panel = $('filter-panel');
+  var PANEL_MIN_W = 240, PANEL_MAX_W = 560, PANEL_MIN_H = 140;
+  function panelMaxH() { return Math.max(220, window.innerHeight - 140); }
+  function setPanelMin(min) {
+    panel.classList.toggle('minimized', min);
+    var b = $('panel-min');
+    b.textContent = min ? '+' : '\u2013';
+    b.setAttribute('aria-label', min ? 'Expand routes panel' : 'Minimize routes panel');
+    b.setAttribute('aria-expanded', String(!min));
+    try { localStorage.setItem('lt-panel-min', min ? '1' : '0'); } catch (e) {}
+  }
+  (function applyPanelPrefs() {
+    if (window.innerWidth <= 640) return;
+    try {
+      var w = parseInt(localStorage.getItem('lt-panel-w'), 10);
+      var h = parseInt(localStorage.getItem('lt-panel-h'), 10);
+      if (w >= PANEL_MIN_W && w <= PANEL_MAX_W) panel.style.width = w + 'px';
+      if (h >= PANEL_MIN_H && h <= panelMaxH()) { panel.style.height = h + 'px'; panel.style.maxHeight = 'none'; }
+      if (localStorage.getItem('lt-panel-min') === '1') setPanelMin(true);
+    } catch (e) {}
+  })();
+  $('panel-min').addEventListener('click', function () { setPanelMin(!panel.classList.contains('minimized')); });
+  var grip = $('panel-resize'), rsz = null;
+  grip.addEventListener('pointerdown', function (e) {
+    if (window.innerWidth <= 640) return;
+    e.preventDefault();
+    try { grip.setPointerCapture(e.pointerId); } catch (err) {}
+    rsz = { x: e.clientX, y: e.clientY, w: panel.offsetWidth, h: panel.offsetHeight };
+  });
+  grip.addEventListener('pointermove', function (e) {
+    if (!rsz) return;
+    var w = Math.min(PANEL_MAX_W, Math.max(PANEL_MIN_W, rsz.w + (rsz.x - e.clientX)));
+    var h = Math.min(panelMaxH(), Math.max(PANEL_MIN_H, rsz.h + (e.clientY - rsz.y)));
+    panel.style.width = w + 'px';
+    panel.style.height = h + 'px';
+    panel.style.maxHeight = 'none';
+  });
+  function endResize(save) {
+    if (!rsz) return;
+    if (save) {
+      try {
+        localStorage.setItem('lt-panel-w', String(panel.offsetWidth));
+        localStorage.setItem('lt-panel-h', String(panel.offsetHeight));
+      } catch (e) {}
+    }
+    rsz = null;
+  }
+  grip.addEventListener('pointerup', function () { endResize(true); });
+  grip.addEventListener('pointercancel', function () { endResize(false); });
 
   // --- filters ---------------------------------------------------------------
   // filterState.groups[gid] + filterState.routes[rid]; a route shows when both.
