@@ -109,7 +109,8 @@
   .nav-step span:last-child { color: #9AA0A6; font-size: .8rem; }
   .bus-card { position: absolute; left: 1.25rem; top: 5.5rem; width: 17rem; max-width: calc(100% - 2.5rem); background: rgba(12,17,22,.9); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: 1rem 1.1rem; backdrop-filter: blur(8px); }
   .bus-card[hidden] { display: none; }
-  .bus-card h2 { font-family: "Space Grotesk", sans-serif; font-size: 1.05rem; margin: 0 0 .4rem; color: #F5F2EA; display: flex; align-items: center; gap: .5rem; }
+  .bus-card h2 { font-family: "Space Grotesk", sans-serif; font-size: 1.05rem; margin: 0 0 .4rem; color: #F5F2EA; display: flex; align-items: center; gap: .5rem; padding-right: 1.7rem; }
+  .bus-card h2 span { overflow-wrap: break-word; min-width: 0; }
   .bus-card h2 i { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; }
   .bus-card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .25rem .8rem; font-size: .85rem; }
   .bus-card dt { color: #9AA0A6; }
@@ -242,7 +243,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2500"></script>
+<script type="module" src="live-transit.js?v=20261002-2510"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
