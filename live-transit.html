@@ -62,14 +62,21 @@
   .f-head-btns { display: flex; gap: .4rem; }
   .f-group { margin-bottom: .7rem; }
   .f-group:last-child { margin-bottom: 0; }
-  .f-group-head { display: flex; align-items: center; gap: .55rem; width: 100%; background: rgba(245,242,234,.04); border: 1px solid rgba(245,242,234,.1); color: #F5F2EA; border-radius: 10px; padding: .5rem .7rem; cursor: pointer; font-size: .85rem; font-family: "Inter", sans-serif; }
+  .f-group-head { display: flex; align-items: center; gap: .55rem; width: 100%; background: rgba(245,242,234,.04); border: 1px solid rgba(245,242,234,.1); color: #F5F2EA; border-radius: 10px; padding: .5rem .7rem; font-size: .85rem; font-family: "Inter", sans-serif; box-sizing: border-box; }
+  button.f-group-head { cursor: pointer; text-align: left; }
   .f-group-head b { font-weight: 600; flex: 1; text-align: left; }
   .f-group-head .f-count { color: #9AA0A6; font-size: .75rem; font-variant-numeric: tabular-nums; }
+  .f-check { background: none; border: none; padding: .15rem; margin: -.15rem 0 -.15rem -.15rem; cursor: pointer; display: flex; flex: none; }
+  .f-label { background: none; border: none; color: inherit; font: inherit; display: flex; align-items: center; gap: .55rem; flex: 1; min-width: 0; cursor: pointer; padding: 0; text-align: left; }
+  .f-chev { color: #9AA0A6; font-size: .8rem; transition: transform .18s; flex: none; }
+  .f-group.open .f-chev { transform: rotate(180deg); }
+  .f-group .f-routes { display: none; }
+  .f-group.open .f-routes { display: flex; }
   .f-box { width: .85rem; height: .85rem; border-radius: 4px; border: 1px solid #E85D1A; background: #E85D1A; flex: none; }
-  .f-group-head[aria-pressed="false"] .f-box { background: transparent; }
-  .f-group-head[aria-pressed="mixed"] .f-box { background: transparent; position: relative; }
+  .f-check[aria-pressed="false"] .f-box { background: transparent; }
+  .f-check[aria-pressed="mixed"] .f-box { background: transparent; position: relative; }
   .f-near { margin-bottom: .6rem; border-color: rgba(232,93,26,.45); }
-  .f-group-head[aria-pressed="mixed"] .f-box::after { content: ""; position: absolute; left: 2px; right: 2px; top: 50%; height: 2px; margin-top: -1px; background: #E85D1A; border-radius: 1px; }
+  .f-check[aria-pressed="mixed"] .f-box::after { content: ""; position: absolute; left: 2px; right: 2px; top: 50%; height: 2px; margin-top: -1px; background: #E85D1A; border-radius: 1px; }
   .f-group.off .f-routes { opacity: .35; }
   .f-routes { display: flex; flex-wrap: wrap; gap: .4rem; padding: .55rem .1rem 0; }
   .f-chip { font-size: .75rem; padding: .4rem .65rem; }
@@ -93,6 +100,8 @@
   .map-stage.pseudo-full { position: fixed; inset: 0; height: 100vh; height: 100dvh; z-index: 60; }
   body.pseudo-full-lock { overflow: hidden; }
   .map-toast { position: absolute; left: 50%; bottom: 5.5rem; transform: translateX(-50%); z-index: 9; display: flex; align-items: center; gap: .6rem; background: rgba(12,17,22,.95); border: 1px solid rgba(232,93,26,.6); color: #F5F2EA; border-radius: 999px; padding: .55rem 1rem; font-size: .82rem; font-family: "Inter", sans-serif; max-width: calc(100% - 3rem); cursor: pointer; white-space: nowrap; }
+  .toast-btn { background: #E85D1A; border: none; color: #0C1116; font-weight: 700; font-size: .78rem; border-radius: 999px; padding: .35rem .8rem; cursor: pointer; font-family: "Inter", sans-serif; flex: none; }
+  .toast-btn-quiet { background: transparent; color: #9AA0A6; font-weight: 500; }
   .map-toast[hidden] { display: none; }
   .map-toast button { background: none; border: none; color: #9AA0A6; font-size: 1.2rem; cursor: pointer; line-height: 1; padding: .2rem .3rem; touch-action: manipulation; }
   .map-toast button:hover { color: #F5F2EA; }
@@ -273,7 +282,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2650"></script>
+<script type="module" src="live-transit.js?v=20261002-2660"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
