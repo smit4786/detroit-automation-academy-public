@@ -627,7 +627,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       -((cy - r.top) / r.height * 2 + 1)
     );
     raycaster.setFromCamera(pointerNDC, camera);
-    raycaster.params.Points.threshold = 90;
+    raycaster.params.Points.threshold = 110;
     var objs = [];
     for (var i = 0; i < stopCloudMeta.length; i++) objs.push(stopCloudMeta[i].points);
     var hits = raycaster.intersectObjects(objs);
@@ -676,10 +676,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var v = pickBus(e.clientX, e.clientY, isTouch);
     if (v) { showBus(v); return; }
     var st = pickStop(e.clientX, e.clientY);
-    if (st) {
-      var rn = (st.r || []).join(', ');
-      showToast(st.n + (rn ? ' · routes ' + rn : ''));
-    } else hideBus();
+    if (st) showStop(st);
+    else { hideBus(); hideStop(); }
   });
   renderer.domElement.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'mouse' || downPos) return;
@@ -693,6 +691,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   function showBus(v) {
     if (!v) return;
+    hideStop();
     selectedVehicleId = v.vehicle_id;
     renderBusInstances(); // expand the selected indicator
     var sn = v.route_id;
@@ -1079,9 +1078,51 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       stopGroup.add(p);
       stopCloudMeta.push({ points: p, list: list });
     }
-    makeCloud(reg, 130, null);
-    makeCloud(hub, 210, 0xf5f2ea);
+    makeCloud(reg, 180, null);
+    makeCloud(hub, 300, 0xf5f2ea);
   }
+
+  // Selected-stop highlight: pulsing ground ring, same rate as everything else.
+  var selectedStop = null;
+  var stopHighlight = new THREE.Mesh(
+    new THREE.RingGeometry(110, 175, 40),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false })
+  );
+  stopHighlight.rotation.x = -Math.PI / 2;
+  stopHighlight.visible = false;
+  scene.add(stopHighlight);
+
+  function showStop(st) {
+    if (!st) return;
+    selectedStop = st;
+    selectedVehicleId = null;
+    renderBusInstances();
+    $('stop-title').textContent = st.n || 'Stop';
+    var host = $('stop-routes');
+    host.innerHTML = '';
+    (st.r || []).forEach(function (rid) {
+      var chip = document.createElement('span');
+      chip.className = 'stop-route';
+      var dot = document.createElement('i');
+      var rc = routeColors[rid];
+      dot.style.background = rc ? '#' + rc.getHexString() : '#F5F2EA';
+      chip.appendChild(dot);
+      var b = document.createElement('b');
+      b.textContent = rid + ' · ' + (routeNames[rid] || 'DDOT');
+      chip.appendChild(b);
+      host.appendChild(chip);
+    });
+    $('bus-card').hidden = true;
+    $('stop-card').hidden = false;
+    stopHighlight.position.set(st.x, 26, st.z);
+    stopHighlight.visible = true;
+  }
+  function hideStop() {
+    selectedStop = null;
+    $('stop-card').hidden = true;
+    stopHighlight.visible = false;
+  }
+  $('stop-close').addEventListener('click', hideStop);
 
   // --- filters ---------------------------------------------------------------
   // filterState.routes[rid] is the ONLY visibility gate: any route can be
@@ -1576,6 +1617,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           var L = labelSprites[i];
           L.sprite.visible = runningState[L.routeId] !== 'not-running' &&
             ((liveCounts[L.routeId] > 0) || camDist > 15000);
+        }
+        if (stopHighlight.visible) {
+          var shp = busPulse();
+          stopHighlight.scale.set(shp, shp, 1);
         }
         updateStreetLabels();
         updateBadgeScales();
