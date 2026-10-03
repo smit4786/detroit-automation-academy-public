@@ -558,8 +558,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     selectedVehicleId = v.vehicle_id;
     renderBusInstances(); // expand the selected indicator
     var sn = v.route_id;
+    var dest = formatDest(sn, v.destination);
     $('bus-chip').style.background = routeColors[sn] ? '#' + routeColors[sn].getHexString() : '#F5F2EA';
-    $('bus-title').textContent = sn + ' · ' + (routeNames[sn] || 'DDOT');
+    $('bus-title').textContent = sn + ' · ' + (routeNames[sn] || 'DDOT') + (dest ? ' → ' + dest : '');
     $('bus-id').textContent = v.vehicle_id || '–';
     $('bus-dest').textContent = formatDest(sn, v.destination) || '–';
     $('bus-speed').textContent = (v.speed_mph != null && !isNaN(v.speed_mph)) ? Math.round(v.speed_mph) + ' mph' : '–';
