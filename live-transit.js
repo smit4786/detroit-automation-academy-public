@@ -230,16 +230,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     new THREE.RingGeometry(72, 124, 28),
     new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     BUS_MAX);
-  // Direction-of-travel arrowheads (cones; apex +X = forward), one per bus.
-  // Floated at upper-pillar height so they read above the raised guideways.
-  var arrowGeo = new THREE.ConeGeometry(100, 220, 14);
-  arrowGeo.rotateZ(-Math.PI / 2);
-  var dirArrowIM = new THREE.InstancedMesh(arrowGeo,
-    new THREE.MeshBasicMaterial({ color: 0xffffff }), BUS_MAX);
-  dirArrowIM.frustumCulled = false;
-  dirArrowIM.count = 0;
-  scene.add(dirArrowIM);
-  var pillarMeshes = [pillarGlowIM, pillarCoreIM, pillarBeaconIM, pillarRingIM, dirArrowIM];
+  var pillarMeshes = [pillarGlowIM, pillarCoreIM, pillarBeaconIM, pillarRingIM];
 
   // Per-bus route badges: number-only chips. Destinations live in the bus
   // card (title + Destination row) — the floating badge stays compact.
@@ -292,10 +283,83 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     badgePool.push(_sp);
   }
 
-  // Shared temps for direction chevrons.
+  // In-scene info label for the tapped bus: route + destination up top,
+  // vehicle + speed + data age below. Drawn on demand (not cached — the
+  // age text goes stale), parked beside the bus so it never covers it.
+  var busInfoSprite = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false, depthWrite: false, transparent: true }));
+  busInfoSprite.visible = false;
+  busInfoSprite.renderOrder = 41;
+  scene.add(busInfoSprite);
+  function busAgeText(v) {
+    if (!v.updated_at) return '–';
+    var s = Math.max(0, Math.round((Date.now() - new Date(v.updated_at).getTime()) / 1000));
+    return s < 60 ? s + 's ago' : Math.floor(s / 60) + 'm ago';
+  }
+  function drawBusInfo(v) {
+    var col = routeColors[v.route_id] ? '#' + routeColors[v.route_id].getHexString() : '#9aa0a6';
+    var dest = formatDest(v.route_id, v.destination);
+    var line1 = v.route_id + ' · ' + (routeNames[v.route_id] || 'DDOT') + (dest ? ' → ' + dest : '');
+    var spd = (v.speed_mph != null && !isNaN(v.speed_mph)) ? Math.round(v.speed_mph) + ' mph' : '–';
+    var line2 = 'Bus ' + (v.vehicle_id || '–') + ' · ' + spd + ' · ' + busAgeText(v);
+    var c = document.createElement('canvas');
+    var m = c.getContext('2d');
+    m.font = '700 34px system-ui, -apple-system, sans-serif';
+    var w1 = Math.ceil(m.measureText(line1).width);
+    m.font = '500 28px system-ui, -apple-system, sans-serif';
+    var w2 = Math.ceil(m.measureText(line2).width);
+    c.width = Math.max(w1, w2) + 72; c.height = 128;
+    var x = c.getContext('2d');
+    x.fillStyle = 'rgba(9,13,17,0.92)';
+    x.beginPath();
+    if (x.roundRect) x.roundRect(4, 4, c.width - 8, c.height - 8, 20); else x.rect(4, 4, c.width - 8, c.height - 8);
+    x.fill();
+    x.lineWidth = 4; x.strokeStyle = col; x.stroke();
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = '#ffffff';
+    x.font = '700 34px system-ui, -apple-system, sans-serif';
+    x.fillText(line1, c.width / 2, 42);
+    x.fillStyle = '#c9ced4';
+    x.font = '500 28px system-ui, -apple-system, sans-serif';
+    x.fillText(line2, c.width / 2, 88);
+    if (busInfoSprite.material.map) busInfoSprite.material.map.dispose();
+    var tex = new THREE.CanvasTexture(c);
+    tex.anisotropy = 4;
+    busInfoSprite.material.map = tex;
+    busInfoSprite.material.needsUpdate = true;
+    busInfoSprite.userData.aspect = c.width / c.height;
+    var h = badgeHeight() * 1.15;
+    busInfoSprite.scale.set(h * busInfoSprite.userData.aspect, h, 1);
+  }
+  function placeBusInfo() {
+    if (!busInfoSprite.visible || !selectedVehicleId) return;
+    for (var i = 0; i < busSlots.length; i++) {
+      var s = busSlots[i];
+      if (s.vehicle && s.vehicle.vehicle_id === selectedVehicleId) {
+        // Beside the bus, not over it: offset in world units, above the
+        // deck in pillar mode, just over the roof in bus mode.
+        var y = busMode ? 150 : 300;
+        busInfoSprite.position.set(s.x + 420, y, s.z);
+        return;
+      }
+    }
+    busInfoSprite.visible = false; // bus left the visible set
+  }
+  function refreshBusInfo() {
+    if (!selectedVehicleId) { busInfoSprite.visible = false; return; }
+    for (var i = 0; i < busSlots.length; i++) {
+      var s = busSlots[i];
+      if (s.vehicle && s.vehicle.vehicle_id === selectedVehicleId) {
+        drawBusInfo(s.vehicle);
+        busInfoSprite.visible = true;
+        placeBusInfo();
+        return;
+      }
+    }
+    busInfoSprite.visible = false;
+  }
+
+  // Shared temps.
   var _e3 = new THREE.Euler();
-  var chevGeo = new THREE.CircleGeometry(30, 3);
-  chevGeo.rotateX(-Math.PI / 2);
 
   // Street name labels: pooled sprites fed from detroit-street-names.json.
   // Freeway/arterial names under 20 km, local names under 6 km, deduped by
@@ -417,13 +481,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         g.add(wh);
       }
       g.add(body); g.add(wins);
-      var chev = new THREE.Mesh(chevGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }));
-      chev.position.set(30, 8, 0);
-      g.add(chev);
       g.visible = false;
       body.userData.detail = null; // set below
       scene.add(g);
-      var d = { group: g, body: body, wins: wins, wheels: wheels, chev: chev, vehicle: null };
+      var d = { group: g, body: body, wins: wins, wheels: wheels, vehicle: null };
       body.userData.detail = d;
       detailPool[i] = d;
     }
@@ -465,13 +526,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     _s3.set(exz * 1.35, exz * 1.35, 1);
     _m4.compose(_p3, _ringQ, _s3);
     pillarRingIM.setMatrixAt(k, _m4);
-    // Direction arrowhead: cone floating ahead of the upper pillar, apex forward.
-    _q3.setFromEuler(_e3.set(0, b.rotY, 0));
-    var fwdX = Math.cos(b.rotY), fwdZ = -Math.sin(b.rotY);
-    _p3.set(b.x + fwdX * 230, PILLAR_H - 150, b.z + fwdZ * 230);
-    _s3.set(exz, 1, exz);
-    _m4.compose(_p3, _q3, _s3);
-    dirArrowIM.setMatrixAt(k, _m4);
   }
 
   function renderBusInstances() {
@@ -489,8 +543,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           d.body.scale.set(fi.length_m, fi.height_m, fi.width_m);
           d.body.position.y = fi.height_m / 2 + 0.35;
           d.body.material.color.copy(s.color);
-          d.chev.material.color.copy(s.color);
-          d.chev.position.set(fi.length_m / 2 + 30, 8, 0);
           var isSelD = !!selectedVehicleId && s.vehicle.vehicle_id === selectedVehicleId;
           var dsc = isSelD ? 1.45 : 1; // selected bus expands
           d.group.scale.set(dsc, dsc, dsc);
@@ -523,7 +575,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       pillarCoreIM.setColorAt(k, b.color);
       pillarBeaconIM.setColorAt(k, b.color);
       pillarRingIM.setColorAt(k, b.color);
-      dirArrowIM.setColorAt(k, b.color);
     }
     pillarMeshes.forEach(function (im) {
       im.count = n;
@@ -719,10 +770,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var when = v.updated_at ? new Date(v.updated_at) : null;
     $('bus-card-updated').textContent = (when && !isNaN(when)) ? when.toLocaleTimeString() : '–';
     $('bus-card').hidden = false;
+    refreshBusInfo(); // in-scene label beside the bus
   }
   function hideBus() {
     selectedVehicleId = null;
     $('bus-card').hidden = true;
+    busInfoSprite.visible = false;
     renderBusInstances(); // shrink the indicator back
   }
   $('bus-close').addEventListener('click', hideBus);
@@ -1656,6 +1709,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     renderBusInstances();
     if (selectedStop) renderStopLive();
+    if (selectedVehicleId) refreshBusInfo(); // tapped bus moved / new data
     return busSlots.length;
   }
 
@@ -1897,6 +1951,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         }
         // Selected bus pulses at the same rate as the user-location ring.
         if (selectedVehicleId) {
+          placeBusInfo(); // info label tracks the bus every frame
           var pulse = busPulse();
           if (busMode) {
             for (var pi = 0; pi < DETAIL_MAX; pi++) {
