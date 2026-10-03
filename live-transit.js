@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2350';
+  var STAMP = '20261002-2355';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -452,6 +452,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     ['+', 'Pinch', 'Zoom in and out'],
     ['\u27F3', 'Two-finger twist', 'Rotate the view'],
     ['\u25CF', 'Tap a bus', 'Vehicle number, model, speed and heading'],
+    ['\u2316', 'Find me', 'Center the map on your location'],
     ['\u29E9', 'Routes', 'Filter by group or individual route'],
     ['\u2302', 'Reset view', 'Return to the full-system view']
   ];
@@ -460,6 +461,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     ['+', 'Scroll', 'Zoom in and out'],
     ['\u2194', 'Right-drag', 'Pan across the city'],
     ['\u25CF', 'Click a bus', 'Vehicle number, model, speed and heading'],
+    ['\u2316', 'Find me', 'Center the map on your location'],
     ['\u29E9', 'Routes', 'Filter by group or individual route'],
     ['\u2302', 'Reset view', 'Return to the full-system view']
   ];
@@ -579,6 +581,89 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   document.addEventListener('webkitfullscreenchange', onFsChange);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && stage.classList.contains('pseudo-full')) setPseudoFull(false);
+  });
+
+  // --- location services ---------------------------------------------------------
+  // Coverage = the Detroit street mosaic bounds (DDOT's service area).
+  function inCoverage(lat, lon) {
+    return lat <= STREET_BOUNDS.latN && lat >= STREET_BOUNDS.latS &&
+           lon >= STREET_BOUNDS.lonW && lon <= STREET_BOUNDS.lonE;
+  }
+  var youMarker = (function () {
+    var g = new THREE.Group();
+    var dot = new THREE.Mesh(
+      new THREE.SphereGeometry(70, 16, 12),
+      new THREE.MeshBasicMaterial({ color: 0xE85D1A })
+    );
+    dot.position.y = 130;
+    var ring = new THREE.Mesh(
+      new THREE.RingGeometry(110, 155, 32),
+      new THREE.MeshBasicMaterial({ color: 0xE85D1A, transparent: true, opacity: 0.7, side: THREE.DoubleSide })
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 60;
+    g.add(dot); g.add(ring);
+    g.visible = false;
+    scene.add(g);
+    return { group: g, ring: ring };
+  })();
+  var toastTimer = null;
+  function hideToast() { $('map-toast').hidden = true; clearTimeout(toastTimer); }
+  function showToast(msg, sticky) {
+    var t = $('map-toast');
+    t.innerHTML = '';
+    var s = document.createElement('span');
+    s.textContent = msg;
+    t.appendChild(s);
+    if (sticky) {
+      var x = document.createElement('button');
+      x.id = 'toast-x';
+      x.setAttribute('aria-label', 'Dismiss');
+      x.textContent = '\u00D7';
+      x.addEventListener('click', function (e) { e.stopPropagation(); hideToast(); });
+      t.appendChild(x);
+    } else {
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(hideToast, 4500);
+    }
+    t.hidden = false;
+  }
+  $('map-toast').addEventListener('click', hideToast);
+  var locateBtn = $('view-locate'), locating = false;
+  function onLocated(lat, lon) {
+    if (!proj) { showToast('Map is still loading — try again in a moment.'); return; }
+    if (!inCoverage(lat, lon)) {
+      youMarker.group.visible = false;
+      locateBtn.setAttribute('aria-pressed', 'false');
+      showToast('Out of bounds — you are outside DDOT\u2019s Detroit coverage area.', true);
+      return;
+    }
+    hideToast();
+    var p = project(lat, lon);
+    var off = camera.position.clone().sub(controls.target);
+    controls.target.set(p[0], 0, p[1]);
+    camera.position.copy(controls.target).add(off);
+    youMarker.group.position.set(p[0], 0, p[1]);
+    youMarker.group.visible = true;
+    locateBtn.setAttribute('aria-pressed', 'true');
+  }
+  locateBtn.addEventListener('click', function () {
+    if (!('geolocation' in navigator)) { showToast('Location services are not available on this device.'); return; }
+    if (locating) return;
+    locating = true;
+    showToast('Locating\u2026');
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        locating = false;
+        onLocated(pos.coords.latitude, pos.coords.longitude);
+      },
+      function (err) {
+        locating = false;
+        if (err && err.code === 1) showToast('Location access denied — allow it in your browser settings to use this.');
+        else showToast('Could not get your location — please try again.');
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+    );
   });
 
   // --- filters ---------------------------------------------------------------
@@ -1000,6 +1085,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       renderer.setAnimationLoop(function () {
         controls.update();
         updateLOD();
+        if (youMarker.group.visible) {
+          var s = 1 + 0.25 * Math.sin(performance.now() / 400);
+          youMarker.ring.scale.set(s, s, s);
+        }
         if (busMode !== lastBusMode) {
           lastBusMode = busMode;
           renderBusInstances();
