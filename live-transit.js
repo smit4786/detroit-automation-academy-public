@@ -1526,12 +1526,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         // Stagger ribbon heights per route: coplanar overlapping guideways
         // at crossings z-fight and flicker; a few meters of separation is
         // invisible but kills the shimmer.
-        // Deliberate layer cake (meters): glow 2-11, streets 14-16,
-        // casing 24-28, street labels 34, deck 66-74. No two layers share
-        // a height where they can overlap.
-        var yDeck = 66 + (ri % 5) * 2;
-        var yGlow = 2 + (ri % 7) * 1.5;
-        var yCase = 24 + (ri % 5) * 1;
+        // Deliberate layer cake (meters): every route owns a unique level —
+        // 37 routes, no shared slots, so crossing/overlapping decks can never
+        // z-fight. Crossings read as clean overpasses, higher route over lower.
+        var yDeck = 66 + ri * 1.2;
+        var yGlow = 2 + ri * 0.25;
+        var yCase = 24 + ri * 0.15;
         // Elevated guideway: the ribbon deck floats at y=66 with solid
         // skirts to the ground, so routes read as 3D structures. Lambert
         // materials let the directional light shade deck vs. sides.
@@ -1563,7 +1563,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           label.position.set(mid[0], 1050, mid[1]);
           grp.add(label);
           var tetherGeo = new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(mid[0], 70, mid[1]),
+            new THREE.Vector3(mid[0], yDeck, mid[1]),
             new THREE.Vector3(mid[0], 980, mid[1])
           ]);
           var tether = new THREE.Line(tetherGeo, new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.45 }));
