@@ -6,21 +6,10 @@
 <title>Detroit Automation Academy — Where Detroit Builds What's Next</title>
 <meta name="description" content="Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.">
 <link rel="icon" type="image/webp" href="assets/logo.webp">
-<link rel="icon" type="image/png" href="assets/favicon-32.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Detroit Automation Academy">
-<meta property="og:title" content="Detroit Automation Academy — Where Detroit Builds What's Next">
-<meta property="og:description" content="Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.">
-<meta property="og:image" content="https://www.detroitautomationacademy.com/assets/social/og-image.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Detroit Automation Academy — Where Detroit Builds What's Next">
-<meta name="twitter:description" content="Robotics, drones, and automation training for Detroit's young builders — from first circuit to first career.">
-<meta name="twitter:image" content="https://www.detroitautomationacademy.com/assets/social/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261001-1500">
+<link rel="stylesheet" href="styles.css">
 <script type="importmap">
 {
   "imports": {
@@ -41,6 +30,7 @@
   <nav class="nav-links" id="navLinks" aria-label="Primary">
     <a href="#demo">Try it</a>
     <a href="forge-line.html">Forge Line</a>
+    <a href="live-transit.html">Live Transit</a>
     <a href="#mission">Mission</a>
     <a href="#programs">Programs</a>
     <a href="#signal">The Signal</a>
@@ -112,37 +102,27 @@
       <div class="demo" id="demoFull">
         <div class="demo-stage" id="demoStage">
           <div id="world3d" class="world3d" role="img" aria-label="Interactive 3D training district. Drag to orbit, scroll to zoom, tap a building to visit it.">
-            <div class="world3d-loading"><span></span><span class="world3d-loadlabel">Building the district</span> <b class="world3d-count"></b>&hellip;</div>
+            <div class="world3d-loading"><span></span>Building the district <b class="world3d-count"></b>&hellip;</div>
           </div>
           <button type="button" class="demo-fullscreen" id="demoFullscreen" aria-label="View the 3D district full screen">&#9974; Full screen</button>
-          <svg class="demo-bot" id="demoBot" viewBox="0 0 220 220" role="img" aria-label="A small orange quadcopter drone that responds to typed commands">
-            <ellipse cx="110" cy="200" rx="58" ry="9" class="bot-shadow"/>
+          <svg class="demo-bot" id="demoBot" viewBox="0 0 220 220" role="img" aria-label="A small orange training robot that responds to typed commands">
+            <ellipse cx="110" cy="198" rx="54" ry="10" class="bot-shadow"/>
             <g class="bot-body">
-              <line x1="88" y1="134" x2="80" y2="170" class="bot-antenna"/>
-              <line x1="132" y1="134" x2="140" y2="170" class="bot-antenna"/>
-              <line x1="62" y1="170" x2="98" y2="170" class="bot-antenna"/>
-              <line x1="122" y1="170" x2="158" y2="170" class="bot-antenna"/>
-              <line x1="110" y1="108" x2="60" y2="66" class="drone-arm"/>
-              <line x1="110" y1="108" x2="160" y2="66" class="drone-arm"/>
-              <line x1="110" y1="116" x2="54" y2="158" class="drone-arm"/>
+              <circle cx="88" cy="178" r="15" class="bot-wheel"/>
+              <circle cx="132" cy="178" r="15" class="bot-wheel"/>
+              <rect x="52" y="104" width="12" height="46" rx="6" class="bot-arm"/>
               <g class="bot-arm-wave">
-                <line x1="110" y1="116" x2="166" y2="158" class="drone-arm"/>
-                <circle cx="166" cy="158" r="9" class="bot-wheel"/>
-                <g class="bot-wheel"><rect x="142" y="154.5" width="48" height="7" rx="3.5" class="drone-prop"/></g>
+                <rect x="156" y="104" width="12" height="46" rx="6" class="bot-arm"/>
               </g>
-              <g class="bot-wheel"><rect x="36" y="62.5" width="48" height="7" rx="3.5" class="drone-prop"/></g>
-              <circle cx="60" cy="66" r="9" class="bot-wheel"/>
-              <g class="bot-wheel"><rect x="136" y="62.5" width="48" height="7" rx="3.5" class="drone-prop"/></g>
-              <circle cx="160" cy="66" r="9" class="bot-wheel"/>
-              <g class="bot-wheel"><rect x="30" y="154.5" width="48" height="7" rx="3.5" class="drone-prop"/></g>
-              <circle cx="54" cy="158" r="9" class="bot-wheel"/>
-              <rect x="76" y="90" width="68" height="44" rx="16" class="bot-torso"/>
-              <ellipse cx="110" cy="88" rx="22" ry="11" class="bot-head"/>
-              <circle cx="97" cy="84" r="7" class="bot-eye"/>
-              <circle cx="123" cy="84" r="7" class="bot-eye"/>
-              <rect x="97" y="104" width="26" height="16" rx="5" class="bot-panel"/>
-              <circle cx="110" cy="112" r="4" class="bot-light"/>
-              <polygon points="120,88 208,48 208,128" class="scan-beam"/>
+              <rect x="68" y="92" width="84" height="72" rx="20" class="bot-torso"/>
+              <rect x="94" y="114" width="32" height="24" rx="7" class="bot-panel"/>
+              <circle cx="110" cy="126" r="5" class="bot-light"/>
+              <rect x="72" y="36" width="76" height="62" rx="26" class="bot-head"/>
+              <circle cx="96" cy="66" r="9" class="bot-eye"/>
+              <circle cx="124" cy="66" r="9" class="bot-eye"/>
+              <line x1="110" y1="36" x2="110" y2="18" class="bot-antenna"/>
+              <circle cx="110" cy="14" r="6" class="bot-eye"/>
+              <polygon points="148,66 214,34 214,98" class="scan-beam"/>
             </g>
           </svg>
         </div>
@@ -170,13 +150,7 @@
             <button type="button" class="demo-chip" data-cmd="wave">wave</button>
             <button type="button" class="demo-chip" data-cmd="up">up</button>
             <button type="button" class="demo-chip" data-cmd="down">down</button>
-            <button type="button" class="demo-chip" data-cmd="ride">ride</button>
-            <button type="button" class="demo-chip theme-toggle" id="themeToggle" aria-pressed="false" aria-label="Play the site theme music">♪ Theme: off</button>
           </div>
-          <audio id="themeAudio" loop preload="none" aria-label="Site theme music">
-            <source src="assets/audio/theme-loop.ogg" type="audio/ogg">
-            <source src="assets/audio/theme-loop.mp3" type="audio/mpeg">
-          </audio>
         </div>
       </div>
     </div>
@@ -235,7 +209,7 @@
       <p class="kicker">The Signal</p>
       <h2 id="signal-heading">Notes on automation, robotics, <span class="accent">and the Detroiters building the future.</span></h2>
       <div class="signal-animation">
-        <iframe src="signal-animation.html?v=20261001-0300" title="The Signal logo animation — a spotlight sweeping the night sky until it lights up the Forge D" loading="lazy"></iframe>
+        <iframe src="signal-animation.html" title="The Signal logo animation — a spotlight sweeping the night sky until it lights up the Forge D" loading="lazy"></iframe>
       </div>
       <div class="prose">
         <p><strong>The Signal</strong> is the academy's monthly newsletter — game-season analysis, cohort work, and industry notes for builders, parents, and partners. Free to read, built to forward.</p>
@@ -258,7 +232,7 @@
           <p>Advisory revenue flows straight back into the academy. Every edition funds a student trained.</p>
         </li>
       </ol>
-<div class="signal-articles">
+      <div class="signal-articles">
         <h3 class="signal-articles-heading">Featured articles</h3>
         <p class="signal-articles-sub">Every piece below, newest first — the full story is right here, no click-through required. Links at the foot of each card go to the full text.</p>
         <div class="signal-grid">
@@ -270,10 +244,9 @@
             <p class="signal-card-dek">A new series. Same newsletter. What does Detroit look like in a hundred years if we build it for everyone who'll live here — not just everyone who can pay today? First up: how we move.</p>
             <ul class="signal-card-points">
               <li>On August 4, 67% of Wayne County voters — 230,387 people — approved a countywide transit millage. All 43 communities are in, including the 17 that had opted out of SMART.</li>
-              <li>Free transit works: Luxembourg's tram went from 8 million annual riders in 2018 to 31.7 million in 2024; in Kansas City's fare-free years, a University of Kansas study found 17% of riders were new to transit because the bus went free. Funding it forever is the hard part.</li>
-              <li>The 100-year version of the Wolverine corridor: electrified, hourly, Detroit–Chicago in about two and a half hours — 233 of the 304 miles are already publicly owned.</li>
+              <li>Free transit works: Luxembourg's tram went from 6 million to over 31 million annual riders; Kansas City's fare-free years ran 24% above peer-city ridership. Funding it forever is the hard part.</li>
+              <li>The 100-year version of the Wolverine corridor: electrified, hourly, Detroit–Chicago in about two and a half hours — 231 of the 304 miles are already publicly owned.</li>
             </ul>
-            <p class="signal-card-sources">Sources: <a href="https://www.railwaygazette.com/data/knowledge-hub/organisation-categories/light-rail-tramway/luxtram-sa/" target="_blank" rel="noopener">Railway Gazette</a> · <a href="https://news.ku.edu/news/article/study-finds-kansas-city-fare-free-bus-policy-attracted-new-riders-increased-overall-use" target="_blank" rel="noopener">Univ. of Kansas</a> · <a href="https://www.rtands.com/freight/class-1/mdot-buys-135-miles-of-ns-line/" target="_blank" rel="noopener">Railway Track &amp; Structures</a></p>
             <a class="signal-card-link" href="https://www.linkedin.com/pulse/ride-free-justin-spencer-smith-drshc/" target="_blank" rel="noopener">Read the full piece →</a>
           </article>
 
@@ -372,66 +345,26 @@
   </div>
 </footer>
 
-<script src="script.js?v=20261001-1500"></script>
-<script src="arch-kit.js?v=20261001-0430" defer></script>
-<script src="streetscape.js?v=20261001-0430" defer></script>
-<script src="furniture.js?v=20261001-0430" defer></script>
-<script src="vehicles.js?v=20261001-0430" defer></script>
-<script src="district-expansion.js?v=20261001-0430" defer></script>
-<script src="groundwork.js?v=20261001-0430" defer></script>
-<script src="promenade.js?v=20261001-0430" defer></script>
-    <script src="region-expansion.js?v=20261001-0430" defer></script>
-<script src="chicago-hsr.js?v=20261001-0430" defer></script>
-<script src="railways.js?v=20261001-1500" defer></script>
-    <script src="region-expansion-r4.js?v=20261001-0430" defer></script>
-    <script src="heritage-car.js?v=20261001-0430" defer></script>
-    <script src="rail-vehicles.js?v=20261001-1500" defer></script>
-    <script src="drone-variants.js?v=20261001-0430" defer></script>
-    <script src="drone-autonomy.js?v=20261001-0430" defer></script>
-    <script src="rail-multilevel.js?v=20261001-0430" defer></script>
-    <script src="stations.js?v=20261001-1500" defer></script>
-    <script src="stability.js?v=20261001-1500" defer></script>
-    <script src="world3d.js?v=20261001-1558" defer></script>
+<script src="script.js?v=20261001-0142"></script>
+<script src="arch-kit.js?v=20261001-0142" defer></script>
+<script src="streetscape.js?v=20261001-0142" defer></script>
+<script src="furniture.js?v=20261001-0142" defer></script>
+<script src="vehicles.js?v=20261001-0142" defer></script>
+<script src="district-expansion.js?v=20261001-0142" defer></script>
+<script src="groundwork.js?v=20261001-0142" defer></script>
+<script src="promenade.js?v=20261001-0142" defer></script>
+<script src="region-expansion.js?v=20261001-local" defer></script>
+<script src="chicago-hsr.js?v=20261001-local" defer></script>
+<script src="railways.js?v=20261001-local" defer></script>
+<script src="region-expansion-r4.js?v=20261001-local" defer></script>
+<script src="region-expansion-r5.js?v=20261001-local" defer></script>
+<script src="heritage-car.js?v=20261001-local" defer></script>
+<script src="rail-vehicles.js?v=20261001-local" defer></script>
+<script src="drone-variants.js?v=20261001-local" defer></script>
+<script src="drone-autonomy.js?v=20261001-local" defer></script>
+<script src="rail-multilevel.js?v=20261001-local" defer></script>
+<script src="stability.js?v=20261001-local" defer></script>
+    <script src="world3d.js?v=20261001-0142" defer></script>
 <script src="owner.js" defer></script>
-<script>
-/* Signal animation: scroll owns replay. When the animation scrolls back into
-   view after being out, restart it (no replay button needed). Honors
-   prefers-reduced-motion and a user pause; cooldown avoids thrash. */
-(function () {
-  var frame = document.querySelector('.signal-animation iframe');
-  if (!frame || !('IntersectionObserver' in window)) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var wasOut = false, lastRestart = 0, pendingRestart = false;
-  function tryRestart() {
-    try {
-      var w = frame.contentWindow;
-      if (w && typeof w.restart === 'function') {
-        var st = frame.contentDocument.querySelector('.stage');
-        if (st && st.classList.contains('paused')) return true; /* respect user pause */
-        w.restart();
-        return true;
-      }
-    } catch (e) {}
-    return false;
-  }
-  frame.addEventListener('load', function () {
-    if (pendingRestart) { pendingRestart = false; tryRestart(); }
-  });
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) {
-      if (en.isIntersecting) {
-        if (wasOut && Date.now() - lastRestart > 8000) {
-          lastRestart = Date.now();
-          if (!tryRestart()) pendingRestart = true;
-        }
-        wasOut = false;
-      } else {
-        wasOut = true;
-      }
-    });
-  }, { threshold: 0.35 });
-  io.observe(frame);
-})();
-</script>
 </body>
 </html>
