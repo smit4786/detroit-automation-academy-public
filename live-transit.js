@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2300';
+  var STAMP = '20261002-2310';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -483,7 +483,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       head.innerHTML = '<span class="f-box"></span><b>' + g.name + '</b>' +
         '<span class="f-count" id="fgc-' + g.id + '">–</span>';
       head.addEventListener('click', function () {
-        filterState.groups[g.id] = !filterState.groups[g.id];
+        var on = !filterState.groups[g.id];
+        filterState.groups[g.id] = on;
+        g.routes.forEach(function (rid) { filterState.routes[rid] = on; });
         applyFilters();
         syncFilterUI();
       });
