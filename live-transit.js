@@ -1044,6 +1044,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       computeNearMe();
       applyFilters();
       syncFilterUI();
+      refreshFilterCounts();
     }
   }
   locateBtn.addEventListener('click', function () {
@@ -1380,6 +1381,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (on) computeNearMe();
     applyFilters();
     syncFilterUI();
+    refreshFilterCounts();
     if (on) {
       var n = nearMeSet ? Object.keys(nearMeSet).length : 0;
       showToast(n ? n + ' routes within ' + NEAR_ME_M + ' m of you.' : 'No routes within ' + NEAR_ME_M + ' m of you.', !n);
@@ -1553,13 +1555,32 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var el = $('fgc-' + gid);
       if (!el) return;
       if (!liveEverOk) { el.textContent = '–'; return; }
-      var run = 0;
+      var run = 0, shownNear = 0, nearTot = 0;
       var tot = (groupRoutes[gid] || []).length;
       (groupRoutes[gid] || []).forEach(function (rid) {
         if (runningState[rid] === 'running') run++;
+        if (filterState.nearMe && nearMeSet && nearMeSet[rid]) {
+          nearTot++;
+          if (routeShown(rid)) shownNear++;
+        }
       });
-      el.textContent = run + ' of ' + tot + ' running';
+      // When near-me is on, say what is actually on the map — the global
+      // "N of M running" no longer describes the view.
+      el.textContent = filterState.nearMe
+        ? shownNear + ' of ' + tot + ' shown near you'
+        : run + ' of ' + tot + ' running';
     });
+  }
+
+  // Near-me scope label on the toggle itself, kept fresh wherever the
+  // near set changes (toggle, locate, poll).
+  function refreshFilterCounts() {
+    updateCounts();
+    var sub = $('nearme-sub');
+    if (sub) {
+      var n = (filterState.nearMe && nearMeSet) ? Object.keys(nearMeSet).length : 0;
+      sub.textContent = NEAR_ME_M + ' m' + (filterState.nearMe ? ' · ' + n + ' near you' : '');
+    }
   }
 
   var groupRoutes = {}; // gid -> [route ids]
@@ -1638,7 +1659,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           applyFilters();   // re-applies visibility + dimming, re-renders buses
           syncFilterUI();
         }
-        updateCounts();
+        refreshFilterCounts();
         lastTotal = n;
         setHeader(n, 'updated ' + fmtTime(d.generated_at ? new Date(d.generated_at) : null), false);
       })
