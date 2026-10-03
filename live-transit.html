@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Live Transit · Detroit — Detroit Automation Academy</title>
-<meta name="description" content="Every DDOT bus on Vernor, Woodward, Greenfield and Dexter, live in 3D. Real route shapes from DDOT GTFS, real-time positions from the agency's vehicle feed.">
+<meta name="description" content="Every DDOT bus in Detroit — all 37 routes, live in 3D. Real route shapes from DDOT GTFS, real-time positions from the agency's vehicle feed.">
 <link rel="icon" type="image/webp" href="assets/logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,6 +25,8 @@
   .map-ui { position: absolute; inset: 0; pointer-events: none; font-family: "Inter", sans-serif; }
   .map-ui > * { pointer-events: auto; }
   .map-head { position: absolute; top: 1.1rem; left: 1.25rem; right: 1.25rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; pointer-events: none; }
+  .map-head-right { display: flex; flex-direction: column; align-items: flex-end; gap: .5rem; pointer-events: none; }
+  .map-head-right > * { pointer-events: auto; }
   .map-title h1 { font-family: "Space Grotesk", sans-serif; font-size: 1.35rem; margin: 0; color: #F5F2EA; letter-spacing: .01em; }
   .map-title h1 .accent { color: #E85D1A; }
   .map-title p { margin: .25rem 0 0; color: #9AA0A6; font-size: .85rem; max-width: 34rem; }
@@ -34,13 +36,34 @@
   .map-live strong { font-family: "Space Grotesk", sans-serif; font-size: 1.15rem; color: #F5F2EA; }
   .map-live span { display: block; color: #9AA0A6; font-size: .75rem; margin-top: .15rem; }
   .map-live .feed-warn { color: #FFB000; }
-  .route-bar { position: absolute; left: 1.25rem; bottom: 1.25rem; display: flex; gap: .5rem; flex-wrap: wrap; max-width: min(46rem, calc(100% - 2.5rem)); }
   .route-chip { display: inline-flex; align-items: center; gap: .5rem; background: rgba(12,17,22,.82); border: 1px solid rgba(245,242,234,.16); color: #F5F2EA; border-radius: 999px; padding: .5rem .85rem; font-size: .82rem; cursor: pointer; backdrop-filter: blur(6px); transition: opacity .15s, border-color .15s; }
   .route-chip i { width: .7rem; height: .7rem; border-radius: 3px; display: inline-block; }
   .route-chip b { font-weight: 600; }
   .route-chip .cnt { color: #9AA0A6; font-variant-numeric: tabular-nums; }
   .route-chip[aria-pressed="false"] { opacity: .38; }
   .route-chip:hover { border-color: rgba(245,242,234,.4); }
+  .filter-btn { display: inline-flex; align-items: center; gap: .5rem; background: rgba(12,17,22,.82); border: 1px solid rgba(232,93,26,.55); color: #F5F2EA; border-radius: 999px; padding: .5rem .95rem; font-size: .82rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(6px); font-family: "Inter", sans-serif; }
+  .filter-btn:hover { border-color: #E85D1A; }
+  .filter-btn .filter-ico { color: #E85D1A; }
+  .filter-btn[aria-expanded="true"] { background: #E85D1A; border-color: #E85D1A; color: #0C1116; }
+  .filter-btn[aria-expanded="true"] .filter-ico { color: #0C1116; }
+  .filter-panel { position: absolute; top: 4.75rem; right: 1.25rem; width: 21rem; max-width: calc(100% - 2.5rem); max-height: calc(100% - 7rem); overflow-y: auto; background: rgba(12,17,22,.94); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: .9rem 1rem 1rem; backdrop-filter: blur(10px); z-index: 5; font-family: "Inter", sans-serif; }
+  .filter-panel[hidden] { display: none; }
+  .filter-panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; }
+  .filter-panel-head strong { font-family: "Space Grotesk", sans-serif; color: #F5F2EA; font-size: .95rem; }
+  .filter-panel-head button { background: none; border: 1px solid rgba(232,93,26,.6); color: #E85D1A; border-radius: 999px; padding: .3rem .7rem; font-size: .75rem; cursor: pointer; font-family: "Inter", sans-serif; }
+  .filter-panel-head button:hover { background: rgba(232,93,26,.12); }
+  .f-group { margin-bottom: .7rem; }
+  .f-group:last-child { margin-bottom: 0; }
+  .f-group-head { display: flex; align-items: center; gap: .55rem; width: 100%; background: rgba(245,242,234,.04); border: 1px solid rgba(245,242,234,.1); color: #F5F2EA; border-radius: 10px; padding: .5rem .7rem; cursor: pointer; font-size: .85rem; font-family: "Inter", sans-serif; }
+  .f-group-head b { font-weight: 600; flex: 1; text-align: left; }
+  .f-group-head .f-count { color: #9AA0A6; font-size: .75rem; font-variant-numeric: tabular-nums; }
+  .f-box { width: .85rem; height: .85rem; border-radius: 4px; border: 1px solid #E85D1A; background: #E85D1A; flex: none; }
+  .f-group-head[aria-pressed="false"] .f-box { background: transparent; }
+  .f-group.off .f-routes { opacity: .35; }
+  .f-routes { display: flex; flex-wrap: wrap; gap: .4rem; padding: .55rem .1rem 0; }
+  .f-chip { font-size: .75rem; padding: .4rem .65rem; }
+  .f-chip .cnt { font-size: .72rem; }
   .map-hint { position: absolute; right: 1.25rem; bottom: 1.25rem; color: #9AA0A6; font-size: .75rem; background: rgba(12,17,22,.7); padding: .45rem .7rem; border-radius: 8px; border: 1px solid rgba(245,242,234,.1); }
   .bus-card { position: absolute; left: 1.25rem; top: 5.5rem; width: 17rem; max-width: calc(100% - 2.5rem); background: rgba(12,17,22,.9); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: 1rem 1.1rem; backdrop-filter: blur(8px); }
   .bus-card[hidden] { display: none; }
@@ -56,10 +79,12 @@
   .page-note .fine { margin-top: 1rem; }
   @media (max-width: 640px) {
     .map-head { flex-direction: column; }
+    .map-head-right { flex-direction: row; align-items: center; align-self: flex-start; }
     .map-live { align-self: flex-start; }
     .map-title p { display: none; }
     .map-hint { display: none; }
     .bus-card { top: auto; bottom: 5.5rem; }
+    .filter-panel { top: auto; bottom: 1rem; right: 1rem; left: 1rem; width: auto; max-height: 55%; }
   }
 </style>
 </head>
@@ -82,19 +107,28 @@
 
 <main>
   <section class="map-stage" aria-label="Live 3D transit map">
-    <div id="live-map" role="img" aria-label="3D map of DDOT routes 1, 4, 10 and 16 with live bus positions"></div>
+    <div id="live-map" role="img" aria-label="3D map of all 37 DDOT routes with live bus positions"></div>
     <div class="map-ui">
       <div class="map-head">
         <div class="map-title">
           <h1>Live transit <span class="accent">· Detroit</span></h1>
-          <p>Every DDOT bus on Vernor, Woodward, Greenfield and Dexter, drawn on the actual routes in 3D. Drag to orbit, scroll to zoom, click a bus for details.</p>
+          <p>Every DDOT bus in Detroit — all 37 routes drawn on the actual streets in 3D. Drag to orbit, scroll to zoom, click a bus for details.</p>
         </div>
-        <div class="map-live" id="map-live">
-          <div><span class="live-dot"></span><strong id="bus-total">–</strong> buses on the road</div>
-          <span id="bus-updated">connecting…</span>
+        <div class="map-head-right">
+          <div class="map-live" id="map-live">
+            <div><span class="live-dot"></span><strong id="bus-total">–</strong> buses on the road</div>
+            <span id="bus-updated">connecting…</span>
+          </div>
+          <button class="filter-btn" id="filter-btn" aria-expanded="false" aria-controls="filter-panel"><span class="filter-ico">⧩</span> Routes</button>
         </div>
       </div>
-      <div class="route-bar" id="route-bar" role="group" aria-label="Toggle routes"></div>
+      <div class="filter-panel" id="filter-panel" hidden>
+        <div class="filter-panel-head">
+          <strong>Routes</strong>
+          <button id="filter-all">Show all</button>
+        </div>
+        <div id="filter-groups"></div>
+      </div>
       <div class="bus-card" id="bus-card" hidden>
         <button class="close" id="bus-close" aria-label="Close bus details">×</button>
         <h2><i id="bus-chip"></i><span id="bus-title">Bus</span></h2>
@@ -104,7 +138,7 @@
           <dt>Capacity</dt><dd id="bus-cap">–</dd>
           <dt>Speed</dt><dd id="bus-speed">–</dd>
           <dt>Heading</dt><dd id="bus-heading">–</dd>
-          <dt>Updated</dt><dd id="bus-updated">–</dd>
+          <dt>Updated</dt><dd id="bus-card-updated">–</dd>
         </dl>
       </div>
       <div class="map-hint">drag&nbsp;·&nbsp;orbit&nbsp;&nbsp;&nbsp;scroll&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;click bus&nbsp;·&nbsp;details</div>
@@ -137,7 +171,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2245"></script>
+<script type="module" src="live-transit.js?v=20261002-2138"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
