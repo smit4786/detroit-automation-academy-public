@@ -50,6 +50,19 @@
   .status-group { margin-top: 2rem; }
   .status-group > h3 { font-size: 1.15rem; margin: 0 0 .25rem; }
   .status-group > h3 .accent { color: #E85D1A; }
+  .arrivals-heading { margin: 1.75rem 0 .25rem; font-size: 1.25rem; display: flex; align-items: center; gap: .55rem; }
+  .live-dot { width: .6em; height: .6em; border-radius: 50%; background: #3ddc84; display: inline-block; box-shadow: 0 0 8px rgba(61,220,132,.8); }
+  .arrivals-note { color: #9AA0A6; font-size: .9rem; margin: 0 0 1rem; max-width: 60ch; }
+  .arrivals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+  .arrival-card { border: 1px solid rgba(245,242,234,.14); border-radius: 12px; padding: 1rem 1.2rem; background: rgba(245,242,234,.03); }
+  .arrival-card h4 { margin: 0 0 .15rem; font-size: 1rem; }
+  .arrival-route { margin: 0; color: #FFB000; font-weight: 500; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+  .arrival-card ul { list-style: none; margin: .65rem 0 0; padding: 0; display: grid; gap: .45rem; }
+  .arrival-live { font-size: .92rem; line-height: 1.5; }
+  .pill-live { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #0C1116; background: #3ddc84; border-radius: 999px; padding: 2px 9px; margin-right: .45rem; white-space: nowrap; }
+  .pill-nearby { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #0C1116; background: #FFB000; border-radius: 999px; padding: 2px 9px; margin-right: .45rem; white-space: nowrap; }
+  .arrival-quiet { color: #9AA0A6; font-size: .9rem; }
+  .arrivals-status { color: #9AA0A6; }
 </style>
 </head>
 <body>
@@ -242,6 +255,13 @@
       <div id="live-transit" hidden>
         <p class="live-transit-line">Loading live positions&hellip;</p>
       </div>
+      <div id="next-arrivals">
+        <h3 class="arrivals-heading">Next arrivals <span class="live-dot" aria-hidden="true"></span></h3>
+        <p class="arrivals-note">Live buses near key stops &mdash; observed positions from the agency feed, not schedule predictions. Schedule data is currently unavailable.</p>
+        <div class="arrivals-grid" id="arrivals-grid">
+          <p class="arrivals-status">Loading live positions&hellip;</p>
+        </div>
+      </div>
       <div class="hero-actions" style="margin-top:1.25rem;">
         <a href="live-transit.html" class="btn btn-primary">Open the live 3D transit map</a>
       </div>
@@ -329,6 +349,7 @@
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
 <script src="forge-line-live.js?v=20261002-1845" defer></script>
+<script src="forge-line-arrivals.js?v=20261002-2130" defer></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
