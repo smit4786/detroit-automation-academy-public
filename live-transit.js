@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2420';
+  var STAMP = '20261002-2770';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -89,7 +89,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var glowTex = radialTex('rgba(255,255,255,1)', 'rgba(255,255,255,0.35)');
 
   // Street-map coverage bounds (WGS84). Streets are drawn as vector
-  // geometry from OSM data (see build scripts); no raster tiles.
+  // geometry from U.S. Census TIGER/Line 2025 (see build scripts); no raster tiles.
   var STREET_BOUNDS = { lonW: -83.3431083, lonE: -82.8992288, latN: 42.47997522924901, latS: 42.25539743550126 };
 
   // --- geometry helpers ---------------------------------------------------
