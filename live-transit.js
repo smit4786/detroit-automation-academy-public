@@ -1412,6 +1412,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     });
     rebuildStops();
     if (lastVehicles) updateBuses(lastVehicles);
+    refreshHeaderCount();
   }
 
   function syncFilterUI() {
@@ -1534,11 +1535,19 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return (when && !isNaN(when)) ? when.toLocaleTimeString() : '–';
   }
 
+  var lastHeaderText = '', lastHeaderWarn = false;
   function setHeader(total, text, warn) {
+    lastHeaderText = text; lastHeaderWarn = !!warn;
     $('bus-total').textContent = (total != null) ? total : '–';
     var el = $('bus-updated');
     el.textContent = text;
     el.className = warn ? 'feed-warn' : '';
+  }
+  // The header count must follow filters immediately — a toggle that
+  // empties the map while the header still claims "13 buses" is a lie.
+  function refreshHeaderCount() {
+    if (!lastVehicles) return;
+    setHeader(busSlots.length, lastHeaderText, lastHeaderWarn);
   }
 
   function updateCounts() {
