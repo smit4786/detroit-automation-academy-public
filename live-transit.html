@@ -53,6 +53,7 @@
   .filter-panel-head strong { font-family: "Space Grotesk", sans-serif; color: #F5F2EA; font-size: .95rem; }
   .filter-panel-head button { background: none; border: 1px solid rgba(232,93,26,.6); color: #E85D1A; border-radius: 999px; padding: .3rem .7rem; font-size: .75rem; cursor: pointer; font-family: "Inter", sans-serif; }
   .filter-panel-head button:hover { background: rgba(232,93,26,.12); }
+  .f-head-btns { display: flex; gap: .4rem; }
   .f-group { margin-bottom: .7rem; }
   .f-group:last-child { margin-bottom: 0; }
   .f-group-head { display: flex; align-items: center; gap: .55rem; width: 100%; background: rgba(245,242,234,.04); border: 1px solid rgba(245,242,234,.1); color: #F5F2EA; border-radius: 10px; padding: .5rem .7rem; cursor: pointer; font-size: .85rem; font-family: "Inter", sans-serif; }
@@ -133,7 +134,10 @@
       <div class="filter-panel" id="filter-panel" hidden>
         <div class="filter-panel-head">
           <strong>Routes</strong>
-          <button id="filter-all">Show all</button>
+          <span class="f-head-btns">
+            <button id="filter-all">Show all</button>
+            <button id="filter-none">All off</button>
+          </span>
         </div>
         <div class="f-idle-row">
           <button id="hide-idle-toggle" aria-pressed="true"><span class="f-box"></span><b>Hide non-running routes</b></button>
@@ -183,7 +187,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2245"></script>
+<script type="module" src="live-transit.js?v=20261002-2300"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
