@@ -699,8 +699,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return COMPASS[Math.round(bearing / 45) % 8] + ' (' + Math.round(bearing) + '°)';
   }
 
+  function tapBuzz() { try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {} }
   function showBus(v) {
     if (!v) return;
+    tapBuzz();
     selectedVehicleId = v.vehicle_id;
     renderBusInstances(); // expand the selected indicator
     var sn = v.route_id;
@@ -888,6 +890,31 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && stage.classList.contains('pseudo-full')) setPseudoFull(false);
   });
+  // Keyboard selection: arrows cycle buses/stops when a card is open,
+  // Escape clears. (OrbitControls doesn't bind arrows — no conflict.)
+  document.addEventListener('keydown', function (e) {
+    var tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return;
+    if (e.key === 'Escape') { hideBus(); hideStop(); return; }
+    if (!$('intro-overlay').hidden) {
+      if (e.key === 'ArrowRight') { setIntroSlide(introIdx + 1); e.preventDefault(); }
+      else if (e.key === 'ArrowLeft') { setIntroSlide(introIdx - 1); e.preventDefault(); }
+      return;
+    }
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    var dir = e.key === 'ArrowRight' ? 1 : -1;
+    if (selectedVehicleId && busSlots.length) {
+      var bi = -1;
+      for (var i = 0; i < busSlots.length; i++) {
+        if (busSlots[i].vehicle && busSlots[i].vehicle.vehicle_id === selectedVehicleId) { bi = i; break; }
+      }
+      var nb = busSlots[(bi + dir + busSlots.length) % busSlots.length];
+      if (nb && nb.vehicle) { showBus(nb.vehicle); e.preventDefault(); }
+    } else if (selectedStop && stopPickList.length && selectedStopIndex >= 0) {
+      var ns = stopPickList[(selectedStopIndex + dir + stopPickList.length) % stopPickList.length];
+      if (ns) { showStop(ns); e.preventDefault(); }
+    }
+  });
 
   // --- location services ---------------------------------------------------------
   // Coverage = the Detroit street mosaic bounds (DDOT's service area).
@@ -1072,6 +1099,57 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     } catch (e) { show(); }
   }
 
+  // --- first-time window -------------------------------------------------------
+  // One showing per device (localStorage — no cookies, no banner needed).
+  var introSeenNow = false;
+  try { introSeenNow = localStorage.getItem('lt-intro-seen') === '1'; } catch (e) {}
+  var introIdx = 0;
+  function setIntroSlide(i) {
+    var slides = document.querySelectorAll('#intro-slides .intro-slide');
+    var dots = document.querySelectorAll('#intro-dots .intro-dot');
+    if (!slides.length) return;
+    introIdx = Math.max(0, Math.min(slides.length - 1, i));
+    for (var k = 0; k < slides.length; k++) {
+      slides[k].hidden = k !== introIdx;
+      if (dots[k]) dots[k].classList.toggle('on', k === introIdx);
+    }
+    $('intro-go').textContent = introIdx === slides.length - 1 ? 'Explore the map' : 'Next';
+  }
+  function dismissIntro() {
+    $('intro-overlay').hidden = true;
+    try { localStorage.setItem('lt-intro-seen', '1'); } catch (e) {}
+    introSeenNow = true;
+  }
+  function wireIntro() {
+    $('intro-close').addEventListener('click', dismissIntro);
+    $('intro-go').addEventListener('click', function () {
+      var slides = document.querySelectorAll('#intro-slides .intro-slide');
+      if (introIdx >= slides.length - 1) dismissIntro();
+      else setIntroSlide(introIdx + 1);
+    });
+    $('intro-locate').addEventListener('click', function () {
+      dismissIntro();
+      locateBtn.click();
+    });
+  }
+  function showIntro() {
+    if (introSeenNow) return;
+    var dotsHost = $('intro-dots');
+    var slides = document.querySelectorAll('#intro-slides .intro-slide');
+    dotsHost.innerHTML = '';
+    for (var k = 0; k < slides.length; k++) {
+      (function (idx) {
+        var d = document.createElement('button');
+        d.className = 'intro-dot';
+        d.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+        d.addEventListener('click', function () { setIntroSlide(idx); });
+        dotsHost.appendChild(d);
+      })(k);
+    }
+    setIntroSlide(0);
+    $('intro-overlay').hidden = false;
+  }
+
   // --- stops ---------------------------------------------------------------
   // Stops follow individual route filters (not groups). Single-route stops
   // take their route's color; multi-route stops ("hubs") draw paper-white
@@ -1170,6 +1248,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   function showStop(st) {
     if (!st) return;
+    tapBuzz();
     setStopSelectedColor(selectedStopIndex, false);
     selectedStop = st;
     selectedStopIndex = stopPickList.indexOf(st);
@@ -1752,7 +1831,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       applyFilters();
       syncFilterUI();
       rebuildStops();
-      setTimeout(maybePromptLocation, 4000); // soft location ask, once the map has settled
+      wireIntro();
+      // First visit: the intro window (with its own location button).
+      // Return visit: the soft location toast.
+      setTimeout(function () { if (!introSeenNow) showIntro(); else maybePromptLocation(); }, 4000);
       $('filter-btn').addEventListener('click', function () { togglePanel(); });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') togglePanel(false);
