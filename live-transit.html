@@ -49,6 +49,12 @@
   .filter-btn[aria-expanded="true"] .filter-ico { color: #0C1116; }
   .filter-panel { position: absolute; top: 4.75rem; right: 1.25rem; width: 21rem; max-width: calc(100% - 2.5rem); max-height: calc(100% - 7rem); overflow-y: auto; background: rgba(12,17,22,.94); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: .9rem 1rem 1rem; backdrop-filter: blur(10px); z-index: 5; font-family: "Inter", sans-serif; }
   .filter-panel[hidden] { display: none; }
+  .filter-panel.minimized .f-body { display: none; }
+  .filter-panel.minimized { max-height: none; }
+  #panel-min { min-width: 2rem; padding: .3rem .5rem; font-size: .9rem; line-height: 1; }
+  .resize-grip { position: absolute; left: 0; bottom: 0; width: 28px; height: 28px; cursor: nwse-resize; touch-action: none; z-index: 6; }
+  .resize-grip::before { content: ""; position: absolute; left: 7px; bottom: 7px; width: 11px; height: 11px; border-left: 2px solid rgba(245,242,234,.55); border-bottom: 2px solid rgba(245,242,234,.55); border-bottom-left-radius: 5px; }
+  .filter-panel.minimized .resize-grip { display: none; }
   .filter-panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; }
   .filter-panel-head strong { font-family: "Space Grotesk", sans-serif; color: #F5F2EA; font-size: .95rem; }
   .filter-panel-head button { background: none; border: 1px solid rgba(232,93,26,.6); color: #E85D1A; border-radius: 999px; padding: .3rem .7rem; font-size: .75rem; cursor: pointer; font-family: "Inter", sans-serif; }
@@ -110,6 +116,7 @@
     .map-hint { display: none; }
     .bus-card { top: auto; bottom: 5.5rem; }
     .filter-panel { top: auto; bottom: 1rem; right: 1rem; left: 1rem; width: auto; max-height: 55%; }
+  .resize-grip { display: none; }
   }
 </style>
 </head>
@@ -153,13 +160,17 @@
           <span class="f-head-btns">
             <button id="filter-all">Show all</button>
             <button id="filter-none">All off</button>
+            <button id="panel-min" aria-label="Minimize routes panel" aria-expanded="true">&ndash;</button>
           </span>
         </div>
+        <div class="f-body">
         <div class="f-idle-row">
           <button id="hide-idle-toggle" aria-pressed="true"><span class="f-box"></span><b>Hide non-running routes</b></button>
         </div>
         <p class="f-note">Routes with no live buses reporting are dimmed or hidden automatically. DDOT&rsquo;s published schedule feed is currently expired, so this page shows live status only &mdash; not timetables.</p>
         <div id="filter-groups"></div>
+        </div>
+        <div class="resize-grip" id="panel-resize" aria-hidden="true"></div>
       </div>
       <div class="bus-card" id="bus-card" hidden>
         <button class="close" id="bus-close" aria-label="Close bus details">×</button>
@@ -216,7 +227,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2340"></script>
+<script type="module" src="live-transit.js?v=20261002-2345"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
