@@ -1,8 +1,11 @@
 /* Live Transit · Detroit — dedicated 3D page.
  *
- * Real DDOT route shapes + stops (GTFS) rendered in 3D, with live bus
- * positions polled from the Forge Line proxy every 60s. Includes route
- * toggles, per-route live counts, and click-a-bus detail cards.
+ * All 37 DDOT routes (GTFS shapes) rendered as elevated 3D guideways, with
+ * live bus positions polled from the Forge Line proxy every 60s. Bus pillars
+ * are InstancedMesh (4 draw calls total); zooming in swaps to true-scale bus
+ * models built lazily. Instant paint from the logged history file, with
+ * honest live/retry badge states. Route filters by group (ConnectTen /
+ * Primary / Neighborhood) plus per-route chips.
  */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -10,11 +13,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2245';
+  var STAMP = '20261002-2138';
   var POLL_MS = 60000;
-  var DOT_MAX = 240;
+  var BUS_MAX = 400;
+  var DETAIL_MAX = 48;
   var DEG = Math.PI / 180;
   var COMPASS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  var HISTORY_URL = 'https://raw.githubusercontent.com/smit4786/forge-line-transit-data/main/data/latest.json';
 
   var container = document.getElementById('live-map');
   if (!container) return;
@@ -70,12 +75,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var glowTex = radialTex('rgba(255,255,255,1)', 'rgba(255,255,255,0.35)');
 
   // Street-map underlay bounds (WGS84 corners of the z12 tile mosaic).
-  var STREET_BOUNDS = { lonW: -83.3203125, lonE: -82.96875, latN: 42.48830197960225, latS: 42.293564192170074 };
+  var STREET_BOUNDS = { lonW: -83.3431083, lonE: -82.8992288, latN: 42.47997522924901, latS: 42.25539743550126 };
   var streetTex = new THREE.TextureLoader().load('assets/detroit-streets-z12.png?v=' + STAMP);
   streetTex.anisotropy = 8;
   streetTex.colorSpace = THREE.SRGBColorSpace;
 
-  var grid = new THREE.GridHelper(24000, 24, 0x2a3542, 0x1a2330);
+  var grid = new THREE.GridHelper(40000, 40, 0x2a3542, 0x1a2330);
   grid.position.y = 0.5;
   grid.material.transparent = true;
   grid.material.opacity = 0.42;
@@ -160,8 +165,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // --- state ---------------------------------------------------------------
   var routeColors = {};   // id -> THREE.Color
   var routeNames = {};    // id -> name
-  var routeGroups = {};   // id -> THREE.Group
+  var routeById = {};     // id -> route record from JSON
+  var routeGroups = {};   // route id -> THREE.Group (guideway + label + tether)
+  var groupObjs = {};     // group id -> THREE.Group (stops cloud)
   var routeOrder = [];
+  var groupOrder = [];
+  var labelSprites = [];  // { sprite, routeId }
+  var liveCounts = {};    // route id -> live bus count (visible)
   var proj = null;
 
   function project(lat, lon) {
@@ -169,9 +179,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
 
   // --- fleet data: vehicle number -> model, dimensions, seating ----------------
-  // Source: CPTDB Wiki DDOT fleet roster (ddot-fleet.json). Dimensions are
-  // nominal manufacturer figures for the model — accurate per model, not
-  // per individual bus. Unknown numbers fall back to a standard 40-ft bus.
   var fleetData = null;
   function fleetLookup(vehicleId) {
     var fallback = { model: '40-ft transit bus', detail: 'model assumed', length_m: 12.19, width_m: 2.59, height_m: 3.3, seats: null, assumed: true };
@@ -193,91 +200,142 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return fallback;
   }
 
-  // --- bus markers: real 3D pillars, not camera-facing billboards ---------------
+  // --- bus pillars: InstancedMesh, 4 draw calls total --------------------------
   var PILLAR_H = 620;
-  var glowPillarGeo = new THREE.CylinderGeometry(58, 58, PILLAR_H, 12, 1, true);
-  var corePillarGeo = new THREE.CylinderGeometry(20, 27, PILLAR_H, 10);
-  var beaconGeo = new THREE.SphereGeometry(64, 16, 12);
-  var ringGeo = new THREE.RingGeometry(72, 124, 28);
-  // True-scale bus geometry (unit box scaled per model; shown when zoomed in).
+  var pillarGlowIM = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(58, 58, PILLAR_H, 12, 1, true),
+    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.30, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
+    BUS_MAX);
+  var pillarCoreIM = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(20, 27, PILLAR_H, 10),
+    new THREE.MeshLambertMaterial({}),
+    BUS_MAX);
+  var pillarBeaconIM = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(64, 16, 12),
+    new THREE.MeshBasicMaterial({}),
+    BUS_MAX);
+  var pillarRingIM = new THREE.InstancedMesh(
+    new THREE.RingGeometry(72, 124, 28),
+    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
+    BUS_MAX);
+  var pillarMeshes = [pillarGlowIM, pillarCoreIM, pillarBeaconIM, pillarRingIM];
+  pillarMeshes.forEach(function (im) {
+    im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    im.count = 0;
+    im.frustumCulled = false;
+    scene.add(im);
+  });
+
+  // True-scale bus geometry (shared; detail groups built lazily for busMode).
   var busBodyGeo = new THREE.BoxGeometry(1, 1, 1);
   var busWinGeo = new THREE.BoxGeometry(1, 1, 1);
   var wheelGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.4, 12);
   var busWinMat = new THREE.MeshBasicMaterial({ color: 0x10161c });
   var wheelMat = new THREE.MeshBasicMaterial({ color: 0x05070a });
 
-  var busMats = {};
-  function busMatsFor(routeId) {
-    if (!busMats[routeId]) {
-      var c = routeColors[routeId] || new THREE.Color(0xf5f2ea);
-      busMats[routeId] = {
-        glow: new THREE.MeshBasicMaterial({ color: c.clone(), transparent: true, opacity: 0.30, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
-        core: new THREE.MeshLambertMaterial({ color: c.clone() }),
-        beacon: new THREE.MeshBasicMaterial({ color: c.clone() }),
-        ring: new THREE.MeshBasicMaterial({ color: c.clone(), transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })
-      };
+  var detailPool = [];
+  function getDetail(i) {
+    if (!detailPool[i]) {
+      var g = new THREE.Group();
+      var body = new THREE.Mesh(busBodyGeo, new THREE.MeshLambertMaterial({ color: 0xffffff }));
+      var wins = new THREE.Mesh(busWinGeo, busWinMat);
+      var wheels = [];
+      for (var k = 0; k < 4; k++) {
+        var wh = new THREE.Mesh(wheelGeo, wheelMat);
+        wh.rotation.x = Math.PI / 2;
+        wheels.push(wh);
+        g.add(wh);
+      }
+      g.add(body); g.add(wins);
+      g.visible = false;
+      body.userData.detail = null; // set below
+      scene.add(g);
+      var d = { group: g, body: body, wins: wins, wheels: wheels, vehicle: null };
+      body.userData.detail = d;
+      detailPool[i] = d;
     }
-    return busMats[routeId];
+    return detailPool[i];
   }
 
-  function makeBusMarker() {
-    var g = new THREE.Group();
-    var dm = busMatsFor('__default');
-    var glow = new THREE.Mesh(glowPillarGeo, dm.glow);
-    glow.position.y = PILLAR_H / 2;
-    var core = new THREE.Mesh(corePillarGeo, dm.core);
-    core.position.y = PILLAR_H / 2;
-    var beacon = new THREE.Mesh(beaconGeo, dm.beacon);
-    beacon.position.y = PILLAR_H + 40;
-    var ring = new THREE.Mesh(ringGeo, dm.ring);
-    ring.rotation.x = -Math.PI / 2;
-    ring.position.y = 6;
-    g.add(glow); g.add(core); g.add(beacon); g.add(ring);
-    // True-scale bus model (busMode): body + window band + 4 wheels, scaled
-    // per the fleet lookup and rotated to the reported bearing.
-    var busG = new THREE.Group();
-    var body = new THREE.Mesh(busBodyGeo, dm.core);
-    var wins = new THREE.Mesh(busWinGeo, busWinMat);
-    var wheels = [];
-    for (var wi = 0; wi < 4; wi++) {
-      var wh = new THREE.Mesh(wheelGeo, wheelMat);
-      wh.rotation.x = Math.PI / 2;
-      wheels.push(wh);
-      busG.add(wh);
-    }
-    busG.add(body); busG.add(wins);
-    busG.visible = false;
-    g.add(busG);
-    g.visible = false;
-    g.userData.vehicle = null;
-    g.userData.hit = core;
-    g.userData.pillarParts = [glow, core, beacon, ring];
-    g.userData.busMeshes = { group: busG, body: body, wins: wins, wheels: wheels };
-    core.userData.markerGroup = g;
-    scene.add(g);
-    return g;
+  // busSlots[i]: one entry per currently visible bus (index == instance id).
+  var busSlots = [];
+
+  var _m4 = new THREE.Matrix4();
+  var _p3 = new THREE.Vector3();
+  var _q3 = new THREE.Quaternion();
+  var _s3 = new THREE.Vector3(1, 1, 1);
+  var _ringQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+
+  function markColorsDirty() {
+    pillarMeshes.forEach(function (im) {
+      if (im.instanceColor) im.instanceColor.needsUpdate = true;
+    });
   }
 
-  var busPool = [];
-  for (var di = 0; di < DOT_MAX; di++) busPool.push(makeBusMarker());
-
-  function visibleHitMeshes() {
-    var arr = [];
-    for (var i = 0; i < busPool.length; i++) {
-      if (busPool[i].visible) arr.push(busPool[i].userData.hit);
+  function renderBusInstances() {
+    var n = busSlots.length;
+    if (busMode) {
+      pillarMeshes.forEach(function (im) { im.visible = false; });
+      var dn = Math.min(n, DETAIL_MAX);
+      for (var i = 0; i < DETAIL_MAX; i++) {
+        var d = getDetail(i);
+        if (i < dn) {
+          var s = busSlots[i];
+          var fi = fleetLookup(s.vehicle.vehicle_id);
+          d.group.position.set(s.x, 0, s.z);
+          d.group.rotation.y = s.rotY;
+          d.body.scale.set(fi.length_m, fi.height_m, fi.width_m);
+          d.body.position.y = fi.height_m / 2 + 0.35;
+          d.body.material.color.copy(s.color);
+          d.wins.scale.set(fi.length_m * 0.88, fi.height_m * 0.32, fi.width_m * 1.02);
+          d.wins.position.y = fi.height_m * 0.72 + 0.35;
+          var wx = fi.length_m * 0.32, wz = fi.width_m / 2;
+          d.wheels[0].position.set(wx, 0.55, wz);
+          d.wheels[1].position.set(wx, 0.55, -wz);
+          d.wheels[2].position.set(-wx, 0.55, wz);
+          d.wheels[3].position.set(-wx, 0.55, -wz);
+          d.vehicle = s.vehicle;
+          d.group.visible = true;
+        } else {
+          d.group.visible = false;
+          d.vehicle = null;
+        }
+      }
+      return;
     }
-    return arr;
+    // Pillar mode: hide detail models, fill instances.
+    for (var j = 0; j < DETAIL_MAX; j++) {
+      if (detailPool[j]) { detailPool[j].group.visible = false; detailPool[j].vehicle = null; }
+    }
+    pillarMeshes.forEach(function (im) { im.visible = true; });
+    for (var k = 0; k < n; k++) {
+      var b = busSlots[k];
+      _p3.set(b.x, PILLAR_H / 2, b.z);
+      _q3.identity();
+      _m4.compose(_p3, _q3, _s3);
+      pillarGlowIM.setMatrixAt(k, _m4);
+      pillarCoreIM.setMatrixAt(k, _m4);
+      _p3.set(b.x, PILLAR_H + 40, b.z);
+      _m4.compose(_p3, _q3, _s3);
+      pillarBeaconIM.setMatrixAt(k, _m4);
+      _p3.set(b.x, 6, b.z);
+      _m4.compose(_p3, _ringQ, _s3);
+      pillarRingIM.setMatrixAt(k, _m4);
+      pillarGlowIM.setColorAt(k, b.color);
+      pillarCoreIM.setColorAt(k, b.color);
+      pillarBeaconIM.setColorAt(k, b.color);
+      pillarRingIM.setColorAt(k, b.color);
+    }
+    pillarMeshes.forEach(function (im) {
+      im.count = n;
+      im.instanceMatrix.needsUpdate = true;
+    });
+    markColorsDirty();
   }
 
   // Zoom LOD: wide view shows the symbolic pillars; zoomed in past ~2.6 km
   // the markers resolve into true-scale bus models. Hysteresis avoids flicker.
   var busMode = false;
-  function applyBusLOD(m) {
-    var showPillar = !busMode;
-    var pp = m.userData.pillarParts;
-    for (var i = 0; i < pp.length; i++) pp[i].visible = showPillar;
-    m.userData.busMeshes.group.visible = busMode;
-  }
   function updateLOD() {
     var d = camera.position.distanceTo(controls.target);
     if (!busMode && d < 2600) busMode = true;
@@ -287,6 +345,28 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var raycaster = new THREE.Raycaster();
   var pointerNDC = new THREE.Vector2();
   var downPos = null;
+  function pickBus(cx, cy) {
+    var r = renderer.domElement.getBoundingClientRect();
+    pointerNDC.set(
+      ((cx - r.left) / r.width) * 2 - 1,
+      -((cy - r.top) / r.height) * 2 + 1
+    );
+    raycaster.setFromCamera(pointerNDC, camera);
+    if (busMode) {
+      var bodies = [];
+      for (var i = 0; i < DETAIL_MAX; i++) {
+        var d = detailPool[i];
+        if (d && d.group.visible) bodies.push(d.body);
+      }
+      var hits = raycaster.intersectObjects(bodies);
+      return hits.length ? hits[0].object.userData.detail.vehicle : null;
+    }
+    var ih = raycaster.intersectObject(pillarCoreIM);
+    if (ih.length && ih[0].instanceId != null && busSlots[ih[0].instanceId]) {
+      return busSlots[ih[0].instanceId].vehicle;
+    }
+    return null;
+  }
   renderer.domElement.addEventListener('pointerdown', function (e) {
     downPos = [e.clientX, e.clientY];
   });
@@ -295,26 +375,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var dx = e.clientX - downPos[0], dy = e.clientY - downPos[1];
     downPos = null;
     if (dx * dx + dy * dy > 36) return; // was a drag
-    var r = renderer.domElement.getBoundingClientRect();
-    pointerNDC.set(
-      ((e.clientX - r.left) / r.width) * 2 - 1,
-      -((e.clientY - r.top) / r.height) * 2 + 1
-    );
-    raycaster.setFromCamera(pointerNDC, camera);
-    var hits = raycaster.intersectObjects(visibleHitMeshes());
-    if (hits.length) showBus(hits[0].object.userData.markerGroup.userData.vehicle);
-    else hideBus();
+    var v = pickBus(e.clientX, e.clientY);
+    if (v) showBus(v); else hideBus();
   });
   renderer.domElement.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'mouse' || downPos) return;
-    var r = renderer.domElement.getBoundingClientRect();
-    pointerNDC.set(
-      ((e.clientX - r.left) / r.width) * 2 - 1,
-      -((e.clientY - r.top) / r.height) * 2 + 1
-    );
-    raycaster.setFromCamera(pointerNDC, camera);
-    renderer.domElement.style.cursor =
-      raycaster.intersectObjects(visibleHitMeshes()).length ? 'pointer' : 'grab';
+    renderer.domElement.style.cursor = pickBus(e.clientX, e.clientY) ? 'pointer' : 'grab';
   });
 
   function compass(bearing) {
@@ -334,99 +400,162 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     $('bus-model').textContent = fi.model + ' · ' + fi.detail;
     $('bus-cap').textContent = (fi.seats != null ? fi.seats + ' seats · ' : '') + fi.length_m.toFixed(1) + ' m long';
     var when = v.updated_at ? new Date(v.updated_at) : null;
-    $('bus-updated').textContent = (when && !isNaN(when)) ? when.toLocaleTimeString() : '–';
+    $('bus-card-updated').textContent = (when && !isNaN(when)) ? when.toLocaleTimeString() : '–';
     $('bus-card').hidden = false;
   }
   function hideBus() { $('bus-card').hidden = true; }
   $('bus-close').addEventListener('click', hideBus);
 
-  // --- route chips -----------------------------------------------------------
-  function buildChips(routes) {
-    var bar = $('route-bar');
-    bar.innerHTML = '';
-    routes.forEach(function (route) {
-      var b = document.createElement('button');
-      b.className = 'route-chip';
-      b.setAttribute('aria-pressed', 'true');
-      b.dataset.route = route.id;
-      b.innerHTML = '<i style="background:' + route.color + '"></i><b>' +
-        route.id + ' · ' + route.name + '</b><span class="cnt" id="cnt-' + route.id + '">–</span>';
-      b.addEventListener('click', function () {
-        var on = b.getAttribute('aria-pressed') === 'true';
-        b.setAttribute('aria-pressed', on ? 'false' : 'true');
-        routeGroups[route.id].visible = !on;
-      });
-      bar.appendChild(b);
+  // --- filters ---------------------------------------------------------------
+  // filterState.groups[gid] + filterState.routes[rid]; a route shows when both.
+  var filterState = { groups: {}, routes: {} };
+
+  function routeIsOn(rid) {
+    var r = routeById[rid];
+    return !!(r && filterState.groups[r.group] && filterState.routes[rid]);
+  }
+
+  function applyFilters() {
+    routeOrder.forEach(function (rid) {
+      if (routeGroups[rid]) routeGroups[rid].visible = routeIsOn(rid);
+    });
+    groupOrder.forEach(function (gid) {
+      if (groupObjs[gid]) groupObjs[gid].visible = !!filterState.groups[gid];
+    });
+    if (lastVehicles) updateBuses(lastVehicles);
+  }
+
+  function syncFilterUI() {
+    groupOrder.forEach(function (gid) {
+      var head = document.querySelector('.f-group-head[data-group="' + gid + '"]');
+      var sec = document.querySelector('.f-group[data-group="' + gid + '"]');
+      if (head) head.setAttribute('aria-pressed', String(!!filterState.groups[gid]));
+      if (sec) sec.classList.toggle('off', !filterState.groups[gid]);
+    });
+    routeOrder.forEach(function (rid) {
+      var b = document.querySelector('.f-chip[data-route="' + rid + '"]');
+      if (b) b.setAttribute('aria-pressed', String(!!filterState.routes[rid]));
     });
   }
 
-  // --- live poll ---------------------------------------------------------------
-  var feedOk = true;
-  function setHeader(total, when, ok) {
-    $('bus-total').textContent = (total != null) ? total : '–';
-    var el = $('bus-updated');
-    if (ok && when && !isNaN(when)) {
-      el.textContent = 'updated ' + when.toLocaleTimeString();
-      el.className = '';
-    } else if (!ok) {
-      el.textContent = 'live feed retrying…';
-      el.className = 'feed-warn';
-    } else {
-      el.textContent = 'connecting…';
-      el.className = '';
-    }
+  function buildFilterPanel(groups) {
+    var host = $('filter-groups');
+    host.innerHTML = '';
+    groups.forEach(function (g) {
+      filterState.groups[g.id] = true;
+      var sec = document.createElement('div');
+      sec.className = 'f-group';
+      sec.dataset.group = g.id;
+      var head = document.createElement('button');
+      head.className = 'f-group-head';
+      head.dataset.group = g.id;
+      head.setAttribute('aria-pressed', 'true');
+      head.innerHTML = '<span class="f-box"></span><b>' + g.name + '</b>' +
+        '<span class="f-count" id="fgc-' + g.id + '">–</span>';
+      head.addEventListener('click', function () {
+        filterState.groups[g.id] = !filterState.groups[g.id];
+        applyFilters();
+        syncFilterUI();
+      });
+      var list = document.createElement('div');
+      list.className = 'f-routes';
+      g.routes.forEach(function (rid) {
+        var route = routeById[rid];
+        if (!route) return;
+        filterState.routes[rid] = true;
+        var b = document.createElement('button');
+        b.className = 'route-chip f-chip';
+        b.setAttribute('aria-pressed', 'true');
+        b.dataset.route = rid;
+        b.innerHTML = '<i style="background:' + route.color + '"></i><b>' +
+          rid + ' · ' + route.name + '</b><span class="cnt" id="cnt-' + rid + '">–</span>';
+        b.addEventListener('click', function () {
+          filterState.routes[rid] = !filterState.routes[rid];
+          applyFilters();
+          syncFilterUI();
+        });
+        list.appendChild(b);
+      });
+      sec.appendChild(head);
+      sec.appendChild(list);
+      host.appendChild(sec);
+    });
+    $('filter-all').addEventListener('click', function () {
+      groupOrder.forEach(function (gid) { filterState.groups[gid] = true; });
+      routeOrder.forEach(function (rid) { filterState.routes[rid] = true; });
+      applyFilters();
+      syncFilterUI();
+    });
   }
 
+  function togglePanel(force) {
+    var panel = $('filter-panel');
+    var btn = $('filter-btn');
+    var show = (typeof force === 'boolean') ? force : panel.hidden;
+    panel.hidden = !show;
+    btn.setAttribute('aria-expanded', String(show));
+  }
+
+  // --- header badge ------------------------------------------------------------
+  var liveEverOk = false;
+  var historyOk = false;
+  var lastTotal = null;
+
+  function fmtTime(when) {
+    return (when && !isNaN(when)) ? when.toLocaleTimeString() : '–';
+  }
+
+  function setHeader(total, text, warn) {
+    $('bus-total').textContent = (total != null) ? total : '–';
+    var el = $('bus-updated');
+    el.textContent = text;
+    el.className = warn ? 'feed-warn' : '';
+  }
+
+  function updateCounts(perRoute) {
+    liveCounts = perRoute;
+    routeOrder.forEach(function (rid) {
+      var el = $('cnt-' + rid);
+      if (el) el.textContent = String(perRoute[rid] || 0);
+    });
+    groupOrder.forEach(function (gid) {
+      var el = $('fgc-' + gid);
+      if (!el) return;
+      var t = 0;
+      groupRoutes[gid].forEach(function (rid) { t += perRoute[rid] || 0; });
+      el.textContent = t + ' buses';
+    });
+  }
+
+  var groupRoutes = {}; // gid -> [route ids]
+  var lastVehicles = null;
+
   function updateBuses(vehicles) {
-    var n = 0, perRoute = {};
-    for (var i = 0; i < vehicles.length && n < DOT_MAX; i++) {
+    var perRoute = {};
+    busSlots = [];
+    for (var i = 0; i < vehicles.length && busSlots.length < BUS_MAX; i++) {
       var v = vehicles[i];
       if (v.lat == null || v.lon == null) continue;
       var grp = routeGroups[v.route_id];
-      if (grp && !grp.visible) continue;
+      if (!grp || !grp.visible) continue; // unknown or filtered route: skip
       var p = project(v.lat, v.lon);
-      var m = busPool[n];
-      m.position.set(p[0], 0, p[1]);
-      var bm = busMatsFor(v.route_id);
-      var pp = m.userData.pillarParts;
-      pp[0].material = bm.glow;
-      pp[1].material = bm.core;
-      pp[2].material = bm.beacon;
-      pp[3].material = bm.ring;
-      // True-scale bus: dimensions from the fleet lookup, heading from bearing.
-      var fi = fleetLookup(v.vehicle_id);
-      var bsh = m.userData.busMeshes;
-      bsh.body.scale.set(fi.length_m, fi.height_m, fi.width_m);
-      bsh.body.position.y = fi.height_m / 2 + 0.35;
-      bsh.body.material = bm.core;
-      bsh.wins.scale.set(fi.length_m * 0.88, fi.height_m * 0.32, fi.width_m * 1.02);
-      bsh.wins.position.y = fi.height_m * 0.72 + 0.35;
-      var wx = fi.length_m * 0.32, wz = fi.width_m / 2;
-      bsh.wheels[0].position.set(wx, 0.55, wz);
-      bsh.wheels[1].position.set(wx, 0.55, -wz);
-      bsh.wheels[2].position.set(-wx, 0.55, wz);
-      bsh.wheels[3].position.set(-wx, 0.55, -wz);
-      if (v.bearing != null && !isNaN(v.bearing)) {
-        m.rotation.y = (90 - v.bearing) * DEG;
-      }
-      m.userData.fleet = fi;
-      applyBusLOD(m);
-      m.userData.vehicle = v;
-      m.visible = true;
+      var rotY = (v.bearing != null && !isNaN(v.bearing)) ? (90 - v.bearing) * DEG : 0;
+      busSlots.push({
+        vehicle: v,
+        x: p[0], z: p[1],
+        rotY: rotY,
+        color: routeColors[v.route_id] || new THREE.Color(0xf5f2ea)
+      });
       perRoute[v.route_id] = (perRoute[v.route_id] || 0) + 1;
-      n++;
     }
-    for (var j = n; j < DOT_MAX; j++) { busPool[j].visible = false; busPool[j].userData.vehicle = null; }
-    routeOrder.forEach(function (id) {
-      var el = $('cnt-' + id);
-      if (el) el.textContent = (perRoute[id] || 0) + ' buses';
-    });
-    return n;
+    renderBusInstances();
+    updateCounts(perRoute);
+    return busSlots.length;
   }
 
   function poll() {
     var proxy = (window.FORGE_LIVE_PROXY || '').replace(/\/$/, '');
-    if (!proxy) { setHeader(null, null, true); return; }
+    if (!proxy) { setHeader(null, 'connecting…', false); return; }
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, 20000);
     fetch(proxy + '/api/vehicles', { cache: 'no-store', signal: ctrl.signal })
@@ -434,14 +563,47 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
             function (e) { clearTimeout(timer); throw e; })
       .then(function (d) {
         if (!d || !Array.isArray(d.vehicles)) throw new Error('bad payload');
+        lastVehicles = d.vehicles;
         var n = updateBuses(d.vehicles);
-        feedOk = true;
-        setHeader(n, d.generated_at ? new Date(d.generated_at) : null, true);
+        liveEverOk = true;
+        lastTotal = n;
+        setHeader(n, 'updated ' + fmtTime(d.generated_at ? new Date(d.generated_at) : null), false);
       })
       .catch(function () {
-        feedOk = false;
-        setHeader($('bus-total').textContent === '–' ? null : $('bus-total').textContent, null, false);
+        var text = liveEverOk
+          ? 'live feed retrying…'
+          : (historyOk ? 'showing last logged positions · live feed retrying…' : 'live feed retrying…');
+        setHeader(lastTotal, text, true);
       });
+  }
+
+  // --- instant paint from logged history ---------------------------------------
+  var historyRendered = false;
+  function maybeRenderHistory() {
+    if (historyRendered || !proj || !historyVehicles) return;
+    if (liveEverOk) return; // live data already won the race
+    historyRendered = true;
+    lastVehicles = historyVehicles;
+    var n = updateBuses(historyVehicles);
+    historyOk = true;
+    lastTotal = n;
+    setHeader(n, 'last logged ' + fmtTime(historyAt ? new Date(historyAt) : null) + ' — connecting live…', false);
+  }
+  var historyVehicles = null;
+  var historyAt = null;
+  function fetchHistory() {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 10000);
+    fetch(HISTORY_URL, { cache: 'no-store', signal: ctrl.signal })
+      .then(function (r) { clearTimeout(timer); if (!r.ok) throw new Error('http ' + r.status); return r.json(); },
+            function (e) { clearTimeout(timer); throw e; })
+      .then(function (d) {
+        if (!d || !Array.isArray(d.vehicles)) throw new Error('bad history payload');
+        historyVehicles = d.vehicles;
+        historyAt = d.polled_at ? new Date(d.polled_at) : null;
+        maybeRenderHistory();
+      })
+      .catch(function () { /* history is a bonus; live poll proceeds regardless */ });
   }
 
   // --- boot --------------------------------------------------------------------
@@ -488,10 +650,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
       var casingMat = new THREE.MeshBasicMaterial({ color: 0x0c1116, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
 
+      // Per-group containers (stops clouds toggle with the group filter).
+      groupOrder = data.groups.map(function (g) { return g.id; });
+      data.groups.forEach(function (g) {
+        groupRoutes[g.id] = g.routes.slice();
+        var gr = new THREE.Group();
+        scene.add(gr);
+        groupObjs[g.id] = gr;
+      });
+
       data.routes.forEach(function (route) {
         var color = new THREE.Color(route.color);
         routeColors[route.id] = color;
         routeNames[route.id] = route.name;
+        routeById[route.id] = route;
         routeOrder.push(route.id);
         var grp = new THREE.Group();
         // Elevated guideway: the ribbon deck floats at y=66 with solid
@@ -519,6 +691,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           var label = makeLabel(route.id + ' · ' + route.name, route.color);
           label.position.set(mid[0], 1050, mid[1]);
           grp.add(label);
+          labelSprites.push({ sprite: label, routeId: route.id });
           var tetherGeo = new THREE.BufferGeometry().setFromPoints([
             new THREE.Vector3(mid[0], 70, mid[1]),
             new THREE.Vector3(mid[0], 980, mid[1])
@@ -529,25 +702,36 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         routeGroups[route.id] = grp;
       });
 
-      // Stops, one Points cloud per route (toggleable with its route).
+      // Stops: one Points cloud per group (3 draw calls), toggled with group.
       var stopTex = glowTex;
-      routeOrder.forEach(function (id) {
-        var pts = (data.stops || []).filter(function (s) { return s.r.indexOf(id) !== -1; });
+      data.groups.forEach(function (g) {
+        var inGroup = {};
+        g.routes.forEach(function (rid) { inGroup[rid] = true; });
+        var pts = (data.stops || []).filter(function (s) {
+          return s.r.some(function (rid) { return inGroup[rid]; });
+        });
         if (!pts.length) return;
         var pos = new Float32Array(pts.length * 3);
         pts.forEach(function (s, i) { pos.set([s.x, 14, s.z], i * 3); });
-        var g = new THREE.BufferGeometry();
-        g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        var m = new THREE.PointsMaterial({
+        var gg = new THREE.BufferGeometry();
+        gg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        var mm = new THREE.PointsMaterial({
           size: 130, map: stopTex, transparent: true, opacity: 0.7,
           color: 0xcfd6dd, depthWrite: false, sizeAttenuation: true
         });
-        routeGroups[id].add(new THREE.Points(g, m));
+        groupObjs[g.id].add(new THREE.Points(gg, mm));
       });
 
-      buildChips(data.routes);
+      buildFilterPanel(data.groups);
+      $('filter-btn').addEventListener('click', function () { togglePanel(); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') togglePanel(false);
+      });
+
       resize();
-      setHeader(null, null, true);
+      setHeader(null, 'connecting…', false);
+      fetchHistory();
+      maybeRenderHistory();
       poll();
       setInterval(poll, POLL_MS);
       var lastBusMode = null;
@@ -556,9 +740,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         updateLOD();
         if (busMode !== lastBusMode) {
           lastBusMode = busMode;
-          for (var i = 0; i < busPool.length; i++) {
-            if (busPool[i].visible) applyBusLOD(busPool[i]);
-          }
+          renderBusInstances();
+        }
+        // Label rule: group on (via parent visibility) AND (live buses on the
+        // route OR zoomed far out). Tethers always follow the route.
+        var camDist = camera.position.distanceTo(controls.target);
+        for (var i = 0; i < labelSprites.length; i++) {
+          var L = labelSprites[i];
+          L.sprite.visible = (liveCounts[L.routeId] > 0) || camDist > 15000;
         }
         renderer.render(scene, camera);
       });
