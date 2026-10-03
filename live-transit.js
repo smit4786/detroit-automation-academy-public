@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2320';
+  var STAMP = '20261002-2330';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -53,6 +53,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   controls.maxPolarAngle = 1.35;
   controls.minDistance = 1200;
   controls.maxDistance = 55000;
+
+  // Touchscreen navigation: one finger drags the map (like a maps app),
+  // pinch zooms and two-finger twist rotates. Desktop keeps drag-orbit.
+  var homePos = camera.position.clone();
+  var homeTarget = controls.target.clone();
+  var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (isTouch) {
+    controls.touches.ONE = THREE.TOUCH.PAN;
+    controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
+  }
 
   scene.add(new THREE.HemisphereLight(0xf5f2ea, 0x0c1116, 0.9));
   var sun = new THREE.DirectionalLight(0xffffff, 0.7);
@@ -412,6 +422,29 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   function hideBus() { $('bus-card').hidden = true; }
   $('bus-close').addEventListener('click', hideBus);
+
+  // --- map navigation tools ----------------------------------------------------
+  function zoomStep(dir) {
+    var off = camera.position.clone().sub(controls.target);
+    var len = off.length() * (dir > 0 ? 0.8 : 1.25);
+    len = Math.max(controls.minDistance, Math.min(controls.maxDistance, len));
+    off.setLength(len);
+    camera.position.copy(controls.target).add(off);
+  }
+  function resetView() {
+    camera.position.copy(homePos);
+    controls.target.copy(homeTarget);
+  }
+  $('zoom-in').addEventListener('click', function () { zoomStep(1); });
+  $('zoom-out').addEventListener('click', function () { zoomStep(-1); });
+  $('view-reset').addEventListener('click', resetView);
+  if (isTouch) {
+    var hint = document.querySelector('.map-hint');
+    if (hint) {
+      hint.innerHTML = 'drag&nbsp;·&nbsp;move&nbsp;&nbsp;&nbsp;pinch&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;tap bus&nbsp;·&nbsp;details';
+      hint.classList.add('touch');
+    }
+  }
 
   // --- filters ---------------------------------------------------------------
   // filterState.groups[gid] + filterState.routes[rid]; a route shows when both.
