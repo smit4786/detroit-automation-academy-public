@@ -64,6 +64,14 @@
   .f-routes { display: flex; flex-wrap: wrap; gap: .4rem; padding: .55rem .1rem 0; }
   .f-chip { font-size: .75rem; padding: .4rem .65rem; }
   .f-chip .cnt { font-size: .72rem; }
+  .f-chip.not-running { opacity: .55; }
+  .f-chip .idle-tag { color: #FFB000; font-size: .68rem; border: 1px solid rgba(255,176,0,.45); border-radius: 999px; padding: .05rem .45rem; white-space: nowrap; }
+  .f-chip .idle-tag[hidden] { display: none; }
+  .f-idle-row { margin-bottom: .55rem; }
+  .f-idle-row button { display: flex; align-items: center; gap: .55rem; width: 100%; background: rgba(245,242,234,.04); border: 1px solid rgba(245,242,234,.1); color: #F5F2EA; border-radius: 10px; padding: .5rem .7rem; cursor: pointer; font-size: .82rem; font-family: "Inter", sans-serif; }
+  .f-idle-row button b { font-weight: 600; flex: 1; text-align: left; }
+  .f-idle-row button[aria-pressed="false"] .f-box { background: transparent; }
+  .f-note { color: #9AA0A6; font-size: .72rem; line-height: 1.5; margin: 0 0 .7rem; }
   .map-hint { position: absolute; right: 1.25rem; bottom: 1.25rem; color: #9AA0A6; font-size: .75rem; background: rgba(12,17,22,.7); padding: .45rem .7rem; border-radius: 8px; border: 1px solid rgba(245,242,234,.1); }
   .bus-card { position: absolute; left: 1.25rem; top: 5.5rem; width: 17rem; max-width: calc(100% - 2.5rem); background: rgba(12,17,22,.9); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: 1rem 1.1rem; backdrop-filter: blur(8px); }
   .bus-card[hidden] { display: none; }
@@ -127,6 +135,10 @@
           <strong>Routes</strong>
           <button id="filter-all">Show all</button>
         </div>
+        <div class="f-idle-row">
+          <button id="hide-idle-toggle" aria-pressed="true"><span class="f-box"></span><b>Hide non-running routes</b></button>
+        </div>
+        <p class="f-note">Routes with no live buses reporting are dimmed or hidden automatically. DDOT&rsquo;s published schedule feed is currently expired, so this page shows live status only &mdash; not timetables.</p>
         <div id="filter-groups"></div>
       </div>
       <div class="bus-card" id="bus-card" hidden>
@@ -171,7 +183,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2138"></script>
+<script type="module" src="live-transit.js?v=20261002-2245"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
