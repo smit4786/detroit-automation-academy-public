@@ -229,7 +229,53 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     new THREE.RingGeometry(72, 124, 28),
     new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     BUS_MAX);
-  var pillarMeshes = [pillarGlowIM, pillarCoreIM, pillarBeaconIM, pillarRingIM];
+  // Direction-of-travel arrowheads (flat triangles; apex +X = forward), one per bus.
+  var arrowGeo = new THREE.CircleGeometry(95, 3);
+  arrowGeo.rotateX(-Math.PI / 2);
+  var dirArrowIM = new THREE.InstancedMesh(arrowGeo,
+    new THREE.MeshBasicMaterial({ color: 0xffffff }), BUS_MAX);
+  dirArrowIM.frustumCulled = false;
+  dirArrowIM.count = 0;
+  scene.add(dirArrowIM);
+  var pillarMeshes = [pillarGlowIM, pillarCoreIM, pillarBeaconIM, pillarRingIM, dirArrowIM];
+
+  // Per-bus route-number badges (sprites), LOD-gated to street-level zooms.
+  var badgeTexCache = {};
+  function routeBadgeTexture(rid) {
+    var t = badgeTexCache[rid];
+    if (t) return t;
+    var rc = routeColors[rid];
+    var col = '#' + (rc ? rc.getHexString() : '9aa0a6');
+    var c = document.createElement('canvas'); c.width = 160; c.height = 80;
+    var x = c.getContext('2d');
+    x.fillStyle = 'rgba(9,13,17,0.92)';
+    x.beginPath();
+    if (x.roundRect) x.roundRect(5, 5, 150, 70, 18); else x.rect(5, 5, 150, 70);
+    x.fill();
+    x.lineWidth = 5; x.strokeStyle = col; x.stroke();
+    x.fillStyle = '#ffffff';
+    x.font = '700 42px system-ui, -apple-system, sans-serif';
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(String(rid), 80, 43);
+    t = new THREE.CanvasTexture(c);
+    t.anisotropy = 4;
+    badgeTexCache[rid] = t;
+    return t;
+  }
+  var badgePool = [];
+  for (var _bi = 0; _bi < BUS_MAX; _bi++) {
+    var _sp = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false, depthWrite: false, transparent: true }));
+    _sp.scale.set(480, 240, 1);
+    _sp.visible = false;
+    _sp.renderOrder = 40;
+    scene.add(_sp);
+    badgePool.push(_sp);
+  }
+
+  // Shared temps for direction chevrons.
+  var _e3 = new THREE.Euler();
+  var chevGeo = new THREE.CircleGeometry(30, 3);
+  chevGeo.rotateX(-Math.PI / 2);
   pillarMeshes.forEach(function (im) {
     im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     im.count = 0;
@@ -258,10 +304,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         g.add(wh);
       }
       g.add(body); g.add(wins);
+      var chev = new THREE.Mesh(chevGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      chev.position.set(30, 8, 0);
+      g.add(chev);
       g.visible = false;
       body.userData.detail = null; // set below
       scene.add(g);
-      var d = { group: g, body: body, wins: wins, wheels: wheels, vehicle: null };
+      var d = { group: g, body: body, wins: wins, wheels: wheels, chev: chev, vehicle: null };
       body.userData.detail = d;
       detailPool[i] = d;
     }
@@ -298,6 +347,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           d.body.scale.set(fi.length_m, fi.height_m, fi.width_m);
           d.body.position.y = fi.height_m / 2 + 0.35;
           d.body.material.color.copy(s.color);
+          d.chev.material.color.copy(s.color);
+          d.chev.position.set(fi.length_m / 2 + 30, 8, 0);
           d.wins.scale.set(fi.length_m * 0.88, fi.height_m * 0.32, fi.width_m * 1.02);
           d.wins.position.y = fi.height_m * 0.72 + 0.35;
           var wx = fi.length_m * 0.32, wz = fi.width_m / 2;
@@ -312,6 +363,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           d.vehicle = null;
         }
       }
+      updateBusBadges(n, 430);
       return;
     }
     // Pillar mode: hide detail models, fill instances.
@@ -336,12 +388,38 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       pillarCoreIM.setColorAt(k, b.color);
       pillarBeaconIM.setColorAt(k, b.color);
       pillarRingIM.setColorAt(k, b.color);
+      // Direction arrowhead: flat triangle ahead of the pillar, apex forward.
+      _q3.setFromEuler(_e3.set(0, b.rotY, 0));
+      var fwdX = Math.cos(b.rotY), fwdZ = -Math.sin(b.rotY);
+      _p3.set(b.x + fwdX * 190, 24, b.z + fwdZ * 190);
+      _s3.set(1, 1, 1);
+      _m4.compose(_p3, _q3, _s3);
+      dirArrowIM.setMatrixAt(k, _m4);
+      dirArrowIM.setColorAt(k, b.color);
     }
     pillarMeshes.forEach(function (im) {
       im.count = n;
       im.instanceMatrix.needsUpdate = true;
     });
     markColorsDirty();
+    updateBusBadges(n, PILLAR_H + 360);
+  }
+
+  // Per-bus route badges: one sprite per bus, shown only at street-level zooms.
+  function updateBusBadges(n, yBase) {
+    var show = camera.position.distanceTo(controls.target) < 12000;
+    for (var bi = 0; bi < BUS_MAX; bi++) {
+      var sp = badgePool[bi];
+      if (bi < n && show) {
+        var bs = busSlots[bi];
+        var tex = routeBadgeTexture(bs.vehicle.route_id);
+        if (sp.material.map !== tex) { sp.material.map = tex; sp.material.needsUpdate = true; }
+        sp.position.set(bs.x, yBase, bs.z);
+        sp.visible = true;
+      } else {
+        sp.visible = false;
+      }
+    }
   }
 
   // Zoom LOD: wide view shows the symbolic pillars; zoomed in past ~2.6 km
