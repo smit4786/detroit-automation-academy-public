@@ -19,28 +19,48 @@
   }
 
   // Reveal-on-scroll
+  // The stylesheet also defines a scroll-driven animation under
+  // @supports (animation-timeline: view()). That path is progressive
+  // enhancement only: the observer below is the mechanism of record, because
+  // feature-detecting the shorthand property ('animationTimeline' in style)
+  // is NOT the same test as @supports (animation-timeline: view()), and on a
+  // partial implementation the old skip-the-observer branch left every
+  // .reveal element at opacity 0 forever -- a blank page. Double-triggering
+  // is harmless: adding .visible twice changes nothing visually.
   var revealEls = document.querySelectorAll('.section .wrap, .hero-inner, .hero-stats, .card, .phase, .principle');
   revealEls.forEach(function (el) { el.classList.add('reveal'); });
 
-  // Where CSS scroll-driven animations are supported, the stylesheet owns the
-  // reveal and the observer below would only double-trigger. Skip it there.
-  var scrollDriven = false;
-  try { scrollDriven = ('animationTimeline' in document.body.style); } catch (e) {}
+  function revealEl(el) { el.classList.add('visible'); }
 
-  if (scrollDriven) {
-    /* CSS animation-timeline handles the reveal; nothing to observe. */
-  } else if ('IntersectionObserver' in window) {
+  if ('IntersectionObserver' in window) {
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
+          revealEl(entry.target);
           observer.unobserve(entry.target);
         }
       });
     }, { threshold: 0.12 });
     revealEls.forEach(function (el) { observer.observe(el); });
   } else {
-    revealEls.forEach(function (el) { el.classList.add('visible'); });
+    revealEls.forEach(revealEl);
+  }
+
+  // Safety net: the landing page must never render blank. If anything above
+  // the fold is still invisible shortly after load (stalled observer, partial
+  // CSS animation support), reveal it.
+  function revealAboveFold() {
+    var vh = window.innerHeight || 0;
+    revealEls.forEach(function (el) {
+      if (el.classList.contains('visible')) return;
+      var rect = el.getBoundingClientRect();
+      if (rect.top < vh && rect.bottom > 0) revealEl(el);
+    });
+  }
+  if (document.readyState === 'complete') {
+    setTimeout(revealAboveFold, 2000);
+  } else {
+    window.addEventListener('load', function () { setTimeout(revealAboveFold, 2000); });
   }
 })();
 
@@ -235,30 +255,8 @@
       printLine('demo-line-out', 'Moves: forward · back · left · right · spin · wave · dance · jump');
       printLine('demo-line-out', 'Fly: takeoff · land · up · down (the bot is a quadcopter now)');
       printLine('demo-line-out', 'Explore: look · focus · go <north|east|south|west|place> · map · status');
-      printLine('demo-line-out', 'Ride: ride · hop off (board the Forge Pod on the Forge Line)');
       printLine('demo-line-out', 'Upkeep: scan · charge');
       printLine('demo-line-out', 'Fleet: patrol · follow · rtp (autonomous bee + scout drones)');
-    }
-
-    /* Ride the Forge Line: the camera boards the Forge Pod and travels with
-       it; `hop off` (or grabbing the canvas) hands the camera back. */
-    function rideLine() {
-      var w3 = need3d(); if (!w3) return;
-      if (w3.riding && w3.riding()) { printLine('demo-line-out', 'Already aboard — "hop off" steps you back.'); return; }
-      var res = w3.ride();
-      if (res === 'riding') {
-        printLine('demo-line-ok', 'Boarding the Forge Pod — riding the line. "hop off" steps you back.');
-      } else if (res === 'parked') {
-        printLine('demo-line-out', 'The line is parked right now.');
-      } else {
-        printLine('demo-line-out', 'The Forge Line is not running yet.');
-      }
-    }
-    function hopOff() {
-      var w3 = need3d(); if (!w3) return;
-      if (!w3.riding || !w3.riding()) { printLine('demo-line-out', 'Not aboard anything.'); return; }
-      w3.hopoff();
-      printLine('demo-line-ok', 'Hopped off. Mind the gap.');
     }
 
     function run(raw) {
@@ -272,8 +270,6 @@
       if (cmd === 'takeoff') { takeoffDrone(); return; }
       if (cmd === 'land') { landDrone(); return; }
       if (cmd === 'up' || cmd === 'down') { altitudeNudge(cmd); return; }
-      if (cmd === 'ride') { rideLine(); return; }
-      if (cmd === 'hop off' || cmd === 'hopoff' || cmd === 'alight') { hopOff(); return; }
       var parts = cmd.split(/\s+/);
       if (parts[0] === 'go') { travel(parts.slice(1).join(' ')); return; }
       if (parts.length === 1 && DIRS.indexOf(parts[0]) !== -1) { travel(parts[0]); return; }
@@ -311,41 +307,12 @@
       input.focus();
     });
 
-    document.querySelectorAll('.demo-chip:not(.dpad-btn):not(.theme-toggle)').forEach(function (chip) {
+    document.querySelectorAll('.demo-chip:not(.dpad-btn)').forEach(function (chip) {
       chip.addEventListener('click', function () {
         run(chip.getAttribute('data-cmd'));
         if (!coarsePointer) input.focus();
       });
     });
-
-    /* Theme audio: a visible toggle, default off, no autoplay ever.
-       Starts only on the user's click; under reduced motion it stays inert. */
-    (function () {
-      var btn = document.getElementById('themeToggle');
-      var audio = document.getElementById('themeAudio');
-      if (!btn || !audio) return;
-      var reduceMotion = window.matchMedia &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduceMotion) {
-        btn.disabled = true;
-        btn.setAttribute('aria-label', 'Site theme music (off — disabled under reduced motion)');
-        return;
-      }
-      function setState(on) {
-        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-        btn.textContent = '♪ Theme: ' + (on ? 'on' : 'off');
-      }
-      btn.addEventListener('click', function () {
-        if (audio.paused) {
-          var p = audio.play();
-          if (p && p.catch) p.catch(function () { setState(false); });
-          setState(true);
-        } else {
-          audio.pause();
-          setState(false);
-        }
-      });
-    })();
 
     /* D-pad: multi-directional drive. Tap for one step, hold to keep rolling.
        Screen-relative like WASD; never summons the keyboard or the page scroll. */
