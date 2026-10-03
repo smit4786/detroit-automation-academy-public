@@ -949,11 +949,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var tag = (e.target && e.target.tagName) || '';
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return;
     if (e.key === 'Escape') { hideBus(); hideStop(); return; }
-    if (!$('intro-overlay').hidden) {
-      if (e.key === 'ArrowRight') { setIntroSlide(introIdx + 1); e.preventDefault(); }
-      else if (e.key === 'ArrowLeft') { setIntroSlide(introIdx - 1); e.preventDefault(); }
-      return;
-    }
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
     var dir = e.key === 'ArrowRight' ? 1 : -1;
     if (selectedVehicleId && busSlots.length) {
@@ -1151,57 +1146,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         }, function () { show(); });
       } else { show(); }
     } catch (e) { show(); }
-  }
-
-  // --- first-time window -------------------------------------------------------
-  // One showing per device (localStorage — no cookies, no banner needed).
-  var introSeenNow = false;
-  try { introSeenNow = localStorage.getItem('lt-intro-seen') === '1'; } catch (e) {}
-  var introIdx = 0;
-  function setIntroSlide(i) {
-    var slides = document.querySelectorAll('#intro-slides .intro-slide');
-    var dots = document.querySelectorAll('#intro-dots .intro-dot');
-    if (!slides.length) return;
-    introIdx = Math.max(0, Math.min(slides.length - 1, i));
-    for (var k = 0; k < slides.length; k++) {
-      slides[k].hidden = k !== introIdx;
-      if (dots[k]) dots[k].classList.toggle('on', k === introIdx);
-    }
-    $('intro-go').textContent = introIdx === slides.length - 1 ? 'Explore the map' : 'Next';
-  }
-  function dismissIntro() {
-    $('intro-overlay').hidden = true;
-    try { localStorage.setItem('lt-intro-seen', '1'); } catch (e) {}
-    introSeenNow = true;
-  }
-  function wireIntro() {
-    $('intro-close').addEventListener('click', dismissIntro);
-    $('intro-go').addEventListener('click', function () {
-      var slides = document.querySelectorAll('#intro-slides .intro-slide');
-      if (introIdx >= slides.length - 1) dismissIntro();
-      else setIntroSlide(introIdx + 1);
-    });
-    $('intro-locate').addEventListener('click', function () {
-      dismissIntro();
-      locateBtn.click();
-    });
-  }
-  function showIntro() {
-    if (introSeenNow) return;
-    var dotsHost = $('intro-dots');
-    var slides = document.querySelectorAll('#intro-slides .intro-slide');
-    dotsHost.innerHTML = '';
-    for (var k = 0; k < slides.length; k++) {
-      (function (idx) {
-        var d = document.createElement('button');
-        d.className = 'intro-dot';
-        d.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
-        d.addEventListener('click', function () { setIntroSlide(idx); });
-        dotsHost.appendChild(d);
-      })(k);
-    }
-    setIntroSlide(0);
-    $('intro-overlay').hidden = false;
   }
 
   // --- stops ---------------------------------------------------------------
@@ -1924,10 +1868,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       applyFilters();
       syncFilterUI();
       rebuildStops();
-      wireIntro();
-      // First visit: the intro window (with its own location button).
-      // Return visit: the soft location toast.
-      setTimeout(function () { if (!introSeenNow) showIntro(); else maybePromptLocation(); }, 4000);
+      // Soft location ask, once the map has settled. The old first-time
+      // popup is gone — "?" is the help hub now.
+      setTimeout(maybePromptLocation, 4000);
       $('filter-btn').addEventListener('click', function () { togglePanel(); });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') togglePanel(false);
