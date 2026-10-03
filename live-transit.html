@@ -88,6 +88,10 @@
   #view-full[aria-pressed="true"] { background: rgba(232,93,26,.2); border-color: #E85D1A; color: #E85D1A; }
   .map-stage.pseudo-full { position: fixed; inset: 0; height: 100vh; height: 100dvh; z-index: 60; }
   body.pseudo-full-lock { overflow: hidden; }
+  .map-toast { position: absolute; left: 50%; bottom: 5.5rem; transform: translateX(-50%); z-index: 9; display: flex; align-items: center; gap: .6rem; background: rgba(12,17,22,.95); border: 1px solid rgba(232,93,26,.6); color: #F5F2EA; border-radius: 999px; padding: .55rem 1rem; font-size: .82rem; font-family: "Inter", sans-serif; max-width: calc(100% - 3rem); cursor: pointer; white-space: nowrap; }
+  .map-toast[hidden] { display: none; }
+  .map-toast button { background: none; border: none; color: #9AA0A6; font-size: 1.2rem; cursor: pointer; line-height: 1; padding: .2rem .3rem; touch-action: manipulation; }
+  .map-toast button:hover { color: #F5F2EA; }
   .nav-overlay { position: absolute; inset: 0; z-index: 8; display: flex; align-items: center; justify-content: center; background: rgba(6,9,12,.72); backdrop-filter: blur(3px); }
   .nav-overlay[hidden] { display: none; }
   .nav-card { position: relative; width: 22rem; max-width: calc(100% - 3rem); max-height: calc(100% - 4rem); overflow-y: auto; background: rgba(12,17,22,.96); border: 1px solid rgba(245,242,234,.18); border-radius: 16px; padding: 1.2rem 1.3rem; font-family: "Inter", sans-serif; }
@@ -194,7 +198,9 @@
         <button id="zoom-out" aria-label="Zoom out">&minus;</button>
         <button id="view-reset" aria-label="Reset view">&#8962;</button>
         <button id="view-full" aria-label="Toggle fullscreen" aria-pressed="false">&#9956;</button>
+        <button id="view-locate" aria-label="Find my location" aria-pressed="false">&#8982;</button>
       </div>
+      <div class="map-toast" id="map-toast" hidden></div>
       <div class="nav-overlay" id="nav-overlay" hidden>
         <div class="nav-card" role="dialog" aria-label="Map navigation help">
           <button class="close" id="nav-close" aria-label="Close navigation help">&times;</button>
@@ -231,7 +237,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2350"></script>
+<script type="module" src="live-transit.js?v=20261002-2355"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
