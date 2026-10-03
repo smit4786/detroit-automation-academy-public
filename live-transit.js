@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261002-2415';
+  var STAMP = '20261002-2420';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -84,17 +84,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   var glowTex = radialTex('rgba(255,255,255,1)', 'rgba(255,255,255,0.35)');
 
-  // Street-map underlay bounds (WGS84 corners of the z12 tile mosaic).
+  // Street-map coverage bounds (WGS84). Streets are drawn as vector
+  // geometry from OSM data (see build scripts); no raster tiles.
   var STREET_BOUNDS = { lonW: -83.3431083, lonE: -82.8992288, latN: 42.47997522924901, latS: 42.25539743550126 };
-  var streetTex = new THREE.TextureLoader().load('assets/detroit-streets-z12.png?v=' + STAMP);
-  streetTex.anisotropy = 8;
-  streetTex.colorSpace = THREE.SRGBColorSpace;
-
-  var grid = new THREE.GridHelper(40000, 40, 0x2a3542, 0x1a2330);
-  grid.position.y = 0.5;
-  grid.material.transparent = true;
-  grid.material.opacity = 0.42;
-  scene.add(grid);
 
   // --- geometry helpers ---------------------------------------------------
   function ribbonGeometry(pts, width, y) {
@@ -190,6 +182,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var quietStreak = {};   // rid -> consecutive polls with zero buses
   var DIM_OPACITY = 0.22;
   var proj = null;
+  var streetData = null; // vector streets (assets/detroit-streets.json)
+  var stopData = null;   // raw stops array from ddot-routes-3d.json
 
   function project(lat, lon) {
     return [(lon - proj.lon0) * proj.mLon, -(lat - proj.lat0) * proj.mLat];
@@ -746,6 +740,59 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     );
   });
 
+  // --- stops ---------------------------------------------------------------
+  // Stops follow individual route filters (not groups). Single-route stops
+  // take their route's color; multi-route stops ("hubs") draw paper-white
+  // and larger so transfer points read at a glance. Two draw calls total.
+  var stopGroup = new THREE.Group();
+  stopGroup.visible = false; // LOD-gated in the animation loop
+  scene.add(stopGroup);
+  var STOP_LOD_DIST = 15000;
+
+  function rebuildStops() {
+    for (var i = stopGroup.children.length - 1; i >= 0; i--) {
+      var c = stopGroup.children[i];
+      stopGroup.remove(c);
+      if (c.geometry) c.geometry.dispose();
+      if (c.material) c.material.dispose();
+    }
+    if (!stopData || !stopData.length) return;
+    var reg = [], hub = [];
+    stopData.forEach(function (s) {
+      if (!s.r || !s.r.length) return;
+      var on = s.r.some(function (rid) { return routeIsOn(rid); });
+      if (!on) return;
+      (s.r.length > 1 ? hub : reg).push(s);
+    });
+    function makeCloud(list, size, fixedColor) {
+      if (!list.length) return;
+      var pos = new Float32Array(list.length * 3);
+      var col = fixedColor != null ? null : new Float32Array(list.length * 3);
+      var tmp = new THREE.Color();
+      list.forEach(function (s, j) {
+        pos[j * 3] = s.x; pos[j * 3 + 1] = 14; pos[j * 3 + 2] = s.z;
+        if (col) {
+          var rc = routeColors[s.r[0]];
+          if (rc) tmp.copy(rc); else tmp.set(0xf5f2ea);
+          col[j * 3] = tmp.r; col[j * 3 + 1] = tmp.g; col[j * 3 + 2] = tmp.b;
+        }
+      });
+      var g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      if (col) g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      var m = new THREE.PointsMaterial({
+        size: size, map: glowTex, transparent: true, opacity: 0.85,
+        depthWrite: false, sizeAttenuation: true
+      });
+      if (fixedColor != null) m.color.set(fixedColor); else m.vertexColors = true;
+      var p = new THREE.Points(g, m);
+      p.frustumCulled = false;
+      stopGroup.add(p);
+    }
+    makeCloud(reg, 130, null);
+    makeCloud(hub, 210, 0xf5f2ea);
+  }
+
   // --- filters ---------------------------------------------------------------
   // filterState.routes[rid] is the ONLY visibility gate: any route can be
   // toggled on its own, no group header required. Group headers are bulk
@@ -796,6 +843,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     groupOrder.forEach(function (gid) {
       if (groupObjs[gid]) groupObjs[gid].visible = groupSelState(gid) !== 'none';
     });
+    rebuildStops();
     if (lastVehicles) updateBuses(lastVehicles);
   }
 
@@ -1057,11 +1105,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); }),
     fetch('ddot-fleet.json?v=' + STAMP, { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }),
+    fetch('assets/detroit-streets.json?v=' + STAMP, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
   ])
     .then(function (all) {
       var data = all[0];
       fleetData = all[1];
+      streetData = all[2];
       proj = {
         lat0: data.projection.lat0,
         lon0: data.projection.lon0,
@@ -1069,19 +1121,44 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         mLon: 111320 * Math.cos(data.projection.lat0 * DEG)
       };
 
-      // Georeferenced street-map underlay: project the tile mosaic corners
-      // through the same transform as the routes so streets sit true.
-      (function addStreetUnderlay() {
+      // Vector street map, drawn ourselves: dark ground + tiered OSM
+      // highway geometry. Crisp at every zoom; no raster tiles.
+      var streetLocal = null;
+      (function buildStreets() {
         var nw = project(STREET_BOUNDS.latN, STREET_BOUNDS.lonW);
         var se = project(STREET_BOUNDS.latS, STREET_BOUNDS.lonE);
         var w = se[0] - nw[0], h = se[1] - nw[1];
         var ground = new THREE.Mesh(
           new THREE.PlaneGeometry(w, h),
-          new THREE.MeshBasicMaterial({ map: streetTex })
+          new THREE.MeshBasicMaterial({ color: 0x0d1319 })
         );
         ground.rotation.x = -Math.PI / 2;
         ground.position.set(nw[0] + w / 2, 0, nw[1] + h / 2);
         scene.add(ground);
+        if (!streetData) return; // ground still renders; streets absent
+        function addTier(arr, color, opacity, y) {
+          if (!arr || !arr.length) return null;
+          var n = arr.length / 4;
+          var pos = new Float32Array(n * 6);
+          for (var i = 0; i < n; i++) {
+            pos[i * 6]     = arr[i * 4];
+            pos[i * 6 + 1] = y;
+            pos[i * 6 + 2] = arr[i * 4 + 1];
+            pos[i * 6 + 3] = arr[i * 4 + 2];
+            pos[i * 6 + 4] = y;
+            pos[i * 6 + 5] = arr[i * 4 + 3];
+          }
+          var g = new THREE.BufferGeometry();
+          g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+          var lines = new THREE.LineSegments(g,
+            new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity }));
+          lines.frustumCulled = false;
+          scene.add(lines);
+          return lines;
+        }
+        addTier(streetData.freeway, 0x8a94a0, 0.95, 6);
+        addTier(streetData.arterial, 0x4d5763, 0.9, 5);
+        streetLocal = addTier(streetData.local, 0x333c46, 0.8, 4);
       })();
 
       var casingMat = new THREE.MeshBasicMaterial({ color: 0x0c1116, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
@@ -1143,27 +1220,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         routeGroups[route.id] = grp;
       });
 
-      // Stops: one Points cloud per group (3 draw calls), toggled with group.
-      var stopTex = glowTex;
-      data.groups.forEach(function (g) {
-        var inGroup = {};
-        g.routes.forEach(function (rid) { inGroup[rid] = true; });
-        var pts = (data.stops || []).filter(function (s) {
-          return s.r.some(function (rid) { return inGroup[rid]; });
-        });
-        if (!pts.length) return;
-        var pos = new Float32Array(pts.length * 3);
-        pts.forEach(function (s, i) { pos.set([s.x, 14, s.z], i * 3); });
-        var gg = new THREE.BufferGeometry();
-        gg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        var mm = new THREE.PointsMaterial({
-          size: 130, map: stopTex, transparent: true, opacity: 0.7,
-          color: 0xcfd6dd, depthWrite: false, sizeAttenuation: true
-        });
-        groupObjs[g.id].add(new THREE.Points(gg, mm));
-      });
+      // Stops are rebuilt from stopData by rebuildStops() (per-route colors,
+      // paper-white hubs) whenever filters change; see the stops section.
+      stopData = data.stops || [];
 
       buildFilterPanel(data.groups);
+      rebuildStops();
       $('filter-btn').addEventListener('click', function () { togglePanel(); });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') togglePanel(false);
@@ -1192,6 +1254,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         // Label rule: route enabled, not confirmed not-running, AND (live buses
         // on the route OR zoomed far out). Tethers always follow the route.
         var camDist = camera.position.distanceTo(controls.target);
+        // LOD: local streets and stops declutter at city-scale zooms.
+        if (streetLocal) streetLocal.visible = camDist < 22000;
+        if (stopGroup) stopGroup.visible = camDist < STOP_LOD_DIST;
         for (var i = 0; i < labelSprites.length; i++) {
           var L = labelSprites[i];
           L.sprite.visible = runningState[L.routeId] !== 'not-running' &&
