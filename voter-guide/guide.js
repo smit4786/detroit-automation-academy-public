@@ -30,6 +30,8 @@
   var chipsEl = document.getElementById("raceChips");
   chipsEl.innerHTML = data.races.map(function (r) {
     return '<a class="chip" href="#race-' + r.id + '">' + esc(r.title) + "</a>";
+  }).join("") + data.ballotQuestions.slice(0, -1).map(function (q, i) {
+    return '<a class="chip chip-measure" href="#bq-' + (i + 1) + '">' + esc(q.short || q.title) + "</a>";
   }).join("");
 
   /* ---------- candidate card ---------- */
@@ -122,8 +124,8 @@
   var bqEl = document.getElementById("ballotQuestions");
   var bq = data.ballotQuestions;
   var qnote = bq[bq.length - 1];
-  bqEl.innerHTML = bq.slice(0, -1).map(function (q) {
-    var h = '<div class="bq reveal"><h3>' + esc(q.title) + "</h3><p>" + esc(q.text) + "</p>";
+  bqEl.innerHTML = bq.slice(0, -1).map(function (q, i) {
+    var h = '<div class="bq reveal" id="bq-' + (i + 1) + '"><h3>' + esc(q.title) + "</h3><p>" + esc(q.text) + "</p>";
     if (q.support) h += '<h4>Supporters say</h4><p>' + esc(q.support) + "</p>";
     if (q.oppose) h += '<h4>Recorded opposition</h4><p>' + esc(q.oppose) + "</p>";
     if (q.sources) h += '<div class="src">' + q.sources.map(function (s) {
