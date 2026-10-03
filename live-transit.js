@@ -185,7 +185,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var streetData = null; // vector streets (assets/detroit-streets.json)
   var streetNameData = null; // street name anchors (assets/detroit-street-names.json)
   var stopData = null;   // raw stops array from ddot-routes-3d.json
-  var stopCloudMeta = []; // [{points, list}] parallel to stopGroup children, for tap picking
 
   function project(lat, lon) {
     return [(lon - proj.lon0) * proj.mLon, -(lat - proj.lat0) * proj.mLat];
@@ -307,16 +306,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (t) return t;
     var c = document.createElement('canvas');
     var mc = c.getContext('2d');
-    mc.font = '500 34px system-ui, -apple-system, sans-serif';
+    mc.font = '600 36px system-ui, -apple-system, sans-serif';
     var tw = Math.ceil(mc.measureText(name).width);
     c.width = tw + 44; c.height = 56;
     var x = c.getContext('2d');
-    x.fillStyle = 'rgba(9,13,17,0.72)';
+    x.fillStyle = 'rgba(12,17,22,0.85)';
     x.beginPath();
-    if (x.roundRect) x.roundRect(2, 2, c.width - 4, 52, 12); else x.rect(2, 2, c.width - 4, 52);
+    if (x.roundRect) x.roundRect(2, 2, c.width - 4, 52, 14); else x.rect(2, 2, c.width - 4, 52);
     x.fill();
-    x.fillStyle = '#c9ced4';
-    x.font = '500 34px system-ui, -apple-system, sans-serif';
+    x.lineWidth = 3; x.strokeStyle = 'rgba(245,242,234,0.35)'; x.stroke();
+    x.fillStyle = '#F5F2EA';
+    x.font = '600 36px system-ui, -apple-system, sans-serif';
     x.textAlign = 'center'; x.textBaseline = 'middle';
     x.fillText(name, c.width / 2, 29);
     t = new THREE.CanvasTexture(c);
@@ -618,26 +618,19 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     return best;
   }
-  // Tap a stop dot: raycast the stop point clouds, report name + routes.
+  // Tap a stop pylon: raycast the instanced markers, report name + routes.
   function pickStop(cx, cy) {
-    if (!stopGroup || !stopGroup.visible || !stopCloudMeta.length) return null;
+    if (!stopGroup || !stopGroup.visible) return null;
     var r = renderer.domElement.getBoundingClientRect();
     pointerNDC.set(
       ((cx - r.left) / r.width) * 2 - 1,
       -((cy - r.top) / r.height * 2 + 1)
     );
     raycaster.setFromCamera(pointerNDC, camera);
-    raycaster.params.Points.threshold = 110;
-    var objs = [];
-    for (var i = 0; i < stopCloudMeta.length; i++) objs.push(stopCloudMeta[i].points);
-    var hits = raycaster.intersectObjects(objs);
-    if (!hits.length || hits[0].index == null) return null;
-    for (var j = 0; j < stopCloudMeta.length; j++) {
-      if (stopCloudMeta[j].points === hits[0].object) {
-        return stopCloudMeta[j].list[hits[0].index] || null;
-      }
-    }
-    return null;
+    var hits = raycaster.intersectObjects([stopRegIM, stopHubIM]);
+    if (!hits.length || hits[0].instanceId == null) return null;
+    var list = hits[0].object === stopHubIM ? stopPickLists[1] : stopPickLists[0];
+    return list[hits[0].instanceId] || null;
   }
   function pickBus(cx, cy, touchSlop) {
     var r = renderer.domElement.getBoundingClientRect();
@@ -1030,56 +1023,64 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   scene.add(stopGroup);
   var STOP_LOD_DIST = 15000;
 
+  // Stop markers: instanced 3D pylons that rise above the elevated guideway
+  // (deck ~66-74m), so stops read as stations on the line instead of dots
+  // buried under it. Single-route stops take their route's color;
+  // multi-route hubs draw paper-white and taller. Two draw calls total.
+  var STOP_MAX = 5120;
+  var stopRegIM = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(13, 17, 110, 8),
+    new THREE.MeshLambertMaterial({ color: 0xffffff }), STOP_MAX);
+  var stopHubIM = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(20, 26, 150, 10),
+    new THREE.MeshLambertMaterial({ color: 0xffffff }), STOP_MAX);
+  stopRegIM.frustumCulled = false;
+  stopHubIM.frustumCulled = false;
+  stopRegIM.count = 0;
+  stopHubIM.count = 0;
+  stopGroup.add(stopRegIM);
+  stopGroup.add(stopHubIM);
+  var stopPickLists = [[], []];
+
   var lastStopSig = null;
+  var _stopTmpColor = new THREE.Color();
+  function fillStopInstances(im, list, fixedColor, yCenter) {
+    for (var i = 0; i < list.length; i++) {
+      var s = list[i];
+      _p3.set(s.x, yCenter, s.z);
+      _q3.identity();
+      _s3.set(1, 1, 1);
+      _m4.compose(_p3, _q3, _s3);
+      im.setMatrixAt(i, _m4);
+      if (fixedColor != null) _stopTmpColor.set(fixedColor);
+      else {
+        var rc = routeColors[s.r[0]];
+        if (rc) _stopTmpColor.copy(rc); else _stopTmpColor.set(0xf5f2ea);
+      }
+      im.setColorAt(i, _stopTmpColor);
+    }
+    im.count = list.length;
+    im.instanceMatrix.needsUpdate = true;
+    if (im.instanceColor) im.instanceColor.needsUpdate = true;
+  }
   function rebuildStops() {
     // Stops only depend on route toggles: skip the full rebuild when the
     // visible route set hasn't changed (e.g. polls that only flip dimming).
     var sig = routeOrder.map(function (rid) { return routeIsOn(rid) ? '1' : '0'; }).join('');
     if (sig === lastStopSig) return;
     lastStopSig = sig;
-    stopCloudMeta = [];
-    for (var i = stopGroup.children.length - 1; i >= 0; i--) {
-      var c = stopGroup.children[i];
-      stopGroup.remove(c);
-      if (c.geometry) c.geometry.dispose();
-      if (c.material) c.material.dispose();
-    }
-    if (!stopData || !stopData.length) return;
     var reg = [], hub = [];
-    stopData.forEach(function (s) {
-      if (!s.r || !s.r.length) return;
-      var on = s.r.some(function (rid) { return routeIsOn(rid); });
-      if (!on) return;
-      (s.r.length > 1 ? hub : reg).push(s);
-    });
-    function makeCloud(list, size, fixedColor) {
-      if (!list.length) return;
-      var pos = new Float32Array(list.length * 3);
-      var col = fixedColor != null ? null : new Float32Array(list.length * 3);
-      var tmp = new THREE.Color();
-      list.forEach(function (s, j) {
-        pos[j * 3] = s.x; pos[j * 3 + 1] = 14; pos[j * 3 + 2] = s.z;
-        if (col) {
-          var rc = routeColors[s.r[0]];
-          if (rc) tmp.copy(rc); else tmp.set(0xf5f2ea);
-          col[j * 3] = tmp.r; col[j * 3 + 1] = tmp.g; col[j * 3 + 2] = tmp.b;
-        }
+    if (stopData && stopData.length) {
+      stopData.forEach(function (s) {
+        if (!s.r || !s.r.length) return;
+        var on = s.r.some(function (rid) { return routeIsOn(rid); });
+        if (!on) return;
+        (s.r.length > 1 ? hub : reg).push(s);
       });
-      var g = new THREE.BufferGeometry();
-      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      if (col) g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-      var m = new THREE.PointsMaterial({
-        size: size, map: glowTex, transparent: true, opacity: 0.85,
-        depthWrite: false, sizeAttenuation: true
-      });
-      if (fixedColor != null) m.color.set(fixedColor); else m.vertexColors = true;
-      var p = new THREE.Points(g, m);
-      p.frustumCulled = false;
-      stopGroup.add(p);
-      stopCloudMeta.push({ points: p, list: list });
     }
-    makeCloud(reg, 180, null);
-    makeCloud(hub, 300, 0xf5f2ea);
+    stopPickLists = [reg, hub];
+    fillStopInstances(stopRegIM, reg, null, 55);
+    fillStopInstances(stopHubIM, hub, 0xf5f2ea, 75);
   }
 
   // Selected-stop highlight: pulsing ground ring, same rate as everything else.
@@ -1508,13 +1509,19 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         groupObjs[g.id] = gr;
       });
 
-      data.routes.forEach(function (route) {
+      data.routes.forEach(function (route, ri) {
         var color = new THREE.Color(route.color);
         routeColors[route.id] = color;
         routeNames[route.id] = route.name;
         routeById[route.id] = route;
         routeOrder.push(route.id);
         var grp = new THREE.Group();
+        // Stagger ribbon heights per route: coplanar overlapping guideways
+        // at crossings z-fight and flicker; a few meters of separation is
+        // invisible but kills the shimmer.
+        var yDeck = 66 + (ri % 5) * 2;
+        var yGlow = 2 + (ri % 7) * 1.5;
+        var yCase = 4 + (ri % 5) * 1;
         // Elevated guideway: the ribbon deck floats at y=66 with solid
         // skirts to the ground, so routes read as 3D structures. Lambert
         // materials let the directional light shade deck vs. sides.
@@ -1532,12 +1539,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         var longest = null;
         route.paths.forEach(function (path) {
           if (path.length < 2) return;
-          grp.add(new THREE.Mesh(ribbonGeometry(path, 230, 2), glowMat));
-          grp.add(new THREE.Mesh(ribbonGeometry(path, 95, 4), casingMat));
-          var deckGeo = ribbonGeometry(path, 72, 66);
+          grp.add(new THREE.Mesh(ribbonGeometry(path, 230, yGlow), glowMat));
+          grp.add(new THREE.Mesh(ribbonGeometry(path, 95, yCase), casingMat));
+          var deckGeo = ribbonGeometry(path, 72, yDeck);
           deckGeo.computeVertexNormals();
           grp.add(new THREE.Mesh(deckGeo, deckMat));
-          grp.add(new THREE.Mesh(skirtGeometry(path, 72, 66), skirtMat));
+          grp.add(new THREE.Mesh(skirtGeometry(path, 72, yDeck), skirtMat));
           if (!longest || path.length > longest.length) longest = path;
         });
         if (longest) {
@@ -1545,12 +1552,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           var label = makeLabel(route.id + ' · ' + route.name, route.color);
           label.position.set(mid[0], 1050, mid[1]);
           grp.add(label);
-          labelSprites.push({ sprite: label, routeId: route.id });
           var tetherGeo = new THREE.BufferGeometry().setFromPoints([
             new THREE.Vector3(mid[0], 70, mid[1]),
             new THREE.Vector3(mid[0], 980, mid[1])
           ]);
-          grp.add(new THREE.Line(tetherGeo, new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.45 })));
+          var tether = new THREE.Line(tetherGeo, new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.45 }));
+          grp.add(tether);
+          labelSprites.push({ sprite: label, routeId: route.id, tether: tether });
         }
         scene.add(grp);
         routeGroups[route.id] = grp;
@@ -1608,15 +1616,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           renderBusInstances();
         }
         // Label rule: route enabled, not confirmed not-running, AND (live buses
-        // on the route OR zoomed far out). Tethers always follow the route.
+        // on the route OR zoomed far out). Midpoint labels hide at street zoom
+        // (< 7 km) where bus badges and street names take over.
         var camDist = camera.position.distanceTo(controls.target);
         // LOD: local streets and stops declutter at city-scale zooms.
         if (streetLocal) streetLocal.visible = camDist < 22000;
         if (stopGroup) stopGroup.visible = camDist < STOP_LOD_DIST;
         for (var i = 0; i < labelSprites.length; i++) {
           var L = labelSprites[i];
-          L.sprite.visible = runningState[L.routeId] !== 'not-running' &&
-            ((liveCounts[L.routeId] > 0) || camDist > 15000);
+          var lvis = runningState[L.routeId] !== 'not-running' &&
+            ((liveCounts[L.routeId] > 0) || camDist > 15000) && camDist > 7000;
+          L.sprite.visible = lvis;
+          if (L.tether) L.tether.visible = lvis;
         }
         if (stopHighlight.visible) {
           var shp = busPulse();
