@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Transit · Detroit — Detroit Automation Academy</title>
+<meta name="description" content="Every DDOT bus on Vernor, Woodward, Greenfield and Dexter, live in 3D. Real route shapes from DDOT GTFS, real-time positions from the agency's vehicle feed.">
+<link rel="icon" type="image/webp" href="assets/logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261001-1500">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+  .map-stage { position: relative; height: calc(100vh - 72px); height: calc(100svh - 72px); min-height: 540px; background: #0C1116; overflow: hidden; }
+  #live-map { position: absolute; inset: 0; }
+  #live-map canvas { display: block; width: 100% !important; height: 100% !important; }
+  .map-ui { position: absolute; inset: 0; pointer-events: none; font-family: "Inter", sans-serif; }
+  .map-ui > * { pointer-events: auto; }
+  .map-head { position: absolute; top: 1.1rem; left: 1.25rem; right: 1.25rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; pointer-events: none; }
+  .map-title h1 { font-family: "Space Grotesk", sans-serif; font-size: 1.35rem; margin: 0; color: #F5F2EA; letter-spacing: .01em; }
+  .map-title h1 .accent { color: #E85D1A; }
+  .map-title p { margin: .25rem 0 0; color: #9AA0A6; font-size: .85rem; max-width: 34rem; }
+  .map-live { text-align: right; background: rgba(12,17,22,.78); border: 1px solid rgba(245,242,234,.14); border-radius: 12px; padding: .6rem .9rem; backdrop-filter: blur(6px); pointer-events: auto; white-space: nowrap; }
+  .map-live .live-dot { display: inline-block; width: .55rem; height: .55rem; border-radius: 50%; background: #2ECC71; margin-right: .45rem; animation: pulse 2s infinite; vertical-align: baseline; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  .map-live strong { font-family: "Space Grotesk", sans-serif; font-size: 1.15rem; color: #F5F2EA; }
+  .map-live span { display: block; color: #9AA0A6; font-size: .75rem; margin-top: .15rem; }
+  .map-live .feed-warn { color: #FFB000; }
+  .route-bar { position: absolute; left: 1.25rem; bottom: 1.25rem; display: flex; gap: .5rem; flex-wrap: wrap; max-width: min(46rem, calc(100% - 2.5rem)); }
+  .route-chip { display: inline-flex; align-items: center; gap: .5rem; background: rgba(12,17,22,.82); border: 1px solid rgba(245,242,234,.16); color: #F5F2EA; border-radius: 999px; padding: .5rem .85rem; font-size: .82rem; cursor: pointer; backdrop-filter: blur(6px); transition: opacity .15s, border-color .15s; }
+  .route-chip i { width: .7rem; height: .7rem; border-radius: 3px; display: inline-block; }
+  .route-chip b { font-weight: 600; }
+  .route-chip .cnt { color: #9AA0A6; font-variant-numeric: tabular-nums; }
+  .route-chip[aria-pressed="false"] { opacity: .38; }
+  .route-chip:hover { border-color: rgba(245,242,234,.4); }
+  .map-hint { position: absolute; right: 1.25rem; bottom: 1.25rem; color: #9AA0A6; font-size: .75rem; background: rgba(12,17,22,.7); padding: .45rem .7rem; border-radius: 8px; border: 1px solid rgba(245,242,234,.1); }
+  .bus-card { position: absolute; left: 1.25rem; top: 5.5rem; width: 17rem; max-width: calc(100% - 2.5rem); background: rgba(12,17,22,.9); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: 1rem 1.1rem; backdrop-filter: blur(8px); }
+  .bus-card[hidden] { display: none; }
+  .bus-card h2 { font-family: "Space Grotesk", sans-serif; font-size: 1.05rem; margin: 0 0 .4rem; color: #F5F2EA; display: flex; align-items: center; gap: .5rem; }
+  .bus-card h2 i { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; }
+  .bus-card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .25rem .8rem; font-size: .85rem; }
+  .bus-card dt { color: #9AA0A6; }
+  .bus-card dd { margin: 0; color: #F5F2EA; font-variant-numeric: tabular-nums; }
+  .bus-card .close { position: absolute; top: .5rem; right: .6rem; background: none; border: none; color: #9AA0A6; font-size: 1.1rem; cursor: pointer; line-height: 1; padding: .25rem; }
+  .bus-card .close:hover { color: #F5F2EA; }
+  .map-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #9AA0A6; padding: 2rem; text-align: center; }
+  .page-note { border-top: 1px solid rgba(245,242,234,.1); }
+  .page-note .fine { margin-top: 1rem; }
+  @media (max-width: 640px) {
+    .map-head { flex-direction: column; }
+    .map-live { align-self: flex-start; }
+    .map-title p { display: none; }
+    .map-hint { display: none; }
+    .bus-card { top: auto; bottom: 5.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="./" aria-label="Back to Detroit Automation Academy">
+    <img src="assets/logo.webp" alt="DAA logo" class="brand-mark">
+    <span class="brand-word">Detroit Automation <em>Academy</em></span>
+  </a>
+  <nav class="nav-links" id="navLinks" aria-label="Primary">
+    <a href="forge-line.html">Forge Line</a>
+    <a href="forge-line.html#live">Live count</a>
+    <a href="./#demo">3D demo</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<main>
+  <section class="map-stage" aria-label="Live 3D transit map">
+    <div id="live-map" role="img" aria-label="3D map of DDOT routes 1, 4, 10 and 16 with live bus positions"></div>
+    <div class="map-ui">
+      <div class="map-head">
+        <div class="map-title">
+          <h1>Live transit <span class="accent">· Detroit</span></h1>
+          <p>Every DDOT bus on Vernor, Woodward, Greenfield and Dexter, drawn on the actual routes in 3D. Drag to orbit, scroll to zoom, click a bus for details.</p>
+        </div>
+        <div class="map-live" id="map-live">
+          <div><span class="live-dot"></span><strong id="bus-total">–</strong> buses on the road</div>
+          <span id="bus-updated">connecting…</span>
+        </div>
+      </div>
+      <div class="route-bar" id="route-bar" role="group" aria-label="Toggle routes"></div>
+      <div class="bus-card" id="bus-card" hidden>
+        <button class="close" id="bus-close" aria-label="Close bus details">×</button>
+        <h2><i id="bus-chip"></i><span id="bus-title">Bus</span></h2>
+        <dl>
+          <dt>Vehicle</dt><dd id="bus-id">–</dd>
+          <dt>Speed</dt><dd id="bus-speed">–</dd>
+          <dt>Heading</dt><dd id="bus-heading">–</dd>
+          <dt>Updated</dt><dd id="bus-updated">–</dd>
+        </dl>
+      </div>
+      <div class="map-hint">drag&nbsp;·&nbsp;orbit&nbsp;&nbsp;&nbsp;scroll&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;click bus&nbsp;·&nbsp;details</div>
+    </div>
+  </section>
+
+  <section class="section page-note">
+    <div class="wrap">
+      <p class="kicker">About this map</p>
+      <h2>Real routes, <span class="accent">real buses.</span></h2>
+      <div class="prose">
+        <p>Route shapes and stop positions come from DDOT&rsquo;s published GTFS schedule data; the bus markers are live vehicle positions from the agency&rsquo;s own feed, refreshed every 60 seconds. This is the same live layer behind the count on the <a href="forge-line.html#live">Forge Line page</a> — the Forge Line concept itself is modeled on the transit Detroit already runs.</p>
+      </div>
+      <p class="fine">Route shapes &amp; stops: DDOT GTFS. Live data: DDOT via Clever Devices BusTime. SMART live feed in progress.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <img src="assets/logo.webp" alt="DAA logo" class="brand-mark">
+      <span>Detroit Automation Academy</span>
+    </div>
+    <p class="footer-line">Built without funding. Finished on principle.</p>
+    <p class="footer-fine">&copy; 2026 Detroit Automation Academy &middot; Detroit, Michigan</p>
+  </div>
+</footer>
+
+<script>
+  window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
+</script>
+<script type="module" src="live-transit.js?v=20261002-2015"></script>
+<script>
+  // Minimal nav toggle (mirrors index behavior for this standalone page)
+  (function () {
+    var t = document.getElementById('navToggle'), l = document.getElementById('navLinks');
+    if (!t || !l) return;
+    t.addEventListener('click', function () {
+      var open = l.classList.toggle('open');
+      t.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  })();
+</script>
+</body>
+</html>
