@@ -121,7 +121,12 @@ function fmtClock(sec) {
   return h12 + ':' + (m < 10 ? '0' : '') + m + ' ' + ap;
 }
 
-export function plan(tt, fromIdx, toIdx, when) {
+export function plan(tt, fromSeeds, toIdx, when) {
+  // fromSeeds: [{stop, walk}] — one tapped stop, or several nearby stops when
+  // the origin is the rider's location. A virtual walk leg is prepended for
+  // location origins so the journey always starts at the rider.
+  var seeds = (Array.isArray(fromSeeds) ? fromSeeds : [{ stop: fromSeeds, walk: 0 }])
+    .filter(function (fs) { return fs && fs.stop >= 0 && fs.stop < tt.nStops; });
   var nS = tt.nStops;
   var ymd = fmtYMD(when), dow = when.getDay();
   var pd = new Date(when.getTime() - 86400000);
@@ -131,17 +136,26 @@ export function plan(tt, fromIdx, toIdx, when) {
   if (svc < 0 && prevSvc < 0) {
     return { journeys: [], meta: { reason: 'no-service', when: when } };
   }
-  if (fromIdx === toIdx) {
+  if (!seeds.length) {
+    return { journeys: [], meta: { reason: 'no-origin', when: when } };
+  }
+  if (seeds.some(function (fs) { return fs.stop === toIdx && !(fs.walk > 0); })) {
     return { journeys: [], meta: { reason: 'same-stop', when: when } };
   }
 
+  var seedOf = {}; // stop -> walk seconds from the origin point
   var arrR = [], alight = [], walkPar = [];
-  // round 0: origin + walking
+  // round 0: origin seeds + walking
   var arr0 = new Float64Array(nS).fill(INF);
-  arr0[fromIdx] = nowSec;
+  var seedList = [];
+  seeds.forEach(function (fs) {
+    var t = nowSec + (fs.walk || 0);
+    if (t < arr0[fs.stop]) { arr0[fs.stop] = t; seedOf[fs.stop] = fs.walk || 0; }
+    seedList.push(fs.stop);
+  });
   var w0 = new Array(nS).fill(null);
-  var imp0 = relaxWalk(tt, arr0, w0, [fromIdx]);
-  imp0.add(fromIdx);
+  var imp0 = relaxWalk(tt, arr0, w0, seedList);
+  seedList.forEach(function (s) { imp0.add(s); });
   arrR[0] = arr0; walkPar[0] = w0;
   var markedPrev = imp0;
 
@@ -183,7 +197,7 @@ export function plan(tt, fromIdx, toIdx, when) {
   var journeys = [], seen = new Set();
   for (var kk = 1; kk <= K_ROUNDS; kk++) {
     if (arrR[kk][toIdx] >= INF / 2) continue;
-    var legs = buildJourney(tt, kk, toIdx, fromIdx, alight, walkPar);
+    var legs = buildJourney(tt, kk, toIdx, seedOf, alight, walkPar);
     if (!legs || !legs.length) continue;
     var nBus = legs.filter(function (l) { return l.type === 'bus'; }).length;
     var key = Math.round(arrR[kk][toIdx]) + '|' + nBus;
@@ -209,9 +223,9 @@ function walkSecs(tt, a, b) {
   return null;
 }
 
-function buildJourney(tt, k, target, fromIdx, alight, walkPar) {
+function buildJourney(tt, k, target, seedOf, alight, walkPar) {
   var legs = [], cur = target, kk = k, guard = 0;
-  while (cur !== fromIdx && guard++ < 200) {
+  while ((seedOf[cur] === undefined) && guard++ < 200) {
     var a = (alight[kk] || [])[cur];
     if (a) {
       var t = a.trip, r = tt.routes[t.r];
@@ -235,7 +249,13 @@ function buildJourney(tt, k, target, fromIdx, alight, walkPar) {
     if (kk > 0) { kk--; continue; }
     return null;
   }
-  return guard < 200 ? legs : null;
+  if (guard >= 200) return null;
+  // Prepend the virtual walk from the origin point (tapped stop: 0s and
+  // usually absorbed; your-location: the real first-mile walk).
+  if (seedOf[cur] !== undefined && seedOf[cur] > 0) {
+    legs.unshift({ type: 'walk', from: -1, to: cur, secs: seedOf[cur], fromLoc: true });
+  }
+  return legs;
 }
 
 function summarize(tt, legs, nowSec, arriveSec) {
@@ -244,6 +264,7 @@ function summarize(tt, legs, nowSec, arriveSec) {
   var interp = busLegs.some(function (l) { return l.interp; });
   return {
     legs: legs,
+    nBus: busLegs.length,
     departSec: nowSec,
     arriveSec: arriveSec,
     durationMin: Math.max(1, Math.round((arriveSec - nowSec) / 60)),
