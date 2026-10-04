@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261003-2200';
+  var STAMP = '20261003-2150';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -1379,14 +1379,29 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // (ddot-timetable-<feed>.json, built by build-timetable.py from DDOT GTFS).
   // Lazily imported only when the rider opens the planner; origin and
   // destination never leave the device. Every result is labeled scheduled.
+  //
+  // Phase 2 scaffold: live-fusion.js annotates scheduled journeys with live
+  // vehicle context (per-route live counts now; delay propagation designed
+  // next — see that module). Phase 3 (multimodal) is scoped in
+  // raptor-concept.md; the leg model already supports it: a new leg type
+  // only needs a renderer in renderTripDetail() and legPoints3D().
   var tripMode = false;
-  var tripOriginIdx = -1, tripDestIdx = -1;
-  var tripTT = null, tripRaptor = null;
+  var tripFrom = null;      // {kind:'stop', idx} | {kind:'loc', x, z}
+  var tripTo = null;        // {kind:'stop', idx}
+  var tripMapPick = null;   // 'from' | 'to' — the next map tap sets this field
+  var tripView = 'planner'; // 'planner' | 'search'
+  var tripSearchFor = 'from';
+  var tripLeaveMode = 'now';// 'now' | 'at'
+  var tripLeaveTime = '';
+  var tripTT = null, tripRaptor = null, tripFusion = null;
   var tripJourneys = [], tripSel = -1, tripLoading = false;
+  var tripFly = null;
   var tripGroup = new THREE.Group();
   tripGroup.visible = false;
   scene.add(tripGroup);
   var tripMats = []; // highlight materials, pulsed at the shared rate
+  var _flyUp = new THREE.Vector3(0, 550, 0);
+  var _flyDir = new THREE.Vector3();
   var SVC_NAMES = { '1': 'Sunday', '2': 'Saturday', '3': 'Weekday' };
   function tripEsc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -1401,6 +1416,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return h12 + ':' + (m < 10 ? '0' : '') + m + ' ' + ap;
   }
   function tripStopName(idx) {
+    if (idx === -1) return 'Your location';
     var s = stopData && stopData[idx];
     return s ? (s.n || 'Stop ' + (s.id || '')) : 'Stop';
   }
@@ -1420,13 +1436,23 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   function setTripMode(on) {
     tripMode = on;
-    var btn = $('trip-btn');
-    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    $('map-hint').innerHTML = on
-      ? 'tap an <b>origin</b> stop, then a <b>destination</b> stop'
-      : HINT_DEFAULT;
-    if (on) { hideBus(); hideStop(); }
-    else clearTrip();
+    $('trip-btn').setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (on) {
+      hideBus(); hideStop();
+      cancelTripFly();
+      // Default origin: your location when known — the standard pattern.
+      if (!tripFrom && typeof userXZ !== 'undefined' && userXZ) {
+        tripFrom = { kind: 'loc', x: userXZ[0], z: userXZ[1] };
+      }
+      showTripView('planner');
+      $('trip-card').hidden = false;
+      renderTripFields();
+      updateTripMarkers();
+      maybeReplan();
+    } else {
+      cancelTripFly();
+      clearTrip();
+    }
   }
   function clearTripHighlight() {
     for (var i = tripGroup.children.length - 1; i >= 0; i--) {
@@ -1439,42 +1465,210 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     tripGroup.visible = false;
   }
   function clearTrip() {
-    tripOriginIdx = -1; tripDestIdx = -1;
+    tripFrom = null; tripTo = null;
+    tripMapPick = null;
     tripJourneys = []; tripSel = -1;
     tripOriginMark.visible = false;
     tripDestMark.visible = false;
     clearTripHighlight();
     $('trip-card').hidden = true;
-    if (tripMode) $('map-hint').innerHTML = 'tap an <b>origin</b> stop, then a <b>destination</b> stop';
+    $('map-hint').innerHTML = HINT_DEFAULT;
   }
-  function tripTapStop(st) {
+  function cancelTripFly() {
+    if (tripFly) { tripFly = null; controls.enabled = true; }
+  }
+  // Map taps in trip mode: an explicit "choose on map" target wins;
+  // otherwise first tap = origin, second = destination, third restarts.
+  function tripStopTapped(st) {
     var idx = stopData ? stopData.indexOf(st) : -1;
     if (idx < 0) return;
     tapBuzz();
-    if (tripOriginIdx < 0 || tripDestIdx >= 0) {
-      // (re)start: new origin
-      clearTripHighlight();
-      $('trip-card').hidden = true;
-      tripJourneys = []; tripSel = -1;
-      tripOriginIdx = idx;
-      tripDestIdx = -1;
-      tripOriginMark.position.set(st.x, 20, st.z);
-      tripOriginMark.visible = true;
-      tripDestMark.visible = false;
-      $('map-hint').innerHTML = 'origin: <b>' + tripEsc(st.n || 'Stop') + '</b> — now tap a destination stop';
-    } else if (idx !== tripOriginIdx) {
-      tripDestIdx = idx;
-      tripDestMark.position.set(st.x, 20, st.z);
-      tripDestMark.visible = true;
-      runTripPlan();
+    cancelTripFly();
+    if (tripMapPick === 'to' || (!tripMapPick && tripFrom && !tripTo)) {
+      setTripTo({ kind: 'stop', idx: idx });
+    } else {
+      setTripFrom({ kind: 'stop', idx: idx });
+      if (!tripMapPick) tripTo = null;
     }
+    tripMapPick = null;
+    if (tripView === 'search') showTripView('planner');
+    else { renderTripFields(); updateTripMarkers(); }
+    maybeReplan();
+  }
+  function setTripFrom(f) {
+    tripFrom = f;
+    renderTripFields();
+    updateTripMarkers();
+  }
+  function setTripTo(t) {
+    tripTo = t;
+    renderTripFields();
+    updateTripMarkers();
+  }
+  function updateTripMarkers() {
+    if (tripFrom) {
+      var p = tripFrom.kind === 'stop' ? stopData[tripFrom.idx] : tripFrom;
+      if (p) { tripOriginMark.position.set(p.x, 20, p.z); tripOriginMark.visible = true; }
+      else tripOriginMark.visible = false;
+    } else tripOriginMark.visible = false;
+    if (tripTo && tripTo.kind === 'stop' && stopData[tripTo.idx]) {
+      var s = stopData[tripTo.idx];
+      tripDestMark.position.set(s.x, 20, s.z);
+      tripDestMark.visible = true;
+    } else tripDestMark.visible = false;
+  }
+  function renderTripFields() {
+    $('trip-from-label').textContent = tripFrom
+      ? (tripFrom.kind === 'loc' ? 'Your location' : tripStopName(tripFrom.idx)) : 'From';
+    $('trip-from-label').classList.toggle('placeholder', !tripFrom);
+    $('trip-to-label').textContent = tripTo ? tripStopName(tripTo.idx) : 'Where to?';
+    $('trip-to-label').classList.toggle('placeholder', !tripTo);
+    $('trip-now-btn').setAttribute('aria-pressed', tripLeaveMode === 'now' ? 'true' : 'false');
+    if (tripLeaveMode === 'now') $('trip-time-input').value = '';
+  }
+  function showTripView(v) {
+    tripView = v;
+    $('trip-planner').hidden = v !== 'planner';
+    $('trip-search').hidden = v !== 'search';
+    if (v === 'search') {
+      var inp = $('trip-search-input');
+      inp.value = '';
+      renderTripSearchOpts();
+      renderTripSearchResults('');
+      setTimeout(function () { inp.focus(); }, 50);
+    }
+  }
+  function openTripSearch(forField) {
+    tripSearchFor = forField;
+    tapBuzz();
+    showTripView('search');
+  }
+  function renderTripSearchOpts() {
+    var host = $('trip-search-opts');
+    host.innerHTML = '';
+    if (tripSearchFor === 'from') {
+      var loc = document.createElement('button');
+      loc.className = 'trip-search-opt';
+      var hasLoc = (typeof userXZ !== 'undefined' && userXZ);
+      loc.innerHTML = '<b>' + (hasLoc ? 'Use my location' : 'Locate me') + '</b><span>' +
+        (hasLoc ? 'nearest stops within a short walk' : 'finds your position first') + '</span>';
+      loc.addEventListener('click', function () {
+        if (typeof userXZ !== 'undefined' && userXZ) {
+          setTripFrom({ kind: 'loc', x: userXZ[0], z: userXZ[1] });
+          showTripView('planner');
+          renderTripFields(); updateTripMarkers(); maybeReplan();
+        } else {
+          var lb = $('view-locate');
+          if (lb) lb.click();
+          showToast('Locating… tap "Use my location" again once found.');
+        }
+      });
+      host.appendChild(loc);
+    }
+    var map = document.createElement('button');
+    map.className = 'trip-search-opt';
+    map.innerHTML = '<b>Choose on map</b><span>tap a stop in the 3D view</span>';
+    map.addEventListener('click', function () {
+      tripMapPick = tripSearchFor;
+      showTripView('planner');
+      renderTripFields();
+      $('map-hint').innerHTML = 'tap a stop for <b>' +
+        (tripSearchFor === 'from' ? 'origin' : 'destination') + '</b>';
+    });
+    host.appendChild(map);
+  }
+  function searchStops(q) {
+    q = (q || '').trim().toLowerCase();
+    if (q.length < 2 || !stopData) return [];
+    var seen = {}, out = [];
+    for (var i = 0; i < stopData.length; i++) {
+      var s = stopData[i];
+      var n = (s.n || '').toLowerCase();
+      if (n.indexOf(q) < 0) continue;
+      var e = seen[n];
+      if (e) {
+        e.count++;
+        if ((s.r || []).length > (e.stop.r || []).length) { e.stop = s; e.idx = i; }
+        continue;
+      }
+      e = { stop: s, idx: i, count: 1, prefix: n.indexOf(q) === 0 };
+      seen[n] = e;
+      out.push(e);
+    }
+    out.sort(function (a, b) {
+      return (b.prefix - a.prefix) || (b.count - a.count) || ((b.stop.r || []).length - (a.stop.r || []).length);
+    });
+    return out.slice(0, 8);
+  }
+  function renderTripSearchResults(q) {
+    var host = $('trip-search-results');
+    host.innerHTML = '';
+    var hits = searchStops(q);
+    if (!hits.length) {
+      if ((q || '').trim().length >= 2) {
+        host.innerHTML = '<p class="trip-note">No stops match. Try a street or landmark name.</p>';
+      }
+      return;
+    }
+    hits.forEach(function (h) {
+      var b = document.createElement('button');
+      b.className = 'trip-search-hit';
+      var t = document.createElement('b');
+      t.textContent = h.stop.n || 'Stop';
+      b.appendChild(t);
+      var r = document.createElement('span');
+      r.textContent = (h.stop.r || []).slice(0, 4).join(' · ') + ((h.stop.r || []).length > 4 ? ' +' + ((h.stop.r || []).length - 4) : '');
+      b.appendChild(r);
+      b.addEventListener('click', function () {
+        tapBuzz();
+        var val = { kind: 'stop', idx: h.idx };
+        if (tripSearchFor === 'from') setTripFrom(val); else setTripTo(val);
+        showTripView('planner');
+        renderTripFields(); updateTripMarkers(); maybeReplan();
+      });
+      host.appendChild(b);
+    });
+  }
+  function tripSeeds() {
+    if (!tripFrom) return [];
+    if (tripFrom.kind === 'stop') return [{ stop: tripFrom.idx, walk: 0 }];
+    // Virtual origin: nearest stops within a 400 m walk of your position.
+    var seeds = [];
+    for (var i = 0; i < stopData.length; i++) {
+      var s = stopData[i];
+      var d = Math.hypot(s.x - tripFrom.x, s.z - tripFrom.z);
+      if (d <= 400) seeds.push({ stop: i, walk: Math.max(60, Math.round(d / 1.4)) });
+    }
+    seeds.sort(function (a, b) { return a.walk - b.walk; });
+    return seeds.slice(0, 12);
+  }
+  function tripWhen() {
+    if (tripLeaveMode === 'at' && tripLeaveTime) {
+      var p = tripLeaveTime.split(':');
+      var d = new Date();
+      d.setHours(parseInt(p[0], 10) || 0, parseInt(p[1], 10) || 0, 0, 0);
+      return d;
+    }
+    return new Date();
+  }
+  function maybeReplan() {
+    if (tripMode && tripFrom && tripTo && !tripLoading) runTripPlan();
+    else if (tripMode && (!tripFrom || !tripTo)) {
+      tripJourneys = []; tripSel = -1;
+      clearTripHighlight();
+      renderTripEmpty();
+    }
+  }
+  function renderTripEmpty() {
+    var host = $('trip-results');
+    host.innerHTML = '<p class="trip-note">Pick an origin and destination to see scheduled trips.</p>';
   }
   function mergeWalkLegs(legs) {
     var out = [];
     legs.forEach(function (l) {
       var p = out[out.length - 1];
       if (l.type === 'walk' && p && p.type === 'walk') { p.to = l.to; p.secs += l.secs; }
-      else out.push({ type: l.type, from: l.from, to: l.to, secs: l.secs, routeId: l.routeId, routeName: l.routeName, color: l.color, board: l.board, alight: l.alight, boardSec: l.boardSec, alightSec: l.alightSec, headsign: l.headsign, interp: l.interp });
+      else out.push(Object.assign({}, l));
     });
     return out;
   }
@@ -1482,61 +1676,79 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (tripLoading) return;
     tripLoading = true;
     tapBuzz();
-    $('trip-card').hidden = false;
+    cancelTripFly();
     $('trip-prov').textContent = 'scheduled';
-    $('trip-title').textContent = 'Planning…';
-    $('trip-body').innerHTML = '<p class="trip-note">Loading schedule…</p>';
-    $('map-hint').innerHTML = 'planning…';
+    var host = $('trip-results');
+    host.innerHTML = '<p class="trip-note">Planning…</p>';
     var go = function (R) {
       tripRaptor = R;
       var loaded = tripTT ? Promise.resolve(tripTT)
         : R.loadTimetable('ddot-timetable-S1000182.json?v=' + STAMP).then(function (tt) { tripTT = tt; return tt; });
-      var oIdx = tripOriginIdx, dIdx = tripDestIdx; // capture; ignore if user moved on
+      var seeds = tripSeeds();
+      var dest = tripTo.idx;
+      var when = tripWhen();
+      var oF = tripFrom, oT = tripTo; // capture; ignore if the user moved on
       return loaded.then(function (tt) {
-        var res = R.plan(tt, oIdx, dIdx, new Date());
-        if (oIdx !== tripOriginIdx || dIdx !== tripDestIdx) return; // stale
+        var res = R.plan(tt, seeds, dest, when);
+        if (oF !== tripFrom || oT !== tripTo) return; // stale
         tripJourneys = res.journeys;
         tripSel = tripJourneys.length ? 0 : -1;
-        renderTripCard(res);
-        if (tripSel >= 0) { hideStop(); highlightJourney(tripJourneys[0]); }
-        else { clearTripHighlight(); hideStop(); }
+        applyTripFusion();
+        renderTripResults(res);
+        if (tripSel >= 0) { highlightJourney(tripJourneys[0]); }
+        else clearTripHighlight();
       });
     };
-    var boot = tripRaptor ? Promise.resolve(tripRaptor)
-      : import('./raptor.js?v=' + STAMP).then(function (m) { return m; });
-    boot.then(go).catch(function (err) {
-      $('trip-title').textContent = 'Trip planner';
-      $('trip-body').innerHTML = '<p class="trip-note">Could not load the schedule (' +
+    var boot = (tripRaptor && tripFusion) ? Promise.resolve({ R: tripRaptor, F: tripFusion })
+      : Promise.all([
+          tripRaptor ? Promise.resolve(tripRaptor) : import('./raptor.js?v=' + STAMP),
+          tripFusion ? Promise.resolve(tripFusion) : import('./live-fusion.js?v=' + STAMP)
+        ]).then(function (ms) { return { R: ms[0].default || ms[0], F: ms[1].default || ms[1] }; })
+        .then(function (m) { tripFusion = m.F; return m; });
+    // Note: raptor.js uses named exports; the .default fallback keeps this
+    // working if the module shape ever changes.
+    boot.then(function (m) { return go(m.R); }).catch(function (err) {
+      $('trip-results').innerHTML = '<p class="trip-note">Could not plan the trip (' +
         tripEsc((err && err.message) || String(err)) + '). Check your connection and try again.</p>';
-      $('map-hint').innerHTML = 'tap an <b>origin</b> stop, then a <b>destination</b> stop';
     }).then(function () { tripLoading = false; });
   }
-  function renderTripCard(res) {
-    var o = tripStopName(tripOriginIdx), d = tripStopName(tripDestIdx);
-    $('trip-title').innerHTML = tripEsc(o) + ' <span class="trip-arrow">→</span> ' + tripEsc(d);
-    var host = $('trip-body');
+  function applyTripFusion() {
+    if (!tripFusion || !tripJourneys.length) return;
+    try { tripFusion.fuseJourneys(tripJourneys, (typeof lastVehicles !== 'undefined' && lastVehicles) || []); }
+    catch (e) { /* fusion never breaks planning */ }
+  }
+  // Called from the vehicle poll so live counts stay fresh while a trip is open.
+  function refreshTripFusion() {
+    if (!tripMode || !tripJourneys.length || !tripFusion) return;
+    applyTripFusion();
+    if (tripSel >= 0) renderTripDetail();
+  }
+  function renderTripResults(res) {
+    var host = $('trip-results');
     host.innerHTML = '';
     var meta = document.createElement('p');
     meta.className = 'trip-note';
     var svcName = res.meta.service && SVC_NAMES[res.meta.service] ? SVC_NAMES[res.meta.service] : 'DDOT';
-    meta.textContent = 'Scheduled times · ' + svcName + ' service · feed ' + (res.meta.feedVersion || '');
+    var whenLbl = tripLeaveMode === 'at' && tripLeaveTime ? 'depart ' + tripLeaveTime : 'leave now';
+    meta.textContent = 'Scheduled times · ' + svcName + ' service · ' + whenLbl + ' · feed ' + (res.meta.feedVersion || '');
     host.appendChild(meta);
     if (!tripJourneys.length) {
       var none = document.createElement('p');
       none.className = 'trip-note';
       none.textContent = res.meta.reason === 'no-service'
         ? 'No scheduled DDOT service at this time.'
-        : 'No scheduled trip found between these stops right now. Try a different pair.';
+        : 'No scheduled trip found between these stops right now. Try a different pair or time.';
       host.appendChild(none);
-      $('map-hint').innerHTML = 'tap an <b>origin</b> stop, then a <b>destination</b> stop';
       return;
     }
-    tripJourneys.forEach(function (j, i) { host.appendChild(tripOptionEl(j, i)); });
+    var list = document.createElement('div');
+    list.id = 'trip-opt-list';
+    tripJourneys.forEach(function (j, i) { list.appendChild(tripOptionEl(j, i)); });
+    host.appendChild(list);
     var det = document.createElement('div');
     det.id = 'trip-detail';
     host.appendChild(det);
     renderTripDetail();
-    $('map-hint').innerHTML = HINT_DEFAULT;
   }
   function tripOptionEl(j, i) {
     var b = document.createElement('button');
@@ -1553,8 +1765,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     b.appendChild(top);
     var sub = document.createElement('div');
     sub.className = 'trip-opt-sub';
-    sub.textContent = (j.transfers === 0 ? 'Direct' : j.transfers + (j.transfers === 1 ? ' transfer' : ' transfers')) +
-      ' · ' + j.walkMin + ' min walk · scheduled';
+    var liveN = j.legs.reduce(function (n, l) { return n + (l.liveVehicles || 0); }, 0);
+    sub.textContent = (j.nBus === 0 ? 'Walk' : (j.transfers === 0 ? 'Direct' : j.transfers + (j.transfers === 1 ? ' transfer' : ' transfers'))) +
+      ' · ' + j.walkMin + ' min walk' + (liveN > 0 ? ' · ' + liveN + ' live' : '') + ' · scheduled';
     b.appendChild(sub);
     var legs = document.createElement('div');
     legs.className = 'trip-legs';
@@ -1580,13 +1793,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     b.addEventListener('click', function () {
       tripSel = i;
       tapBuzz();
-      var opts = document.querySelectorAll('#trip-body .trip-opt');
+      var opts = document.querySelectorAll('#trip-opt-list .trip-opt');
       for (var k = 0; k < opts.length; k++) {
         opts[k].classList.toggle('sel', k === tripSel);
         opts[k].setAttribute('aria-pressed', k === tripSel ? 'true' : 'false');
       }
       renderTripDetail();
       highlightJourney(tripJourneys[i]);
+      flyJourney(tripJourneys[i]); // the perspective is the interface
     });
     return b;
   }
@@ -1610,7 +1824,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         body.appendChild(s);
         var tm = document.createElement('span');
         tm.className = 'trip-leg-time';
-        tm.textContent = tripClock(l.boardSec) + ' → ' + tripClock(l.alightSec) + ' · scheduled' + (l.interp ? ' · estimated' : '');
+        tm.textContent = tripClock(l.boardSec) + ' → ' + tripClock(l.alightSec) + ' · scheduled' +
+          (l.interp ? ' · estimated' : '') + (l.liveVehicles > 0 ? ' · ' + l.liveVehicles + ' live' : '');
         body.appendChild(tm);
       } else {
         dot.className = 'walk';
@@ -1635,41 +1850,57 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     return bi;
   }
+  // Slice of a route's guideway between two stops, for highlight + fly-through.
+  function busLegSlice(leg) {
+    var route = routeById[leg.routeId];
+    if (!route || !route.paths || !route.paths.length) return null;
+    var ri = routeOrder.indexOf(leg.routeId);
+    var y = 66 + ri * 1.2 + 3; // just above this route's deck
+    var a = stopData[leg.board], b = stopData[leg.alight];
+    if (!a || !b) return null;
+    var best = null;
+    route.paths.forEach(function (path) {
+      if (!path || path.length < 2) return;
+      var ia = nearestOnPath(path, a.x, a.z), ib = nearestOnPath(path, b.x, b.z);
+      var d = Math.pow(path[ia][0] - a.x, 2) + Math.pow(path[ia][1] - a.z, 2) +
+              Math.pow(path[ib][0] - b.x, 2) + Math.pow(path[ib][1] - b.z, 2);
+      if (!best || d < best.d) best = { path: path, ia: ia, ib: ib, d: d };
+    });
+    if (!best) return null;
+    var i0 = Math.min(best.ia, best.ib), i1 = Math.max(best.ia, best.ib);
+    if (i1 - i0 < 1) return null;
+    return { pts: best.path.slice(i0, i1 + 1), y: y };
+  }
+  function legPoints3D(leg) {
+    if (leg.type === 'walk') {
+      var a = leg.fromLoc ? { x: tripFrom.x, z: tripFrom.z } : stopData[leg.from];
+      var b = stopData[leg.to];
+      if (!a || !b) return [];
+      return [new THREE.Vector3(a.x, 80, a.z), new THREE.Vector3(b.x, 80, b.z)];
+    }
+    var sl = busLegSlice(leg);
+    if (!sl) return [];
+    return sl.pts.map(function (p) { return new THREE.Vector3(p[0], sl.y, p[1]); });
+  }
   function highlightJourney(j) {
     clearTripHighlight();
     if (!j) return;
-    j.legs.forEach(function (leg) {
+    mergeWalkLegs(j.legs).forEach(function (leg) {
       if (leg.type === 'bus') {
-        var route = routeById[leg.routeId];
-        if (!route || !route.paths || !route.paths.length) return;
-        var ri = routeOrder.indexOf(leg.routeId);
-        var y = 66 + ri * 1.2 + 3; // just above this route's deck
-        var a = stopData[leg.board], b = stopData[leg.alight];
-        if (!a || !b) return;
-        var best = null;
-        route.paths.forEach(function (path) {
-          if (!path || path.length < 2) return;
-          var ia = nearestOnPath(path, a.x, a.z), ib = nearestOnPath(path, b.x, b.z);
-          var d = Math.pow(path[ia][0] - a.x, 2) + Math.pow(path[ia][1] - a.z, 2) +
-                  Math.pow(path[ib][0] - b.x, 2) + Math.pow(path[ib][1] - b.z, 2);
-          if (!best || d < best.d) best = { path: path, ia: ia, ib: ib, d: d };
-        });
-        if (!best) return;
-        var i0 = Math.min(best.ia, best.ib), i1 = Math.max(best.ia, best.ib);
-        if (i1 - i0 < 1) return;
+        var sl = busLegSlice(leg);
+        if (!sl) return;
         var mat = new THREE.MeshBasicMaterial({
           color: new THREE.Color(leg.color || '#F5F2EA'), transparent: true,
           opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
         });
         mat.userData.baseOpacity = 0.85;
-        tripGroup.add(new THREE.Mesh(ribbonGeometry(best.path.slice(i0, i1 + 1), 46, y), mat));
+        tripGroup.add(new THREE.Mesh(ribbonGeometry(sl.pts, 46, sl.y), mat));
         tripMats.push(mat);
       } else {
-        var s1 = stopData[leg.from], s2 = stopData[leg.to];
-        if (!s1 || !s2) return;
-        var g = new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(s1.x, 30, s1.z), new THREE.Vector3(s2.x, 30, s2.z)
-        ]);
+        var pts3 = legPoints3D(leg);
+        if (pts3.length < 2) return;
+        pts3[0].y = 30; pts3[1].y = 30;
+        var g = new THREE.BufferGeometry().setFromPoints(pts3);
         var wm = new THREE.LineDashedMaterial({ color: 0xf5f2ea, transparent: true, opacity: 0.8, dashSize: 60, gapSize: 40 });
         var line = new THREE.Line(g, wm);
         line.computeLineDistances();
@@ -1680,8 +1911,69 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     });
     tripGroup.visible = true;
   }
+  // Cinematic fly-through of the selected journey: the perspective is the
+  // interface. Chase-cam along the journey path; any pointerdown hands
+  // control straight back to the rider.
+  function flyJourney(j) {
+    if (!j) return;
+    var pts = [];
+    mergeWalkLegs(j.legs).forEach(function (leg) {
+      var lp = legPoints3D(leg);
+      for (var i = 0; i < lp.length; i++) {
+        if (pts.length && i === 0) continue;
+        pts.push(lp[i]);
+      }
+    });
+    if (pts.length < 2) return;
+    if (pts.length > 80) {
+      var step = (pts.length - 1) / 79, dp = [];
+      for (var k = 0; k < 80; k++) dp.push(pts[Math.round(k * step)]);
+      pts = dp;
+    }
+    tripFly = {
+      curve: new THREE.CatmullRomCurve3(pts),
+      t0: performance.now(),
+      dur: Math.min(6500, 2600 + pts.length * 45)
+    };
+    controls.enabled = false;
+  }
+  function stepTripFly(now) {
+    if (!tripFly) return;
+    var t = Math.min(1, (now - tripFly.t0) / tripFly.dur);
+    var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    var pos = tripFly.curve.getPoint(e);
+    var ahead = tripFly.curve.getPoint(Math.min(1, e + 0.03));
+    _flyDir.copy(ahead).sub(pos);
+    if (_flyDir.lengthSq() > 1e-6) _flyDir.normalize();
+    camera.position.copy(pos).addScaledVector(_flyDir, -450).add(_flyUp);
+    controls.target.copy(ahead);
+    if (t >= 1) { tripFly = null; controls.enabled = true; }
+  }
   $('trip-btn').addEventListener('click', function () { tapBuzz(); setTripMode(!tripMode); });
   $('trip-close').addEventListener('click', function () { setTripMode(false); });
+  $('trip-from-btn').addEventListener('click', function () { openTripSearch('from'); });
+  $('trip-to-btn').addEventListener('click', function () { openTripSearch('to'); });
+  $('trip-search-back').addEventListener('click', function () { showTripView('planner'); renderTripFields(); });
+  $('trip-search-input').addEventListener('input', function (e) { renderTripSearchResults(e.target.value); });
+  $('trip-swap').addEventListener('click', function () {
+    tapBuzz();
+    cancelTripFly();
+    var f = tripFrom, t = tripTo;
+    // A location origin can't become a destination; it yields its slot.
+    tripFrom = (t && t.kind === 'stop') ? t : null;
+    tripTo = (f && f.kind === 'stop') ? f : null;
+    renderTripFields(); updateTripMarkers(); maybeReplan();
+  });
+  $('trip-now-btn').addEventListener('click', function () {
+    tripLeaveMode = 'now'; tripLeaveTime = '';
+    renderTripFields(); maybeReplan();
+  });
+  $('trip-time-input').addEventListener('change', function (e) {
+    if (e.target.value) { tripLeaveMode = 'at'; tripLeaveTime = e.target.value; }
+    else { tripLeaveMode = 'now'; tripLeaveTime = ''; }
+    renderTripFields(); maybeReplan();
+  });
+  renderer.domElement.addEventListener('pointerdown', function () { cancelTripFly(); });
 
   // --- filters ---------------------------------------------------------------
   // filterState.routes[rid] is the ONLY visibility gate: any route can be
@@ -2020,6 +2312,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     renderBusInstances();
     if (selectedStop) renderStopLive();
+    if (typeof refreshTripFusion === 'function') refreshTripFusion(); // live counts on trip legs
     if (selectedVehicleId) refreshBusInfo(); // tapped bus moved / new data
     return busSlots.length;
   }
@@ -2253,6 +2546,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       renderer.setAnimationLoop(function () {
         controls.update();
         updateLOD();
+        if (typeof stepTripFly === 'function') stepTripFly(performance.now());
         if (youMarker.group.visible) {
           var t = performance.now();
           var s = 1 + 0.22 * Math.sin(t / 420);
