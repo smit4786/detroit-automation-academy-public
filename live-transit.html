@@ -174,6 +174,32 @@
   .bus-card dd { margin: 0; color: #F5F2EA; font-variant-numeric: tabular-nums; }
   .bus-card .close { position: absolute; top: .5rem; right: .6rem; background: none; border: none; color: #9AA0A6; font-size: 1.1rem; cursor: pointer; line-height: 1; padding: .25rem; }
   .bus-card .close:hover { color: #F5F2EA; }
+  /* Trip planner (RAPTOR): same card language as BUS/STOP. */
+  #trip-card { top: auto; bottom: 4.5rem; }
+  #trip-title .trip-arrow { color: #E85D1A; }
+  .filter-btn[aria-pressed="true"] { background: #E85D1A; border-color: #E85D1A; color: #0C1116; }
+  .filter-btn[aria-pressed="true"] .filter-ico { color: #0C1116; }
+  .map-hint b { color: #F5F2EA; font-weight: 600; }
+  .trip-note { font-size: .78rem; color: #9AA0A6; margin: .35rem 0 0; }
+  .trip-opt { display: block; width: 100%; text-align: left; background: rgba(245,242,234,.05); border: 1px solid rgba(245,242,234,.14); border-radius: 10px; padding: .6rem .7rem; margin: .55rem 0 0; cursor: pointer; color: #F5F2EA; font-family: "Inter", sans-serif; }
+  .trip-opt:hover { border-color: rgba(232,93,26,.6); }
+  .trip-opt.sel { border-color: #E85D1A; background: rgba(232,93,26,.12); }
+  .trip-opt-top { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+  .trip-opt-top b { font-family: "Space Grotesk", sans-serif; font-size: 1rem; }
+  .trip-opt-top span { font-size: .76rem; color: #9AA0A6; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .trip-opt-sub { font-size: .75rem; color: #9AA0A6; margin-top: .15rem; }
+  .trip-legs { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .45rem; }
+  .trip-leg-chip { display: inline-flex; align-items: center; gap: .3rem; font-size: .72rem; background: rgba(12,17,22,.6); border: 1px solid rgba(245,242,234,.16); border-radius: 999px; padding: .18rem .55rem; color: #F5F2EA; }
+  .trip-leg-chip i { width: .6rem; height: .6rem; border-radius: 2px; display: inline-block; }
+  .trip-leg-chip .walk { color: #9AA0A6; font-weight: 600; }
+  #trip-detail { margin-top: .65rem; border-top: 1px solid rgba(245,242,234,.12); padding-top: .55rem; display: grid; gap: .5rem; }
+  .trip-leg-row { display: flex; gap: .6rem; align-items: flex-start; font-size: .78rem; }
+  .trip-leg-row > i { width: .7rem; height: .7rem; border-radius: 3px; margin-top: .2rem; flex: none; }
+  .trip-leg-row > i.walk { background: none; border: 2px dashed #9AA0A6; border-radius: 50%; width: .55rem; height: .55rem; }
+  .trip-leg-row div { display: grid; gap: .1rem; min-width: 0; }
+  .trip-leg-row b { color: #F5F2EA; font-weight: 600; }
+  .trip-leg-row span { color: #9AA0A6; overflow-wrap: break-word; }
+  .trip-leg-row .trip-leg-time { font-variant-numeric: tabular-nums; }
   .stop-routes { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem; }
   .stop-route { display: inline-flex; align-items: center; gap: .35rem; background: rgba(245,242,234,.08); border: 1px solid rgba(245,242,234,.14); color: #F5F2EA; border-radius: 999px; padding: .3rem .6rem; font-size: .78rem; font-family: "Inter", sans-serif; }
   .stop-route i { width: .65rem; height: .65rem; border-radius: 3px; display: inline-block; flex: none; }
@@ -225,6 +251,7 @@
             <span id="bus-updated">connecting…</span>
           </div>
           <button class="filter-btn" id="filter-btn" aria-expanded="false" aria-controls="filter-panel"><span class="filter-ico">⧩</span> Routes</button>
+          <button class="filter-btn" id="trip-btn" aria-pressed="false"><span class="filter-ico">◈</span> Plan trip</button>
         </div>
       </div>
       <div class="filter-panel" id="filter-panel" hidden>
@@ -241,7 +268,7 @@
         <div class="f-idle-row">
           <button id="hide-idle-toggle" aria-pressed="true"><span class="f-box"></span><b>Hide non-running routes</b></button>
         </div>
-        <p class="f-note">Routes with no live buses reporting are dimmed or hidden automatically. DDOT schedule data is current through Feb 7, 2027 &mdash; this page shows live bus positions; timetables and trip planning are on the roadmap.</p>
+        <p class="f-note">Routes with no live buses reporting are dimmed or hidden automatically. DDOT schedule data is current through Feb 7, 2027 &mdash; this page shows live bus positions; the trip planner uses scheduled times.</p>
         <div id="filter-groups"></div>
         </div>
         <div class="resize-grip" id="panel-resize" aria-hidden="true"></div>
@@ -274,7 +301,13 @@
           <div id="stop-live-list"></div>
         </div>
       </div>
-      <div class="map-hint">drag&nbsp;·&nbsp;orbit&nbsp;&nbsp;&nbsp;scroll&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;tap bus or stop&nbsp;·&nbsp;details</div>
+      <div class="bus-card" id="trip-card" hidden>
+        <button class="close" id="trip-close" aria-label="Close trip planner">×</button>
+        <div class="sel-eyebrow">Trip · <span id="trip-prov">scheduled</span></div>
+        <h2><span id="trip-title">Plan a trip</span></h2>
+        <div id="trip-body"></div>
+      </div>
+      <div class="map-hint" id="map-hint">drag&nbsp;·&nbsp;orbit&nbsp;&nbsp;&nbsp;scroll&nbsp;·&nbsp;zoom&nbsp;&nbsp;&nbsp;tap bus or stop&nbsp;·&nbsp;details</div>
       <div class="map-tools" role="group" aria-label="Map navigation">
         <button id="nav-help" aria-label="Navigation help" aria-expanded="false">?</button>
         <button id="zoom-in" aria-label="Zoom in">+</button>
@@ -328,7 +361,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261002-2780"></script>
+<script type="module" src="live-transit.js?v=20261003-2200"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
