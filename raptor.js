@@ -94,18 +94,23 @@ function serviceFor(tt, ymd, dow) {
   return best;
 }
 
-function relaxWalk(tt, arr, wpar, seeds) {
+var MAX_WALK_SECS = 1800; // 30 min cumulative walk per round: transfers and
+// last-mile walks are minutes; anything longer is not a transit itinerary.
+function relaxWalk(tt, arr, wpar, wsec, seeds) {
   var improved = new Set();
   var q = seeds.slice(), inQ = new Set(seeds);
   while (q.length) {
     var s = q.shift(); inQ.delete(s);
+    if (wsec[s] >= MAX_WALK_SECS) continue;
     var edges = tt.adj[s];
     if (!edges) continue;
     for (var i = 0; i < edges.length; i++) {
       var t = edges[i][0], w = edges[i][1];
+      var nw = wsec[s] + w;
+      if (nw > MAX_WALK_SECS) continue;
       var na = arr[s] + w;
       if (na < arr[t]) {
-        arr[t] = na; wpar[t] = s; improved.add(t);
+        arr[t] = na; wpar[t] = s; wsec[t] = nw; improved.add(t);
         if (!inQ.has(t)) { q.push(t); inQ.add(t); }
       }
     }
@@ -154,7 +159,12 @@ export function plan(tt, fromSeeds, toIdx, when) {
     seedList.push(fs.stop);
   });
   var w0 = new Array(nS).fill(null);
-  var imp0 = relaxWalk(tt, arr0, w0, seedList);
+  var ws0 = new Float64Array(nS).fill(INF);
+  seeds.forEach(function (fs) {
+    var w = fs.walk || 0;
+    if (w < ws0[fs.stop]) ws0[fs.stop] = w;
+  });
+  var imp0 = relaxWalk(tt, arr0, w0, ws0, seedList);
   seedList.forEach(function (s) { imp0.add(s); });
   arrR[0] = arr0; walkPar[0] = w0;
   var markedPrev = imp0;
@@ -187,8 +197,12 @@ export function plan(tt, fromSeeds, toIdx, when) {
         }
       }
     });
-    var wImp = relaxWalk(tt, arr, wpar, Array.from(improved));
-    wImp.forEach(function (s) { improved.add(s); });
+    var ws = new Float64Array(nS).fill(INF);
+    improved.forEach(function (s) { ws[s] = 0; });
+    var wImp = relaxWalk(tt, arr, wpar, ws, Array.from(improved));
+    // A stop reached faster on foot was not reached by bus: drop the stale
+    // bus leg so the reconstruction follows the walk that actually won.
+    wImp.forEach(function (s) { improved.add(s); ali[s] = null; });
     arrR[k] = arr; alight[k] = ali; walkPar[k] = wpar;
     markedPrev = improved;
   }
