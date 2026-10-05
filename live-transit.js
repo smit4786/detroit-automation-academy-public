@@ -195,6 +195,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // its own toggle, its own honesty labeling, never presented as live.
   var pmGroup = null;      // THREE.Group: loop deck + skirts + station pins + label
   var pmStations = [];     // pickable records {id, n, x, z, r:['DPM'], pm:true}
+  var pmPins = [];         // station pin meshes (zoom-scaled with the stop family)
   var pmLabel = null, pmTether = null;
   var pmVisible = true;
   var PM_DECK_Y = 140;     // elevated guideway: floats above the highest DDOT route deck (~110)
@@ -720,6 +721,29 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     updateBusBadges(busSlots.length, PILLAR_H * pillarYS + 360);
   }
 
+  // Zoom-coupled stop rescale, throttled like the pillar rescale. Rewrites
+  // instance matrices only on a material change; People Mover pins follow
+  // the same scale so all stop-class markers behave as one family.
+  var _lastStopScaleT = 0;
+  function updateStopScale() {
+    var now = performance.now();
+    if (now - _lastStopScaleT < 400) return;
+    _lastStopScaleT = now;
+    var target = stopScaleFor(camera.position.distanceTo(controls.target));
+    if (Math.abs(target - stopYS) < 0.02) return;
+    stopYS = target;
+    if (stopPickList.length) {
+      writeStopMatrices(stopPickList);
+      selectedStopIndex = selectedStop ? stopPickList.indexOf(selectedStop) : -1;
+      setStopSelectedColor(selectedStopIndex, true);
+    }
+    for (var p = 0; p < pmPins.length; p++) {
+      var pin = pmPins[p];
+      pin.scale.y = stopYS;
+      pin.position.y = PM_DECK_Y + (300 * stopYS) / 2;
+    }
+  }
+
   var raycaster = new THREE.Raycaster();
   var pointerNDC = new THREE.Vector2();
   var downPos = null;
@@ -781,7 +805,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var best = null, bestD = 44;
     for (var i = 0; i < stopPickList.length; i++) {
       var s = stopPickList[i];
-      _stopV3.set(s.x, STOP_BASE_Y + stopHeight(s.r.length) / 2, s.z).project(camera);
+      _stopV3.set(s.x, STOP_BASE_Y + stopHeight(s.r.length) * stopYS / 2, s.z).project(camera);
       if (_stopV3.z > 1) continue;
       var px = (_stopV3.x * 0.5 + 0.5) * r.width;
       var py = (-_stopV3.y * 0.5 + 0.5) * r.height;
@@ -1281,6 +1305,38 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var lastStopSig = null;
   var _stopTmpColor = new THREE.Color();
   function stopHeight(nRoutes) { return 75 + 28 * nRoutes; }
+  // Zoom-coupled stop scale: the importance-encoded heights read well wide
+  // out but tower over downtown at street zoom. Gentler than the bus-pillar
+  // curve — stops are wayfinding anchors and must stay findable.
+  var stopYS = 1;
+  function stopScaleFor(d) {
+    if (d >= 8000) return 1;
+    if (d <= 2800) return 0.35;
+    var t = (d - 2800) / (8000 - 2800);
+    t = t * t * (3 - 2 * t);
+    return 0.35 + 0.65 * t;
+  }
+  function writeStopMatrices(list) {
+    for (var i = 0; i < list.length; i++) {
+      var s = list[i];
+      var h = stopHeight(s.r.length) * stopYS;
+      _p3.set(s.x, STOP_BASE_Y + h / 2, s.z);
+      _q3.identity();
+      _s3.set(1, h, 1);
+      _m4.compose(_p3, _q3, _s3);
+      stopIM.setMatrixAt(i, _m4);
+      if (s.r.length > 1) {
+        _stopTmpColor.set(0xf5f2ea);
+      } else {
+        var rc = routeColors[s.r[0]];
+        if (rc) _stopTmpColor.copy(rc); else _stopTmpColor.set(0xf5f2ea);
+      }
+      stopIM.setColorAt(i, _stopTmpColor);
+    }
+    stopIM.count = list.length;
+    stopIM.instanceMatrix.needsUpdate = true;
+    if (stopIM.instanceColor) stopIM.instanceColor.needsUpdate = true;
+  }
   function rebuildStops() {
     // Stops only depend on route toggles: skip the full rebuild when the
     // visible route set hasn't changed (e.g. polls that only flip dimming).
@@ -1298,25 +1354,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       });
     }
     stopPickList = list;
-    for (var i = 0; i < list.length; i++) {
-      var s = list[i];
-      var h = stopHeight(s.r.length);
-      _p3.set(s.x, STOP_BASE_Y + h / 2, s.z);
-      _q3.identity();
-      _s3.set(1, h, 1);
-      _m4.compose(_p3, _q3, _s3);
-      stopIM.setMatrixAt(i, _m4);
-      if (s.r.length > 1) {
-        _stopTmpColor.set(0xf5f2ea);
-      } else {
-        var rc = routeColors[s.r[0]];
-        if (rc) _stopTmpColor.copy(rc); else _stopTmpColor.set(0xf5f2ea);
-      }
-      stopIM.setColorAt(i, _stopTmpColor);
-    }
-    stopIM.count = list.length;
-    stopIM.instanceMatrix.needsUpdate = true;
-    if (stopIM.instanceColor) stopIM.instanceColor.needsUpdate = true;
+    writeStopMatrices(list);
     // Rebuilds recolor every instance: re-apply the selection highlight.
     selectedStopIndex = selectedStop ? list.indexOf(selectedStop) : -1;
     if (selectedStopIndex < 0 && selectedStop) hideStop();
@@ -2300,6 +2338,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var pin = new THREE.Mesh(pinGeo, pinMat);
       pin.position.set(s.x, PM_DECK_Y + 150, s.z);
       pmGroup.add(pin);
+      pmPins.push(pin);
       var ring = new THREE.Mesh(ringGeo, ringMat);
       ring.rotation.x = -Math.PI / 2;
       ring.position.set(s.x, PM_DECK_Y + 3, s.z);
@@ -2814,6 +2853,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         }
         updateStreetLabels();
         updatePillarScale();
+        updateStopScale();
         updateBadgeScales();
         renderer.render(scene, camera);
       });
