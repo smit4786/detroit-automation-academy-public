@@ -4,12 +4,18 @@
  * DDOT GTFS S1000182). Lazily imported only when the rider opens trip
  * planning; the map's first load is untouched.
  *
- * Honesty: Phase 1 runs on scheduled times only. Every leg is tagged
- * scheduled; interpolated stop times are flagged per leg. No live fusion yet.
+ * Honesty: Phase 1 runs on scheduled times only. Phase 2b-i adds the live
+ * adjusted timetable: per poll, matched vehicles produce per-trip delays
+ * (setLiveDelays); plan() reads times through depA/arrA, which apply the
+ * L2 empirical baseline (when mature) and the L3 live delay shift. Legs
+ * carry provenance 'live'/'empirical'/'scheduled' plus delay metadata.
+ * No live feed → scheduled planner, exactly as Phase 1. RAPTOR itself
+ * (the rounds) is unchanged; it just sees adjusted times.
  */
 var TT = null;
 var K_ROUNDS = 3; // max trips per journey => at most 2 transfers
 var INF = 1e15;
+var LIVE_FRESH_MS = 30 * 60 * 1000; // live delays only apply to near-term queries
 
 export async function loadTimetable(url) {
   if (TT && TT.url === url) return TT;
@@ -150,6 +156,29 @@ export function plan(tt, fromSeeds, toIdx, when) {
 
   var seedOf = {}; // stop -> walk seconds from the origin point
   var arrR = [], alight = [], walkPar = [];
+  // Phase 2b-i adjusted timetable: live delays apply only to near-term
+  // queries — a delay measured now says nothing about a trip planned for 8pm.
+  // Without fresh delays this is exactly the Phase 1 scheduled planner.
+  var liveDelays = tt.liveDelays || null;
+  var liveStamp = tt.liveStamp || 0;
+  var useLive = !!(liveDelays && liveStamp && Math.abs(when.getTime() - liveStamp) < LIVE_FRESH_MS);
+  var liveCtx = useLive ? { delays: liveDelays, stamp: liveStamp } : null;
+  function depA(t, pos) {
+    var d = (t.depL2 ? t.depL2[pos] : t.dep[pos]);
+    if (liveCtx) {
+      var ld = liveDelays.get(t);
+      if (ld && !ld.disrupted && ld.delaySec) d += ld.delaySec;
+    }
+    return d;
+  }
+  function arrA(t, pos) {
+    var a = (t.arrL2 ? t.arrL2[pos] : t.arr[pos]);
+    if (liveCtx) {
+      var ld = liveDelays.get(t);
+      if (ld && !ld.disrupted && ld.delaySec) a += ld.delaySec;
+    }
+    return a;
+  }
   // round 0: origin seeds + walking
   var arr0 = new Float64Array(nS).fill(INF);
   var seedList = [];
@@ -185,11 +214,11 @@ export function plan(tt, fromSeeds, toIdx, when) {
         for (var ti = 0; ti < trips.length; ti++) {
           var t = trips[ti];
           if (t.s !== svc && t.s !== prevSvc) continue;
-          if (t.dep[pos] < prevArr[p]) continue; // cannot catch
+          if (depA(t, pos) < prevArr[p]) continue; // cannot catch
           for (var j = pos + 1; j < pat.stops.length; j++) {
             var s = pat.stops[j];
-            if (t.arr[j] < arr[s]) {
-              arr[s] = t.arr[j];
+            if (arrA(t, j) < arr[s]) {
+              arr[s] = arrA(t, j);
               ali[s] = { trip: t, board: p, boardPos: pos, alightPos: j };
               improved.add(s);
             }
@@ -211,7 +240,7 @@ export function plan(tt, fromSeeds, toIdx, when) {
   var journeys = [], seen = new Set();
   for (var kk = 1; kk <= K_ROUNDS; kk++) {
     if (arrR[kk][toIdx] >= INF / 2) continue;
-    var legs = buildJourney(tt, kk, toIdx, seedOf, alight, walkPar);
+    var legs = buildJourney(tt, kk, toIdx, seedOf, alight, walkPar, liveCtx);
     if (!legs || !legs.length) continue;
     var nBus = legs.filter(function (l) { return l.type === 'bus'; }).length;
     var key = Math.round(arrR[kk][toIdx]) + '|' + nBus;
@@ -237,18 +266,29 @@ function walkSecs(tt, a, b) {
   return null;
 }
 
-function buildJourney(tt, k, target, seedOf, alight, walkPar) {
+function buildJourney(tt, k, target, seedOf, alight, walkPar, liveCtx) {
   var legs = [], cur = target, kk = k, guard = 0;
   while ((seedOf[cur] === undefined) && guard++ < 200) {
     var a = (alight[kk] || [])[cur];
     if (a) {
       var t = a.trip, r = tt.routes[t.r];
       var interp = t.interp.indexOf(a.boardPos) >= 0 || t.interp.indexOf(a.alightPos) >= 0;
+      var ld = liveCtx ? liveCtx.delays.get(t) : null;
+      var hasL2 = !!(t.depL2 && t.arrL2);
+      // Times as planned (adjusted when live/empirical). Provenance follows
+      // the strongest signal: live delay > empirical baseline > scheduled.
+      var bSec = (hasL2 ? t.depL2[a.boardPos] : t.dep[a.boardPos]);
+      var aSec = (hasL2 ? t.arrL2[a.alightPos] : t.arr[a.alightPos]);
+      if (ld && !ld.disrupted && ld.delaySec) { bSec += ld.delaySec; aSec += ld.delaySec; }
       legs.unshift({
         type: 'bus', routeId: r.id, routeName: r.name, color: r.color,
         board: a.board, alight: cur,
-        boardSec: t.dep[a.boardPos], alightSec: t.arr[a.alightPos],
-        headsign: t.h || '', interp: interp, provenance: 'scheduled'
+        boardSec: bSec, alightSec: aSec,
+        headsign: t.h || '', interp: interp,
+        provenance: (ld && !ld.disrupted) ? 'live' : (hasL2 ? 'empirical' : 'scheduled'),
+        delaySec: (ld && !ld.disrupted) ? ld.delaySec : 0,
+        delayStamp: (ld && !ld.disrupted) ? liveCtx.stamp : 0,
+        disrupted: !!(ld && ld.disrupted)
       });
       cur = a.board; kk--;
       if (kk < 0) return null;
@@ -291,3 +331,14 @@ function summarize(tt, legs, nowSec, arriveSec) {
 }
 
 export function fmtClockSec(sec) { return fmtClock(sec); }
+
+// Phase 2b-i: the live adjusted timetable. delayMap: Map(trip -> {delaySec,
+// disrupted, vehicleId}). Delays shift a trip's remaining times; disrupted
+// trips are never shifted. Stored on the tt object; plan() applies them.
+export function setLiveDelays(tt, delayMap, stampMs) {
+  tt.liveDelays = delayMap;
+  tt.liveStamp = stampMs;
+}
+
+// Exported for the client-side trip matcher (Phase 2b-i).
+export { serviceFor };
