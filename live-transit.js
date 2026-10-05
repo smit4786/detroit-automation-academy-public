@@ -1984,7 +1984,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // filterState.hideIdle (default ON): fully hide routes confirmed not-running.
   // filterState.nearMe: only routes with a stop within NEAR_ME_M of you.
   var filterState = { groups: {}, routes: {}, hideIdle: true, nearMe: false };
-  var NEAR_ME_M = 800;
+  var NEAR_ME_M = 1250;
   var nearMeSet = null;   // rid -> true, rebuilt when you move or toggle
   var userXZ = null;      // your projected position, set by onLocated
   var pendingNearMe = false;
