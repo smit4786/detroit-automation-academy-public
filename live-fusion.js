@@ -7,11 +7,14 @@
  * vehicles currently reporting on its route. Honest and useful — "3 live"
  * tells the rider their bus is actually out there — with zero fake ETAs.
  *
- * Phase 2b (DESIGNED, not yet implemented): delay propagation. Match each
- * live vehicle to its scheduled trip, measure the observed delay at the
- * last map-matched stop, and shift the remaining stop times on that trip.
- * Legs then carry provenance 'live' with a data-age label instead of
- * 'scheduled'. Design notes:
+ * Phase 2b-i (IMPLEMENTED 2026-10-05): delay propagation. Each poll,
+ * live-transit.js matches live vehicles to scheduled trips (clear margin or
+ * no match), measures the delay, and hands raptor.js an adjusted timetable
+ * via setLiveDelays(). plan() reads times through the delay accessors, so
+ * legs carry provenance 'live' with delay + data-age metadata. Disrupted
+ * trips are flagged, never shifted. Three quiet polls revert to scheduled.
+ * Phase 2b-ii (empirical baseline substitution) ships dormant in
+ * live-transit.js and activates as timing cells mature.
  *
  *   1. Trip matching: for each vehicle, candidates = scheduled trips on
  *      its route active in the current service window. Score by
