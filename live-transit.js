@@ -711,6 +711,163 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     else if (busMode && d > 3400) busMode = false;
   }
 
+  // --- street view: the max-zoom experience --------------------------------
+  // Pinch-zooming past STREET_ENTER_DIST hands off to a street-level view:
+  // the camera glides (never cuts) to an oblique vantage over the nearest
+  // stop, stop name labels fade in, and a camera floor keeps the lens out of
+  // the geometry. Zooming back out past STREET_EXIT_DIST restores the orbit
+  // view. Hysteresis on both ends so the handoff never flickers mid-pinch.
+  var streetView = false;
+  var STREET_ENTER_DIST = 1500, STREET_EXIT_DIST = 2600;
+  var STREET_MIN_Y = 45;    // camera never dips into street-level geometry
+  var streetTween = null;   // {t0, dur, fromPos, toPos, fromTgt, toTgt}
+  var _svDir = new THREE.Vector3();
+
+  function nearestStopTo(x, z, maxR) {
+    var best = null, bd2 = maxR * maxR;
+    var list = (stopPickList && stopPickList.length) ? stopPickList : (stopData || []);
+    for (var i = 0; i < list.length; i++) {
+      var s = list[i];
+      var dx = s.x - x, dz = s.z - z, d2 = dx * dx + dz * dz;
+      if (d2 < bd2) { bd2 = d2; best = s; }
+    }
+    // People Mover stations are stop-class anchors too.
+    for (var p = 0; p < pmStations.length; p++) {
+      var q = pmStations[p];
+      var qdx = q.x - x, qdz = q.z - z, qd2 = qdx * qdx + qdz * qdz;
+      if (qd2 < bd2) { bd2 = qd2; best = q; }
+    }
+    return best;
+  }
+  // Eased camera flight: position + target glide together over ~1.4 s.
+  // The user's grab always wins — pointerdown cancels the flight instantly.
+  function glideTo(pos, tgt, dur) {
+    streetTween = {
+      t0: performance.now(), dur: dur || 1400,
+      fromPos: camera.position.clone(), toPos: pos.clone(),
+      fromTgt: controls.target.clone(), toTgt: tgt.clone()
+    };
+    controls.enabled = false;
+  }
+  function stepStreetTween(now) {
+    if (!streetTween) return;
+    var t = Math.min(1, (now - streetTween.t0) / streetTween.dur);
+    var e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    camera.position.lerpVectors(streetTween.fromPos, streetTween.toPos, e);
+    controls.target.lerpVectors(streetTween.fromTgt, streetTween.toTgt, e);
+    if (t >= 1) { streetTween = null; if (!tripFly) controls.enabled = true; }
+  }
+  // Programmatic camera moves (reset, locate) cancel any in-flight glide so
+  // they don't fight over the camera.
+  function cancelStreetTween() {
+    if (streetTween) { streetTween = null; if (!tripFly) controls.enabled = true; }
+  }
+  renderer.domElement.addEventListener('pointerdown', function () {
+    if (streetTween) { streetTween = null; if (!tripFly) controls.enabled = true; }
+  });
+  // Vantage for a stop anchor: keep the user's current azimuth, pull back to
+  // an oblique street-level framing. Works for DDOT stops (ground) and
+  // People Mover stations (elevated deck).
+  function streetVantageFor(st) {
+    var ax = st.x, az = st.z, ay = st.pm ? PM_DECK_Y : STOP_BASE_Y;
+    _svDir.copy(camera.position).sub(controls.target); _svDir.y = 0;
+    if (_svDir.lengthSq() < 1e-6) _svDir.set(1, 0, 0);
+    _svDir.normalize();
+    return {
+      pos: new THREE.Vector3(ax + _svDir.x * 620, ay + 250, az + _svDir.z * 620),
+      tgt: new THREE.Vector3(ax, ay, az)
+    };
+  }
+  function enterStreetView() {
+    var anchor = nearestStopTo(controls.target.x, controls.target.z, 900);
+    var st = anchor || { x: controls.target.x, z: controls.target.z };
+    var v = streetVantageFor(st);
+    controls.minDistance = 150;   // street view owns the close range
+    camera.near = 10; camera.updateProjectionMatrix();
+    streetView = true;
+    glideTo(v.pos, v.tgt, 1400);
+  }
+  function exitStreetView() {
+    streetView = false;
+    controls.minDistance = 1200;  // restore the orbit constraint
+    camera.near = 100; camera.updateProjectionMatrix();
+    // No forced camera move: the user is already zooming out.
+  }
+  // Stop name labels: the "individual stops" legibility layer. Only in
+  // street view, nearest few within ~1 km of the target.
+  var stopLabelCache = {};
+  function stopLabelTex(name) {
+    var hit = stopLabelCache[name];
+    if (hit) return hit;
+    var c = document.createElement('canvas');
+    var x = c.getContext('2d');
+    x.font = '500 30px system-ui, -apple-system, sans-serif';
+    var w = Math.ceil(x.measureText(name).width) + 44;
+    c.width = w; c.height = 56;
+    var g = x; // redraw after resize (resizing clears the context state)
+    g.fillStyle = 'rgba(10,14,18,0.85)';
+    g.beginPath();
+    if (g.roundRect) g.roundRect(0, 0, c.width, c.height, 14); else g.rect(0, 0, c.width, c.height);
+    g.fill();
+    g.font = '500 30px system-ui, -apple-system, sans-serif';
+    g.fillStyle = '#F5F2EA'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(name, c.width / 2, c.height / 2 + 1);
+    var t = new THREE.CanvasTexture(c);
+    t.anisotropy = 4;
+    var o = { tex: t, aspect: c.width / c.height };
+    stopLabelCache[name] = o;
+    return o;
+  }
+  var stopLabelPool = [];
+  for (var _svi = 0; _svi < 8; _svi++) {
+    var _svl = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false, depthWrite: false, transparent: true, opacity: 0.95 }));
+    _svl.visible = false;
+    _svl.renderOrder = 36;
+    scene.add(_svl);
+    stopLabelPool.push(_svl);
+  }
+  var lastStopLabelUpdate = 0;
+  function updateStopLabels() {
+    var now = performance.now();
+    if (now - lastStopLabelUpdate < 500) return;
+    lastStopLabelUpdate = now;
+    var i;
+    if (!streetView) {
+      for (i = 0; i < stopLabelPool.length; i++) stopLabelPool[i].visible = false;
+      return;
+    }
+    var tx = controls.target.x, tz = controls.target.z;
+    var scored = [];
+    var list = (stopPickList && stopPickList.length) ? stopPickList : (stopData || []);
+    for (i = 0; i < list.length; i++) {
+      var s = list[i];
+      if (!s.n) continue;
+      var d2 = (s.x - tx) * (s.x - tx) + (s.z - tz) * (s.z - tz);
+      if (d2 < 1000 * 1000) scored.push([d2, s]);
+    }
+    for (var p = 0; p < pmStations.length; p++) {
+      var q = pmStations[p];
+      var qd2 = (q.x - tx) * (q.x - tx) + (q.z - tz) * (q.z - tz);
+      if (qd2 < 1000 * 1000) scored.push([qd2, q]);
+    }
+    scored.sort(function (a, b) { return a[0] - b[0]; });
+    var n = Math.min(stopLabelPool.length, scored.length);
+    for (i = 0; i < stopLabelPool.length; i++) {
+      var sp = stopLabelPool[i];
+      if (i < n) {
+        var st = scored[i][1];
+        var o = stopLabelTex(st.n);
+        if (sp.userData.tex !== o.tex) { sp.material.map = o.tex; sp.userData.tex = o.tex; sp.material.needsUpdate = true; }
+        var h = 44;
+        sp.scale.set(h * o.aspect, h, 1);
+        sp.position.set(st.x, (st.pm ? PM_DECK_Y : STOP_BASE_Y) + stopHeight((st.r || []).length) * stopYS + 40, st.z);
+        sp.visible = true;
+      } else {
+        sp.visible = false;
+      }
+    }
+  }
+
   // Zoom-coupled pillar scale, eased every frame toward the zoom target so
   // markers glide instead of stepping. Rewrites instance matrices only while
   // the eased value is still moving; badge anchors follow the pillar tops.
@@ -927,6 +1084,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     camera.position.copy(controls.target).add(off);
   }
   function resetView() {
+    cancelStreetTween();
     camera.position.copy(homePos);
     controls.target.copy(homeTarget);
   }
@@ -1219,6 +1377,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     hideToast();
     var p = project(lat, lon);
     userXZ = p;
+    cancelStreetTween();
     var off = camera.position.clone().sub(controls.target);
     controls.target.set(p[0], 0, p[1]);
     camera.position.copy(controls.target).add(off);
@@ -1431,6 +1590,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     stopHighlight.position.set(st.x, st.pm ? PM_DECK_Y + 4 : 20, st.z);
     stopHighlight.visible = true;
     renderStopLive();
+    // In street view, tapping a stop glides the camera to center it —
+    // the max-zoom way of walking down the street stop by stop.
+    if (streetView && !tripFly && !(typeof tripMode !== 'undefined' && tripMode)) {
+      var _sv = streetVantageFor(st);
+      glideTo(_sv.pos, _sv.tgt, 1100);
+    }
   }
   // Live arrivals on the selected stop's routes, refreshed on every poll.
   function renderStopLive() {
@@ -2794,6 +2959,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         controls.update();
         updateLOD();
         if (typeof stepTripFly === 'function') stepTripFly(performance.now());
+        stepStreetTween(performance.now());
+        // Street-view handoff with hysteresis. The trip fly-through owns the
+        // camera while active, so street view yields to it.
+        var svDist = camera.position.distanceTo(controls.target);
+        if (tripFly && streetView) exitStreetView();
+        else if (!streetView && !streetTween && !tripFly && svDist < STREET_ENTER_DIST) enterStreetView();
+        else if (streetView && !streetTween && !tripFly && svDist > STREET_EXIT_DIST) exitStreetView();
+        if (streetView && !tripFly && camera.position.y < STREET_MIN_Y) camera.position.y = STREET_MIN_Y;
         if (youMarker.group.visible) {
           var t = performance.now();
           var s = 1 + 0.22 * Math.sin(t / 420);
@@ -2863,6 +3036,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           stopHighlight.scale.set(shp, shp, 1);
         }
         updateStreetLabels();
+        updateStopLabels();
         easePillarScale(camDist);
         easeStopScale(camDist);
         smoothBadges();
