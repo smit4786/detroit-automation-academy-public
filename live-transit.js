@@ -227,6 +227,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   // --- bus pillars: InstancedMesh, 4 draw calls total --------------------------
   var PILLAR_H = 620;
+  // Zoom-coupled marker scale: full-height symbolic pillars wide out, shrinking
+  // as the camera dives so downtown stays intelligible at street zoom. The
+  // handoff to true-scale bus models happens at ~2.6 km (updateLOD).
+  var pillarYS = 1;
+  function pillarScaleFor(d) {
+    if (d >= 8000) return 1;
+    if (d <= 2800) return 0.16;
+    var t = (d - 2800) / (8000 - 2800);
+    t = t * t * (3 - 2 * t); // smoothstep: gentle at both ends
+    return 0.16 + 0.84 * t;
+  }
   var pillarGlowIM = new THREE.InstancedMesh(
     new THREE.CylinderGeometry(58, 58, PILLAR_H, 12, 1, true),
     new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.30, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
@@ -356,9 +367,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     for (var i = 0; i < busSlots.length; i++) {
       var s = busSlots[i];
       if (s.vehicle && s.vehicle.vehicle_id === selectedVehicleId) {
-        // Upper third of the column, clear of the route badge (y=430):
-        // reads as a unit with the badge without covering the pillar.
-        var y = busMode ? 150 : 540;
+        // Upper area of the column, clear of the route badge: reads as a unit
+        // with the badge without covering the pillar. Tracks the zoom-coupled
+        // pillar height (busMode uses true-scale models instead).
+        var y = busMode ? 150 : Math.max(120, PILLAR_H * pillarYS - 80);
         busInfoSprite.position.set(s.x + 420, y, s.z);
         return;
       }
@@ -566,13 +578,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function writeBusMatrices(k, b, pulse) {
     var isSel = !!selectedVehicleId && b.vehicle.vehicle_id === selectedVehicleId;
     var exz = (isSel ? 1.55 : 1) * (isSel ? pulse : 1); // selected bus expands + pulses
-    _p3.set(b.x, PILLAR_H / 2, b.z);
+    var topY = PILLAR_H * pillarYS;
+    _p3.set(b.x, topY / 2, b.z);
     _q3.identity();
-    _s3.set(exz, 1, exz);
+    _s3.set(exz, pillarYS, exz);
     _m4.compose(_p3, _q3, _s3);
     pillarGlowIM.setMatrixAt(k, _m4);
     pillarCoreIM.setMatrixAt(k, _m4);
-    _p3.set(b.x, PILLAR_H + 40, b.z);
+    _p3.set(b.x, topY + 40, b.z);
     _m4.compose(_p3, _q3, _s3);
     pillarBeaconIM.setMatrixAt(k, _m4);
     _p3.set(b.x, 6, b.z);
@@ -634,14 +647,22 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       im.instanceMatrix.needsUpdate = true;
     });
     markColorsDirty();
-    updateBusBadges(n, PILLAR_H + 360);
+    updateBusBadges(n, PILLAR_H * pillarYS + 360);
   }
 
   // Per-bus route badges: one sprite per bus, shown only at close street-level zooms.
   // Badge size tracks zoom (constant screen presence) via updateBadgeScales.
   function badgeHeight() {
     var camDist = camera.position.distanceTo(controls.target);
-    return Math.max(60, Math.min(170, camDist * 0.045));
+    var h = Math.max(60, Math.min(170, camDist * 0.045));
+    // Close-zoom ease: below ~6 km badges shrink toward 55% so dense
+    // downtown clusters stop stacking into a wall of chips. Wide-out
+    // presence is unchanged.
+    if (camDist < 6000) {
+      var t = Math.max(0, (camDist - 2600) / (6000 - 2600));
+      h *= 0.55 + 0.45 * t;
+    }
+    return h;
   }
   function updateBusBadges(n, yBase) {
     var show = camera.position.distanceTo(controls.target) < 7000;
@@ -683,6 +704,22 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     else if (busMode && d > 3400) busMode = false;
   }
 
+  // Zoom-coupled pillar rescale, throttled. Rewrites instance matrices only
+  // when the scale moved materially; badge anchors follow the pillar tops.
+  var _lastPillarScaleT = 0;
+  function updatePillarScale() {
+    var now = performance.now();
+    if (now - _lastPillarScaleT < 400) return;
+    _lastPillarScaleT = now;
+    if (busMode) return; // true-scale models need no pillar scaling
+    var target = pillarScaleFor(camera.position.distanceTo(controls.target));
+    if (Math.abs(target - pillarYS) < 0.02) return;
+    pillarYS = target;
+    for (var k = 0; k < busSlots.length; k++) writeBusMatrices(k, busSlots[k], 1);
+    pillarMeshes.forEach(function (im) { im.instanceMatrix.needsUpdate = true; });
+    updateBusBadges(busSlots.length, PILLAR_H * pillarYS + 360);
+  }
+
   var raycaster = new THREE.Raycaster();
   var pointerNDC = new THREE.Vector2();
   var downPos = null;
@@ -707,7 +744,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         if (_p3.z > 1 || _p3.z < -1) continue;
         var ax = (_p3.x * 0.5 + 0.5) * r.width + r.left;
         var ay = (-_p3.y * 0.5 + 0.5) * r.height + r.top;
-        _p3.set(s.x, PILLAR_H + 40, s.z).project(camera);
+        _p3.set(s.x, PILLAR_H * pillarYS + 40, s.z).project(camera);
         if (_p3.z > 1 || _p3.z < -1) continue;
         var bx = (_p3.x * 0.5 + 0.5) * r.width + r.left;
         var by = (-_p3.y * 0.5 + 0.5) * r.height + r.top;
@@ -2743,6 +2780,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         }
         if (busMode !== lastBusMode) {
           lastBusMode = busMode;
+          // Leaving busMode: snap the pillar scale to the current zoom before
+          // the rewrite, so wide-out pillars don't flash at street-zoom height.
+          if (!busMode) pillarYS = pillarScaleFor(camera.position.distanceTo(controls.target));
           renderBusInstances();
         }
         // Label rule: route enabled, not confirmed not-running, AND (live buses
@@ -2773,6 +2813,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           stopHighlight.scale.set(shp, shp, 1);
         }
         updateStreetLabels();
+        updatePillarScale();
         updateBadgeScales();
         renderer.render(scene, camera);
       });
