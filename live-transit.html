@@ -110,8 +110,12 @@
   .f-box { width: .85rem; height: .85rem; border-radius: 4px; border: 1px solid #E85D1A; background: #E85D1A; flex: none; }
   .f-check[aria-pressed="false"] .f-box { background: transparent; }
   .f-check[aria-pressed="mixed"] .f-box { background: transparent; position: relative; }
-  .f-near { margin-bottom: .6rem; border-color: rgba(232,93,26,.45); }
+  .f-near { margin-bottom: .6rem; }
+  /* The amber row border means ON: never illuminate a disabled row. */
+  .f-near[aria-pressed="true"] { border-color: rgba(232,93,26,.45); }
   .f-near[aria-pressed="false"] .f-box { background: transparent; }
+  #pm-toggle[aria-pressed="true"] { border-color: rgba(232,93,26,.45); }
+  #pm-toggle[aria-pressed="false"] .f-box { background: transparent; }
   .f-check[aria-pressed="mixed"] .f-box::after { content: ""; position: absolute; left: 2px; right: 2px; top: 50%; height: 2px; margin-top: -1px; background: #E85D1A; border-radius: 1px; }
   .f-group.off .f-routes { opacity: .35; }
   .f-routes { display: flex; flex-wrap: wrap; gap: .4rem; padding: .55rem .1rem 0; }
@@ -434,7 +438,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261005-1246"></script>
+<script type="module" src="live-transit.js?v=20261005-1344"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
