@@ -785,12 +785,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     controls.minDistance = 150;   // street view owns the close range
     camera.near = 10; camera.updateProjectionMatrix();
     streetView = true;
+    streetGuideFadeTarget = 0.07; // guideways recede; stops + buses take over
     glideTo(v.pos, v.tgt, 1400);
   }
   function exitStreetView() {
     streetView = false;
     controls.minDistance = 1200;  // restore the orbit constraint
     camera.near = 100; camera.updateProjectionMatrix();
+    streetGuideFadeTarget = 1;    // guideways glide back
     // No forced camera move: the user is already zooming out.
   }
   // Stop name labels: the "individual stops" legibility layer. Only in
@@ -1478,11 +1480,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // curve — stops are wayfinding anchors and must stay findable.
   var stopYS = 1;
   function stopScaleFor(d) {
+    // In street view the stops are the subject: they ease a touch taller
+    // than the plain close-zoom floor so individual markers read clearly.
+    var lo = streetView ? 0.55 : 0.35;
     if (d >= 8000) return 1;
-    if (d <= 2800) return 0.35;
+    if (d <= 2800) return lo;
     var t = (d - 2800) / (8000 - 2800);
     t = t * t * (3 - 2 * t);
-    return 0.35 + 0.65 * t;
+    return lo + (1 - lo) * t;
   }
   function writeStopMatrices(list, withColors) {
     for (var i = 0; i < list.length; i++) {
@@ -2341,13 +2346,53 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     // bright. 'unknown' (not yet confirmed by the feed) and 'not-running'
     // both dim — the map never implies a route is active before live data
     // proves it. ('not-running' is additionally hidden when hideIdle is on.)
+    // Opacity composes with the street-view guideway fade (dimmed x faded).
     var dim = runningState[rid] !== 'running' && g.visible;
     g.userData.guideMats.forEach(function (e) {
       if (e.dimmed === dim) return; // unchanged: never touch the material (needsUpdate forces a shader recompile)
       e.dimmed = dim;
-      e.mat.transparent = dim ? true : false;
-      e.mat.opacity = dim ? DIM_OPACITY : e.opacity;
+      syncGuideEntry(e);
     });
+  }
+  // Street-view guideway fade: the elevated layer cake (decks + solid skirts
+  // + casing + ground glow) reads as walls at street level and buries the
+  // stops and true-scale buses. In street view it eases to a whisper so the
+  // street grid, stops, and buses carry the scene. The fade multiplies with
+  // the running-state dimming; transparency flips only on real state changes
+  // (shader recompiles are never per-frame).
+  var streetGuideFade = 1, streetGuideFadeTarget = 1;
+  var streetGlowMats = []; // per-route ground-glow materials (not dimmed by running state)
+  function guideEntryOpacity(e) {
+    return (e.dimmed ? DIM_OPACITY : e.opacity) * streetGuideFade;
+  }
+  function syncGuideEntry(e) {
+    var wantTransparent = e.dimmed || streetGuideFade < 0.999;
+    if (e.mat.transparent !== wantTransparent) {
+      e.mat.transparent = wantTransparent;
+      e.mat.needsUpdate = true;
+    }
+    e.mat.opacity = guideEntryOpacity(e);
+  }
+  function easeGuideFade() {
+    var d = streetGuideFadeTarget - streetGuideFade;
+    if (Math.abs(d) < 0.005) {
+      if (streetGuideFade === streetGuideFadeTarget) return;
+      streetGuideFade = streetGuideFadeTarget;
+    } else {
+      streetGuideFade += d * 0.12;
+    }
+    for (var ri = 0; ri < routeOrder.length; ri++) {
+      var g = routeGroups[routeOrder[ri]];
+      if (!g || !g.userData.guideMats) continue;
+      g.userData.guideMats.forEach(syncGuideEntry);
+    }
+    // Shared casing + ground glows answer only to the street fade.
+    if (typeof casingMat !== 'undefined' && casingMat) {
+      casingMat.opacity = 0.9 * streetGuideFade;
+    }
+    for (var gi = 0; gi < streetGlowMats.length; gi++) {
+      streetGlowMats[gi].opacity = 0.13 * streetGuideFade;
+    }
   }
 
   function applyFilters() {
@@ -2900,6 +2945,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           color: color, transparent: true, opacity: 0.13,
           blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
         });
+        streetGlowMats.push(glowMat);
         var longest = null;
         route.paths.forEach(function (path) {
           if (path.length < 2) return;
@@ -3039,6 +3085,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         updateStopLabels();
         easePillarScale(camDist);
         easeStopScale(camDist);
+        easeGuideFade();
         smoothBadges();
         renderer.render(scene, camera);
       });
