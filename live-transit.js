@@ -2731,7 +2731,146 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return m;
   }
 
+  // --- per-vehicle motion prediction -----------------------------------------
+  // The feed polls every 60 s; between polls each bus dead-reckons along its
+  // route's GTFS shape using the feed's own speed_mph, map-matched per fix.
+  // Deterministic inputs: poll fixes, reported speed, reported bearing, and
+  // the shape geometry (buses can't leave their path). Small fix divergences
+  // ease in over ~2 s; teleports (>200 m) snap. Honest limits: no public
+  // Detroit traffic-signal feed exists — a red light reads as speed 0 (hold,
+  // never drift); arterial congestion is already encoded in the bus's own
+  // reported speed, so no second feed is fused. A fix >150 m off every shape
+  // is rendered raw (detour) with prediction suspended until it re-matches.
+  var busTrackers = {};   // vehicle_id -> tracker (persists across polls)
+  var shapeArcCache = {}; // route_id -> [{pts, cum, len}]
+  var MPH_TO_MPS = 0.44704;
+  var PREDICT_HORIZON_S = 150; // never dead-reckon on a fix older than this
+  var SNAP_DIST_M = 200;       // along-track divergence above this = teleport
+  var OFFSHAPE_M = 150;        // cross-track beyond this = detour, render raw
+
+  function shapeArcs(routeId) {
+    var hit = shapeArcCache[routeId];
+    if (hit !== undefined) return hit;
+    var r = routeById[routeId];
+    var arcs = [];
+    if (r && r.paths) {
+      for (var pi = 0; pi < r.paths.length; pi++) {
+        var pts = r.paths[pi];
+        if (!pts || pts.length < 2) continue;
+        var cum = [0];
+        for (var i = 1; i < pts.length; i++) {
+          cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+        }
+        arcs.push({ pts: pts, cum: cum, len: cum[cum.length - 1] });
+      }
+    }
+    shapeArcCache[routeId] = arcs.length ? arcs : null;
+    return shapeArcCache[routeId];
+  }
+
+  function pointAt(arc, s) {
+    s = Math.max(0, Math.min(arc.len, s));
+    var cum = arc.cum, pts = arc.pts;
+    var lo = 0, hi = cum.length - 1;
+    while (lo < hi - 1) { var mid = (lo + hi) >> 1; if (cum[mid] <= s) lo = mid; else hi = mid; }
+    var segLen = (cum[hi] - cum[lo]) || 1;
+    var t = (s - cum[lo]) / segLen;
+    var ax = pts[lo][0], az = pts[lo][1];
+    var dx = pts[hi][0] - ax, dz = pts[hi][1] - az;
+    var dl = Math.hypot(dx, dz) || 1;
+    return { x: ax + dx * t, z: az + dz * t, dx: dx / dl, dz: dz / dl };
+  }
+
+  // Map-match a fix to (path, arc-length). Bearing disambiguates overlapping
+  // outbound/inbound paths; the previous match lends continuity.
+  function matchFix(routeId, x, z, bearingDeg, prev) {
+    var arcs = shapeArcs(routeId);
+    if (!arcs) return null;
+    var bwx = 0, bwz = 0;
+    var hasB = (bearingDeg != null && !isNaN(bearingDeg));
+    if (hasB) {
+      var br = bearingDeg * DEG;
+      bwx = Math.sin(br) * proj.mLon; bwz = -Math.cos(br) * proj.mLat;
+      var bl = Math.hypot(bwx, bwz) || 1; bwx /= bl; bwz /= bl;
+    }
+    var best = null;
+    for (var pi = 0; pi < arcs.length; pi++) {
+      var pts = arcs[pi].pts, cum = arcs[pi].cum;
+      var bDist = Infinity, bS = 0, bDx = 1, bDz = 0;
+      for (var i = 0; i < pts.length - 1; i++) {
+        var ax = pts[i][0], az = pts[i][1];
+        var dx = pts[i + 1][0] - ax, dz = pts[i + 1][1] - az;
+        var l2 = dx * dx + dz * dz;
+        var t = l2 > 0 ? ((x - ax) * dx + (z - az) * dz) / l2 : 0;
+        t = Math.max(0, Math.min(1, t));
+        var d = Math.hypot(x - (ax + dx * t), z - (az + dz * t));
+        if (d < bDist) {
+          bDist = d; bS = cum[i] + Math.sqrt(l2) * t;
+          var dl = Math.sqrt(l2) || 1; bDx = dx / dl; bDz = dz / dl;
+        }
+      }
+      var dot = hasB ? (bwx * bDx + bwz * bDz) : 0;
+      var score = bDist - 80 * Math.max(0, dot);
+      if (prev && prev.pathIdx === pi && Math.abs(bS - prev.s) < 400) score -= 50;
+      if (!best || score < best.score) {
+        best = { score: score, pathIdx: pi, s: bS, dist: bDist, arc: arcs[pi] };
+      }
+    }
+    return best;
+  }
+
+  // Advance every tracker's dead reckoning and push the predicted positions
+  // into slots, badges, and true-scale models. Runs every frame; cheap.
+  var lastMotionT = 0;
+  function updateBusMotion(now) {
+    if (!busSlots.length) return;
+    var dt = lastMotionT ? Math.min(0.1, (now - lastMotionT) / 1000) : 0;
+    lastMotionT = now;
+    if (dt <= 0) return;
+    var anyMoved = false;
+    for (var i = 0; i < busSlots.length; i++) {
+      var sl = busSlots[i], tr = sl.tracker;
+      if (!tr || !tr.arc) continue;
+      var moved = false;
+      var ageS = (now - tr.fixT) / 1000;
+      if (ageS < PREDICT_HORIZON_S && tr.speedMps > 0.3) {
+        tr.s = Math.max(0, Math.min(tr.arc.len, tr.s + tr.speedMps * dt));
+        moved = true;
+      }
+      if (Math.abs(tr.sCorr) > 0.05) {
+        var k = Math.min(1, dt * 1.8);
+        tr.s = Math.max(0, Math.min(tr.arc.len, tr.s + tr.sCorr * k));
+        tr.sCorr *= (1 - k);
+        moved = true;
+      }
+      if (moved) {
+        anyMoved = true;
+        var pt = pointAt(tr.arc, tr.s);
+        sl.x = pt.x; sl.z = pt.z;
+        sl.rotY = Math.atan2(-pt.dz, pt.dx);
+        var sp = badgePool[i];
+        if (sp && sp.visible) { sp.position.x = pt.x; sp.position.z = pt.z; }
+      }
+    }
+    if (!anyMoved) return;
+    if (!busMode) {
+      for (var m = 0; m < busSlots.length; m++) writeBusMatrices(m, busSlots[m], 1);
+      pillarMeshes.forEach(function (im) { im.instanceMatrix.needsUpdate = true; });
+    } else {
+      var dn = Math.min(busSlots.length, DETAIL_MAX);
+      for (var di = 0; di < dn; di++) {
+        var d = detailPool[di];
+        if (d && d.group.visible) {
+          d.group.position.set(busSlots[di].x, 0, busSlots[di].z);
+          d.group.rotation.y = busSlots[di].rotY;
+        }
+      }
+    }
+  }
+
   function updateBuses(vehicles) {
+    var now = performance.now();
+    var seen = {};
     busSlots = [];
     for (var i = 0; i < vehicles.length && busSlots.length < BUS_MAX; i++) {
       var v = vehicles[i];
@@ -2739,14 +2878,56 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var grp = routeGroups[v.route_id];
       if (!grp || !grp.visible) continue; // unknown or filtered route: skip
       var p = project(v.lat, v.lon);
-      var rotY = (v.bearing != null && !isNaN(v.bearing)) ? (90 - v.bearing) * DEG : 0;
+      // Reconcile the per-vehicle tracker: new buses start one, existing
+      // ones get their fix map-matched and their speed refreshed.
+      var tr = busTrackers[v.vehicle_id];
+      if (!tr || tr.routeId !== v.route_id) {
+        tr = busTrackers[v.vehicle_id] = {
+          id: v.vehicle_id, routeId: v.route_id,
+          arc: null, pathIdx: -1, s: 0, sCorr: 0,
+          speedMps: 0, fixT: 0, lastX: null, lastZ: null, init: false
+        };
+      }
+      var m = matchFix(v.route_id, p[0], p[1], v.bearing, tr.arc ? tr : null);
+      if (m && m.dist <= OFFSHAPE_M) {
+        if (tr.arc && tr.pathIdx === m.pathIdx) {
+          var delta = m.s - tr.s;
+          if (Math.abs(delta) > SNAP_DIST_M) { tr.s = m.s; tr.sCorr = 0; }
+          else tr.sCorr += delta;
+        } else {
+          tr.s = m.s; tr.sCorr = 0; // new / re-matched path: snap
+        }
+        tr.arc = m.arc; tr.pathIdx = m.pathIdx;
+      } else {
+        tr.arc = null; // detour or no shape: render the raw fix, hold still
+      }
+      // Speed: prefer the feed's own number; derive from fixes when absent.
+      var spMph = parseFloat(v.speed_mph);
+      var inst = (!isNaN(spMph) && spMph >= 0) ? spMph * MPH_TO_MPS : null;
+      if (inst == null && tr.lastX != null && tr.fixT) {
+        var dtF = (now - tr.fixT) / 1000;
+        if (dtF > 5) inst = Math.hypot(p[0] - tr.lastX, p[1] - tr.lastZ) / dtF;
+      }
+      if (inst != null) {
+        tr.speedMps = tr.init ? tr.speedMps * 0.4 + inst * 0.6 : inst;
+        tr.init = true;
+      }
+      tr.fixT = now; tr.lastX = p[0]; tr.lastZ = p[1];
+      // Render state: matched arc position, else the raw fix.
+      var pt = tr.arc ? pointAt(tr.arc, tr.s) : null;
+      var rotY = (v.bearing != null && !isNaN(v.bearing))
+        ? (90 - v.bearing) * DEG
+        : (pt ? Math.atan2(-pt.dz, pt.dx) : 0);
       busSlots.push({
         vehicle: v,
-        x: p[0], z: p[1],
+        x: pt ? pt.x : p[0], z: pt ? pt.z : p[1],
         rotY: rotY,
-        color: routeColors[v.route_id] || new THREE.Color(0xf5f2ea)
+        color: routeColors[v.route_id] || new THREE.Color(0xf5f2ea),
+        tracker: tr
       });
+      seen[v.vehicle_id] = true;
     }
+    for (var id in busTrackers) if (!seen[id]) delete busTrackers[id];
     renderBusInstances();
     if (selectedStop) renderStopLive();
     if (typeof refreshTripFusion === 'function') refreshTripFusion(); // live counts on trip legs
@@ -3030,6 +3211,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         else if (!streetView && !streetTween && !tripFly && svDist < STREET_ENTER_DIST) enterStreetView();
         else if (streetView && !streetTween && !tripFly && svDist > STREET_EXIT_DIST) exitStreetView();
         if (streetView && !tripFly && camera.position.y < STREET_MIN_Y) camera.position.y = STREET_MIN_Y;
+        // Per-vehicle motion prediction: buses glide along their shapes
+        // between polls instead of jumping every 60 s.
+        updateBusMotion(performance.now());
         if (youMarker.group.visible) {
           var t = performance.now();
           var s = 1 + 0.22 * Math.sin(t / 420);
