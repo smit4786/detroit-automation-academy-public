@@ -2056,7 +2056,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function applyDim(rid) {
     var g = routeGroups[rid];
     if (!g || !g.userData.guideMats) return;
-    var dim = runningState[rid] === 'not-running' && !filterState.hideIdle && g.visible;
+    // Honest rendering: only a route with a live bus on it right now renders
+    // bright. 'unknown' (not yet confirmed by the feed) and 'not-running'
+    // both dim — the map never implies a route is active before live data
+    // proves it. ('not-running' is additionally hidden when hideIdle is on.)
+    var dim = runningState[rid] !== 'running' && g.visible;
     g.userData.guideMats.forEach(function (e) {
       if (e.dimmed === dim) return; // unchanged: never touch the material (needsUpdate forces a shader recompile)
       e.dimmed = dim;
