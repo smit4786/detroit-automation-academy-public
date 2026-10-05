@@ -3003,6 +3003,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var lastBusMode = null;
       renderer.setAnimationLoop(function () {
         controls.update();
+        // Camera floor: the zoom-to-cursor dolly walks the lens down the
+        // pointer ray, and a large wheel/pinch delta can tunnel it straight
+        // through the ground plane before the target re-anchors (radius is
+        // clamped to the target, not to the terrain). A hard floor keeps the
+        // camera out of the geometry on every device and gesture. Placed
+        // before the trip fly-through, which drives the camera itself and
+        // is unaffected.
+        if (camera.position.y < 30) camera.position.y = 30;
         updateLOD();
         if (typeof stepTripFly === 'function') stepTripFly(performance.now());
         stepStreetTween(performance.now());
