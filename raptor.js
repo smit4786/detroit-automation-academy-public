@@ -288,7 +288,8 @@ function buildJourney(tt, k, target, seedOf, alight, walkPar, liveCtx) {
         provenance: (ld && !ld.disrupted) ? 'live' : (hasL2 ? 'empirical' : 'scheduled'),
         delaySec: (ld && !ld.disrupted) ? ld.delaySec : 0,
         delayStamp: (ld && !ld.disrupted) ? liveCtx.stamp : 0,
-        disrupted: !!(ld && ld.disrupted)
+        disrupted: !!(ld && ld.disrupted),
+        tripRef: t // Phase 2c: identity key into the live delay/matcher state
       });
       cur = a.board; kk--;
       if (kk < 0) return null;
