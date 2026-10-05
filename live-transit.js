@@ -2001,6 +2001,32 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     applyTripFusion();
     if (tripSel >= 0) renderTripDetail();
   }
+  // Phase 2b-i: quietly re-plan "leave now" queries each poll so the card
+  // reflects fresh delays. "Depart at" queries are fixed in time and keep
+  // their original plan. Selection is preserved when the option survives.
+  function replanLive() {
+    if (!tripMode || !tripJourneys.length || !tripRaptor || !tripTT || tripLoading) return;
+    try {
+      var res = tripRaptor.plan(tripTT, tripSeeds(), tripTo.idx, new Date());
+      var sig = tripSel >= 0 && tripJourneys[tripSel] ? journeySig(tripJourneys[tripSel]) : null;
+      tripJourneys = res.journeys;
+      tripSel = -1;
+      if (sig) {
+        for (var i = 0; i < tripJourneys.length; i++) {
+          if (journeySig(tripJourneys[i]) === sig) { tripSel = i; break; }
+        }
+      }
+      if (tripSel < 0) tripSel = tripJourneys.length ? 0 : -1;
+      applyTripFusion();
+      renderTripResults(res);
+      if (tripSel >= 0) highlightJourney(tripJourneys[tripSel]); else clearTripHighlight();
+    } catch (e) { /* live refresh never breaks the card */ }
+  }
+  function journeySig(j) {
+    return j.legs.map(function (l) {
+      return l.type === 'bus' ? ('b' + l.routeId + '@' + l.board + '>' + l.alight) : 'w';
+    }).join('|');
+  }
   function renderTripResults(res) {
     var host = $('trip-results');
     host.innerHTML = '';
@@ -2008,7 +2034,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     meta.className = 'trip-note';
     var svcName = res.meta.service && SVC_NAMES[res.meta.service] ? SVC_NAMES[res.meta.service] : 'DDOT';
     var whenLbl = tripLeaveMode === 'at' && tripLeaveTime ? 'depart ' + tripLeaveTime : 'leave now';
-    meta.textContent = 'Scheduled times · ' + svcName + ' service · ' + whenLbl + ' · feed ' + (res.meta.feedVersion || '');
+    var provMode = 'scheduled';
+    tripJourneys.forEach(function (j) {
+      j.legs.forEach(function (l) {
+        if (l.type !== 'bus') return;
+        if (l.provenance === 'live') provMode = 'live';
+        else if (l.provenance === 'empirical' && provMode === 'scheduled') provMode = 'empirical';
+      });
+    });
+    var provLbl = provMode === 'live' ? 'Live delays' : (provMode === 'empirical' ? 'Typical times' : 'Scheduled times');
+    meta.textContent = provLbl + ' · ' + svcName + ' service · ' + whenLbl + ' · feed ' + (res.meta.feedVersion || '');
+    var provEl = $('trip-prov');
+    if (provEl) provEl.textContent = provMode === 'live' ? 'live' : (provMode === 'empirical' ? 'typical' : 'scheduled');
     host.appendChild(meta);
     if (!tripJourneys.length) {
       var none = document.createElement('p');
@@ -2044,8 +2081,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var sub = document.createElement('div');
     sub.className = 'trip-opt-sub';
     var liveN = j.legs.reduce(function (n, l) { return n + (l.liveVehicles || 0); }, 0);
+    var jProv = 'scheduled';
+    j.legs.forEach(function (l) {
+      if (l.type !== 'bus') return;
+      if (l.provenance === 'live') jProv = 'live';
+      else if (l.provenance === 'empirical' && jProv === 'scheduled') jProv = 'empirical';
+    });
+    var jProvLbl = jProv === 'live' ? 'live delays' : (jProv === 'empirical' ? 'typical times' : 'scheduled');
+    if (j.legs.some(function (l) { return l.disrupted; })) jProvLbl += ' · disrupted';
     sub.textContent = (j.nBus === 0 ? 'Walk' : (j.transfers === 0 ? 'Direct' : j.transfers + (j.transfers === 1 ? ' transfer' : ' transfers'))) +
-      ' · ' + j.walkMin + ' min walk' + (liveN > 0 ? ' · ' + liveN + ' live' : '') + ' · scheduled';
+      ' · ' + j.walkMin + ' min walk' + (liveN > 0 ? ' · ' + liveN + ' live' : '') + ' · ' + jProvLbl;
     b.appendChild(sub);
     var legs = document.createElement('div');
     legs.className = 'trip-legs';
@@ -2082,6 +2127,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     });
     return b;
   }
+  // Phase 2b-i: human-readable provenance for a bus leg.
+  function tripProvLabel(l) {
+    if (l.disrupted) return 'disrupted · times as scheduled';
+    if (l.provenance === 'live') {
+      var dMin = Math.round(l.delaySec / 60);
+      var dTxt = Math.abs(l.delaySec) <= 60 ? 'on time'
+        : (dMin > 0 ? '+' + dMin + ' min late' : dMin + ' min early');
+      var ageS = Math.max(0, Math.round((Date.now() - (l.delayStamp || Date.now())) / 1000));
+      var ageTxt = ageS < 90 ? ageS + 's' : Math.round(ageS / 60) + ' min';
+      return dTxt + ' · live ' + ageTxt + ' old';
+    }
+    if (l.provenance === 'empirical') return 'typical time';
+    return 'scheduled';
+  }
   function renderTripDetail() {
     var det = $('trip-detail');
     if (!det) return;
@@ -2102,9 +2161,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         body.appendChild(s);
         var tm = document.createElement('span');
         tm.className = 'trip-leg-time';
-        tm.textContent = tripClock(l.boardSec) + ' → ' + tripClock(l.alightSec) + ' · scheduled' +
+        tm.textContent = tripClock(l.boardSec) + ' → ' + tripClock(l.alightSec) + ' · ' + tripProvLabel(l) +
           (l.interp ? ' · estimated' : '') + (l.liveVehicles > 0 ? ' · ' + l.liveVehicles + ' live' : '');
         body.appendChild(tm);
+        if (l.provenance === 'live' || l.disrupted) {
+          var badge = document.createElement('span');
+          badge.className = l.disrupted ? 'trip-disrupted-badge' : 'trip-live-badge';
+          badge.textContent = l.disrupted ? 'Disrupted' : 'Live';
+          body.appendChild(badge);
+        }
       } else {
         dot.className = 'walk';
         var wt = document.createElement('b');
@@ -2744,6 +2809,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var busTrackers = {};   // vehicle_id -> tracker (persists across polls)
   var shapeArcCache = {}; // route_id -> [{pts, cum, len}]
   var lastPollT = 0;      // performance.now() of the previous poll (for observations)
+  var pollSeq = 0;        // increments per poll; trackers record their birth poll
   var MPH_TO_MPS = 0.44704;
   var PREDICT_HORIZON_S = 150; // never dead-reckon on a fix older than this
   var SNAP_DIST_M = 200;       // along-track divergence above this = teleport
@@ -3031,6 +3097,236 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return null;
   }
 
+  // --- Phase 2b-i: live delay propagation --------------------------------------
+  // Per poll, match live vehicles to scheduled trips and measure delays.
+  // Client-side, honest: a clear margin or no match. Matched trips get their
+  // remaining times shifted (clamped); disrupted trips are flagged, never
+  // shifted. Three quiet polls and the match reverts to scheduled.
+  var tripDelayState = new Map(); // trip object -> {delaySec, vehicleId, misses, disrupted}
+  var stopArcCache = {};          // routeId|pathIdx -> {stopId: arc s}
+  var ttRouteIdxById = null;      // built per timetable
+  var lastEmpiricalRun = 0;
+
+  function detroitParts(whenMs) {
+    var o = {};
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Detroit', year: 'numeric', month: 'numeric', day: 'numeric',
+      weekday: 'short', hour: 'numeric', minute: 'numeric', second: 'numeric', hourCycle: 'h23'
+    }).formatToParts(new Date(whenMs)).forEach(function (p) { o[p.type] = p.value; });
+    return {
+      ymd: o.year + String(o.month).padStart(2, '0') + String(o.day).padStart(2, '0'),
+      dow: { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[o.weekday],
+      sec: (+o.hour) * 3600 + (+o.minute) * 60 + (+o.second)
+    };
+  }
+
+  function stopArcMap(routeId, pathIdx) {
+    var key = routeId + '|' + pathIdx;
+    var hit = stopArcCache[key];
+    if (hit) return hit;
+    var m = {};
+    routeSegments(routeId).forEach(function (g) {
+      if (g.pathIdx !== pathIdx) return;
+      if (!(g.from in m)) m[g.from] = g.s0;
+      m[g.to] = g.s1;
+    });
+    stopArcCache[key] = m;
+    return m;
+  }
+
+  // Where a scheduled trip should be (arc s) at nowSec, via its stops mapped
+  // onto the shape. Returns null when the trip isn't on this path / is over.
+  function tripExpected(trip, stopS, nowSec) {
+    var pts = [];
+    for (var j = 0; j < trip.stops.length; j++) {
+      var s = stopS[String(trip.stops[j])];
+      if (s == null) continue;
+      pts.push({ s: s, dep: trip.dep[j], arr: trip.arr[j] });
+    }
+    if (pts.length < 2) return null;
+    for (var k = 1; k < pts.length; k++) if (pts[k].s <= pts[k - 1].s) return null;
+    var first = pts[0], last = pts[pts.length - 1];
+    function vref(a, b) {
+      var dt = b.dep - a.dep, ds = b.s - a.s;
+      return (dt > 0 && ds > 0) ? ds / dt : 8;
+    }
+    // expIdx: last stop the trip should have served by nowSec
+    var expIdx = -1;
+    for (var e = 0; e < pts.length; e++) if (pts[e].dep <= nowSec) expIdx = e;
+    if (nowSec < first.dep) return { sE: first.s, vRef: vref(first, pts[1]), pts: pts, expIdx: -1 };
+    if (nowSec > last.arr) return null;
+    for (var m = 0; m + 1 < pts.length; m++) {
+      var a = pts[m], b = pts[m + 1];
+      if (nowSec >= a.dep && nowSec <= b.dep) {
+        var f = (b.dep > a.dep) ? (nowSec - a.dep) / (b.dep - a.dep) : 0;
+        return { sE: a.s + f * (b.s - a.s), vRef: vref(a, b), pts: pts, expIdx: expIdx };
+      }
+    }
+    return { sE: last.s, vRef: vref(pts[pts.length - 2], last), pts: pts, expIdx: expIdx };
+  }
+
+  function headsignMatch(dest, h) {
+    if (!dest || !h) return false;
+    function norm(x) { return String(x).toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); }
+    var d = norm(dest), hh = norm(h);
+    if (!d || !hh) return false;
+    if (hh.indexOf(d) >= 0 || d.indexOf(hh) >= 0) return true;
+    return d.split(' ')[0] === hh.split(' ')[0];
+  }
+
+  function candidateTrips(tt, ridx, svc, prevSvc, nowSec) {
+    var out = [];
+    for (var pi = 0; pi < tt.patterns.length; pi++) {
+      var pat = tt.patterns[pi];
+      if (pat.route !== ridx) continue;
+      for (var ti = 0; ti < pat.trips.length; ti++) {
+        var t = pat.trips[ti];
+        if (t.s !== svc && t.s !== prevSvc) continue;
+        if (nowSec >= t.dep[0] - 1800 && nowSec <= t.arr[t.arr.length - 1] + 300) out.push(t);
+      }
+    }
+    return out;
+  }
+
+  function updateLiveDelays() {
+    if (!tripTT || !tripRaptor || !tripRaptor.setLiveDelays) return;
+    var tt = tripTT;
+    // Phase 2b-ii (dormant): empirical baseline substitution, hourly.
+    var nowMs = Date.now();
+    if (nowMs - lastEmpiricalRun > 3600000) {
+      lastEmpiricalRun = nowMs;
+      applyEmpiricalBaseline();
+    }
+    if (!ttRouteIdxById) {
+      ttRouteIdxById = {};
+      tt.routes.forEach(function (r, i) { ttRouteIdxById[String(r.id)] = i; });
+    }
+    var dp = detroitParts(nowMs);
+    var dpPrev = detroitParts(nowMs - 86400000);
+    var svc = tripRaptor.serviceFor(tt, dp.ymd, dp.dow);
+    var prevSvc = tripRaptor.serviceFor(tt, dpPrev.ymd, dpPrev.dow);
+    var nowSec = dp.sec;
+    // Candidate trips per route, once per poll.
+    var candsByRoute = {};
+    function candsFor(ridx) {
+      if (!candsByRoute[ridx]) candsByRoute[ridx] = candidateTrips(tt, ridx, svc, prevSvc, nowSec);
+      return candsByRoute[ridx];
+    }
+    var matches = []; // {trip, vehicleId, delaySec, disrupted, score}
+    var nowPerf = performance.now();
+    for (var vid in busTrackers) {
+      var tr = busTrackers[vid];
+      if (!tr || !tr.arc || !tr.vehicle) continue;
+      if (pollSeq - tr.bornSeq < 2) continue; // just appeared / changed routes
+      if (nowPerf - tr.fixT > 180000) continue; // stale fix
+      var v = tr.vehicle;
+      var routeStr = String(v.route_id);
+      var ridx = ttRouteIdxById[routeStr];
+      if (ridx == null) continue; // ghost route: nothing to match against
+      var stopS = stopArcMap(routeStr, tr.pathIdx);
+      var cands = candsFor(ridx);
+      if (!cands.length) continue;
+      var best = null, second = null;
+      for (var ci = 0; ci < cands.length; ci++) {
+        var trip = cands[ci];
+        var exp = tripExpected(trip, stopS, nowSec);
+        if (!exp) continue;
+        // Stop-index gate: the bus can't be 2+ stops early, nor absurdly late.
+        var vIdx = -1;
+        for (var q = 0; q < exp.pts.length; q++) {
+          if (exp.pts[q].s <= tr.s + 30) vIdx = q; else break;
+        }
+        var gate = vIdx - exp.expIdx;
+        if (gate > 1 || gate < -8) continue;
+        var score = Math.abs(tr.s - exp.sE) - (headsignMatch(v.destination, trip.h) ? 500 : 0);
+        if (!best || score < best.score) { second = best; best = { trip: trip, score: score, exp: exp }; }
+        else if (!second || score < second.score) { second = { trip: trip, score: score }; }
+      }
+      // Clear margin or no match. 4000 m bound: beyond that the residual is
+      // not a credible delay measurement.
+      if (!best || best.score >= 4000) continue;
+      if (second && (second.score - best.score) <= 300) continue;
+      var ds = tr.s - best.exp.sE;
+      var vRef = Math.max(best.exp.vRef, 2);
+      var delaySec = Math.round(-ds / vRef);
+      var disrupted = delaySec < -300 || delaySec > 1800;
+      matches.push({
+        trip: best.trip, vehicleId: v.vehicle_id,
+        delaySec: disrupted ? 0 : delaySec, disrupted: disrupted, score: best.score
+      });
+    }
+    // One vehicle per trip: best score wins (bus bunching).
+    var byTrip = new Map();
+    matches.forEach(function (m) {
+      var cur = byTrip.get(m.trip);
+      if (!cur || m.score < cur.score) byTrip.set(m.trip, m);
+    });
+    var matchedTrips = new Set(byTrip.keys());
+    byTrip.forEach(function (m, trip) {
+      var st = tripDelayState.get(trip);
+      if (m.disrupted) {
+        tripDelayState.set(trip, { delaySec: 0, vehicleId: m.vehicleId, misses: 0, disrupted: true });
+      } else if (!st || st.vehicleId !== m.vehicleId || st.disrupted) {
+        tripDelayState.set(trip, { delaySec: m.delaySec, vehicleId: m.vehicleId, misses: 0, disrupted: false });
+      } else {
+        st.delaySec = Math.round(st.delaySec * 0.5 + m.delaySec * 0.5);
+        st.misses = 0;
+      }
+    });
+    tripDelayState.forEach(function (st, trip) {
+      if (!matchedTrips.has(trip)) {
+        st.misses++;
+        if (st.misses >= 3) tripDelayState.delete(trip); // quiet: revert to scheduled
+      }
+    });
+    var delayMap = new Map();
+    tripDelayState.forEach(function (st, trip) {
+      delayMap.set(trip, { delaySec: st.delaySec, disrupted: st.disrupted, vehicleId: st.vehicleId });
+    });
+    tripRaptor.setLiveDelays(tt, delayMap, nowMs);
+    // Keep the open trip card live: re-plan "leave now" queries per poll.
+    if (tripMode && tripJourneys.length && !(tripLeaveMode === 'at' && tripLeaveTime)) replanLive();
+  }
+
+  // --- Phase 2b-ii (dormant): empirical timetable substitution ----------------
+  // Replaces scheduled segment times with mature timing-cell means. No-ops
+  // until cells mature (none as of 2026-10-05). The delay layer measures
+  // against this baseline when present, else against the raw schedule.
+  function applyEmpiricalBaseline() {
+    if (!tripTT) return 0;
+    var tt = tripTT;
+    var bucket = detroitBucket(new Date());
+    var nSub = 0;
+    var hasCells = false;
+    if (timingCells) {
+      for (var k in timingCells) {
+        if (k.indexOf('|') >= 0) { hasCells = true; break; }
+      }
+    }
+    tt.patterns.forEach(function (pat) {
+      var routeId = String(tt.routes[pat.route].id);
+      pat.trips.forEach(function (t) {
+        var dep2 = null, arr2 = null;
+        if (hasCells) {
+          for (var j = 0; j + 1 < t.stops.length; j++) {
+            var cell = timingCells[routeId + '|' + t.stops[j] + '|' + t.stops[j + 1] + '|' + bucket];
+            if (cell && cell.n >= 3 && cell.mean_s > 0) {
+              var delta = cell.mean_s - (t.dep[j + 1] - t.dep[j]);
+              if (Math.abs(delta) >= 1) {
+                if (!dep2) { dep2 = t.dep.slice(); arr2 = t.arr.slice(); }
+                for (var m = j + 1; m < dep2.length; m++) { dep2[m] += delta; arr2[m] += delta; }
+                nSub++;
+              }
+            }
+          }
+        }
+        t.depL2 = dep2;
+        t.arrL2 = arr2;
+      });
+    });
+    return nSub;
+  }
+
   function updateBuses(vehicles) {
     var now = performance.now();
     var seen = {};
@@ -3048,9 +3344,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         tr = busTrackers[v.vehicle_id] = {
           id: v.vehicle_id, routeId: v.route_id,
           arc: null, pathIdx: -1, s: 0, sCorr: 0,
-          speedMps: 0, fixT: 0, lastX: null, lastZ: null, init: false
+          speedMps: 0, fixT: 0, lastX: null, lastZ: null, init: false,
+          bornSeq: pollSeq, vehicle: null
         };
       }
+      tr.vehicle = v; // fresh record each poll (destination, updated_at)
       var m = matchFix(v.route_id, p[0], p[1], v.bearing, tr.arc ? tr : null);
       if (m && m.dist <= OFFSHAPE_M) {
         if (tr.arc && tr.pathIdx === m.pathIdx) {
@@ -3106,6 +3404,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     for (var id in busTrackers) if (!seen[id]) delete busTrackers[id];
     lastPollT = now;
+    pollSeq++;
+    updateLiveDelays(); // Phase 2b-i: match vehicles to trips, measure delays
     renderBusInstances();
     if (selectedStop) renderStopLive();
     if (typeof refreshTripFusion === 'function') refreshTripFusion(); // live counts on trip legs
