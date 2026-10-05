@@ -370,9 +370,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (s.vehicle && s.vehicle.vehicle_id === selectedVehicleId) {
         // Upper area of the column, clear of the route badge: reads as a unit
         // with the badge without covering the pillar. Tracks the zoom-coupled
-        // pillar height (busMode uses true-scale models instead).
+        // pillar height (busMode uses true-scale models instead). Scale eases
+        // per frame with the badges so the card glides instead of stepping.
         var y = busMode ? 150 : Math.max(120, PILLAR_H * pillarYS - 80);
         busInfoSprite.position.set(s.x + 420, y, s.z);
+        if (busInfoSprite.userData.aspect) {
+          var ih = badgeHeight() * 1.15;
+          busInfoSprite.scale.set(ih * busInfoSprite.userData.aspect, ih, 1);
+        }
         return;
       }
     }
@@ -652,7 +657,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
 
   // Per-bus route badges: one sprite per bus, shown only at close street-level zooms.
-  // Badge size tracks zoom (constant screen presence) via updateBadgeScales.
+  // Badge size tracks zoom (constant screen presence) via smoothBadges, called every frame.
   function badgeHeight() {
     var camDist = camera.position.distanceTo(controls.target);
     var h = Math.max(60, Math.min(170, camDist * 0.045));
@@ -683,16 +688,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       }
     }
   }
-  var lastBadgeScaleUpdate = 0;
-  function updateBadgeScales() {
-    var now = performance.now();
-    if (now - lastBadgeScaleUpdate < 500) return;
-    lastBadgeScaleUpdate = now;
+  // Per-frame badge smoothing: scale and anchor track the live zoom every
+  // frame, so badges glide with the pillars instead of stepping on a timer.
+  // Visibility/texture assignment stays in updateBusBadges (data updates).
+  function smoothBadges() {
     var h = badgeHeight();
+    var yBase = busMode ? 430 : PILLAR_H * pillarYS + 360;
     for (var i = 0; i < badgePool.length; i++) {
       var sp = badgePool[i];
       if (!sp.visible || !sp.userData.aspect) continue;
       sp.scale.set(h * sp.userData.aspect, h, 1);
+      sp.position.y = yBase;
     }
   }
 
@@ -705,36 +711,39 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     else if (busMode && d > 3400) busMode = false;
   }
 
-  // Zoom-coupled pillar rescale, throttled. Rewrites instance matrices only
-  // when the scale moved materially; badge anchors follow the pillar tops.
-  var _lastPillarScaleT = 0;
-  function updatePillarScale() {
-    var now = performance.now();
-    if (now - _lastPillarScaleT < 400) return;
-    _lastPillarScaleT = now;
+  // Zoom-coupled pillar scale, eased every frame toward the zoom target so
+  // markers glide instead of stepping. Rewrites instance matrices only while
+  // the eased value is still moving; badge anchors follow the pillar tops.
+  function easePillarScale(camDist) {
     if (busMode) return; // true-scale models need no pillar scaling
-    var target = pillarScaleFor(camera.position.distanceTo(controls.target));
-    if (Math.abs(target - pillarYS) < 0.02) return;
-    pillarYS = target;
+    var target = pillarScaleFor(camDist);
+    var d = target - pillarYS;
+    if (Math.abs(d) < 0.003) {
+      if (pillarYS === target) return;
+      pillarYS = target;
+    } else {
+      pillarYS += d * 0.16;
+    }
     for (var k = 0; k < busSlots.length; k++) writeBusMatrices(k, busSlots[k], 1);
     pillarMeshes.forEach(function (im) { im.instanceMatrix.needsUpdate = true; });
     updateBusBadges(busSlots.length, PILLAR_H * pillarYS + 360);
   }
 
-  // Zoom-coupled stop rescale, throttled like the pillar rescale. Rewrites
-  // instance matrices only on a material change; People Mover pins follow
-  // the same scale so all stop-class markers behave as one family.
-  var _lastStopScaleT = 0;
-  function updateStopScale() {
-    var now = performance.now();
-    if (now - _lastStopScaleT < 400) return;
-    _lastStopScaleT = now;
-    var target = stopScaleFor(camera.position.distanceTo(controls.target));
-    if (Math.abs(target - stopYS) < 0.02) return;
-    stopYS = target;
+  // Zoom-coupled stop scale, eased every frame like the pillars. Matrix-only
+  // rewrites while moving (colors are untouched); the selection highlight is
+  // re-applied after each rewrite. People Mover pins follow the same scale
+  // so all stop-class markers behave as one family.
+  function easeStopScale(camDist) {
+    var target = stopScaleFor(camDist);
+    var d = target - stopYS;
+    if (Math.abs(d) < 0.003) {
+      if (stopYS === target) return;
+      stopYS = target;
+    } else {
+      stopYS += d * 0.16;
+    }
     if (stopPickList.length) {
-      writeStopMatrices(stopPickList);
-      selectedStopIndex = selectedStop ? stopPickList.indexOf(selectedStop) : -1;
+      writeStopMatrices(stopPickList, false);
       setStopSelectedColor(selectedStopIndex, true);
     }
     for (var p = 0; p < pmPins.length; p++) {
@@ -1316,7 +1325,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     t = t * t * (3 - 2 * t);
     return 0.35 + 0.65 * t;
   }
-  function writeStopMatrices(list) {
+  function writeStopMatrices(list, withColors) {
     for (var i = 0; i < list.length; i++) {
       var s = list[i];
       var h = stopHeight(s.r.length) * stopYS;
@@ -1325,17 +1334,19 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       _s3.set(1, h, 1);
       _m4.compose(_p3, _q3, _s3);
       stopIM.setMatrixAt(i, _m4);
-      if (s.r.length > 1) {
-        _stopTmpColor.set(0xf5f2ea);
-      } else {
-        var rc = routeColors[s.r[0]];
-        if (rc) _stopTmpColor.copy(rc); else _stopTmpColor.set(0xf5f2ea);
+      if (withColors) {
+        if (s.r.length > 1) {
+          _stopTmpColor.set(0xf5f2ea);
+        } else {
+          var rc = routeColors[s.r[0]];
+          if (rc) _stopTmpColor.copy(rc); else _stopTmpColor.set(0xf5f2ea);
+        }
+        stopIM.setColorAt(i, _stopTmpColor);
       }
-      stopIM.setColorAt(i, _stopTmpColor);
     }
     stopIM.count = list.length;
     stopIM.instanceMatrix.needsUpdate = true;
-    if (stopIM.instanceColor) stopIM.instanceColor.needsUpdate = true;
+    if (withColors && stopIM.instanceColor) stopIM.instanceColor.needsUpdate = true;
   }
   function rebuildStops() {
     // Stops only depend on route toggles: skip the full rebuild when the
@@ -1354,7 +1365,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       });
     }
     stopPickList = list;
-    writeStopMatrices(list);
+    writeStopMatrices(list, true);
     // Rebuilds recolor every instance: re-apply the selection highlight.
     selectedStopIndex = selectedStop ? list.indexOf(selectedStop) : -1;
     if (selectedStopIndex < 0 && selectedStop) hideStop();
@@ -2852,9 +2863,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           stopHighlight.scale.set(shp, shp, 1);
         }
         updateStreetLabels();
-        updatePillarScale();
-        updateStopScale();
-        updateBadgeScales();
+        easePillarScale(camDist);
+        easeStopScale(camDist);
+        smoothBadges();
         renderer.render(scene, camera);
       });
     })
