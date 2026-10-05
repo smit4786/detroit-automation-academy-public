@@ -190,6 +190,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var streetNameData = null; // street name anchors (assets/detroit-street-names.json)
   var stopData = null;   // raw stops array from ddot-routes-3d.json
 
+  // People Mover layer: static schedule geometry (no live feed exists —
+  // verified 2026-10-05). Independent of the DDOT route filter machinery:
+  // its own toggle, its own honesty labeling, never presented as live.
+  var pmGroup = null;      // THREE.Group: loop deck + skirts + station pins + label
+  var pmStations = [];     // pickable records {id, n, x, z, r:['DPM'], pm:true}
+  var pmLabel = null, pmTether = null;
+  var pmVisible = true;
+  var PM_DECK_Y = 140;     // elevated guideway: floats above the highest DDOT route deck (~110)
+
   function project(lat, lon) {
     return [(lon - proj.lon0) * proj.mLon, -(lat - proj.lat0) * proj.mLat];
   }
@@ -794,8 +803,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var v = pickBus(e.clientX, e.clientY, isTouch);
     if (v) { showBus(v); return; }
     var st = pickStop(e.clientX, e.clientY, isTouch);
-    if (st) showStop(st);
-    else { hideBus(); hideStop(); }
+    if (st) { showStop(st); return; }
+    var pm = pickPMStation(e.clientX, e.clientY, isTouch);
+    if (pm) { showStop(pm); return; }
+    hideBus(); hideStop();
   });
   renderer.domElement.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'mouse' || downPos) return;
@@ -1329,7 +1340,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       host.appendChild(chip);
     });
     $('stop-card').hidden = false;
-    stopHighlight.position.set(st.x, 20, st.z);
+    // Selection ring hugs the ground for DDOT stops, the guideway deck for
+    // People Mover stations (their pins stand on the elevated loop).
+    stopHighlight.position.set(st.x, st.pm ? PM_DECK_Y + 4 : 20, st.z);
     stopHighlight.visible = true;
     renderStopLive();
   }
@@ -2207,6 +2220,91 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       pendingNearMe = true;
       locateBtn.click();
     });
+    // People Mover static layer: independent of the DDOT route filters —
+    // "Show all"/"All off" and near-me never touch it. Own toggle, own state.
+    var pmT = $('pm-toggle');
+    if (pmT) pmT.addEventListener('click', function () {
+      pmVisible = !pmVisible;
+      if (pmGroup) pmGroup.visible = pmVisible;
+      pmT.setAttribute('aria-pressed', String(pmVisible));
+      if (!pmVisible && selectedStop && selectedStop.pm) hideStop();
+    });
+  }
+
+  // --- People Mover: stations + downtown loop (static) -------------------------
+  // Source: Detroit People Mover GTFS static (agency permalink), projected
+  // with the same lat0/lon0 as ddot-routes-3d.json so geometry aligns.
+  // Visual language: Concrete #9AA0A6 deck (reads as infrastructure, distinct
+  // from the saturated live-route colors), paper-white station pins, narrow
+  // 40 m guideway (single track, not a bus corridor). Nothing here implies
+  // live vehicles: no beacons, no "LIVE" marker, and the filter-panel note
+  // states the static provenance outright.
+  function buildPeopleMover(pm) {
+    // Pseudo-route registration so the shared stop card renders a proper
+    // chip ("DPM · Detroit People Mover"). Kept OUT of routeOrder: the
+    // DDOT filter/dim/near-me machinery must never touch this layer.
+    routeColors['DPM'] = new THREE.Color(0x9AA0A6);
+    routeNames['DPM'] = 'Detroit People Mover';
+
+    pmGroup = new THREE.Group();
+    pmGroup.name = 'people-mover';
+    var concrete = new THREE.Color(0x9AA0A6);
+    var deckMat = new THREE.MeshLambertMaterial({ color: concrete, side: THREE.DoubleSide });
+    var skirtMat = new THREE.MeshLambertMaterial({ color: concrete.clone().multiplyScalar(0.35), side: THREE.DoubleSide });
+    var loop = pm.loop.slice();
+    pmGroup.add(new THREE.Mesh(ribbonGeometry(loop, 40, PM_DECK_Y), deckMat));
+    pmGroup.add(new THREE.Mesh(skirtGeometry(loop, 40, PM_DECK_Y), skirtMat));
+
+    var pinGeo = new THREE.CylinderGeometry(24, 32, 300, 12);
+    var pinMat = new THREE.MeshLambertMaterial({ color: 0xF5F2EA });
+    var ringGeo = new THREE.RingGeometry(40, 64, 32);
+    var ringMat = new THREE.MeshBasicMaterial({ color: 0xF5F2EA, transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: false });
+    pmStations = pm.stations.map(function (s) {
+      var pin = new THREE.Mesh(pinGeo, pinMat);
+      pin.position.set(s.x, PM_DECK_Y + 150, s.z);
+      pmGroup.add(pin);
+      var ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.set(s.x, PM_DECK_Y + 3, s.z);
+      pmGroup.add(ring);
+      return { id: s.id, n: s.name, x: s.x, z: s.z, r: ['DPM'], pm: true };
+    });
+
+    var mid = loop[Math.floor(loop.length / 2)];
+    pmLabel = makeLabel('People Mover · Downtown Loop', '#9AA0A6');
+    pmLabel.position.set(mid[0], 1050, mid[1]);
+    pmGroup.add(pmLabel);
+    pmTether = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(mid[0], PM_DECK_Y, mid[1]),
+        new THREE.Vector3(mid[0], 980, mid[1])
+      ]),
+      new THREE.LineBasicMaterial({ color: 0x9AA0A6, transparent: true, opacity: 0.45 })
+    );
+    pmGroup.add(pmTether);
+    pmGroup.visible = pmVisible;
+    scene.add(pmGroup);
+  }
+
+  // Screen-space nearest station (mirrors the stop touch fallback: forgiving
+  // at far zooms, tighter for mouse). The pins are small; raycasting them
+  // would be fiddly, so proximity picking is the primary path for both.
+  var _pmV3 = new THREE.Vector3();
+  function pickPMStation(cx, cy, isTouch) {
+    if (!pmGroup || !pmGroup.visible || !pmStations.length) return null;
+    var r = renderer.domElement.getBoundingClientRect();
+    var sx = cx - r.left, sy = cy - r.top;
+    var best = null, bestD = isTouch ? 48 : 26;
+    for (var i = 0; i < pmStations.length; i++) {
+      var s = pmStations[i];
+      _pmV3.set(s.x, PM_DECK_Y + 150, s.z).project(camera);
+      if (_pmV3.z > 1) continue;
+      var px = (_pmV3.x * 0.5 + 0.5) * r.width;
+      var py = (-_pmV3.y * 0.5 + 0.5) * r.height;
+      var d = Math.hypot(px - sx, py - sy);
+      if (d < bestD) { bestD = d; best = s; }
+    }
+    return best;
   }
 
   function togglePanel(force) {
@@ -2430,13 +2528,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       .catch(function () { return null; }),
     fetch('assets/detroit-street-names.json?v=' + STAMP, { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .catch(function () { return null; })
+      .catch(function () { return null; }),
+    fetch('peoplemover-3d.json?v=' + STAMP, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }) // static layer is optional: map works without it
   ])
     .then(function (all) {
       var data = all[0];
       fleetData = all[1];
       streetData = all[2];
       streetNameData = all[3];
+      var pmData = all[4];
       proj = {
         lat0: data.projection.lat0,
         lon0: data.projection.lon0,
@@ -2578,6 +2680,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       // paper-white hubs) whenever filters change; see the stops section.
       stopData = data.stops || [];
 
+      // People Mover static layer: built once, toggled independently of the
+      // DDOT route filters. Absent (fetch failed) the map simply has no PM layer.
+      if (pmData && pmData.loop && pmData.stations) buildPeopleMover(pmData);
+
       buildFilterPanel(data.groups);
       applyFilters();
       syncFilterUI();
@@ -2653,6 +2759,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
             routeNearOk(L.routeId);
           L.sprite.visible = lvis;
           if (L.tether) L.tether.visible = lvis;
+        }
+        // People Mover label: static layer, so its visibility follows only
+        // the layer toggle and the street-zoom declutter rule — never the
+        // live-running state, which must not imply vehicles exist.
+        if (pmLabel) {
+          var pmLvis = pmGroup.visible && camDist > 7000;
+          pmLabel.visible = pmLvis;
+          if (pmTether) pmTether.visible = pmLvis;
         }
         if (stopHighlight.visible) {
           var shp = busPulse();
