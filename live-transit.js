@@ -2262,11 +2262,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // Returns true if any route flipped between running/not-running.
   // Running-state engine. Asymmetric by design: a visible bus means
   // 'running' immediately (certain); a disappearance needs 3 quiet polls
-  // (uncertain — could be a feed gap). A route never seen running has no
-  // prior state to protect from flicker, so the first poll marks zero-bus
-  // routes 'not-running' at once — otherwise "hide non-running" is a lie
-  // for ~3 minutes after every load.
-  var runningPrimed = false;
+  // (~3 minutes — uncertain, could be a feed gap or a between-buses lull).
+  // A route is never assumed dead on load: with zero buses seen it stays
+  // 'unknown' (which never hides or dims) until 3 consecutive polls come
+  // back empty. Burying a scheduled route on a single empty snapshot —
+  // e.g. page loaded between buses — was the old first-poll shortcut.
   function updateRunningState() {
     var changed = false;
     routeOrder.forEach(function (rid) {
@@ -2276,13 +2276,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         if (runningState[rid] !== 'running') { runningState[rid] = 'running'; changed = true; }
       } else {
         quietStreak[rid] = (quietStreak[rid] || 0) + 1;
-        var need = runningPrimed ? 3 : 1;
-        if (quietStreak[rid] >= need && runningState[rid] !== 'not-running') {
+        if (quietStreak[rid] >= 3 && runningState[rid] !== 'not-running') {
           runningState[rid] = 'not-running'; changed = true;
         }
       }
     });
-    runningPrimed = true;
     return changed;
   }
 
