@@ -2427,6 +2427,27 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         ground.rotation.x = -Math.PI / 2;
         ground.position.set(nw[0] + w / 2, 0, nw[1] + h / 2);
         scene.add(ground);
+        // Safe-zone border: dashed amber perimeter at the coverage bounds so the
+        // edge of the mapped area stays visible while panning/scrolling. Floats
+        // at y=20 — above the street tiers (14-16), below the route decks (~66).
+        // Brand: Amber #FFB000, the academy's signal accent.
+        (function addBoundsBorder() {
+          var x0 = nw[0], x1 = se[0], z0 = nw[1], z1 = se[1], yB = 20;
+          var g = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(x0, yB, z0),
+            new THREE.Vector3(x1, yB, z0),
+            new THREE.Vector3(x1, yB, z1),
+            new THREE.Vector3(x0, yB, z1)
+          ]);
+          var border = new THREE.LineLoop(g, new THREE.LineDashedMaterial({
+            color: 0xFFB000, dashSize: 220, gapSize: 140,
+            transparent: true, opacity: 0.55, depthWrite: false
+          }));
+          border.computeLineDistances();
+          border.renderOrder = 5;
+          border.name = 'safe-zone-border';
+          scene.add(border);
+        })();
         if (!streetData) return; // ground still renders; streets absent
         function addTier(arr, color, opacity, y) {
           if (!arr || !arr.length) return null;
