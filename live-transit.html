@@ -249,6 +249,13 @@
   .trip-leg-row b { color: #F5F2EA; font-weight: 600; }
   .trip-leg-row span { color: #9AA0A6; overflow-wrap: break-word; }
   .trip-leg-row .trip-leg-time { font-variant-numeric: tabular-nums; }
+  .trip-live-badge, .trip-disrupted-badge {
+    display: inline-block; font-size: .62rem; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; padding: .1rem .45rem; border-radius: 999px; margin-top: .15rem;
+    width: fit-content;
+  }
+  .trip-live-badge { color: #0C1116; background: #FFB000; }
+  .trip-disrupted-badge { color: #F5F2EA; background: #B3261E; }
   .stop-routes { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem; }
   .stop-route { display: inline-flex; align-items: center; gap: .35rem; background: rgba(245,242,234,.08); border: 1px solid rgba(245,242,234,.14); color: #F5F2EA; border-radius: 999px; padding: .3rem .6rem; font-size: .78rem; font-family: "Inter", sans-serif; }
   .stop-route i { width: .65rem; height: .65rem; border-radius: 3px; display: inline-block; flex: none; }
@@ -438,7 +445,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261005-1435"></script>
+<script type="module" src="live-transit.js?v=20261005-1520"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
