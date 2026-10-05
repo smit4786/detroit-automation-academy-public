@@ -315,6 +315,10 @@
         </div>
         <p class="f-note">Routes with no live buses reporting are dimmed or hidden automatically. DDOT schedule data is current through Feb 7, 2027 &mdash; this page shows live bus positions; the trip planner uses scheduled times.</p>
         <div id="filter-groups"></div>
+        <div class="f-static">
+          <button class="f-group-head" id="pm-toggle" aria-pressed="true" title="Show the People Mover downtown loop and stations"><span class="f-box"></span><b>People Mover loop</b><span class="f-count">static</span></button>
+          <p class="f-note">No live feed exists for the People Mover &mdash; stations and the downtown loop are schedule geometry from the agency&rsquo;s GTFS. Positions are real; no vehicles are shown.</p>
+        </div>
         </div>
         <div class="resize-grip" id="panel-resize" aria-hidden="true"></div>
       </div>
@@ -430,7 +434,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261005-0953"></script>
+<script type="module" src="live-transit.js?v=20261005-1148"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
