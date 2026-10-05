@@ -970,6 +970,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     stage.classList.toggle('pseudo-full', on);
     document.body.classList.toggle('pseudo-full-lock', on);
     setFsBtn();
+    syncFsLock();
     notifyMapResize();
   }
   fullBtn.addEventListener('click', function () {
@@ -994,7 +995,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function notifyMapResize() {
     try { window.dispatchEvent(new Event('resize')); } catch (e) {}
   }
-  function onFsChange() { setFsBtn(); notifyMapResize(); }
+  function onFsChange() { setFsBtn(); syncFsLock(); notifyMapResize(); }
+  function syncFsLock() { document.body.classList.toggle('fs-lock', fsActive()); }
   document.addEventListener('fullscreenchange', onFsChange);
   document.addEventListener('webkitfullscreenchange', onFsChange);
   document.addEventListener('keydown', function (e) {
