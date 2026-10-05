@@ -2027,6 +2027,165 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       return l.type === 'bus' ? ('b' + l.routeId + '@' + l.board + '>' + l.alight) : 'w';
     }).join('|');
   }
+  // --- Phase 2c: active ride guidance -----------------------------------------
+  // Advisory banners driven by the selected journey + live vehicle positions.
+  // Framed around the BUS (what we can see), never the rider (what we can't).
+  // Triggers: "board soon" (bus ≤2 min from boarding stop), "alight next"
+  // (1 stop out), missed transfer → auto-replan from the live position.
+  var guidanceDismissedSig = null;
+  var missedCooldownUntil = 0;
+
+  function guidanceVehicle(leg) {
+    if (!leg.tripRef) return null;
+    var st = tripDelayState.get(leg.tripRef);
+    if (!st || st.disrupted) return null;
+    var tr = busTrackers[st.vehicleId];
+    if (!tr || !tr.arc || !tr.vehicle) return null;
+    return tr;
+  }
+  function stopsToAlight(leg, tr, arcMap) {
+    var trip = leg.tripRef;
+    var pts = [];
+    for (var k = 0; k < trip.stops.length; k++) {
+      var sk = arcMap[String(trip.stops[k])];
+      if (sk != null) pts.push({ stop: String(trip.stops[k]), s: sk });
+    }
+    var vi = -1, ai = -1;
+    for (var q = 0; q < pts.length; q++) {
+      if (pts[q].s <= tr.s + 30) vi = q;
+      if (pts[q].stop === String(leg.alight)) ai = q;
+    }
+    if (vi < 0 || ai < 0) return -1;
+    return ai - vi;
+  }
+  function fmtEta(sec) {
+    sec = Math.max(0, Math.round(sec));
+    if (sec < 60) return sec + 's';
+    var m = Math.round(sec / 60);
+    return m + ' min';
+  }
+  // Live-adjusted leg time: refresh the plan-time delay with the current one.
+  function liveLegTime(leg, which) {
+    var base = which === 'board' ? leg.boardSec : leg.alightSec;
+    if (!leg.tripRef) return base;
+    var st = tripDelayState.get(leg.tripRef);
+    if (st && !st.disrupted) return base - (leg.delaySec || 0) + st.delaySec;
+    return base;
+  }
+  function guidanceForLeg(leg) {
+    var tr = guidanceVehicle(leg);
+    if (!tr) return null; // no live bus on this trip: no guidance, no fiction
+    var arcMap = stopArcMap(leg.routeId, tr.pathIdx);
+    var sBoard = arcMap[String(leg.board)], sAlight = arcMap[String(leg.alight)];
+    if (sBoard == null || sAlight == null) return null;
+    var speed = Math.max(tr.speedMps, 1.5);
+    if (tr.s < sBoard - 50) {
+      var eta = (sBoard - tr.s) / speed;
+      if (eta <= 150) {
+        return { kind: 'board', text: 'Route ' + leg.routeId + ' reaches ' +
+          tripStopName(leg.board) + ' in ~' + fmtEta(eta) + ' — be ready to board.' };
+      }
+      return null;
+    }
+    var left = stopsToAlight(leg, tr, arcMap);
+    if (left < 0) return null;
+    if (left === 0) return 'passed';
+    if (left === 1) {
+      return { kind: 'alight', urgent: true, text: 'Route ' + leg.routeId +
+        ' arriving at ' + tripStopName(leg.alight) + ' — get off at the next stop.' };
+    }
+    return { kind: 'riding', text: 'Route ' + leg.routeId + ' — ' + left +
+      ' stops to ' + tripStopName(leg.alight) + '.' };
+  }
+  function checkMissedTransfer(j, busLegs) {
+    for (var i = 0; i + 1 < busLegs.length; i++) {
+      var leg1 = busLegs[i], leg2 = busLegs[i + 1];
+      var alight1 = liveLegTime(leg1, 'alight');
+      var board2 = liveLegTime(leg2, 'board');
+      // Walk between the legs comes from the journey's own walk legs.
+      var walkSec = 0, inWalk = false;
+      for (var k = 0; k < j.legs.length; k++) {
+        var l = j.legs[k];
+        if (l === leg1) { inWalk = true; continue; }
+        if (l === leg2) break;
+        if (inWalk && l.type === 'walk') walkSec += l.secs || 0;
+      }
+      if (board2 < alight1 + walkSec + 60) {
+        return { leg1: leg1, leg2: leg2, alightStop: leg1.alight };
+      }
+    }
+    return null;
+  }
+  function showGuidanceBanner(kind, text, urgent, done) {
+    var banner = $('trip-guidance');
+    if (!banner) return;
+    banner.innerHTML = '';
+    banner.className = urgent ? 'urgent' : (done ? 'done' : '');
+    banner.hidden = false;
+    banner.style.display = 'flex';
+    var dot = document.createElement('b');
+    dot.textContent = kind === 'alight' ? '◉' : (kind === 'missed' ? '⚠' : '●');
+    dot.style.color = urgent ? '#FF6B60' : '#FFB000';
+    banner.appendChild(dot);
+    var sp = document.createElement('span');
+    sp.textContent = text;
+    banner.appendChild(sp);
+    var x = document.createElement('button');
+    x.textContent = '×';
+    x.setAttribute('aria-label', 'Dismiss guidance');
+    x.addEventListener('click', function () {
+      if (tripSel >= 0 && tripJourneys[tripSel]) guidanceDismissedSig = journeySig(tripJourneys[tripSel]);
+      banner.hidden = true;
+      banner.style.display = 'none';
+    });
+    banner.appendChild(x);
+  }
+  function hideGuidanceBanner() {
+    var banner = $('trip-guidance');
+    if (banner) { banner.hidden = true; banner.style.display = 'none'; }
+  }
+  // Replan from the rider's live position: the bus they're on, else GPS,
+  // else the missed leg's alighting stop.
+  function replanFromLive(missed) {
+    var tr = guidanceVehicle(missed.leg1);
+    if (tr && tr.vehicle && tr.vehicle.x != null) {
+      tripFrom = { kind: 'loc', x: tr.vehicle.x, z: tr.vehicle.z };
+    } else if (youMarker.group.visible) {
+      tripFrom = { kind: 'loc', x: youMarker.group.position.x, z: youMarker.group.position.z };
+    } else {
+      var sd = stopData[missed.alightStop];
+      tripFrom = sd ? { kind: 'stop', idx: missed.alightStop } : tripFrom;
+    }
+    renderTripFields();
+    updateTripMarkers();
+    runTripPlan();
+  }
+  function updateGuidance() {
+    if (!tripMode || !tripJourneys.length || tripSel < 0) { hideGuidanceBanner(); return; }
+    if (tripLeaveMode === 'at' && tripLeaveTime) { hideGuidanceBanner(); return; }
+    var j = tripJourneys[tripSel];
+    var sig = journeySig(j);
+    if (guidanceDismissedSig === sig) { hideGuidanceBanner(); return; }
+    var busLegs = j.legs.filter(function (l) { return l.type === 'bus'; });
+    if (!busLegs.length) { hideGuidanceBanner(); return; }
+    // Missed transfer: highest priority.
+    var missed = checkMissedTransfer(j, busLegs);
+    if (missed && Date.now() > missedCooldownUntil) {
+      missedCooldownUntil = Date.now() + 5 * 60 * 1000;
+      guidanceDismissedSig = null;
+      showGuidanceBanner('missed',
+        'Missed the Route ' + missed.leg2.routeId + ' connection — replanned from your current position.',
+        true, false);
+      replanFromLive(missed);
+      return;
+    }
+    for (var i = 0; i < busLegs.length; i++) {
+      var g = guidanceForLeg(busLegs[i]);
+      if (g === 'passed') continue;
+      if (g) { showGuidanceBanner(g.kind, g.text, !!g.urgent, false); return; }
+    }
+    showGuidanceBanner('done', 'You have arrived.', false, true);
+  }
   function renderTripResults(res) {
     var host = $('trip-results');
     host.innerHTML = '';
@@ -3286,6 +3445,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     tripRaptor.setLiveDelays(tt, delayMap, nowMs);
     // Keep the open trip card live: re-plan "leave now" queries per poll.
     if (tripMode && tripJourneys.length && !(tripLeaveMode === 'at' && tripLeaveTime)) replanLive();
+    updateGuidance(); // Phase 2c: board/alight/missed-transfer banners
   }
 
   // --- Phase 2b-ii (dormant): empirical timetable substitution ----------------
