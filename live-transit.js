@@ -2743,6 +2743,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // is rendered raw (detour) with prediction suspended until it re-matches.
   var busTrackers = {};   // vehicle_id -> tracker (persists across polls)
   var shapeArcCache = {}; // route_id -> [{pts, cum, len}]
+  var lastPollT = 0;      // performance.now() of the previous poll (for observations)
   var MPH_TO_MPS = 0.44704;
   var PREDICT_HORIZON_S = 150; // never dead-reckon on a fix older than this
   var SNAP_DIST_M = 200;       // along-track divergence above this = teleport
@@ -2781,6 +2782,25 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return { x: ax + dx * t, z: az + dz * t, dx: dx / dl, dz: dz / dl };
   }
 
+  // Nearest point on one arc: arc-length, cross-track distance, direction.
+  function nearestOnArc(arc, x, z) {
+    var pts = arc.pts, cum = arc.cum;
+    var bDist = Infinity, bS = 0, bDx = 1, bDz = 0;
+    for (var i = 0; i < pts.length - 1; i++) {
+      var ax = pts[i][0], az = pts[i][1];
+      var dx = pts[i + 1][0] - ax, dz = pts[i + 1][1] - az;
+      var l2 = dx * dx + dz * dz;
+      var t = l2 > 0 ? ((x - ax) * dx + (z - az) * dz) / l2 : 0;
+      t = Math.max(0, Math.min(1, t));
+      var d = Math.hypot(x - (ax + dx * t), z - (az + dz * t));
+      if (d < bDist) {
+        bDist = d; bS = cum[i] + Math.sqrt(l2) * t;
+        var dl = Math.sqrt(l2) || 1; bDx = dx / dl; bDz = dz / dl;
+      }
+    }
+    return { s: bS, dist: bDist, dx: bDx, dz: bDz };
+  }
+
   // Map-match a fix to (path, arc-length). Bearing disambiguates overlapping
   // outbound/inbound paths; the previous match lends continuity.
   function matchFix(routeId, x, z, bearingDeg, prev) {
@@ -2795,25 +2815,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     var best = null;
     for (var pi = 0; pi < arcs.length; pi++) {
-      var pts = arcs[pi].pts, cum = arcs[pi].cum;
-      var bDist = Infinity, bS = 0, bDx = 1, bDz = 0;
-      for (var i = 0; i < pts.length - 1; i++) {
-        var ax = pts[i][0], az = pts[i][1];
-        var dx = pts[i + 1][0] - ax, dz = pts[i + 1][1] - az;
-        var l2 = dx * dx + dz * dz;
-        var t = l2 > 0 ? ((x - ax) * dx + (z - az) * dz) / l2 : 0;
-        t = Math.max(0, Math.min(1, t));
-        var d = Math.hypot(x - (ax + dx * t), z - (az + dz * t));
-        if (d < bDist) {
-          bDist = d; bS = cum[i] + Math.sqrt(l2) * t;
-          var dl = Math.sqrt(l2) || 1; bDx = dx / dl; bDz = dz / dl;
-        }
-      }
-      var dot = hasB ? (bwx * bDx + bwz * bDz) : 0;
-      var score = bDist - 80 * Math.max(0, dot);
-      if (prev && prev.pathIdx === pi && Math.abs(bS - prev.s) < 400) score -= 50;
+      var nb = nearestOnArc(arcs[pi], x, z);
+      var dot = hasB ? (bwx * nb.dx + bwz * nb.dz) : 0;
+      var score = nb.dist - 80 * Math.max(0, dot);
+      if (prev && prev.pathIdx === pi && Math.abs(nb.s - prev.s) < 400) score -= 50;
       if (!best || score < best.score) {
-        best = { score: score, pathIdx: pi, s: bS, dist: bDist, arc: arcs[pi] };
+        best = { score: score, pathIdx: pi, s: nb.s, dist: nb.dist, arc: arcs[pi] };
       }
     }
     return best;
@@ -2833,9 +2840,23 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (!tr || !tr.arc) continue;
       var moved = false;
       var ageS = (now - tr.fixT) / 1000;
-      if (ageS < PREDICT_HORIZON_S && tr.speedMps > 0.3) {
-        tr.s = Math.max(0, Math.min(tr.arc.len, tr.s + tr.speedMps * dt));
-        moved = true;
+      if (ageS < PREDICT_HORIZON_S) {
+        // Conservative mean reversion: decay toward the empirical segment
+        // speed, but only downward — never invent acceleration. A cruising
+        // bus keeps its reported speed; a fast-reported bus entering a
+        // habitually slow segment eases toward the segment mean.
+        if (!tr.seg || tr.segPath !== tr.pathIdx || tr.s < tr.seg.s0 || tr.s > tr.seg.s1) {
+          tr.seg = segmentAt(tr.routeId, tr.pathIdx, tr.s);
+          tr.segPath = tr.pathIdx;
+        }
+        var v0 = tr.speedMps;
+        var vEmp = empiricalSpeed(tr.routeId, tr.seg);
+        var vInf = (vEmp != null && vEmp < v0) ? vEmp : v0;
+        var vEff = vInf + (v0 - vInf) * Math.exp(-ageS / REVERT_TAU_S);
+        if (vEff > 0.3) {
+          tr.s = Math.max(0, Math.min(tr.arc.len, tr.s + vEff * dt));
+          moved = true;
+        }
       }
       if (Math.abs(tr.sCorr) > 0.05) {
         var k = Math.min(1, dt * 1.8);
@@ -2866,6 +2887,148 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         }
       }
     }
+  }
+
+  // --- empirical motion prior ------------------------------------------------
+  // Teaches the predictor which segments habitually run slow, so it stops
+  // overshooting into red lights and dwells. One key space —
+  // route|from_stop|to_stop — fed by two sources:
+  //   1. Telemetry timing cells (canonical, multi-day aggregates), fetched
+  //      hourly from the telemetry repo. No-ops until cells mature.
+  //   2. Local speed map: learned live from the 60 s poll stream, EMA per
+  //      segment, persisted to localStorage. Works today.
+  // The predictor only ever revises DOWNWARD toward the empirical speed: a
+  // cruising bus keeps its reported speed; a fast-reported bus entering a
+  // habitually slow segment decays toward the segment mean. Never invents
+  // acceleration — the worst case stays a smaller overshoot, never a phantom.
+  var REVERT_TAU_S = 45;      // reported speed's trust half-life, seconds
+  var LOCAL_FRESH_MS = 2 * 3600 * 1000; // local observations older than this are ignored
+  var segTableCache = {};     // routeId -> [{from, to, s0, s1, pathIdx}]
+  var stopsByRouteCache = {};
+  var localSegs = {};         // "route|from|to" -> {v, t, n}
+  var timingCells = null;     // telemetry segments.json (null until fetched)
+  var speedmapSaveT = 0;
+
+  function stopsByRoute(routeId) {
+    var hit = stopsByRouteCache[routeId];
+    if (hit) return hit;
+    var out = [];
+    for (var i = 0; i < stopData.length; i++) {
+      var st = stopData[i];
+      if (st.r && st.r.indexOf(routeId) !== -1) out.push(st);
+    }
+    stopsByRouteCache[routeId] = out;
+    return out;
+  }
+
+  // Order each route's stops along its shape arcs -> stop-pair segments.
+  function routeSegments(routeId) {
+    var hit = segTableCache[routeId];
+    if (hit) return hit;
+    var segs = [];
+    var arcs = shapeArcs(routeId);
+    var stops = stopsByRoute(routeId);
+    if (arcs && stops.length) {
+      var perPath = arcs.map(function () { return []; });
+      stops.forEach(function (st) {
+        var best = null;
+        for (var pi = 0; pi < arcs.length; pi++) {
+          var nb = nearestOnArc(arcs[pi], st.x, st.z);
+          if (nb.dist < 120 && (!best || nb.dist < best.dist)) {
+            best = { pathIdx: pi, s: nb.s, dist: nb.dist };
+          }
+        }
+        if (best) perPath[best.pathIdx].push({ id: st.id, s: best.s });
+      });
+      perPath.forEach(function (list, pi) {
+        list.sort(function (a, b) { return a.s - b.s; });
+        for (var i = 0; i + 1 < list.length; i++) {
+          if (list[i + 1].s - list[i].s < 5) continue;
+          segs.push({ from: list[i].id, to: list[i + 1].id, s0: list[i].s, s1: list[i + 1].s, pathIdx: pi });
+        }
+      });
+    }
+    segTableCache[routeId] = segs;
+    return segs;
+  }
+
+  function segmentAt(routeId, pathIdx, s) {
+    var segs = routeSegments(routeId);
+    for (var i = 0; i < segs.length; i++) {
+      var g = segs[i];
+      if (g.pathIdx === pathIdx && s >= g.s0 && s <= g.s1) return g;
+    }
+    var best = null; // past the last stop: nearest upcoming segment
+    for (var j = 0; j < segs.length; j++) {
+      var h = segs[j];
+      if (h.pathIdx !== pathIdx || h.s1 < s) continue;
+      if (!best || h.s0 < best.s0) best = h;
+    }
+    return best;
+  }
+
+  function observeSegment(routeId, seg, obsV) {
+    var key = routeId + '|' + seg.from + '|' + seg.to;
+    var e = localSegs[key];
+    var nowMs = Date.now();
+    if (!e) localSegs[key] = { v: obsV, t: nowMs, n: 1 };
+    else { e.v = e.v * 0.85 + obsV * 0.15; e.t = nowMs; e.n++; }
+    if (nowMs - speedmapSaveT > 5 * 60 * 1000) {
+      speedmapSaveT = nowMs;
+      try { localStorage.setItem('fl-speedmap-v1', JSON.stringify(localSegs)); } catch (err) {}
+    }
+  }
+
+  function loadSpeedmap() {
+    try {
+      var raw = localStorage.getItem('fl-speedmap-v1');
+      if (raw) {
+        var d = JSON.parse(raw);
+        if (d && typeof d === 'object') localSegs = d;
+      }
+    } catch (err) {}
+  }
+
+  function detroitBucket(d) {
+    d = d || new Date();
+    var wd = null, hr = null;
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Detroit', weekday: 'short', hour: 'numeric', hourCycle: 'h23'
+    }).formatToParts(d).forEach(function (p) {
+      if (p.type === 'weekday') wd = p.value;
+      if (p.type === 'hour') hr = parseInt(p.value, 10);
+    });
+    if (wd === 'Sat') return 'sat';
+    if (wd === 'Sun') return 'sun';
+    if (hr >= 6 && hr < 9) return 'wkd_am';
+    if (hr >= 9 && hr < 15) return 'wkd_mid';
+    if (hr >= 15 && hr < 19) return 'wkd_pm';
+    if (hr >= 19 && hr < 24) return 'wkd_eve';
+    return 'wkd_night';
+  }
+
+  function fetchTimingCells() {
+    fetch('https://raw.githubusercontent.com/smit4786/forge-line-transit-data/main/data/timing/segments.json',
+      { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function (d) { timingCells = (d && typeof d === 'object') ? d : null; })
+      .catch(function () { /* keep the previous cache; the local map covers */ });
+  }
+
+  // Empirical speed (m/s) for a route segment, or null when unknown.
+  // Telemetry cells (mature, bucketed) outrank the local map (recent, EMA).
+  function empiricalSpeed(routeId, seg) {
+    if (!seg) return null;
+    var base = routeId + '|' + seg.from + '|' + seg.to;
+    if (timingCells) {
+      var cell = timingCells[base + '|' + detroitBucket()];
+      if (cell && cell.n >= 3 && cell.mean_s > 0 && cell.dist_m > 0) {
+        return cell.dist_m / cell.mean_s;
+      }
+    }
+    var loc = localSegs[base];
+    if (loc && loc.v > 0.2 && (Date.now() - loc.t) < LOCAL_FRESH_MS) return loc.v;
+    return null;
   }
 
   function updateBuses(vehicles) {
@@ -2901,6 +3064,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       } else {
         tr.arc = null; // detour or no shape: render the raw fix, hold still
       }
+      // Learn: observed along-track speed between consecutive matched polls
+      // feeds the local segment speed map (the empirical motion prior).
+      if (m && m.dist <= OFFSHAPE_M && tr.matchS != null && tr.matchPath === m.pathIdx && lastPollT) {
+        var dtP = (now - lastPollT) / 1000;
+        if (dtP > 20 && dtP < 150) {
+          var obsV = (m.s - tr.matchS) / dtP;
+          if (Math.abs(obsV) < 31.3) { // 70 mph sanity: GPS jumps don't teach
+            var segMid = segmentAt(v.route_id, m.pathIdx, (m.s + tr.matchS) / 2);
+            if (segMid) observeSegment(v.route_id, segMid, Math.max(0, obsV));
+          }
+        }
+      }
+      tr.matchS = m ? m.s : null;
+      tr.matchPath = m ? m.pathIdx : -1;
       // Speed: prefer the feed's own number; derive from fixes when absent.
       var spMph = parseFloat(v.speed_mph);
       var inst = (!isNaN(spMph) && spMph >= 0) ? spMph * MPH_TO_MPS : null;
@@ -2928,6 +3105,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       seen[v.vehicle_id] = true;
     }
     for (var id in busTrackers) if (!seen[id]) delete busTrackers[id];
+    lastPollT = now;
     renderBusInstances();
     if (selectedStop) renderStopLive();
     if (typeof refreshTripFusion === 'function') refreshTripFusion(); // live counts on trip legs
@@ -3190,6 +3368,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       maybeRenderHistory();
       poll();
       setInterval(poll, POLL_MS);
+      // Empirical motion prior: restore the local speed map, fetch the
+      // telemetry timing cells now and hourly; persist the map on hide.
+      loadSpeedmap();
+      fetchTimingCells();
+      setInterval(fetchTimingCells, 3600000);
+      window.addEventListener('pagehide', function () {
+        try { localStorage.setItem('fl-speedmap-v1', JSON.stringify(localSegs)); } catch (err) {}
+      });
       var lastBusMode = null;
       renderer.setAnimationLoop(function () {
         controls.update();
