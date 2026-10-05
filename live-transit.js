@@ -2029,6 +2029,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (dx * dx + dz * dz > r2) continue;
       for (var j = 0; j < s.r.length; j++) nearMeSet[s.r[j]] = true;
     }
+    // Foundational rule: proximity wins. A route near the user is always
+    // enabled — its group/route filter is switched on so near-me results are
+    // actually drawn, not silently suppressed by an off toggle. Enabling only;
+    // we never auto-disable, so the user's explicit choices are respected.
+    Object.keys(nearMeSet).forEach(function (rid) { filterState.routes[rid] = true; });
   }
 
   function setNearMe(on) {
