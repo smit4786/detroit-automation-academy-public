@@ -2429,6 +2429,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     });
     var idle = $('hide-idle-toggle');
     if (idle) idle.setAttribute('aria-pressed', String(!!filterState.hideIdle));
+    var pmT = $('pm-toggle');
+    if (pmT) pmT.setAttribute('aria-pressed', String(!!pmVisible));
   }
 
   function buildFilterPanel(groups) {
