@@ -135,6 +135,20 @@
   #view-full[aria-pressed="true"] { background: rgba(232,93,26,.2); border-color: #E85D1A; color: #E85D1A; }
   .map-stage.pseudo-full { position: fixed; inset: 0; height: 100vh; height: 100dvh; z-index: 60; }
   body.pseudo-full-lock { overflow: hidden; }
+  /* Fullscreen gesture lock — iOS Safari treats an unconsumed downward swipe
+     as "swipe down to exit fullscreen". While fullscreen is active, consume
+     all touch gestures on the map chrome so a stray swipe can't drop out of
+     fullscreen. Scrollable panels keep vertical panning (pan-y still blocks
+     pinch/zoom leaks). Taps/clicks are unaffected by touch-action. */
+  body.fs-lock { overflow: hidden; overscroll-behavior: none; }
+  body.fs-lock #live-map,
+  body.fs-lock .map-head,
+  body.fs-lock .map-hint,
+  body.fs-lock .map-tools { touch-action: none; }
+  body.fs-lock .bus-card { touch-action: pan-y; }
+  body.fs-lock .filter-panel,
+  body.fs-lock .nav-card,
+  body.fs-lock #trip-search-results { touch-action: pan-y; overscroll-behavior: contain; }
   .map-toast { position: absolute; left: 50%; bottom: 5.5rem; transform: translateX(-50%); z-index: 9; display: flex; align-items: center; gap: .6rem; background: rgba(12,17,22,.95); border: 1px solid rgba(232,93,26,.6); color: #F5F2EA; border-radius: 999px; padding: .55rem 1rem; font-size: .82rem; font-family: "Inter", sans-serif; max-width: calc(100% - 3rem); cursor: pointer; white-space: nowrap; }
   .toast-btn { background: #E85D1A; border: none; color: #0C1116; font-weight: 700; font-size: .78rem; border-radius: 999px; padding: .35rem .8rem; cursor: pointer; font-family: "Inter", sans-serif; flex: none; }
   .toast-btn-quiet { background: transparent; color: #9AA0A6; font-weight: 500; }
@@ -416,7 +430,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261004-2105"></script>
+<script type="module" src="live-transit.js?v=20261005-0916"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
