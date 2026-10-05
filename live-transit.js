@@ -2160,12 +2160,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       host.appendChild(sec);
     });
     $('filter-all').addEventListener('click', function () {
+      // "Show all" means all: the near-me proximity restriction must not
+      // override it, so near-me is switched off first.
+      if (filterState.nearMe) setNearMe(false);
       groupOrder.forEach(function (gid) { filterState.groups[gid] = true; });
       routeOrder.forEach(function (rid) { filterState.routes[rid] = true; });
       applyFilters();
       syncFilterUI();
     });
     $('filter-none').addEventListener('click', function () {
+      // Symmetric case: "All off" must not be undone by the near-me
+      // auto-enable on the next location update.
+      if (filterState.nearMe) setNearMe(false);
       groupOrder.forEach(function (gid) { filterState.groups[gid] = false; });
       routeOrder.forEach(function (rid) { filterState.routes[rid] = false; });
       applyFilters();
