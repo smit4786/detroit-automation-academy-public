@@ -2031,17 +2031,34 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     // Foundational rule: proximity wins. A route near the user is always
     // enabled — its group/route filter is switched on so near-me results are
-    // actually drawn, not silently suppressed by an off toggle. Enabling only;
-    // we never auto-disable, so the user's explicit choices are respected.
-    Object.keys(nearMeSet).forEach(function (rid) { filterState.routes[rid] = true; });
+    // actually drawn, not silently suppressed by an off toggle. Auto-enables
+    // are tracked in nearMeAdded and reverted when near-me disengages, so a
+    // temporary mode never permanently mutates the user's filter choices.
+    Object.keys(nearMeSet).forEach(function (rid) {
+      if (!filterState.routes[rid]) { filterState.routes[rid] = true; nearMeAdded[rid] = true; }
+    });
   }
+
+  var nearMeSnapshot = null; // filterState.routes copy taken when near-me engages
+  var nearMeAdded = {};      // rids whose on-state is attributable to near-me
 
   function setNearMe(on) {
     filterState.nearMe = on;
     pendingNearMe = false;
     var t = $('nearme-toggle');
     if (t) t.setAttribute('aria-pressed', String(on));
-    if (on) computeNearMe();
+    if (on) {
+      nearMeSnapshot = {};
+      routeOrder.forEach(function (rid) { nearMeSnapshot[rid] = !!filterState.routes[rid]; });
+      nearMeAdded = {};
+      computeNearMe();
+    } else if (nearMeSnapshot) {
+      Object.keys(nearMeAdded).forEach(function (rid) {
+        filterState.routes[rid] = !!nearMeSnapshot[rid];
+      });
+      nearMeSnapshot = null;
+      nearMeAdded = {};
+    }
     applyFilters();
     syncFilterUI();
     refreshFilterCounts();
@@ -2119,7 +2136,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       check.addEventListener('click', function () {
         var on = groupSelState(g.id) !== 'all'; // all-on -> switch off; else switch on
         filterState.groups[g.id] = on;
-        g.routes.forEach(function (rid) { filterState.routes[rid] = on; });
+        g.routes.forEach(function (rid) { filterState.routes[rid] = on; delete nearMeAdded[rid]; });
         applyFilters();
         syncFilterUI();
       });
@@ -2150,6 +2167,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           '<span class="idle-tag" id="idle-' + rid + '" hidden>not running</span>';
         b.addEventListener('click', function () {
           filterState.routes[rid] = !filterState.routes[rid];
+          delete nearMeAdded[rid]; // user's explicit choice now owns this route
           applyFilters();
           syncFilterUI();
         });
