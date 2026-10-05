@@ -150,21 +150,28 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   function makeLabel(text, colorHex) {
     var c = document.createElement('canvas');
-    c.width = 512; c.height = 128;
+    c.height = 128;
+    // Long text (the People Mover title) must not clip at the canvas edge:
+    // measure at the standard size and widen the pill to fit, keeping the
+    // same type size as the route chips.
+    var mx = c.getContext('2d');
+    mx.font = '600 52px "Space Grotesk", sans-serif';
+    var tw = Math.ceil(mx.measureText(text).width);
+    c.width = tw > 460 ? tw + 52 : 512;
     var x = c.getContext('2d');
     x.fillStyle = 'rgba(12,17,22,0.85)';
     x.beginPath();
-    if (x.roundRect) x.roundRect(6, 14, 500, 100, 50); else x.rect(6, 14, 500, 100);
+    if (x.roundRect) x.roundRect(6, 14, c.width - 12, 100, 50); else x.rect(6, 14, c.width - 12, 100);
     x.fill();
     x.strokeStyle = colorHex; x.lineWidth = 4; x.stroke();
     x.fillStyle = colorHex;
     x.font = '600 52px "Space Grotesk", sans-serif';
     x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillText(text, 256, 68);
+    x.fillText(text, c.width / 2, 68);
     var tex = new THREE.CanvasTexture(c);
     tex.anisotropy = 4;
     var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
-    sp.scale.set(1500, 375, 1);
+    sp.scale.set(375 * c.width / c.height, 375, 1);
     return sp;
   }
 
