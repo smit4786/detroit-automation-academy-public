@@ -195,6 +195,16 @@
   /* Trip planner (RAPTOR): same card language as BUS/STOP. */
   #trip-card { top: auto; bottom: 4.5rem; }
   #trip-card[hidden] #trip-planner, #trip-card[hidden] #trip-search { display: none; }
+  .bus-card .minbtn { position: absolute; top: .5rem; right: 2.4rem; background: none; border: none; color: #9AA0A6; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: .4rem; touch-action: manipulation; }
+  .bus-card .minbtn:hover { color: #F5F2EA; }
+  #trip-mini { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+  #trip-mini[hidden] { display: none; }
+  #trip-mini-label { font-family: "Space Grotesk", sans-serif; font-size: .95rem; color: #F5F2EA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #trip-expand { background: none; border: 1px solid rgba(245,242,234,.25); border-radius: 8px; color: #F5F2EA; font-size: 1rem; cursor: pointer; padding: .25rem .6rem; flex: none; touch-action: manipulation; }
+  #trip-card.min { padding: .7rem 1rem; }
+  #trip-card.min .sel-eyebrow, #trip-card.min #trip-guidance, #trip-card.min #trip-planner,
+  #trip-card.min #trip-search, #trip-card.min #trip-close, #trip-card.min #trip-min { display: none; }
+  #trip-card.min #trip-mini { display: flex; }
   #trip-planner[hidden], #trip-search[hidden] { display: none; }
   .trip-fields { display: grid; gap: .35rem; margin-top: .55rem; position: relative; }
   .trip-field { display: flex; align-items: center; gap: .55rem; background: rgba(245,242,234,.05); border: 1px solid rgba(245,242,234,.14); border-radius: 10px; padding: .45rem .6rem; }
@@ -379,6 +389,11 @@
       </div>
       <div class="bus-card" id="trip-card" hidden>
         <button class="close" id="trip-close" aria-label="Close trip planner">×</button>
+        <button class="minbtn" id="trip-min" aria-label="Minimize trip card">−</button>
+        <div id="trip-mini" hidden>
+          <span id="trip-mini-label">Trip</span>
+          <button id="trip-expand" aria-label="Expand trip card">▴</button>
+        </div>
         <div class="sel-eyebrow">Trip · <span id="trip-prov">scheduled</span></div>
         <div id="trip-guidance" hidden></div>
         <div id="trip-planner">
@@ -462,7 +477,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261005-2045"></script>
+<script type="module" src="live-transit.js?v=20261005-2155"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
