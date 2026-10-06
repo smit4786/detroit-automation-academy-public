@@ -153,7 +153,7 @@
   body.fs-lock .filter-panel,
   body.fs-lock .nav-card,
   body.fs-lock #trip-search-results { touch-action: pan-y; overscroll-behavior: contain; }
-  .map-toast { position: absolute; left: 50%; bottom: 5.5rem; transform: translateX(-50%); z-index: 9; display: flex; align-items: center; gap: .6rem; background: rgba(12,17,22,.95); border: 1px solid rgba(232,93,26,.6); color: #F5F2EA; border-radius: 999px; padding: .55rem 1rem; font-size: .82rem; font-family: "Inter", sans-serif; max-width: calc(100% - 3rem); cursor: pointer; white-space: nowrap; }
+  .map-toast { position: absolute; left: 50%; bottom: 5.5rem; transform: translateX(-50%); z-index: 9; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6rem; background: rgba(12,17,22,.95); border: 1px solid rgba(232,93,26,.6); color: #F5F2EA; border-radius: 16px; padding: .55rem 1rem; font-size: .82rem; font-family: "Inter", sans-serif; max-width: calc(100% - 2rem); cursor: pointer; text-align: center; }
   .toast-btn { background: #E85D1A; border: none; color: #0C1116; font-weight: 700; font-size: .78rem; border-radius: 999px; padding: .35rem .8rem; cursor: pointer; font-family: "Inter", sans-serif; flex: none; }
   .toast-btn-quiet { background: transparent; color: #9AA0A6; font-weight: 500; }
   .map-toast[hidden] { display: none; }
@@ -462,7 +462,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261005-2030"></script>
+<script type="module" src="live-transit.js?v=20261005-2045"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
