@@ -1075,6 +1075,26 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     $('bus-card-updated').textContent = (when && !isNaN(when)) ? when.toLocaleTimeString() : '–';
     $('bus-card').hidden = false;
     refreshBusInfo(); // in-scene label beside the bus
+    // Move the view to the bus on the live map: keep the current azimuth and
+    // frame the bus at a distance that respects the active zoom limit, so the
+    // per-frame controls clamp can't snap the camera back out mid-glide.
+    if (typeof tripFly === 'undefined' || !tripFly) {
+      var _bs = null;
+      for (var _bi = 0; _bi < busSlots.length; _bi++) {
+        if (busSlots[_bi].vehicle && busSlots[_bi].vehicle.vehicle_id === v.vehicle_id) { _bs = busSlots[_bi]; break; }
+      }
+      if (_bs) {
+        var _bd = Math.max(controls.minDistance * 1.15, 700);
+        _svDir.copy(camera.position).sub(controls.target); _svDir.y = 0;
+        if (_svDir.lengthSq() < 1e-6) _svDir.set(1, 0, 0);
+        _svDir.normalize();
+        glideTo(
+          new THREE.Vector3(_bs.x + _svDir.x * _bd, _bd * 0.35, _bs.z + _svDir.z * _bd),
+          new THREE.Vector3(_bs.x, 40, _bs.z),
+          1200
+        );
+      }
+    }
   }
   function hideBus() {
     selectedVehicleId = null;
