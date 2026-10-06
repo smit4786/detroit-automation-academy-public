@@ -771,9 +771,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // they don't fight over the camera.
   function cancelStreetTween() {
     if (streetTween) { streetTween = null; if (!tripFly) controls.enabled = true; }
+    followVId = null; // any programmatic move also ends bus tracking
   }
   renderer.domElement.addEventListener('pointerdown', function () {
     if (streetTween) { streetTween = null; if (!tripFly) controls.enabled = true; }
+    followVId = null; // user takes the camera: stop tracking the bus
   });
   // Vantage for a stop anchor: keep the user's current azimuth, pull back to
   // an oblique street-level framing. Works for DDOT stops (ground) and
@@ -1058,6 +1060,32 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
 
   function tapBuzz() { try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {} }
+  // Selected-bus follow: the one-time glide in showBus lands on the bus's
+  // position at select time, but dead reckoning moves every bus each frame and
+  // polls re-match it — without tracking, the bus drives out of the static
+  // view. While a bus is selected, followTick translates the whole camera rig
+  // with the bus's live slot position, so the selection stays on screen.
+  // Any canvas pointerdown hands the camera back to the user.
+  var followVId = null;
+  var _followPrev = new THREE.Vector3();
+  function followTick() {
+    if (!followVId) return;
+    var sl = null;
+    for (var i = 0; i < busSlots.length; i++) {
+      if (busSlots[i].vehicle && busSlots[i].vehicle.vehicle_id === followVId) { sl = busSlots[i]; break; }
+    }
+    if (!sl) { followVId = null; return; } // bus left the visible set: stop
+    if (streetTween || (typeof tripFly !== 'undefined' && tripFly)) {
+      _followPrev.set(sl.x, 0, sl.z); // a glide owns the camera: keep the seed fresh
+      return;
+    }
+    var dx = sl.x - _followPrev.x, dz = sl.z - _followPrev.z;
+    if (dx || dz) {
+      camera.position.x += dx; camera.position.z += dz;
+      controls.target.x += dx; controls.target.z += dz;
+      _followPrev.set(sl.x, 0, sl.z);
+    }
+  }
   function showBus(v) {
     if (!v) return;
     tapBuzz();
@@ -1096,11 +1124,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           new THREE.Vector3(_bs.x, 40, _bs.z),
           1200
         );
+        // Engage follow: the glide is one-time, the bus keeps moving.
+        followVId = v.vehicle_id;
+        _followPrev.set(_bs.x, 0, _bs.z);
       }
     }
   }
   function hideBus() {
     selectedVehicleId = null;
+    followVId = null; // stop tracking
     $('bus-card').hidden = true;
     busInfoSprite.visible = false;
     renderBusInstances(); // shrink the indicator back
@@ -1744,6 +1776,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   function showStop(st) {
     if (!st) return;
+    followVId = null; // a stop selection ends bus tracking
     if (typeof tripMode !== 'undefined' && tripMode) tripTapStop(st);
     tapBuzz();
     setStopSelectedColor(selectedStopIndex, false);
@@ -4165,6 +4198,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         // Per-vehicle motion prediction: buses glide along their shapes
         // between polls instead of jumping every 60 s.
         updateBusMotion(performance.now());
+        followTick(); // selected bus stays on screen as it moves
         if (youMarker.group.visible) {
           var t = performance.now();
           var s = 1 + 0.22 * Math.sin(t / 420);
