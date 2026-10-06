@@ -2322,7 +2322,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var dMin = Math.round(l.delaySec / 60);
       var dTxt = Math.abs(l.delaySec) <= 60 ? 'on time'
         : (dMin > 0 ? '+' + dMin + ' min late' : dMin + ' min early');
-      var ageS = Math.max(0, Math.round((Date.now() - (l.delayStamp || Date.now())) / 1000));
+      // Age is the vehicle's GPS fix age (falls back to the delay computation
+      // time when the fix stamp is unavailable).
+      var ageMs = l.delayFixStamp || l.delayStamp || Date.now();
+      var ageS = Math.max(0, Math.round((Date.now() - ageMs) / 1000));
       var ageTxt = ageS < 90 ? ageS + 's' : Math.round(ageS / 60) + ' min';
       return dTxt + ' · live ' + ageTxt + ' old';
     }
@@ -3360,10 +3363,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // onto the shape. Returns null when the trip isn't on this path / is over.
   function tripExpected(trip, stopS, nowSec) {
     var pts = [];
+    // Measure against the empirical baseline when 2b-ii substituted it;
+    // measuring a typically-late bus against the raw schedule would
+    // double-count the lateness (empirical shift + delay vs raw).
+    var dep = trip.depL2 || trip.dep, arr = trip.arrL2 || trip.arr;
     for (var j = 0; j < trip.stops.length; j++) {
       var s = stopS[String(trip.stops[j])];
       if (s == null) continue;
-      pts.push({ s: s, dep: trip.dep[j], arr: trip.arr[j] });
+      pts.push({ s: s, dep: dep[j], arr: arr[j] });
     }
     if (pts.length < 2) return null;
     for (var k = 1; k < pts.length; k++) if (pts[k].s <= pts[k - 1].s) return null;
@@ -3440,8 +3447,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var tr = busTrackers[vid];
       if (!tr || !tr.arc || !tr.vehicle) continue;
       if (pollSeq - tr.bornSeq < 2) continue; // just appeared / changed routes
-      if (nowPerf - tr.fixT > 180000) continue; // stale fix
+      if (nowPerf - tr.fixT > 180000) continue; // vanished from feed
       var v = tr.vehicle;
+      // Gate on the vehicle's GPS fix age, not poll receipt: a frozen feed
+      // must not keep feeding delay measurements. 150s matches the
+      // dead-reckoning horizon (PREDICT_HORIZON_S).
+      var fixAgeMs = v.updated_at ? (Date.now() - new Date(v.updated_at).getTime()) : 0;
+      if (fixAgeMs > 150000) continue; // GPS fix too old to measure delay
       var routeStr = String(v.route_id);
       var ridx = ttRouteIdxById[routeStr];
       if (ridx == null) continue; // ghost route: nothing to match against
@@ -3474,7 +3486,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var disrupted = delaySec < -300 || delaySec > 1800;
       matches.push({
         trip: best.trip, vehicleId: v.vehicle_id,
-        delaySec: disrupted ? 0 : delaySec, disrupted: disrupted, score: best.score
+        delaySec: disrupted ? 0 : delaySec, disrupted: disrupted, score: best.score,
+        fixStamp: v.updated_at ? new Date(v.updated_at).getTime() : 0
       });
     }
     // One vehicle per trip: best score wins (bus bunching).
@@ -3487,11 +3500,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     byTrip.forEach(function (m, trip) {
       var st = tripDelayState.get(trip);
       if (m.disrupted) {
-        tripDelayState.set(trip, { delaySec: 0, vehicleId: m.vehicleId, misses: 0, disrupted: true });
+        tripDelayState.set(trip, { delaySec: 0, vehicleId: m.vehicleId, misses: 0, disrupted: true, fixStamp: m.fixStamp });
       } else if (!st || st.vehicleId !== m.vehicleId || st.disrupted) {
-        tripDelayState.set(trip, { delaySec: m.delaySec, vehicleId: m.vehicleId, misses: 0, disrupted: false });
+        tripDelayState.set(trip, { delaySec: m.delaySec, vehicleId: m.vehicleId, misses: 0, disrupted: false, fixStamp: m.fixStamp });
       } else {
         st.delaySec = Math.round(st.delaySec * 0.5 + m.delaySec * 0.5);
+        st.fixStamp = m.fixStamp;
         st.misses = 0;
       }
     });
@@ -3503,7 +3517,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     });
     var delayMap = new Map();
     tripDelayState.forEach(function (st, trip) {
-      delayMap.set(trip, { delaySec: st.delaySec, disrupted: st.disrupted, vehicleId: st.vehicleId });
+      delayMap.set(trip, { delaySec: st.delaySec, disrupted: st.disrupted, vehicleId: st.vehicleId, fixStamp: st.fixStamp || 0 });
     });
     tripRaptor.setLiveDelays(tt, delayMap, nowMs);
     // Keep the open trip card live: re-plan "leave now" queries per poll.
