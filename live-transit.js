@@ -1673,6 +1673,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var tripLeaveTime = '';
   var tripTT = null, tripRaptor = null, tripFusion = null;
   var tripJourneys = [], tripSel = -1, tripLoading = false;
+  var tripAutoMinimized = false; // mobile: collapse card on first results render
   var tripFly = null;
   var tripGroup = new THREE.Group();
   tripGroup.visible = false;
@@ -1720,6 +1721,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       cancelTripFly();
       $('trip-card').classList.remove('min');
       $('trip-mini').hidden = true;
+      tripAutoMinimized = false;
       // Default origin: your location when known — the standard pattern.
       if (!tripFrom && typeof userXZ !== 'undefined' && userXZ) {
         tripFrom = { kind: 'loc', x: userXZ[0], z: userXZ[1] };
@@ -2192,6 +2194,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var host = $('trip-results');
     host.innerHTML = '';
     refreshTripMini();
+    // Small screens: default to the minimized bar on the first results render
+    // so the map stays usable. Never re-collapse after the user expanded it.
+    if (!tripAutoMinimized && tripJourneys.length &&
+        window.matchMedia('(max-width: 640px)').matches) {
+      tripAutoMinimized = true;
+      $('trip-mini-label').textContent = tripMiniLabel();
+      $('trip-mini').hidden = false;
+      $('trip-card').classList.add('min');
+    }
     var meta = document.createElement('p');
     meta.className = 'trip-note';
     var svcName = res.meta.service && SVC_NAMES[res.meta.service] ? SVC_NAMES[res.meta.service] : 'DDOT';
