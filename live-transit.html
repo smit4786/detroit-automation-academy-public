@@ -280,7 +280,7 @@
   .page-note .fine { margin-top: 1rem; }
   @media (max-width: 640px) {
     .map-head { flex-direction: column; }
-    .map-head-right { flex-direction: row; align-items: center; align-self: flex-start; }
+    .map-head-right { flex-direction: row; flex-wrap: wrap; align-items: center; align-self: flex-start; max-width: 100%; }
     .map-live { align-self: flex-start; }
     .map-title p { display: none; }
     .map-hint { display: none; }
@@ -288,6 +288,7 @@
     .filter-panel { top: auto; bottom: 1rem; right: 1rem; left: 1rem; width: auto; max-height: 55%; }
   .resize-grip { display: none; }
   }
+  .filter-btn { white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -461,7 +462,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261005-1605"></script>
+<script type="module" src="live-transit.js?v=20261005-2030"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
