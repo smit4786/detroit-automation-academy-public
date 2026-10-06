@@ -2126,7 +2126,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     banner.innerHTML = '';
     banner.className = urgent ? 'urgent' : (done ? 'done' : '');
     banner.hidden = false;
-    banner.style.display = 'flex';
+    // Urgent guidance (alight-next) must be seen: expand a minimized card.
+    // A rider must not miss their stop because the card was collapsed.
+    if (urgent) {
+      var tc = $('trip-card');
+      if (tc && tc.classList.contains('min')) {
+        tc.classList.remove('min');
+        $('trip-mini').hidden = true;
+      }
+    }
     var dot = document.createElement('b');
     dot.textContent = kind === 'alight' ? '◉' : (kind === 'missed' ? '⚠' : '●');
     dot.style.color = urgent ? '#FF6B60' : '#FFB000';
@@ -2140,13 +2148,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     x.addEventListener('click', function () {
       if (tripSel >= 0 && tripJourneys[tripSel]) guidanceDismissedSig = journeySig(tripJourneys[tripSel]);
       banner.hidden = true;
-      banner.style.display = 'none';
     });
     banner.appendChild(x);
   }
   function hideGuidanceBanner() {
     var banner = $('trip-guidance');
-    if (banner) { banner.hidden = true; banner.style.display = 'none'; }
+    if (banner) { banner.hidden = true; }
   }
   // Replan from the rider's live position: the bus they're on, else GPS,
   // else the missed leg's alighting stop.
@@ -2485,7 +2492,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     $('trip-mini').hidden = false;
     $('trip-card').classList.add('min');
   });
-  $('trip-expand').addEventListener('click', function () {
+  $('trip-expand').addEventListener('click', function (e) {
+    e.stopPropagation();
+    tapBuzz();
+    $('trip-card').classList.remove('min');
+    $('trip-mini').hidden = true;
+  });
+  // The whole mini bar is tappable — easier to hit on a moving bus.
+  $('trip-mini').addEventListener('click', function () {
     tapBuzz();
     $('trip-card').classList.remove('min');
     $('trip-mini').hidden = true;
