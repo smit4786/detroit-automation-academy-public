@@ -1115,12 +1115,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         if (busSlots[_bi].vehicle && busSlots[_bi].vehicle.vehicle_id === v.vehicle_id) { _bs = busSlots[_bi]; break; }
       }
       if (_bs) {
-        var _bd = Math.max(controls.minDistance * 1.15, 700);
+        // Frame from a ~32° elevation: low obliques let 3D buildings occlude
+        // the bus; the higher vantage looks over them. Distance still respects
+        // the active zoom limit so the per-frame clamp can't snap back out.
+        var _bd = Math.max(controls.minDistance * 1.3, 900);
         _svDir.copy(camera.position).sub(controls.target); _svDir.y = 0;
         if (_svDir.lengthSq() < 1e-6) _svDir.set(1, 0, 0);
         _svDir.normalize();
         glideTo(
-          new THREE.Vector3(_bs.x + _svDir.x * _bd, _bd * 0.35, _bs.z + _svDir.z * _bd),
+          new THREE.Vector3(_bs.x + _svDir.x * _bd, _bd * 0.65, _bs.z + _svDir.z * _bd),
           new THREE.Vector3(_bs.x, 40, _bs.z),
           1200
         );
