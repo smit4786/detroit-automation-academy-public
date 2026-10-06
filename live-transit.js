@@ -1718,6 +1718,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (on) {
       hideBus(); hideStop();
       cancelTripFly();
+      $('trip-card').classList.remove('min');
+      $('trip-mini').hidden = true;
       // Default origin: your location when known — the standard pattern.
       if (!tripFrom && typeof userXZ !== 'undefined' && userXZ) {
         tripFrom = { kind: 'loc', x: userXZ[0], z: userXZ[1] };
@@ -2189,6 +2191,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function renderTripResults(res) {
     var host = $('trip-results');
     host.innerHTML = '';
+    refreshTripMini();
     var meta = document.createElement('p');
     meta.className = 'trip-note';
     var svcName = res.meta.service && SVC_NAMES[res.meta.service] ? SVC_NAMES[res.meta.service] : 'DDOT';
@@ -2453,6 +2456,29 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   $('trip-btn').addEventListener('click', function () { tapBuzz(); setTripMode(!tripMode); });
   $('trip-close').addEventListener('click', function () { setTripMode(false); });
+  function tripMiniLabel() {
+    if (typeof tripJourneys !== 'undefined' && tripJourneys.length && tripJourneys[tripSel]) {
+      var j = tripJourneys[tripSel];
+      return j.durationMin + ' min · ' + j.departClock + ' → ' + j.arriveClock;
+    }
+    return 'Trip planner';
+  }
+  function refreshTripMini() {
+    if ($('trip-card').classList.contains('min')) {
+      $('trip-mini-label').textContent = tripMiniLabel();
+    }
+  }
+  $('trip-min').addEventListener('click', function () {
+    tapBuzz();
+    $('trip-mini-label').textContent = tripMiniLabel();
+    $('trip-mini').hidden = false;
+    $('trip-card').classList.add('min');
+  });
+  $('trip-expand').addEventListener('click', function () {
+    tapBuzz();
+    $('trip-card').classList.remove('min');
+    $('trip-mini').hidden = true;
+  });
   $('trip-from-btn').addEventListener('click', function () { openTripSearch('from'); });
   $('trip-to-btn').addEventListener('click', function () { openTripSearch('to'); });
   $('trip-search-back').addEventListener('click', function () { showTripView('planner'); renderTripFields(); });
