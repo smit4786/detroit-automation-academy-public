@@ -1611,6 +1611,9 @@ window.GUIDE = GUIDE;
     var issueLabel = {};
     window.ALIGN_ISSUES.forEach(function (it) { issueLabel[it.key] = it.label; });
 
+    // Optgroups are pre-rendered into the static HTML; only populate from data
+    // when they are absent so the page never doubles them at runtime.
+    if (!picker.querySelector("optgroup")) {
     data.races.forEach(function (race) {
       var inRace = race.candidates.filter(function (c) { return A[c.name]; });
       if (!inRace.length) return;
@@ -1624,6 +1627,7 @@ window.GUIDE = GUIDE;
       });
       picker.appendChild(g);
     });
+    }
 
     function renderAlignment(name) {
       var me = A[name];
