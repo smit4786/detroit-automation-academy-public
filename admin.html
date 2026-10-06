@@ -1,485 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="generator" content="Agentic Design Corp">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Detroit Automation Academy</title>
-    
-    <link rel="stylesheet" href="branding/palette.css">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        /* ── Standardized Header/Footer Styles ── */
-        header {
-            background: rgba(13, 17, 23, 0.88);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--daa-border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            transition: background 0.3s;
-        }
-
-        body.light-mode header {
-            background: rgba(245, 247, 250, 0.92);
-        }
-
-        footer {
-            background: var(--daa-bg-card);
-            border-top: 1px solid var(--daa-border);
-            color: var(--daa-fg-muted);
-            padding: 32px;
-            text-align: center;
-            font-size: 13px;
-        }
-
-        .footer-links {
-            margin-bottom: 14px;
-        }
-
-        .footer-links a {
-            color: var(--daa-fg-muted);
-            text-decoration: none;
-            margin: 0 14px;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Circuit background ── */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(var(--daa-border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--daa-border) 1px, transparent 1px);
-            background-size: 52px 52px;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.6;
-        }
-
-        /* ── Standardized Header/Footer Styles ── */
-        
-
-        body.light-mode 
-
-        
-
-        
-
-        
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Circuit background ── */
-        
-
-        /* ── Standardized Header/Footer Styles ── */
-        
-
-        body.light-mode 
-
-        
-
-        
-
-        
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Circuit background ── */
-        
-
-        /* ── Standardized Header/Footer Styles ── */
-        
-
-        body.light-mode 
-
-        
-
-        
-
-        
-
-        .footer-links a:hover {
-            color: var(--daa-accent);
-        }
-
-        /* ── Circuit background ── */
-        
-
-        /* ── Circuit background ── */
-        
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Courier New', Courier, monospace; line-height: 1.6; color: var(--daa-fg); background: var(--daa-bg); transition: background 0.3s, color 0.3s; min-height: 100vh; }
-        
-        nav { max-width: 1200px; margin: 0 auto; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
-        .logo a { text-decoration: none; display: flex; align-items: center; }
-        #logo-text-main { fill: var(--daa-fg); transition: fill 0.3s; }
-        #logo-text-sub { fill: var(--daa-primary); transition: fill 0.3s; }
-        .nav-links { display: flex; gap: 24px; list-style: none; align-items: center;}
-        .nav-links a { text-decoration: none; color: var(--daa-fg-muted); font-weight: 500; transition: color 0.3s; font-size: 14px;}
-        .nav-links a:hover { color: var(--daa-accent); }
-        #theme-toggle { background: var(--daa-bg-raised); color: var(--daa-fg); border: 1px solid var(--daa-border); border-radius: 999px; padding: 7px 16px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; }
-        #theme-toggle:hover { border-color: var(--daa-accent); color: var(--daa-accent); }
-        
-        .admin-container { max-width: 1200px; margin: 48px auto; padding: 0 32px; }
-        .admin-card { background: var(--daa-bg-card); border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px var(--daa-shadow); border: 1px solid var(--daa-border); }
-        .admin-
-        .admin-title { font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: 800; color: var(--daa-primary); }
-        
-        .cta-button { background: linear-gradient(135deg, var(--daa-accent) 0%, var(--daa-accent-dark, #52A300) 100%); color: var(--daa-bg); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; border: none; cursor: pointer; box-shadow: 0 4px 15px var(--daa-accent-glow); }
-        .cta-button:hover { transform: translateY(-2px); }
-        .cta-button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 24px; }
-        .data-table th, .data-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--daa-border); }
-        .data-table th { font-weight: 600; color: var(--daa-fg-muted); text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
-        .data-table tr:hover { background: var(--daa-bg-raised); }
-        .status-badge { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; background: rgba(102, 204, 0, 0.1); color: var(--daa-accent); border: 1px solid var(--daa-border-green, rgba(102,204,0,0.3)); }
-
-        .auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px); }
-        .auth-modal { background: var(--daa-bg-card); padding: 48px; border-radius: 20px; text-align: center; max-width: 400px; border: 1px solid var(--daa-border); }
-        
-        
-        
-        .footer-links a:hover { color: var(--daa-accent); }
-        
-        #dashboard-content { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin hub — Detroit Automation Academy</title>
+<meta name="description" content="Operational hub for Detroit Automation Academy administrators: system status and operational links.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/webp" href="/assets/logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+.status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-top: 1.5rem; }
+.status-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
+.status-card h3 { margin: 0 0 .35rem; font-size: 1rem; }
+.status-card p { color: #9AA0A6; font-size: .85rem; margin: 0 0 .75rem; }
+.pill { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; border-radius: 999px; padding: .3rem .75rem; border: 1px solid; }
+.pill.ok { color: #7ee2a8; border-color: rgba(126,226,168,.5); background: rgba(126,226,168,.08); }
+.pill.bad { color: #ff8f8f; border-color: rgba(255,143,143,.5); background: rgba(255,143,143,.08); }
+.pill.wait { color: #9AA0A6; border-color: rgba(154,160,166,.4); }
+.status-meta { color: #9AA0A6; font-size: .78rem; margin-top: .6rem; font-variant-numeric: tabular-nums; }
+.ops-list { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: .6rem; }
+.ops-list a { display: flex; align-items: center; gap: .75rem; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; padding: .6rem .9rem; color: #F5F2EA; text-decoration: none; font-size: .9rem; }
+.ops-list a:hover { border-color: #E85D1A; }
+.ops-list a:focus-visible { outline: 2px solid #E85D1A; outline-offset: 2px; }
+.ops-list .tag { margin-left: auto; font-size: .72rem; color: #9AA0A6; text-transform: uppercase; letter-spacing: .08em; }
+.callout { border: 1px solid rgba(232,93,26,.4); border-radius: 14px; padding: 1.25rem; margin-top: 2rem; }
+.callout strong { color: #E85D1A; }
+</style>
 </head>
-<body class="light-mode">
-                            <header>
-        <nav>
-            <div class="logo">
-                <a href="index.html?v=2026040220">
-                    <svg class="logo-reactive" viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
-                        <g transform="translate(25, 25)">
-                            <g id="gear">
-                                <circle cx="100" cy="100" r="75" fill="none" stroke="#00f0ff" stroke-width="4" />
-                                <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linejoin="round" />
-                            </g>
-                            <g id="circuits" stroke="#00f0ff" stroke-width="3" fill="none" stroke-linecap="round">
-                                <path d="M 100 30 L 100 15 L 85 10" />
-                                <path d="M 130 70 L 155 50 L 170 55" />
-                                <path d="M 140 130 L 160 155 L 165 170" />
-                                <path d="M 60 160 L 30 180 L 20 175" />
-                                <path d="M 60 70 L 35 50 L 25 60" />
-                            </g>
-                        </g>
-                        <g transform="translate(260, 110)">
-                            <text font-family="'Courier New', Courier, monospace" font-weight="800" font-size="64">
-                                <tspan x="0" y="0" fill="#f8fafc">DETROIT</tspan>
-                                <tspan x="0" y="75" font-size="54" font-weight="700" fill="#00f0ff">AUTOMATION ACADEMY</tspan>
-                            </text>
-                        </g>
-                    </svg>
-                </a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html?v=2026040220">🏠 Home</a></li>
-                <li><a href="https://blog.detroitautomationacademy.com">📝 Blog</a></li>
-                <li><a href="dashboard.html?v=2026040220">📊 Dashboard</a></li>
-                <li><a href="students.html?v=2026040220">👨‍🎓 Students</a></li>
-                <li><a href="instructors.html?v=2026040220">👨‍🏫 Instructors</a></li>
-                <li><a href="partners.html?v=2026040220">💼 Partners</a></li>
-                <li><a href="https://enroll.detroitautomationacademy.com" style="color: #39ff14; font-weight: 800; border: 1px solid #39ff14; padding: 5px 12px; border-radius: 6px;">Enroll</a></li>
-            </ul>
-        </nav>
-    </header>
+<body>
 
-    <script>
-        (function () {
-            const saved = localStorage.getItem('daa-theme');
-            const body = document.body;
-            const btn = document.getElementById('theme-toggle');
-            if (saved === 'light') {
-                body.classList.add('light-mode');
-                if (btn) btn.textContent = '🌙 Dark Mode';
-            }
-            document.addEventListener('DOMContentLoaded', function () {
-                const toggle = document.getElementById('theme-toggle');
-                if (!toggle) return;
-                toggle.addEventListener('click', function () {
-                    const isLight = document.body.classList.toggle('light-mode');
-                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
-                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
-                    // Update SVG logo text color
-                    const main = document.getElementById('logo-text-main');
-                    const sub = document.getElementById('logo-text-sub');
-                    if (main) {
-                        main.setAttribute('fill', isLight ? '#1A1F2E' : 'var(--daa-fg)');
-                    }
-                    if (sub) {
-                        sub.setAttribute('fill', isLight ? '#0055BB' : 'var(--daa-primary)');
-                    }
-                });
-            });
-        })();
-    </script><div id="auth-modal" class="auth-overlay">
-        <div class="auth-modal">
-            <h2 style="font-family: 'Courier New', Courier, monospace; font-size: 24px; margin-bottom: 16px;">Admin Access</h2>
-            <p style="color: var(--daa-fg-muted); margin-bottom: 24px; font-size: 14px;">Please authenticate with your authorized DAA Google account.</p>
-            <div id="g_id_onload"
-                 data-client_id="87748455115-483j472l7c7scjkcm8qpguen8jaa4ie6.apps.googleusercontent.com"
-                 data-callback="handleCredentialResponse">
-            </div>
-            <div class="g_id_signin" data-type="standard" data-theme="filled_black"></div>
-        </div>
+<header class="nav">
+  <a class="brand" href="/" aria-label="Detroit Automation Academy home">
+    <img src="/assets/logo.webp" alt="" class="brand-mark">
+    <span class="brand-name">Detroit Automation Academy</span>
+  </a>
+  <nav class="nav-links" id="navLinks" aria-label="Primary">
+    <a href="/district.html">Try it</a>
+    <a href="/forge-line.html">Forge Line</a>
+    <a href="/live-transit.html">Live Transit</a>
+    <a href="/#mission">Mission</a>
+    <a href="/#programs">Programs</a>
+    <a href="/signal/">The Signal</a>
+    <a href="/engineering/">Engineering</a>
+    <a href="/voter-guide.html">Voter Guide</a>
+    <a href="/#partners">Partners</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<main id="top">
+  <section class="section">
+    <div class="wrap">
+      <p class="kicker">Administration</p>
+      <h2>Admin <span class="accent">hub.</span></h2>
+      <div class="prose">
+        <p>Operational links and live system status for Academy administrators. Nothing on this page holds sensitive data; the owner console remains separately token-gated.</p>
+      </div>
     </div>
+  </section>
 
-    <section id="dashboard-content" class="admin-container">
-        <div class="admin-card">
-            <div class="admin-header">
-                <div>
-                    <h1 class="admin-title">CRM Admin Dashboard</h1>
-                    <p style="color: var(--daa-fg-muted); font-size: 14px;">Managing multi-tenant enrollments and insights.</p>
-                </div>
-                <div style="display: flex; gap: 12px;">
-                    <button class="cta-button" onclick="fetchData()">🔄 Refresh</button>
-                    <button class="cta-button" style="background: transparent; border: 1px solid var(--daa-border); color: var(--daa-fg); box-shadow: none;" onclick="exportCSV()">📥 Export CSV</button>
-                    <button class="cta-button" style="background: transparent; border: 1px solid #ff4136; color: #ff4136; box-shadow: none;" onclick="logout()">Logout</button>
-                </div>
-            </div>
+  <section class="section">
+    <div class="wrap">
+      <p class="kicker">Live status</p>
+      <h2>Systems, <span class="accent">right now.</span></h2>
+      <div style="margin-top:1rem;">
+        <button class="btn btn-ghost" id="status-recheck">Recheck</button>
+      </div>
+      <div class="status-grid" id="status-grid" aria-live="polite"></div>
+      <p class="status-meta" id="status-meta"></p>
+    </div>
+  </section>
 
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px;">
-                <div style="background: var(--daa-bg-raised); padding: 24px; border-radius: 12px; border: 1px solid var(--daa-border);">
-                    <h4 style="color: var(--daa-fg-muted); font-size: 13px; text-transform: uppercase;">Total Applications</h4>
-                    <p id="stat-total" style="font-size: 32px; font-weight: 800; color: var(--daa-primary); margin-top: 8px;">0</p>
-                </div>
-                <div style="background: var(--daa-bg-raised); padding: 24px; border-radius: 12px; border: 1px solid var(--daa-border);">
-                    <h4 style="color: var(--daa-fg-muted); font-size: 13px; text-transform: uppercase;">Active Students</h4>
-                    <p id="stat-active" style="font-size: 32px; font-weight: 800; color: var(--daa-accent); margin-top: 8px;">0</p>
-                </div>
-                <div style="background: var(--daa-bg-raised); padding: 24px; border-radius: 12px; border: 1px solid var(--daa-border);">
-                    <h4 style="color: var(--daa-fg-muted); font-size: 13px; text-transform: uppercase;">AaaS Pilot MRR</h4>
-                    <p id="stat-revenue" style="font-size: 32px; font-weight: 800; color: var(--daa-secondary); margin-top: 8px;">$0</p>
-                </div>
-                <div style="background: var(--daa-bg-raised); padding: 24px; border-radius: 12px; border: 1px solid var(--daa-border);">
-                    <h4 style="color: var(--daa-fg-muted); font-size: 13px; text-transform: uppercase;">Active Tenants</h4>
-                    <p id="stat-tenants" style="font-size: 32px; font-weight: 800; color: var(--daa-fg); margin-top: 8px;">0</p>
-                </div>
-            </div>
+  <section class="section">
+    <div class="wrap">
+      <p class="kicker">Operations</p>
+      <h2>Tools &amp; <span class="accent">repos.</span></h2>
+      <ul class="ops-list">
+        <li><a href="/console.html">Owner console <span class="tag">token-gated</span></a></li>
+        <li><a href="/dashboard.html">Platform status <span class="tag">public</span></a></li>
+        <li><a href="https://github.com/smit4786/detroit-automation-academy-public" target="_blank" rel="noopener">Site repository <span class="tag">github</span></a></li>
+        <li><a href="https://github.com/smit4786/forge-line-live-proxy" target="_blank" rel="noopener">Live proxy repository <span class="tag">github</span></a></li>
+        <li><a href="https://github.com/smit4786/forge-line-transit-data" target="_blank" rel="noopener">Transit data repository <span class="tag">github</span></a></li>
+      </ul>
+      <div class="callout">
+        <strong>Enrollment pipeline.</strong>
+        <p style="margin:.5rem 0 0;">The legacy CRM backend is offline. Enrollment applications arrive by email via the <a href="/enroll.html">enrollment form</a>; there is no admin-side enrollment table until a backend is provisioned.</p>
+      </div>
+    </div>
+  </section>
+</main>
 
-            <h3 style="margin-bottom: 16px;">Recent Enrollments</h3>
-            <div style="overflow-x: auto;">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Cohort</th>
-                            <th>Academy Tenant</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="student-table-body">
-                        <tr><td colspan="6" style="text-align: center; color: var(--daa-fg-muted);">Loading data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+<footer class="footer">
+  <div class="wrap">
+    <p>Detroit Automation Academy — Where Detroit builds what's next.</p>
+  </div>
+</footer>
 
-                            <footer>
-        <div class="footer-links">
-            <a href="https://blog.detroitautomationacademy.com">Blog</a>
-            <a href="dashboard.html?v=2026040220">Dashboard</a>
-            <a href="https://status.detroitautomationacademy.com">System Status</a>
-            <a href="https://github.com/smit4786/detroit-automation-academy-public" target="_blank">GitHub</a>
-            <a href="mailto:info@detroitautomationacademy.com">Contact</a>
-        </div>
-        <p>© 2026 Detroit Automation Academy. All rights reserved. |
-           Automation skills for Detroit's future, built by Detroiters.</p>
-    </footer>
+<script>
+(function () {
+  var toggle = document.getElementById('navToggle');
+  var nav = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
 
-    <script>
-        const API_URL = "https://daa-crm-backend-ww72p2xhtq-uc.a.run.app/api/students?tenant_id=ALL";
-        let currentData = [];
-
-        function parseJwt (token) {
-            var base64Url = token.split('.')[1];
-            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
+  var CHECKS = [
+    { id: 'site',   name: 'Website',       desc: 'Academy homepage',            url: '/' },
+    { id: 'proxy',  name: 'Bus data proxy', desc: 'Live DDOT vehicle feed',    url: 'https://forge-line-live-proxy.netlify.app/healthz' },
+    { id: 'timing', name: 'Timing data',   desc: 'Empirical segment timings',  url: 'https://raw.githubusercontent.com/smit4786/forge-line-transit-data/main/data/timing/segments.json' }
+  ];
+  function check(c) {
+    var t0 = performance.now();
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 10000);
+    return fetch(c.url, { cache: 'no-store', signal: ctrl.signal })
+      .then(function (r) { return { ok: r.ok, ms: Math.round(performance.now() - t0) }; })
+      .catch(function () { return { ok: false, ms: Math.round(performance.now() - t0) }; })
+      .finally(function () { clearTimeout(timer); });
+  }
+  function render() {
+    var grid = document.getElementById('status-grid');
+    grid.innerHTML = '';
+    CHECKS.forEach(function (c) {
+      var d = document.createElement('div');
+      d.className = 'status-card';
+      d.innerHTML = '<h3></h3><p></p><span class="pill wait">checking…</span><p class="status-meta"></p>';
+      d.querySelector('h3').textContent = c.name;
+      d.querySelector('p').textContent = c.desc;
+      d.id = 'st-' + c.id;
+      grid.appendChild(d);
+    });
+    document.getElementById('status-meta').textContent = '';
+    var done = 0;
+    CHECKS.forEach(function (c) {
+      check(c).then(function (r) {
+        var d = document.getElementById('st-' + c.id);
+        var pill = d.querySelector('.pill');
+        pill.className = 'pill ' + (r.ok ? 'ok' : 'bad');
+        pill.textContent = r.ok ? 'operational' : 'unreachable';
+        d.querySelector('.status-meta').textContent = r.ms + ' ms';
+        if (++done === CHECKS.length) {
+          document.getElementById('status-meta').textContent =
+            'Checked ' + new Date().toLocaleTimeString() + ' · ' + done + ' of ' + CHECKS.length + ' systems reporting';
         }
+      });
+    });
+  }
+  document.getElementById('status-recheck').addEventListener('click', render);
+  render();
+})();
+</script>
 
-        function handleCredentialResponse(response) {
-            const token = response.credential;
-            const payload = parseJwt(token);
-            const allowed = ["contact@detroitautomationacademy.com", "smit4786@gmail.com"];
-            
-            if (allowed.includes(payload.email)) {
-                sessionStorage.setItem('daa_admin_token', token);
-                document.getElementById('auth-modal').style.display = 'none';
-                document.getElementById('dashboard-content').style.display = 'block';
-                fetchData();
-            } else {
-                alert("Unauthorized Access. Contact the CTO.");
-            }
-        }
-
-        function logout() {
-            sessionStorage.removeItem('daa_admin_token');
-            window.location.reload();
-        }
-
-        async function updateStudent(studentId, tenantId, status, cohort) {
-            const token = sessionStorage.getItem('daa_admin_token');
-            if (!token) return;
-
-            try {
-                const res = await fetch(`https://daa-crm-backend-ww72p2xhtq-uc.a.run.app/api/students?tenant_id=${tenantId}`, {
-                    method: 'PUT',
-                    headers: { 
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id: studentId,
-                        status: status,
-                        cohort: cohort
-                    })
-                });
-                if (!res.ok) throw new Error("Update failed");
-                alert("Student updated successfully!");
-                fetchData();
-            } catch (e) {
-                alert("Error updating student.");
-            }
-        }
-
-        async function deleteStudent(studentId, tenantId) {
-            if (!confirm("Are you sure you want to delete this record?")) return;
-            const token = sessionStorage.getItem('daa_admin_token');
-            if (!token) return;
-
-            try {
-                const res = await fetch(`https://daa-crm-backend-ww72p2xhtq-uc.a.run.app/api/students?tenant_id=${tenantId}&id=${studentId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!res.ok) throw new Error("Delete failed");
-                fetchData();
-            } catch (e) {
-                alert("Error deleting student.");
-            }
-        }
-
-        async function fetchData() {
-            const token = sessionStorage.getItem('daa_admin_token');
-            if (!token) return;
-
-            document.getElementById('student-table-body').innerHTML = '<tr><td colspan="6" style="text-align: center;">Refreshing...</td></tr>';
-            
-            try {
-                const res = await fetch(API_URL, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                if (!res.ok) throw new Error("API failed");
-                const data = await res.json();
-                currentData = data;
-                
-                document.getElementById('stat-total').innerText = data.length;
-                document.getElementById('stat-active').innerText = data.filter(s => s.status === 'Active').length;
-                
-                const uniqueTenants = [...new Set(data.map(s => s.tenant_id))];
-                document.getElementById('stat-tenants').innerText = uniqueTenants.length;
-
-                // Mock revenue based on active tenants (if they are not DAA-CORE)
-                const externalTenants = data.filter(s => s.tenant_id !== 'DAA-CORE').length;
-                document.getElementById('stat-revenue').innerText = `$${externalTenants * 149}`; // Mock $149 Box tier per student logic or similar
-                
-                const tbody = document.getElementById('student-table-body');
-                tbody.innerHTML = '';
-                
-                data.forEach(s => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td style="font-weight: 600;">${s.first_name} ${s.last_name}</td>
-                        <td style="color: var(--daa-fg-muted);">${s.email}</td>
-                        <td>
-                            <input type="text" value="${s.cohort}" id="cohort-${s.id}" style="width: 100px; padding: 4px; border-radius: 4px; border: 1px solid var(--daa-border); background: var(--daa-bg); color: var(--daa-fg);">
-                        </td>
-                        <td><span style="font-size: 11px; padding: 2px 6px; background: var(--daa-bg); border-radius: 4px; border: 1px solid var(--daa-border);">${s.tenant_id}</span></td>
-                        <td>
-                            <select id="status-${s.id}" style="padding: 4px; border-radius: 4px; border: 1px solid var(--daa-border); background: var(--daa-bg); color: var(--daa-fg);">
-                                <option ${s.status === 'Active' ? 'selected' : ''}>Active</option>
-                                <option ${s.status === 'Inquiry' ? 'selected' : ''}>Inquiry</option>
-                                <option ${s.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                                <option ${s.status === 'Withdrawn' ? 'selected' : ''}>Withdrawn</option>
-                            </select>
-                        </td>
-                        <td>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="cta-button" style="padding: 4px 8px; font-size: 11px;" onclick="updateStudent('${s.id}', '${s.tenant_id}', document.getElementById('status-${s.id}').value, document.getElementById('cohort-${s.id}').value)">💾 Save</button>
-                                <button class="cta-button" style="padding: 4px 8px; font-size: 11px; background: #ff4136;" onclick="deleteStudent('${s.id}', '${s.tenant_id}')">🗑️</button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch (e) {
-                document.getElementById('student-table-body').innerHTML = `<tr><td colspan="6" style="color: red; text-align: center;">Error loading data.</td></tr>`;
-            }
-        }
-
-        function exportCSV() {
-            if (currentData.length === 0) return alert("No data to export.");
-            const headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Cohort', 'Tenant', 'Status'];
-            const rows = currentData.map(s => [
-                s.first_name, s.last_name, s.email, s.phone || '', s.cohort, s.tenant_id, s.status
-            ]);
-            const csv = [headers, ...rows].map(e => e.join(",")).join("
-");
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `DAA_Enrollments_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-        }
-
-        (function () {
-            const saved = localStorage.getItem('daa-theme');
-            const body = document.body;
-            const btn = document.getElementById('theme-toggle');
-            if (saved === 'light') {
-                body.classList.add('light-mode');
-                if (btn) btn.textContent = '🌙 Dark Mode';
-            }
-            
-            const token = sessionStorage.getItem('daa_admin_token');
-            if (token) {
-                document.getElementById('auth-modal').style.display = 'none';
-                document.getElementById('dashboard-content').style.display = 'block';
-                fetchData();
-            }
-
-            document.getElementById('theme-toggle').addEventListener('click', function () {
-                const isLight = document.body.classList.toggle('light-mode');
-                this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
-                localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
-                const main = document.getElementById('logo-text-main');
-                const sub = document.getElementById('logo-text-sub');
-                if (main) main.setAttribute('fill', isLight ? '#1A1F2E' : 'var(--daa-fg)');
-                if (sub) sub.setAttribute('fill', isLight ? '#0055BB' : 'var(--daa-primary)');
-            });
-        })();
-    </script>
 </body>
 </html>
