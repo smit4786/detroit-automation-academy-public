@@ -240,11 +240,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // handoff to true-scale bus models happens at ~2.6 km (updateLOD).
   var pillarYS = 1;
   function pillarScaleFor(d) {
+    // Same close-zoom floor as stops: bus markers must stay readable when the
+    // camera moves in close (e.g. after selecting a bus flies the view to it).
+    var lo = (typeof streetView !== 'undefined' && streetView) ? 0.55 : 0.35;
     if (d >= 8000) return 1;
-    if (d <= 2800) return 0.16;
+    if (d <= 2800) return lo;
     var t = (d - 2800) / (8000 - 2800);
     t = t * t * (3 - 2 * t); // smoothstep: gentle at both ends
-    return 0.16 + 0.84 * t;
+    return lo + (1 - lo) * t;
   }
   var pillarGlowIM = new THREE.InstancedMesh(
     new THREE.CylinderGeometry(58, 58, PILLAR_H, 12, 1, true),
