@@ -3535,6 +3535,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // the measured total is always preserved. No-ops until cells mature.
   // The delay layer measures against this baseline when present, else against
   // the raw schedule.
+  // Timetable stop entries are page indices into ddot-routes-3d.json;
+  // timing cells are keyed by GTFS stop_id. Translate before lookup —
+  // the numeric spaces overlap but are not the same (e.g. page 741 is
+  // GTFS 846).
+  function ttStopId(pageIdx) {
+    var s = stopData && stopData[pageIdx];
+    return (s && s.id != null) ? String(s.id) : String(pageIdx);
+  }
+
   function applyEmpiricalBaseline() {
     if (!tripTT) return 0;
     var tt = tripTT;
@@ -3551,9 +3560,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       pat.trips.forEach(function (t) {
         var dep2 = null, arr2 = null;
         if (hasCells) {
-          // Index this trip's observed spans by stop position.
+          // Index this trip's observed spans by stop position (GTFS IDs).
+          var gids = [];
+          for (var s = 0; s < t.stops.length; s++) gids.push(ttStopId(t.stops[s]));
           var stopPos = {};
-          for (var s = 0; s < t.stops.length; s++) stopPos[String(t.stops[s])] = s;
+          for (var s2 = 0; s2 < gids.length; s2++) stopPos[gids[s2]] = s2;
           var spans = [];
           for (var k in timingCells) {
             var p = k.split('|');
@@ -3566,7 +3577,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           }
           for (var j = 0; j + 1 < t.stops.length; j++) {
             var emp = null;
-            var exact = timingCells[routeId + '|' + t.stops[j] + '|' + t.stops[j + 1] + '|' + bucket];
+            var exact = timingCells[routeId + '|' + gids[j] + '|' + gids[j + 1] + '|' + bucket];
             if (exact && exact.n >= 3 && exact.mean_s > 0) {
               emp = exact.mean_s;
             } else {
