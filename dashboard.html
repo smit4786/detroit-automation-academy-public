@@ -1,239 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta name="generator" content="Agentic Design Corp">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Detroit Automation Academy</title>
-    
-    <link rel="stylesheet" href="branding/palette.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500;800&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platform status — Detroit Automation Academy</title>
+<meta name="description" content="Live status of Detroit Automation Academy platform systems: website, live transit map, bus data feed, and timing data.">
+<meta property="og:title" content="Platform status — Detroit Automation Academy">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/webp" href="/assets/logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+.status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-top: 1.5rem; }
+.status-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem; }
+.status-card h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
+.status-card > p { color: #9AA0A6; font-size: .88rem; margin: 0 0 .9rem; }
+.pill { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; border-radius: 999px; padding: .35rem .8rem; border: 1px solid; }
+.pill.ok { color: #7ee2a8; border-color: rgba(126,226,168,.5); background: rgba(126,226,168,.08); }
+.pill.bad { color: #ff8f8f; border-color: rgba(255,143,143,.5); background: rgba(255,143,143,.08); }
+.pill.wait { color: #9AA0A6; border-color: rgba(154,160,166,.4); }
+.status-meta { color: #9AA0A6; font-size: .8rem; margin-top: .7rem; font-variant-numeric: tabular-nums; }
+.status-foot { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
 
-        /* ── Nav ── */
-        header {
-            background: rgba(5, 5, 7, 0.75);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 0.8rem 0;
-        }
+<header class="nav">
+  <a class="brand" href="/" aria-label="Detroit Automation Academy home">
+    <img src="/assets/logo.webp" alt="" class="brand-mark">
+    <span class="brand-name">Detroit Automation Academy</span>
+  </a>
+  <nav class="nav-links" id="navLinks" aria-label="Primary">
+    <a href="/district.html">Try it</a>
+    <a href="/forge-line.html">Forge Line</a>
+    <a href="/live-transit.html">Live Transit</a>
+    <a href="/#mission">Mission</a>
+    <a href="/#programs">Programs</a>
+    <a href="/signal/">The Signal</a>
+    <a href="/engineering/">Engineering</a>
+    <a href="/voter-guide.html">Voter Guide</a>
+    <a href="/#partners">Partners</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</header>
 
-        body {
-            font-family: 'JetBrains Mono', monospace;
-            background: #050507;
-            color: #f8fafc;
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            line-height: 0.95;
-            margin-bottom: 24px;
-        }
-
-        /* ── Bento Dashboard ── */
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 20px;
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .tile {
-            background: rgba(15, 20, 29, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 32px;
-            border-radius: 32px;
-            backdrop-filter: blur(12px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .tile:hover {
-            border-color: #00f0ff;
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Specific Bento Spans */
-        .tile-stats { grid-column: span 4; }
-        .tile-news { grid-column: span 4; }
-        .tile-agents { grid-column: span 4; }
-        .tile-ecosystem { grid-column: span 12; background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(187, 110, 231, 0.1) 100%); }
-
-        .hero-stat-num {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #00f0ff;
-            letter-spacing: -0.04em;
-        }
-    </style>
-
-        /* ── Logo Animation ── */
-        .logo-reactive #gear {
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: 100px 100px;
-        }
-
-        .logo-reactive:hover #gear {
-            transform: rotate(90deg);
-        }
-
-        .logo-reactive #circuits path {
-            stroke-dasharray: 100;
-            stroke-dashoffset: 100;
-            transition: stroke-dashoffset 0.6s ease;
-        }
-
-        .logo-reactive:hover #circuits path {
-            stroke-dashoffset: 0;
-        }
-
-        .footer-links a:hover { color: var(--daa-accent); }
-        </style>
-        </head>
-
-<body class="dark-mode">
-                            <header>
-        <nav>
-            <div class="logo">
-                <a href="index.html?v=2026040220">
-                    <svg class="logo-reactive" viewBox="0 0 1000 250" width="180" height="45" xmlns="http://www.w3.org/2000/svg">
-                        <g transform="translate(25, 25)">
-                            <g id="gear">
-                                <circle cx="100" cy="100" r="75" fill="none" stroke="#00f0ff" stroke-width="4" />
-                                <polygon points="100,30 130,40 140,70 130,100 140,130 100,170 70,160 60,130 70,100 60,70 100,30" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linejoin="round" />
-                            </g>
-                            <g id="circuits" stroke="#00f0ff" stroke-width="3" fill="none" stroke-linecap="round">
-                                <path d="M 100 30 L 100 15 L 85 10" />
-                                <path d="M 130 70 L 155 50 L 170 55" />
-                                <path d="M 140 130 L 160 155 L 165 170" />
-                                <path d="M 60 160 L 30 180 L 20 175" />
-                                <path d="M 60 70 L 35 50 L 25 60" />
-                            </g>
-                        </g>
-                        <g transform="translate(260, 110)">
-                            <text font-family="'Courier New', Courier, monospace" font-weight="800" font-size="64">
-                                <tspan x="0" y="0" fill="#f8fafc">DETROIT</tspan>
-                                <tspan x="0" y="75" font-size="54" font-weight="700" fill="#00f0ff">AUTOMATION ACADEMY</tspan>
-                            </text>
-                        </g>
-                    </svg>
-                </a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html?v=2026040220">🏠 Home</a></li>
-                <li><a href="https://blog.detroitautomationacademy.com">📝 Blog</a></li>
-                <li><a href="dashboard.html?v=2026040220">📊 Dashboard</a></li>
-                <li><a href="students.html?v=2026040220">👨‍🎓 Students</a></li>
-                <li><a href="instructors.html?v=2026040220">👨‍🏫 Instructors</a></li>
-                <li><a href="partners.html?v=2026040220">💼 Partners</a></li>
-                <li><a href="https://enroll.detroitautomationacademy.com" style="color: #39ff14; font-weight: 800; border: 1px solid #39ff14; padding: 5px 12px; border-radius: 6px;">Enroll</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <script>
-        (function () {
-            const saved = localStorage.getItem('daa-theme');
-            const body = document.body;
-            const btn = document.getElementById('theme-toggle');
-            if (saved === 'light') {
-                body.classList.add('light-mode');
-                if (btn) btn.textContent = '🌙 Dark Mode';
-            }
-            document.addEventListener('DOMContentLoaded', function () {
-                const toggle = document.getElementById('theme-toggle');
-                if (!toggle) return;
-                toggle.addEventListener('click', function () {
-                    const isLight = document.body.classList.toggle('light-mode');
-                    this.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
-                    localStorage.setItem('daa-theme', isLight ? 'light' : 'dark');
-                    // Update SVG logo text color
-                    const main = document.getElementById('logo-text-main');
-                    const sub = document.getElementById('logo-text-sub');
-                    if (main) {
-                        main.setAttribute('fill', isLight ? '#1A1F2E' : 'var(--daa-fg)');
-                    }
-                    if (sub) {
-                        sub.setAttribute('fill', isLight ? '#0055BB' : 'var(--daa-primary)');
-                    }
-                });
-            });
-        })();
-    </script>
-
-    <section class="hero">
-        <h1>Event Status Dashboard</h1>
-        <p>Live metrics and synchronization from @AutomatedTechnologies</p>
-    </section>
-
-    <div class="dashboard-container">
-        <!-- Event Status Tile -->
-        <div class="tile tile-stats">
-            <h2 style="color: #00f0ff; font-weight: 800; font-size: 1.2rem;">🚀 LIVE_SIGNUPS</h2>
-            <div class="hero-stat-num" style="margin: 20px 0;">5</div>
-            <p style="font-size: 12px; color: #94a3b8; line-height: 1.6;">Anonymized participant nodes settled within the mesh. Real-time telemetry active.</p>
-        </div>
-
-        <!-- Daily News Tile -->
-        <div class="tile tile-news">
-            <h2 style="color: #BB6EE7; font-weight: 800; font-size: 1.2rem;">📰 INTEL_FEED</h2>
-            <ul class="status-list" style="margin-top: 20px;">
-                <li style="border-color: rgba(255,255,255,0.05); color: #f8fafc;">Permanent residency established at BGC Detroit.</li>
-                <li style="border-color: rgba(255,255,255,0.05); color: #f8fafc;">Launch event completed with 50+ attendees.</li>
-                <li style="border-color: rgba(255,255,255,0.05); color: #f8fafc;">UI/UX Revitalization live across all nodes.</li>
-            </ul>
-        </div>
-
-        <!-- Agent Highlight Tile -->
-        <div class="tile tile-agents">
-            <h2 style="color: #00f0ff; font-weight: 800; font-size: 1.2rem;">🤖 AGENT_STATUS</h2>
-            <ul class="status-list" style="margin-top: 20px;">
-                <li style="border-color: rgba(255,255,255,0.05);"><span style="color: #94a3b8;">AI_COPILOT</span> <span class="badge badge-active" style="float: right;">ACTIVE</span></li>
-                <li style="border-color: rgba(255,255,255,0.05);"><span style="color: #94a3b8;">GROWTH_LEAD</span> <span class="badge badge-active" style="float: right;">ACTIVE</span></li>
-                <li style="border-color: rgba(255,255,255,0.05);"><span style="color: #94a3b8;">PRIVACY_AUDITOR</span> <span class="badge badge-active" style="float: right;">STABLE</span></li>
-            </ul>
-        </div>
-
-        <!-- Ecosystem Insights Tile -->
-        <div class="tile tile-ecosystem">
-            <h2 style="color: #f8fafc; font-weight: 800; margin-bottom: 32px;">🌐 ECOSYSTEM_INSIGHTS (MCP_SYNC)</h2>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 24px; border-radius: 20px;">
-                    <h4 style="color: #94a3b8; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;">Velocity</h4>
-                    <p style="font-size: 24px; font-weight: 800; color: #00f0ff; margin-top: 8px;">Phase 1 Active</p>
-                </div>
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 24px; border-radius: 20px;">
-                    <h4 style="color: #94a3b8; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;">Sentiment</h4>
-                    <p style="font-size: 24px; font-weight: 800; color: #BB6EE7; margin-top: 8px;">Optimal</p>
-                </div>
-                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 24px; border-radius: 20px;">
-                    <h4 style="color: #94a3b8; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;">System Audits</h4>
-                    <p style="font-size: 24px; font-weight: 800; color: #00f0ff; margin-top: 8px;">0 PII Leaks</p>
-                </div>
-            </div>
-        </div>
+<main id="top">
+  <section class="section">
+    <div class="wrap">
+      <p class="kicker">Platform status</p>
+      <h2>Systems, <span class="accent">live.</span></h2>
+      <div class="prose">
+        <p>Real-time status of the Academy's public platform systems, checked from your browser right now. Refreshes automatically every minute.</p>
+      </div>
+      <div class="status-grid" id="status-grid" aria-live="polite"></div>
+      <div class="status-foot">
+        <button class="btn btn-ghost" id="status-recheck">Recheck now</button>
+        <span class="status-meta" id="status-meta"></span>
+      </div>
     </div>
+  </section>
+</main>
 
-                            <footer>
-        <div class="footer-links">
-            <a href="https://blog.detroitautomationacademy.com">Blog</a>
-            <a href="dashboard.html?v=2026040220">Dashboard</a>
-            <a href="https://status.detroitautomationacademy.com">System Status</a>
-            <a href="https://github.com/smit4786/detroit-automation-academy-public" target="_blank">GitHub</a>
-            <a href="mailto:info@detroitautomationacademy.com">Contact</a>
-        </div>
-        <p>© 2026 Detroit Automation Academy. All rights reserved. |
-           Automation skills for Detroit's future, built by Detroiters.</p>
-    </footer>
+<footer class="footer">
+  <div class="wrap">
+    <p>Detroit Automation Academy — Where Detroit builds what's next.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var toggle = document.getElementById('navToggle');
+  var nav = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  var CHECKS = [
+    { id: 'site',    name: 'Website',          desc: 'Academy homepage and content pages', url: '/' },
+    { id: 'transit', name: 'Live Transit map', desc: '3D transit map application',         url: '/live-transit.html' },
+    { id: 'proxy',   name: 'Bus data feed',    desc: 'Live DDOT vehicle positions',        url: 'https://forge-line-live-proxy.netlify.app/healthz' },
+    { id: 'timing',  name: 'Timing data',      desc: 'Empirical segment timing dataset',   url: 'https://raw.githubusercontent.com/smit4786/forge-line-transit-data/main/data/timing/segments.json' }
+  ];
+  function check(c) {
+    var t0 = performance.now();
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 10000);
+    return fetch(c.url, { cache: 'no-store', signal: ctrl.signal })
+      .then(function (r) { return { ok: r.ok, ms: Math.round(performance.now() - t0) }; })
+      .catch(function () { return { ok: false, ms: Math.round(performance.now() - t0) }; })
+      .finally(function () { clearTimeout(timer); });
+  }
+  function render() {
+    var grid = document.getElementById('status-grid');
+    grid.innerHTML = '';
+    CHECKS.forEach(function (c) {
+      var d = document.createElement('div');
+      d.className = 'status-card';
+      d.id = 'st-' + c.id;
+      var h = document.createElement('h3'); h.textContent = c.name;
+      var p = document.createElement('p'); p.textContent = c.desc;
+      var pill = document.createElement('span'); pill.className = 'pill wait'; pill.textContent = 'checking…';
+      var meta = document.createElement('p'); meta.className = 'status-meta';
+      d.appendChild(h); d.appendChild(p); d.appendChild(pill); d.appendChild(meta);
+      grid.appendChild(d);
+    });
+    document.getElementById('status-meta').textContent = 'Checking…';
+    var done = 0, up = 0;
+    CHECKS.forEach(function (c) {
+      check(c).then(function (r) {
+        var d = document.getElementById('st-' + c.id);
+        var pill = d.querySelector('.pill');
+        pill.className = 'pill ' + (r.ok ? 'ok' : 'bad');
+        pill.textContent = r.ok ? 'operational' : 'unreachable';
+        d.querySelector('.status-meta').textContent = r.ms + ' ms';
+        done++; if (r.ok) up++;
+        if (done === CHECKS.length) {
+          document.getElementById('status-meta').textContent =
+            up + ' of ' + done + ' systems operational · checked ' + new Date().toLocaleTimeString();
+        }
+      });
+    });
+  }
+  document.getElementById('status-recheck').addEventListener('click', render);
+  render();
+  setInterval(render, 60000);
+})();
+</script>
+
 </body>
-
 </html>
