@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261004-2105';
+  var STAMP = '20261006-1815';
   var POLL_MS = 60000;
   var BUS_MAX = 400;
   var DETAIL_MAX = 48;
@@ -234,7 +234,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
 
   // --- bus pillars: InstancedMesh, 4 draw calls total --------------------------
-  var PILLAR_H = 620;
+  // Marker assembly redesigned 2026-10-06 for the true-scale skyline
+  // (landmark massing: RenCen 221m). The full stack — glow, core, beacon
+  // ("ceiling"), ground ring ("floor"), badges — is sized as one coherent
+  // marker language: visible at wide zoom, subordinate to the towers,
+  // compact at street zoom. Nothing in the assembly exceeds ~265m.
+  var PILLAR_H = 220;
   // Zoom-coupled marker scale: full-height symbolic pillars wide out, shrinking
   // as the camera dives so downtown stays intelligible at street zoom. The
   // handoff to true-scale bus models happens at ~2.6 km (updateLOD).
@@ -250,22 +255,31 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return lo + (1 - lo) * t;
   }
   var pillarGlowIM = new THREE.InstancedMesh(
-    new THREE.CylinderGeometry(58, 58, PILLAR_H, 12, 1, true),
+    new THREE.CylinderGeometry(36, 36, PILLAR_H, 12, 1, true),
     new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     BUS_MAX);
   var pillarCoreIM = new THREE.InstancedMesh(
-    new THREE.CylinderGeometry(20, 27, PILLAR_H, 10),
+    new THREE.CylinderGeometry(12, 16, PILLAR_H, 10),
     new THREE.MeshLambertMaterial({}),
     BUS_MAX);
   var pillarBeaconIM = new THREE.InstancedMesh(
-    new THREE.SphereGeometry(64, 16, 12),
+    new THREE.SphereGeometry(20, 16, 12),
     new THREE.MeshBasicMaterial({}),
     BUS_MAX);
   var pillarRingIM = new THREE.InstancedMesh(
-    new THREE.RingGeometry(72, 124, 28),
+    new THREE.RingGeometry(20, 36, 28),
     new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     BUS_MAX);
   var pillarMeshes = [pillarGlowIM, pillarCoreIM, pillarBeaconIM, pillarRingIM];
+  // Uncertainty halo: one soft disc per bus, radius = 3σ of the Kalman
+  // position variance. Additive, subtle — it reads as "confidence," not geometry.
+  var haloIM = new THREE.InstancedMesh(
+    new THREE.CircleGeometry(1, 24),
+    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
+    BUS_MAX);
+  haloIM.frustumCulled = false;
+  haloIM.renderOrder = 4;
+  pillarMeshes.push(haloIM);
 
   // Per-bus route badges: number-only chips. Destinations live in the bus
   // card (title + Destination row) — the floating badge stays compact.
@@ -382,8 +396,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         // with the badge without covering the pillar. Tracks the zoom-coupled
         // pillar height (busMode uses true-scale models instead). Scale eases
         // per frame with the badges so the card glides instead of stepping.
-        var y = busMode ? 150 : Math.max(120, PILLAR_H * pillarYS - 80);
-        busInfoSprite.position.set(s.x + 420, y, s.z);
+        var y = busMode ? 150 : Math.max(60, PILLAR_H * pillarYS - 40);
+        busInfoSprite.position.set(s.x + 200, y, s.z);
         if (busInfoSprite.userData.aspect) {
           var ih = badgeHeight() * 1.15;
           busInfoSprite.scale.set(ih * busInfoSprite.userData.aspect, ih, 1);
@@ -601,13 +615,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     _m4.compose(_p3, _q3, _s3);
     pillarGlowIM.setMatrixAt(k, _m4);
     pillarCoreIM.setMatrixAt(k, _m4);
-    _p3.set(b.x, topY + 40, b.z);
+    _p3.set(b.x, topY + 24, b.z);
     _m4.compose(_p3, _q3, _s3);
     pillarBeaconIM.setMatrixAt(k, _m4);
-    _p3.set(b.x, 6, b.z);
+    _p3.set(b.x, 4, b.z);
     _s3.set(exz * 1.35, exz * 1.35, 1);
     _m4.compose(_p3, _ringQ, _s3);
     pillarRingIM.setMatrixAt(k, _m4);
+    // Uncertainty halo: flat disc at y=8, scaled to the 3σ radius.
+    var hr = b.haloR || 15;
+    _p3.set(b.x, 8, b.z);
+    _q3.identity();
+    _s3.set(hr, hr, 1);
+    _m4.compose(_p3, _ringQ, _s3);
+    haloIM.setMatrixAt(k, _m4);
   }
 
   function renderBusInstances() {
@@ -663,7 +684,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       im.instanceMatrix.needsUpdate = true;
     });
     markColorsDirty();
-    updateBusBadges(n, PILLAR_H * pillarYS + 360);
+    updateBusBadges(n, PILLAR_H * pillarYS + 80);
   }
 
   // Per-bus route badges: one sprite per bus, shown only at close street-level zooms.
@@ -690,6 +711,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         var bt = routeBadgeTexture(bs.vehicle.route_id);
         if (sp.material.map !== bt.tex) { sp.material.map = bt.tex; sp.material.needsUpdate = true; }
         sp.userData.aspect = bt.aspect;
+        sp.userData.slot = bi;
+        sp.userData.pri = (selectedVehicleId && bs.vehicle.vehicle_id === selectedVehicleId) ? 0 : 1;
         sp.scale.set(h * bt.aspect, h, 1);
         sp.position.set(bs.x, yBase, bs.z);
         sp.visible = true;
@@ -698,18 +721,83 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       }
     }
   }
+  // Guaranteed badge decluttering: greedy screen-space insertion, selected
+  // bus first, then stable slot order. Each badge tests its anchor against
+  // placed rects; on overlap it spirals through 24 candidate offsets and
+  // takes the first non-overlapping slot. Separation is guaranteed by
+  // construction — badges never stack into a wall. Runs in smoothBadges.
+  var _dcV = new THREE.Vector3(), _dcR = new THREE.Vector3(), _dcU = new THREE.Vector3();
+  function declutterBadges() {
+    var cw = renderer.domElement.clientWidth || 1, ch = renderer.domElement.clientHeight || 1;
+    var items = [];
+    for (var i = 0; i < badgePool.length; i++) {
+      var sp = badgePool[i];
+      if (!sp.visible || !sp.userData.aspect) continue;
+      items.push(sp);
+    }
+    if (items.length < 2) {
+      // Still anchor single badges at their yBase (set by smoothBadges caller).
+      return;
+    }
+    items.sort(function (a, b) { return (a.userData.pri - b.userData.pri) || (a.userData.slot - b.userData.slot); });
+    camera.updateMatrixWorld();
+    _dcR.setFromMatrixColumn(camera.matrix, 0);
+    _dcU.setFromMatrixColumn(camera.matrix, 1);
+    var placed = []; // {x,y,w,h} in screen px
+    for (var k = 0; k < items.length; k++) {
+      var s2 = items[k];
+      var bw = s2.scale.x, bh = s2.scale.y;
+      // anchor screen pos
+      _dcV.copy(s2.position).project(camera);
+      var ax = (_dcV.x * 0.5 + 0.5) * cw, ay = (-_dcV.y * 0.5 + 0.5) * ch;
+      // badge world-to-px at anchor depth for offset conversion
+      var dist = camera.position.distanceTo(s2.position);
+      var wpp = (2 * dist * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)) / ch;
+      var found = null;
+      outer:
+      for (var ring = 0; ring <= 2; ring++) {
+        var rad = ring * Math.max(bw, bh) * 0.75 / Math.max(wpp, 1e-6); // world units
+        var steps = ring === 0 ? 1 : 8;
+        for (var st = 0; st < steps; st++) {
+          var ang = (st / steps) * Math.PI * 2 + ring * 0.4;
+          var ox = ring === 0 ? 0 : Math.cos(ang) * rad;
+          var oy = ring === 0 ? 0 : Math.sin(ang) * rad;
+          // candidate world pos = anchor + right*ox + up*oy
+          _dcV.copy(s2.position).addScaledVector(_dcR, ox).addScaledVector(_dcU, oy).project(camera);
+          var cx = (_dcV.x * 0.5 + 0.5) * cw, cy = (-_dcV.y * 0.5 + 0.5) * ch;
+          // screen-space badge rect (scale is world units; convert)
+          var pxW = bw / Math.max(wpp, 1e-6), pxH = bh / Math.max(wpp, 1e-6);
+          var ok = true;
+          for (var p = 0; p < placed.length; p++) {
+            var r = placed[p];
+            if (Math.abs(cx - r.x) < (pxW + r.w) / 2 && Math.abs(cy - r.y) < (pxH + r.h) / 2) { ok = false; break; }
+          }
+          if (ok) { found = { x: cx, y: cy, w: pxW, h: pxH, ox: ox, oy: oy }; break outer; }
+        }
+      }
+      if (!found) {
+        // Fallback (shouldn't happen): stack above anchor.
+        found = { x: ax, y: ay - placed.length * bh / Math.max(wpp, 1e-6), w: bw / wpp, h: bh / wpp, ox: 0, oy: placed.length * bh };
+      }
+      placed.push(found);
+      s2.position.addScaledVector(_dcR, found.ox).addScaledVector(_dcU, found.oy);
+    }
+  }
   // Per-frame badge smoothing: scale and anchor track the live zoom every
   // frame, so badges glide with the pillars instead of stepping on a timer.
   // Visibility/texture assignment stays in updateBusBadges (data updates).
   function smoothBadges() {
     var h = badgeHeight();
-    var yBase = busMode ? 430 : PILLAR_H * pillarYS + 360;
+    var yBase = busMode ? 150 : PILLAR_H * pillarYS + 80;
     for (var i = 0; i < badgePool.length; i++) {
       var sp = badgePool[i];
       if (!sp.visible || !sp.userData.aspect) continue;
       sp.scale.set(h * sp.userData.aspect, h, 1);
-      sp.position.y = yBase;
+      // Reset to anchor before decluttering (declutter adds offsets).
+      var bs = busSlots[sp.userData.slot];
+      if (bs) sp.position.set(bs.x, yBase, bs.z);
     }
+    declutterBadges();
   }
 
   // Zoom LOD: wide view shows the symbolic pillars; zoomed in past ~2.6 km
@@ -751,32 +839,213 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   // Eased camera flight: position + target glide together over ~1.4 s.
   // The user's grab always wins — pointerdown cancels the flight instantly.
-  function glideTo(pos, tgt, dur) {
+  // --- DisplayBounds: device-specific visible-map framing --------------------
+  // The map canvas (#live-map) is full-viewport with UI chrome overlaid. This
+  // module measures the actually-visible map region ("safe frame") by
+  // subtracting the screen rects of visible chrome elements. Phase 2's
+  // transition engine will frame subjects inside the safe frame so the camera
+  // never lands a subject under a card or panel.
+  //
+  // Phase 1: measurement only. Nothing consumes the safe frame yet. The API
+  // is exposed as window.__db() for verification.
+  var DisplayBounds = (function () {
+    'use strict';
+    var MOBILE_MAX_W = 768;
+
+    function isShown(el) {
+      if (!el || el.hidden) return false;
+      var r = el.getBoundingClientRect();
+      return r.width > 0 && r.height > 0;
+    }
+    // Registry: chrome element -> viewport edge it docks to per device class.
+    // 'modal' = centered overlay; when any modal is open the safe frame is
+    // degenerate and callers must dismiss it before transitioning.
+    var registry = [
+      { sel: 'header.nav', edge: { mobile: 'top', desktop: 'top' }, visible: isShown },
+      { id: 'bus-card', edge: { mobile: 'bottom', desktop: 'left' }, visible: isShown },
+      { id: 'stop-card', edge: { mobile: 'bottom', desktop: 'left' }, visible: isShown },
+      { id: 'trip-card', edge: { mobile: 'bottom', desktop: 'right' }, visible: isShown },
+      { id: 'trip-planner', edge: { mobile: 'bottom', desktop: 'right' }, visible: isShown },
+      { id: 'filter-panel', edge: { mobile: 'right', desktop: 'right' }, visible: isShown },
+      { id: 'browse-panel', edge: { mobile: 'modal', desktop: 'modal' }, visible: isShown },
+      { id: 'nav-overlay', edge: { mobile: 'modal', desktop: 'modal' }, visible: isShown },
+      { id: 'map-hint', edge: { mobile: 'bottom', desktop: 'bottom' }, visible: isShown },
+      { id: 'zoom-in', edge: { mobile: 'right', desktop: 'right' }, visible: isShown },
+      { id: 'zoom-out', edge: { mobile: 'right', desktop: 'right' }, visible: isShown },
+      { id: 'view-locate', edge: { mobile: 'right', desktop: 'right' }, visible: isShown },
+      { id: 'view-reset', edge: { mobile: 'right', desktop: 'right' }, visible: isShown },
+      { id: 'view-full', edge: { mobile: 'right', desktop: 'right' }, visible: isShown },
+      { id: 'browse-toggle', edge: { mobile: 'right', desktop: 'right' }, visible: isShown },
+      { id: 'filter-btn', edge: { mobile: 'right', desktop: 'right' }, visible: isShown },
+      { id: 'trip-btn', edge: { mobile: 'right', desktop: 'right' }, visible: isShown }
+    ];
+
+    function get() {
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var dc = vw < MOBILE_MAX_W ? 'mobile' : 'desktop';
+      var insets = { top: 0, left: 0, right: 0, bottom: 0 };
+      var modalOpen = false;
+      var parts = [];
+      for (var i = 0; i < registry.length; i++) {
+        var e = registry[i];
+        var el = e.id ? document.getElementById(e.id) : document.querySelector(e.sel);
+        if (!el || !e.visible(el)) continue;
+        var r = el.getBoundingClientRect();
+        var edge = e.edge[dc];
+        if (edge === 'modal') { modalOpen = true; parts.push({ id: e.id || e.sel, edge: 'modal' }); continue; }
+        var extent = edge === 'top' ? r.bottom
+          : edge === 'left' ? r.right
+          : edge === 'right' ? vw - r.left
+          : vh - r.top; // bottom
+        extent = Math.max(0, Math.round(extent));
+        if (extent > insets[edge]) insets[edge] = extent;
+        parts.push({ id: e.id || e.sel, edge: edge, extent: extent });
+      }
+      var sf = {
+        x: insets.left, y: insets.top,
+        w: Math.max(0, vw - insets.left - insets.right),
+        h: Math.max(0, vh - insets.top - insets.bottom)
+      };
+      return {
+        vw: vw, vh: vh, deviceClass: dc,
+        insets: insets, modalOpen: modalOpen,
+        safeFrame: sf,
+        center: { x: Math.round(sf.x + sf.w / 2), y: Math.round(sf.y + sf.h / 2) },
+        _parts: parts
+      };
+    }
+
+    return { get: get, MOBILE_MAX_W: MOBILE_MAX_W };
+  })();
+  // Verification hook (Phase 1): window.__db() returns the live measurement.
+  window.__db = function () { return DisplayBounds.get(); };
+  // STAGING-ONLY debug readout: ?dbdebug=1 renders the live DisplayBounds
+  // measurement into the DOM so script-less verification can read it.
+  // Never ship this block to production.
+  if (/[?&]dbdebug=1/.test(location.search)) {
+    (function () {
+      var pre = document.createElement('pre');
+      pre.id = 'db-debug';
+      pre.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:9999;max-width:92vw;max-height:40vh;overflow:auto;background:rgba(0,0,0,.85);color:#0f0;font:11px/1.4 monospace;padding:8px;white-space:pre-wrap;';
+      document.body.appendChild(pre);
+      setInterval(function () {
+        try {
+          var d = DisplayBounds.get();
+          d.cam = [Math.round(camera.position.x), Math.round(camera.position.y), Math.round(camera.position.z)];
+          d.tgt = [Math.round(controls.target.x), Math.round(controls.target.y), Math.round(controls.target.z)];
+          d.follow = followVId;
+          d.selectedBus = selectedVehicleId;
+          pre.textContent = JSON.stringify(d, null, 1);
+        } catch (e) { /* keep last */ }
+      }, 500);
+    })();
+  }
+
+  function glideTo(pos, tgt, dur, onDone) {
     streetTween = {
       t0: performance.now(), dur: dur || 1400,
       fromPos: camera.position.clone(), toPos: pos.clone(),
-      fromTgt: controls.target.clone(), toTgt: tgt.clone()
+      fromTgt: controls.target.clone(), toTgt: tgt.clone(),
+      onDone: (typeof onDone === 'function') ? onDone : null
     };
     controls.enabled = false;
   }
   function stepStreetTween(now) {
     if (!streetTween) return;
     var t = Math.min(1, (now - streetTween.t0) / streetTween.dur);
-    var e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    // Minimum-jerk profile (Flash & Hogan): minimizes ∫jerk², the provably
+    // smoothest rest-to-rest trajectory and the one human motor control uses.
+    // Closed-form quintic; replaces easeInOutCubic. Interruption, follow-on-
+    // complete, and safe-frame offset behavior unchanged.
+    var e = t * t * t * (t * (t * 6 - 15) + 10);
     camera.position.lerpVectors(streetTween.fromPos, streetTween.toPos, e);
     controls.target.lerpVectors(streetTween.fromTgt, streetTween.toTgt, e);
-    if (t >= 1) { streetTween = null; if (!tripFly) controls.enabled = true; }
+    if (t >= 1) {
+      var done = streetTween.onDone;
+      streetTween = null;
+      if (!tripFly) controls.enabled = true;
+      // Only a naturally completed glide runs its follow directive; a
+      // cancelled glide (pointerdown / programmatic move) never does.
+      if (done) { try { done(); } catch (err) {} }
+    }
   }
   // Programmatic camera moves (reset, locate) cancel any in-flight glide so
   // they don't fight over the camera.
   function cancelStreetTween() {
     if (streetTween) { streetTween = null; if (!tripFly) controls.enabled = true; }
     followVId = null; // any programmatic move also ends bus tracking
+    refreshFollowBtn();
   }
   renderer.domElement.addEventListener('pointerdown', function () {
     if (streetTween) { streetTween = null; if (!tripFly) controls.enabled = true; }
-    followVId = null; // user takes the camera: stop tracking the bus
+    setFollow(null); // user takes the camera: stop tracking the bus
   });
+  // --- TransitionEngine (Phase 2) -----------------------------------------
+  // After-touch camera transitions: every selection intent flows through one
+  // path that frames the subject at the DisplayBounds safe-frame center
+  // (not the viewport center), animates position + target with the existing
+  // interruptible glide, and applies the intent's follow directive only on
+  // natural completion. A cancelled intent never engages follow.
+  var TransitionEngine = (function () {
+    function worldPerPixel(dist) {
+      var vFov = THREE.MathUtils.degToRad(camera.fov);
+      var h = renderer.domElement.clientHeight || 1;
+      return (2 * dist * Math.tan(vFov / 2)) / h;
+    }
+    // Shift pos/tgt so the subject renders at the safe-frame center instead
+    // of the viewport center. Uses the camera's right/up basis at the
+    // subject's depth; no-ops when the safe frame is already centered.
+    function applySafeFrameOffset(pos, tgt) {
+      var b = DisplayBounds.get();
+      var sx = b.center.x - b.vw / 2, sy = b.center.y - b.vh / 2;
+      if (Math.abs(sx) < 1 && Math.abs(sy) < 1) return { pos: pos, tgt: tgt };
+      var wpp = worldPerPixel(pos.distanceTo(tgt));
+      camera.updateMatrixWorld();
+      var right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
+      var up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
+      var off = new THREE.Vector3()
+        .addScaledVector(right, -sx * wpp)
+        .addScaledVector(up, sy * wpp);
+      return { pos: pos.clone().add(off), tgt: tgt.clone().add(off) };
+    }
+    // 32° elevated vantage for a bus at (bx, bz); keeps the current azimuth
+    // so buildings don't occlude the subject. Distance respects the active
+    // zoom limit so the per-frame clamp can't snap back mid-glide.
+    function vantageForBus(bx, bz) {
+      var bd = Math.max(controls.minDistance * 1.3, 900);
+      _svDir.copy(camera.position).sub(controls.target); _svDir.y = 0;
+      if (_svDir.lengthSq() < 1e-6) _svDir.set(1, 0, 0);
+      _svDir.normalize();
+      return {
+        pos: new THREE.Vector3(bx + _svDir.x * bd, bd * 0.65, bz + _svDir.z * bd),
+        tgt: new THREE.Vector3(bx, 40, bz)
+      };
+    }
+    // 32° elevated vantage for a stop at (sx, sy, sz); keeps the current
+    // azimuth. Closer than the bus vantage (stops are smaller targets).
+    function vantageForStop(sx, sy, sz) {
+      var sd = Math.max(controls.minDistance * 1.1, 700);
+      _svDir.copy(camera.position).sub(controls.target); _svDir.y = 0;
+      if (_svDir.lengthSq() < 1e-6) _svDir.set(1, 0, 0);
+      _svDir.normalize();
+      return {
+        pos: new THREE.Vector3(sx + _svDir.x * sd, sy + sd * 0.65, sz + _svDir.z * sd),
+        tgt: new THREE.Vector3(sx, sy, sz)
+      };
+    }
+    // intent: { vantage:{pos,tgt}, follow:'engage'|'hold', vehicleId, slot }
+    function go(intent) {
+      if (typeof tripFly !== 'undefined' && tripFly) return; // D4a: cinematic owns the camera
+      var framed = applySafeFrameOffset(intent.vantage.pos, intent.vantage.tgt);
+      var dist = camera.position.distanceTo(framed.pos);
+      var dur = Math.min(1600, Math.max(600, dist * 0.35));
+      glideTo(framed.pos, framed.tgt, dur, function () {
+        if (intent.follow === 'engage' && intent.vehicleId) setFollow(intent.vehicleId, intent.slot);
+        else refreshFollowBtn();
+      });
+    }
+    return { go: go, vantageForBus: vantageForBus, vantageForStop: vantageForStop };
+  })();
   // Vantage for a stop anchor: keep the user's current azimuth, pull back to
   // an oblique street-level framing. Works for DDOT stops (ground) and
   // People Mover stations (elevated deck).
@@ -897,7 +1166,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
     for (var k = 0; k < busSlots.length; k++) writeBusMatrices(k, busSlots[k], 1);
     pillarMeshes.forEach(function (im) { im.instanceMatrix.needsUpdate = true; });
-    updateBusBadges(busSlots.length, PILLAR_H * pillarYS + 360);
+    updateBusBadges(busSlots.length, PILLAR_H * pillarYS + 80);
   }
 
   // Zoom-coupled stop scale, eased every frame like the pillars. Matrix-only
@@ -951,7 +1220,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         if (_p3.z > 1 || _p3.z < -1) continue;
         var ax = (_p3.x * 0.5 + 0.5) * r.width + r.left;
         var ay = (-_p3.y * 0.5 + 0.5) * r.height + r.top;
-        _p3.set(s.x, PILLAR_H * pillarYS + 40, s.z).project(camera);
+        _p3.set(s.x, PILLAR_H * pillarYS + 48, s.z).project(camera);
         if (_p3.z > 1 || _p3.z < -1) continue;
         var bx = (_p3.x * 0.5 + 0.5) * r.width + r.left;
         var by = (-_p3.y * 0.5 + 0.5) * r.height + r.top;
@@ -970,19 +1239,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // Touch gets a 44px screen-space nearest fallback so finger taps are
   // forgiving at far zooms (mirrors the bus pillar fallback).
   var _stopV3 = null;
-  function pickStop(cx, cy, isTouch) {
-    if (!stopGroup || !stopGroup.visible || !stopPickList.length) return null;
-    var r = renderer.domElement.getBoundingClientRect();
-    pointerNDC.set(
-      ((cx - r.left) / r.width) * 2 - 1,
-      -(((cy - r.top) / r.height) * 2 - 1)
-    );
-    raycaster.setFromCamera(pointerNDC, camera);
-    var hits = raycaster.intersectObject(stopIM);
-    if (hits.length && hits[0].instanceId != null) {
-      return stopPickList[hits[0].instanceId] || null;
-    }
-    if (!isTouch) return null;
+  // Touch fallback: nearest stop center on screen within 44px. Split out so
+  // the tap handler can try the depth-ordered raycast first.
+  function pickStopScreen(cx, cy, r) {
     if (!_stopV3) _stopV3 = new THREE.Vector3();
     var sx = cx - r.left, sy = cy - r.top;
     var best = null, bestD = 44;
@@ -996,6 +1255,62 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (d < bestD) { bestD = d; best = s; }
     }
     return best;
+  }
+  function pickStop(cx, cy, isTouch) {
+    if (!stopGroup || !stopGroup.visible || !stopPickList.length) return null;
+    var r = renderer.domElement.getBoundingClientRect();
+    pointerNDC.set(
+      ((cx - r.left) / r.width) * 2 - 1,
+      -(((cy - r.top) / r.height) * 2 - 1)
+    );
+    raycaster.setFromCamera(pointerNDC, camera);
+    var hits = raycaster.intersectObject(stopIM);
+    if (hits.length && hits[0].instanceId != null) {
+      return stopPickList[hits[0].instanceId] || null;
+    }
+    if (!isTouch) return null;
+    return pickStopScreen(cx, cy, r);
+  }
+  // Depth-ordered tap pick: buses and stops in ONE raycast so the visually
+  // frontmost marker wins. Previously buses were tested first and always won,
+  // even when a stop stood in front of the pillar (2026-10-06: tapping a stop
+  // overlapping a bus pillar could not select the stop).
+  function pickTopHit(cx, cy) {
+    var r = renderer.domElement.getBoundingClientRect();
+    pointerNDC.set(
+      ((cx - r.left) / r.width) * 2 - 1,
+      -(((cy - r.top) / r.height) * 2 - 1)
+    );
+    raycaster.setFromCamera(pointerNDC, camera);
+    var targets = [];
+    var busMeshCount = 0;
+    if (busMode) {
+      for (var i = 0; i < DETAIL_MAX; i++) {
+        var d = detailPool[i];
+        if (d && d.group.visible) { targets.push(d.body); busMeshCount++; }
+      }
+    } else {
+      targets.push(pillarBeaconIM, pillarGlowIM, pillarCoreIM);
+      busMeshCount = 3;
+    }
+    var stopMesh = null;
+    if (stopGroup && stopGroup.visible && stopPickList.length) {
+      stopMesh = stopIM; targets.push(stopIM);
+    }
+    if (!targets.length) return null;
+    var hits = raycaster.intersectObjects(targets);
+    if (!hits.length) return null;
+    var h = hits[0];
+    if (stopMesh && h.object === stopMesh) {
+      var st = (h.instanceId != null) ? (stopPickList[h.instanceId] || null) : null;
+      return st ? { kind: 'stop', stop: st } : null;
+    }
+    if (busMode) {
+      var veh = (h.object.userData.detail) ? h.object.userData.detail.vehicle : null;
+      return veh ? { kind: 'bus', vehicle: veh } : null;
+    }
+    var slot = (h.instanceId != null) ? busSlots[h.instanceId] : null;
+    return (slot && slot.vehicle) ? { kind: 'bus', vehicle: slot.vehicle } : null;
   }
   function pickBus(cx, cy, touchSlop) {
     var r = renderer.domElement.getBoundingClientRect();
@@ -1044,10 +1359,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var isTouch = e.pointerType === 'touch';
     if (dx * dx + dy * dy > (isTouch ? 169 : 36)) return; // was a drag (13px touch slop)
     if (tapHitsBusInfo(e.clientX, e.clientY)) { hideBus(); return; }
-    var v = pickBus(e.clientX, e.clientY, isTouch);
-    if (v) { showBus(v); return; }
-    var st = pickStop(e.clientX, e.clientY, isTouch);
-    if (st) { showStop(st); return; }
+    // Depth-ordered: one raycast across buses and stops, frontmost wins.
+    var hit = pickTopHit(e.clientX, e.clientY);
+    if (hit && hit.kind === 'bus') { showBus(hit.vehicle); return; }
+    if (hit && hit.kind === 'stop') { showStop(hit.stop); return; }
+    if (isTouch) {
+      // Raycast missed everything: nearest-on-screen fallbacks, as before.
+      var _r = renderer.domElement.getBoundingClientRect();
+      var _v = pickNearestScreen(e.clientX, e.clientY, _r);
+      if (_v) { showBus(_v); return; }
+      var _st = pickStopScreen(e.clientX, e.clientY, _r);
+      if (_st) { showStop(_st); return; }
+    }
     var pm = pickPMStation(e.clientX, e.clientY, isTouch);
     if (pm) { showStop(pm); return; }
     hideBus(); hideStop();
@@ -1071,13 +1394,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // Any canvas pointerdown hands the camera back to the user.
   var followVId = null;
   var _followPrev = new THREE.Vector3();
+  // Single mutation point for follow state: keeps the Follow button label in
+  // sync wherever tracking starts or stops.
+  function setFollow(vid, slot) {
+    followVId = vid || null;
+    if (followVId && slot) _followPrev.set(slot.x, 0, slot.z);
+    refreshFollowBtn();
+  }
   function followTick() {
     if (!followVId) return;
     var sl = null;
     for (var i = 0; i < busSlots.length; i++) {
       if (busSlots[i].vehicle && busSlots[i].vehicle.vehicle_id === followVId) { sl = busSlots[i]; break; }
     }
-    if (!sl) { followVId = null; return; } // bus left the visible set: stop
+    if (!sl) { setFollow(null); return; } // bus left the visible set: stop
     if (streetTween || (typeof tripFly !== 'undefined' && tripFly)) {
       _followPrev.set(sl.x, 0, sl.z); // a glide owns the camera: keep the seed fresh
       return;
@@ -1096,8 +1426,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     renderBusInstances(); // expand the selected indicator
     var sn = v.route_id;
     var dest = formatDest(sn, v.destination);
-    $('bus-chip').style.background = routeColors[sn] ? '#' + routeColors[sn].getHexString() : '#F5F2EA';
-    $('bus-title').textContent = sn + ' · ' + (routeNames[sn] || 'DDOT') + (dest ? ' → ' + dest : '');
+    var chipBg = routeColors[sn] ? '#' + routeColors[sn].getHexString() : '#F5F2EA';
+    $('bus-chip').style.background = chipBg;
+    var chipC = $('bus-chip-c'); // compact bar (staging Phase 2 HTML); guard for HTML without it
+    if (chipC) chipC.style.background = chipBg;
+    var compactTitle = sn + ' · ' + (routeNames[sn] || 'DDOT') + (dest ? ' → ' + dest : '');
+    $('bus-title').textContent = compactTitle;
+    var cTitle = $('bus-compact-title');
+    if (cTitle) cTitle.textContent = compactTitle;
+    var cId = $('bus-compact-id');
+    if (cId) cId.textContent = 'Vehicle ' + (v.vehicle_id || '–');
     $('bus-id').textContent = v.vehicle_id || '–';
     $('bus-dest').textContent = formatDest(sn, v.destination) || '–';
     $('bus-speed').textContent = (v.speed_mph != null && !isNaN(v.speed_mph)) ? Math.round(v.speed_mph) + ' mph' : '–';
@@ -1108,42 +1446,67 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var when = v.updated_at ? new Date(v.updated_at) : null;
     $('bus-card-updated').textContent = (when && !isNaN(when)) ? when.toLocaleTimeString() : '–';
     $('bus-card').hidden = false;
+    // D1a: on mobile the card opens as a compact route/vehicle bar; tap to expand.
+    setBusCardCompact(DisplayBounds.get().deviceClass === 'mobile');
     refreshBusInfo(); // in-scene label beside the bus
-    // Move the view to the bus on the live map: keep the current azimuth and
-    // frame the bus at a distance that respects the active zoom limit, so the
-    // per-frame controls clamp can't snap the camera back out mid-glide.
+    // After-touch transition: one engine path frames the bus at the
+    // safe-frame center (not the viewport center), so the card never covers
+    // it. D2b: on mobile the selection frames and holds; the explicit Follow
+    // button starts tracking. Desktop keeps the existing auto-follow.
     if (typeof tripFly === 'undefined' || !tripFly) {
       var _bs = null;
       for (var _bi = 0; _bi < busSlots.length; _bi++) {
         if (busSlots[_bi].vehicle && busSlots[_bi].vehicle.vehicle_id === v.vehicle_id) { _bs = busSlots[_bi]; break; }
       }
       if (_bs) {
-        // Frame from a ~32° elevation: low obliques let 3D buildings occlude
-        // the bus; the higher vantage looks over them. Distance still respects
-        // the active zoom limit so the per-frame clamp can't snap back out.
-        var _bd = Math.max(controls.minDistance * 1.3, 900);
-        _svDir.copy(camera.position).sub(controls.target); _svDir.y = 0;
-        if (_svDir.lengthSq() < 1e-6) _svDir.set(1, 0, 0);
-        _svDir.normalize();
-        glideTo(
-          new THREE.Vector3(_bs.x + _svDir.x * _bd, _bd * 0.65, _bs.z + _svDir.z * _bd),
-          new THREE.Vector3(_bs.x, 40, _bs.z),
-          1200
-        );
-        // Engage follow: the glide is one-time, the bus keeps moving.
-        followVId = v.vehicle_id;
-        _followPrev.set(_bs.x, 0, _bs.z);
+        TransitionEngine.go({
+          vantage: TransitionEngine.vantageForBus(_bs.x, _bs.z),
+          follow: DisplayBounds.get().deviceClass === 'mobile' ? 'hold' : 'engage',
+          vehicleId: v.vehicle_id,
+          slot: _bs
+        });
       }
     }
   }
   function hideBus() {
     selectedVehicleId = null;
-    followVId = null; // stop tracking
+    setFollow(null); // stop tracking
     $('bus-card').hidden = true;
     busInfoSprite.visible = false;
     renderBusInstances(); // shrink the indicator back
   }
   $('bus-close').addEventListener('click', hideBus);
+  // --- D1a compact bar + D2b Follow button ---------------------------------
+  // On mobile the bus card opens collapsed to a route/vehicle bar; tapping
+  // the bar expands the full details. The Follow button toggles tracking on
+  // every device class (on mobile it is the only way tracking starts).
+  function setBusCardCompact(compact) {
+    $('bus-card').classList.toggle('compact', !!compact);
+  }
+  var _followBtnLabel = null;
+  function refreshFollowBtn() {
+    var label = followVId ? 'Following' : 'Follow';
+    if (label === _followBtnLabel) return;
+    _followBtnLabel = label;
+    var btns = document.querySelectorAll('.bus-follow-btn');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].textContent = label;
+      btns[i].setAttribute('aria-pressed', followVId ? 'true' : 'false');
+    }
+  }
+  function toggleFollow() {
+    if (followVId) { setFollow(null); return; }
+    var sl = null;
+    for (var i = 0; i < busSlots.length; i++) {
+      if (busSlots[i].vehicle && busSlots[i].vehicle.vehicle_id === selectedVehicleId) { sl = busSlots[i]; break; }
+    }
+    if (sl) setFollow(selectedVehicleId, sl);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.bus-follow-btn'), function (b) {
+    b.addEventListener('click', toggleFollow);
+  });
+  var _busExpand = $('bus-expand'); // compact bar (staging Phase 2 HTML); guard for HTML without it
+  if (_busExpand) _busExpand.addEventListener('click', function () { setBusCardCompact(false); });
 
   // --- Accessible browse panel: list-based alternative to canvas tapping ---
   // Every tappable 3D object (stop pylon, bus pillar) is also reachable as a
@@ -1782,7 +2145,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   function showStop(st) {
     if (!st) return;
-    followVId = null; // a stop selection ends bus tracking
+    setFollow(null); // a stop selection ends bus tracking
     if (typeof tripMode !== 'undefined' && tripMode) tripTapStop(st);
     tapBuzz();
     setStopSelectedColor(selectedStopIndex, false);
@@ -1812,6 +2175,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     stopHighlight.position.set(st.x, st.pm ? PM_DECK_Y + 4 : 20, st.z);
     stopHighlight.visible = true;
     renderStopLive();
+    // Stop selection glides the camera (Phase 2 stop intent): frame the stop
+    // at the safe-frame center. No follow — stops don't move. Skipped in
+    // street view (its own glide above), trip modes, and the cinematic.
+    if (!streetView && !tripFly && !(typeof tripMode !== 'undefined' && tripMode)) {
+      var _sy = st.pm ? PM_DECK_Y : 20;
+      TransitionEngine.go({
+        vantage: TransitionEngine.vantageForStop(st.x, _sy, st.z),
+        follow: 'hold'
+      });
+    }
     // In street view, tapping a stop glides the camera to center it —
     // the max-zoom way of walking down the street stop by stop.
     if (streetView && !tripFly && !(typeof tripMode !== 'undefined' && tripMode)) {
@@ -3245,6 +3618,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var PREDICT_HORIZON_S = 150; // never dead-reckon on a fix older than this
   var SNAP_DIST_M = 200;       // along-track divergence above this = teleport
   var OFFSHAPE_M = 150;        // cross-track beyond this = detour, render raw
+  // Kalman filter noise model. R = GPS measurement variance (15m sigma).
+  // Q_* are process-noise densities; replaced by Bayesian timing-cell
+  // posteriors when telemetry-math/bayesian_cells.py lands in the pipeline.
+  var KALMAN_R = 225, KALMAN_Q_POS = 2.0, KALMAN_Q_VEL = 0.5;
 
   function shapeArcs(routeId) {
     var hit = shapeArcCache[routeId];
@@ -3337,29 +3714,29 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (!tr || !tr.arc) continue;
       var moved = false;
       var ageS = (now - tr.fixT) / 1000;
-      if (ageS < PREDICT_HORIZON_S) {
-        // Conservative mean reversion: decay toward the empirical segment
-        // speed, but only downward — never invent acceleration. A cruising
-        // bus keeps its reported speed; a fast-reported bus entering a
-        // habitually slow segment eases toward the segment mean.
-        if (!tr.seg || tr.segPath !== tr.pathIdx || tr.s < tr.seg.s0 || tr.s > tr.seg.s1) {
-          tr.seg = segmentAt(tr.routeId, tr.pathIdx, tr.s);
+      if (ageS < PREDICT_HORIZON_S && tr.kInit) {
+        // Kalman predict: constant-velocity model, F = [[1,dt],[0,1]].
+        // The empirical segment speed enters as a velocity prior (the old
+        // mean-reversion, now inside the filter instead of beside it).
+        if (!tr.seg || tr.segPath !== tr.pathIdx || tr.kS < tr.seg.s0 || tr.kS > tr.seg.s1) {
+          tr.seg = segmentAt(tr.routeId, tr.pathIdx, tr.kS);
           tr.segPath = tr.pathIdx;
         }
         var v0 = tr.speedMps;
         var vEmp = empiricalSpeed(tr.routeId, tr.seg);
-        var vInf = (vEmp != null && vEmp < v0) ? vEmp : v0;
-        var vEff = vInf + (v0 - vInf) * Math.exp(-ageS / REVERT_TAU_S);
-        if (vEff > 0.3) {
-          tr.s = Math.max(0, Math.min(tr.arc.len, tr.s + vEff * dt));
+        var vPrior = (vEmp != null && vEmp < v0) ? vEmp : v0;
+        // Ease the velocity state toward the prior (never invent accel).
+        tr.kV += (vPrior - tr.kV) * (1 - Math.exp(-dt / REVERT_TAU_S));
+        tr.kS += tr.kV * dt;
+        // Covariance predict: P = F*P*F' + Q*dt.
+        var p00 = tr.kP, p01 = tr.kPvS, p11 = tr.kPv;
+        tr.kP = p00 + 2 * dt * p01 + dt * dt * p11 + KALMAN_Q_POS * dt;
+        tr.kPvS = p01 + dt * p11;
+        tr.kPv = p11 + KALMAN_Q_VEL * dt;
+        if (Math.abs(tr.kV) > 0.3 || tr.kP > KALMAN_R * 4) {
+          tr.s = Math.max(0, Math.min(tr.arc.len, tr.kS));
           moved = true;
         }
-      }
-      if (Math.abs(tr.sCorr) > 0.05) {
-        var k = Math.min(1, dt * 1.8);
-        tr.s = Math.max(0, Math.min(tr.arc.len, tr.s + tr.sCorr * k));
-        tr.sCorr *= (1 - k);
-        moved = true;
       }
       if (moved) {
         anyMoved = true;
@@ -3368,6 +3745,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         sl.rotY = Math.atan2(-pt.dz, pt.dx);
         var sp = badgePool[i];
         if (sp && sp.visible) { sp.position.x = pt.x; sp.position.z = pt.z; }
+        // Uncertainty halo: radius = 3σ of the position variance, clamped.
+        // Grows between fixes, collapses on the Kalman update — the honest
+        // rendering of "we're less sure where this bus is."
+        sl.haloR = Math.max(15, Math.min(150, 3 * Math.sqrt(Math.max(tr.kP, 1))));
       }
     }
     if (!anyMoved) return;
@@ -3844,17 +4225,41 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           id: v.vehicle_id, routeId: v.route_id,
           arc: null, pathIdx: -1, s: 0, sCorr: 0,
           speedMps: 0, fixT: 0, lastX: null, lastZ: null, init: false,
-          bornSeq: pollSeq, vehicle: null
+          bornSeq: pollSeq, vehicle: null,
+          // Kalman state: [kS arc-pos, kV velocity]; kP/kPv/kPvS covariance.
+          // Replaces the ad-hoc sCorr easing with optimal gains; snap logic
+          // below stays as the outlier gate. Q_* defaults until the Bayesian
+          // timing cells land (telemetry-math/bayesian_cells.py).
+          kS: 0, kV: 0, kP: 225, kPv: 25, kPvS: 0, kInit: false
         };
       }
       tr.vehicle = v; // fresh record each poll (destination, updated_at)
       var m = matchFix(v.route_id, p[0], p[1], v.bearing, tr.arc ? tr : null);
       if (m && m.dist <= OFFSHAPE_M) {
-        if (tr.arc && tr.pathIdx === m.pathIdx) {
-          var delta = m.s - tr.s;
-          if (Math.abs(delta) > SNAP_DIST_M) { tr.s = m.s; tr.sCorr = 0; }
-          else tr.sCorr += delta;
+        if (tr.arc && tr.pathIdx === m.pathIdx && tr.kInit) {
+          var delta = m.s - tr.kS;
+          if (Math.abs(delta) > SNAP_DIST_M) {
+            // Outlier gate: snap and reinit the filter (a plain Kalman
+            // filter is not robust to GPS jumps; the gate keeps it honest).
+            tr.kS = m.s; tr.kV = tr.speedMps; tr.kP = KALMAN_R; tr.kPv = 25; tr.kPvS = 0;
+          } else {
+            // Kalman update: H = [1, 0], R = GPS variance. Optimal gain —
+            // replaces the old sCorr easing with the MMSE correction.
+            var Sk = tr.kP + KALMAN_R;
+            var kk0 = tr.kP / Sk, kk1 = tr.kPvS / Sk;
+            tr.kS += kk0 * delta;
+            tr.kV += kk1 * delta;
+            var nkP = tr.kP - kk0 * tr.kP;
+            var nkPvS = tr.kPvS - kk0 * tr.kPvS;
+            tr.kPv = tr.kPv - kk1 * tr.kPvS;
+            tr.kP = nkP; tr.kPvS = nkPvS;
+          }
+          // Keep the filtered state on the arc.
+          if (tr.arc) tr.kS = Math.max(0, Math.min(tr.arc.len, tr.kS));
+          tr.s = tr.kS; tr.sCorr = 0; // render from the filtered state
         } else {
+          tr.kS = m.s; tr.kV = tr.speedMps; tr.kP = KALMAN_R; tr.kPv = 25; tr.kPvS = 0;
+          tr.kInit = true;
           tr.s = m.s; tr.sCorr = 0; // new / re-matched path: snap
         }
         tr.arc = m.arc; tr.pathIdx = m.pathIdx;
@@ -4152,6 +4557,27 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       // People Mover static layer: built once, toggled independently of the
       // DDOT route filters. Absent (fetch failed) the map simply has no PM layer.
       if (pmData && pmData.loop && pmData.stations) buildPeopleMover(pmData);
+
+      /* LANDMARK-MASSING-BEGIN v20261006-1700 — staging-only Phase A.
+         True-form OSM landmark massing (single merged mesh, 1 draw call).
+         Geometry: /tmp/build_landmarks.py. Revert: delete this block and
+         landmarks.json. */
+      (function () {
+        if (window.__landmarksA) return; window.__landmarksA = true;
+        fetch('landmarks.json?v=' + STAMP, { cache: 'no-store' })
+          .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+          .then(function (L) {
+            var g = new THREE.BufferGeometry();
+            g.setAttribute('position', new THREE.Float32BufferAttribute(L.positions, 3));
+            g.setIndex(L.index);
+            g.computeVertexNormals();
+            var mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0x3a4a5c }));
+            mesh.frustumCulled = false;
+            scene.add(mesh);
+          })
+          .catch(function (e) { console.warn('[landmarks] ' + e.message); });
+      })();
+      /* LANDMARK-MASSING-END */
 
       buildFilterPanel(data.groups);
       applyFilters();
