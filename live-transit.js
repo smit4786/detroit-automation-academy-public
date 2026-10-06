@@ -1177,21 +1177,29 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   function refreshBrowseBuses(force) {
     var list = $('browse-bus-list'); if (!list) return;
-    var ids = busSlots.map(function (s) { return s.vehicle.vehicle_id; }).join(',');
-    if (!force && ids === browseBusIds) return; // no change: keep focus/scroll
-    browseBusIds = ids;
-    var n = busSlots.length;
+    var q = ($('browse-bus-search').value || '').toLowerCase();
+    var slots = busSlots;
+    if (q) slots = slots.filter(function (s) {
+      var v = s.vehicle;
+      var hay = (v.route_id + ' ' + (v.vehicle_id || '') + ' ' + (routeNames[v.route_id] || '') + ' ' + (formatDest(v.route_id, v.destination) || '')).toLowerCase();
+      return hay.indexOf(q) >= 0;
+    });
+    var ids = slots.map(function (s) { return s.vehicle.vehicle_id; }).join(',');
+    if (!force && ids === browseBusIds && !q) return; // no change: keep focus/scroll
+    browseBusIds = q ? '' : ids; // searching bypasses the change cache
+    var n = slots.length;
     $('browse-bus-count').textContent = n ? '(' + n + ')' : '';
     list.innerHTML = '';
     if (!n) {
       var li = document.createElement('li'); li.className = 'browse-empty';
-      li.textContent = 'No buses on the visible routes right now.';
+      li.textContent = q ? 'No buses match.' : 'No buses on the visible routes right now.';
       list.appendChild(li); return;
     }
-    busSlots.slice().sort(function (a, b) {
+    slots.slice().sort(function (a, b) {
       return String(a.vehicle.route_id).localeCompare(String(b.vehicle.route_id));
     }).forEach(function (s) { list.appendChild(browseBusRow(s)); });
   }
+  $('browse-bus-search').addEventListener('input', function () { refreshBrowseBuses(true); });
 
   // --- map navigation tools ----------------------------------------------------
   function zoomStep(dir) {
