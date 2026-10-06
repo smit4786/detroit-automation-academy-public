@@ -1121,6 +1121,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       togglePanel(false); // mutually exclusive with the routes panel
       buildBrowseStops();
       refreshBrowseBuses(true);
+      // Move focus into the dialog so keyboard users land on the tabs.
+      ($('browse-buses-pane').hidden ? $('browse-tab-stops') : $('browse-tab-buses')).focus();
+    } else if (p.contains(document.activeElement)) {
+      $('browse-toggle').focus(); // return focus to the toggle on close
     }
   }
   $('browse-toggle').addEventListener('click', function () {
@@ -1139,6 +1143,23 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   $('browse-tab-stops').addEventListener('click', function () { browseTab('stops'); });
   $('browse-tab-buses').addEventListener('click', function () { browseTab('buses'); });
+  // WAI-ARIA tab keyboard support: Arrow keys / Home / End move focus between
+  // tabs with automatic activation. Roving tabindex keeps the inactive tab out
+  // of the Tab order, so the arrow keys are its only keyboard path.
+  document.querySelector('#browse-panel .browse-tabs').addEventListener('keydown', function (e) {
+    var tabs = [$('browse-tab-buses'), $('browse-tab-stops')];
+    var i = tabs.indexOf(document.activeElement);
+    if (i < 0) return;
+    var j = null;
+    if (e.key === 'ArrowRight') j = (i + 1) % tabs.length;
+    else if (e.key === 'ArrowLeft') j = (i - 1 + tabs.length) % tabs.length;
+    else if (e.key === 'Home') j = 0;
+    else if (e.key === 'End') j = tabs.length - 1;
+    if (j === null || j === i) return;
+    e.preventDefault();
+    tabs[j].focus();
+    browseTab(tabs[j] === $('browse-tab-stops') ? 'stops' : 'buses');
+  });
   function browseStopRow(st) {
     var li = document.createElement('li');
     var b = document.createElement('button');
