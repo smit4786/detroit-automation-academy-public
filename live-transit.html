@@ -197,10 +197,10 @@
   #trip-card[hidden] #trip-planner, #trip-card[hidden] #trip-search { display: none; }
   .bus-card .minbtn { position: absolute; top: .5rem; right: 2.4rem; background: none; border: none; color: #9AA0A6; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: .4rem; touch-action: manipulation; }
   .bus-card .minbtn:hover { color: #F5F2EA; }
-  #trip-mini { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+  #trip-mini { display: flex; align-items: center; justify-content: space-between; gap: .75rem; cursor: pointer; }
   #trip-mini[hidden] { display: none; }
-  #trip-mini-label { font-family: "Space Grotesk", sans-serif; font-size: .95rem; color: #F5F2EA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #trip-expand { background: none; border: 1px solid rgba(245,242,234,.25); border-radius: 8px; color: #F5F2EA; font-size: 1rem; cursor: pointer; padding: .25rem .6rem; flex: none; touch-action: manipulation; }
+  #trip-mini-label { font-family: "Space Grotesk", sans-serif; font-size: .95rem; color: #F5F2EA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+  #trip-expand { background: none; border: 1px solid rgba(245,242,234,.25); border-radius: 8px; color: #F5F2EA; font-size: 1.1rem; cursor: pointer; padding: .5rem .9rem; flex: none; touch-action: manipulation; min-height: 2.75rem; }
   #trip-card.min { padding: .7rem 1rem; }
   #trip-card.min .sel-eyebrow, #trip-card.min #trip-guidance, #trip-card.min #trip-planner,
   #trip-card.min #trip-search, #trip-card.min #trip-close, #trip-card.min #trip-min { display: none; }
@@ -211,7 +211,7 @@
   .trip-dot { width: .6rem; height: .6rem; border-radius: 50%; flex: none; }
   .trip-dot.from { background: #FFB000; }
   .trip-dot.to { background: #F5F2EA; }
-  .trip-field-btn { flex: 1; background: none; border: none; color: #F5F2EA; font-family: "Inter", sans-serif; font-size: .85rem; text-align: left; cursor: pointer; padding: .15rem 0; min-width: 0; }
+  .trip-field-btn { flex: 1; background: none; border: none; color: #F5F2EA; font-family: "Inter", sans-serif; font-size: .85rem; text-align: left; cursor: pointer; padding: .15rem 2.4rem .15rem 0; min-width: 0; }
   .trip-field-btn span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .trip-field-btn .placeholder { color: #9AA0A6; }
   #trip-swap { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); background: rgba(12,17,22,.9); border: 1px solid rgba(245,242,234,.2); color: #9AA0A6; border-radius: 50%; width: 1.7rem; height: 1.7rem; font-size: .85rem; cursor: pointer; line-height: 1; }
@@ -477,7 +477,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261005-2205"></script>
+<script type="module" src="live-transit.js?v=20261005-2245"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
