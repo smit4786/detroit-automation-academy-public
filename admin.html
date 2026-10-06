@@ -112,14 +112,14 @@
 
   var CHECKS = [
     { id: 'site',   name: 'Website',       desc: 'Academy homepage',            url: '/' },
-    { id: 'proxy',  name: 'Bus data proxy', desc: 'Live DDOT vehicle feed',    url: 'https://forge-line-live-proxy.netlify.app/healthz' },
+    { id: 'proxy',  name: 'Bus data proxy', desc: 'Live DDOT vehicle feed',    url: 'https://forge-line-live-proxy.netlify.app/api/vehicles', method: 'HEAD' },
     { id: 'timing', name: 'Timing data',   desc: 'Empirical segment timings',  url: 'https://raw.githubusercontent.com/smit4786/forge-line-transit-data/main/data/timing/segments.json' }
   ];
   function check(c) {
     var t0 = performance.now();
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, 10000);
-    return fetch(c.url, { cache: 'no-store', signal: ctrl.signal })
+    return fetch(c.url, { cache: 'no-store', signal: ctrl.signal, method: c.method || 'GET' })
       .then(function (r) { return { ok: r.ok, ms: Math.round(performance.now() - t0) }; })
       .catch(function () { return { ok: false, ms: Math.round(performance.now() - t0) }; })
       .finally(function () { clearTimeout(timer); });
