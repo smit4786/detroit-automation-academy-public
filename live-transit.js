@@ -922,15 +922,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       pin.scale.y = stopYS;
       pin.position.y = PM_DECK_Y + (300 * stopYS) / 2;
     }
-    // Visual hierarchy: stops are the static reference frame — they recede
-    // (opacity -> 0.5) at far zoom so the live buses lead, returning to full
-    // strength close up where stops are the navigation landmarks.
-    var ot = camDist >= 8000 ? 0.5 : camDist <= 2800 ? 1 : (function () {
-      var t = (camDist - 2800) / 5200; t = t * t * (3 - 2 * t); return 1 - 0.5 * t;
-    })();
-    var sm = stopIM.material;
-    if (!sm.transparent) sm.transparent = true;
-    if (Math.abs(sm.opacity - ot) > 0.01) sm.opacity = ot;
+    // NOTE 2026-10-06: stop distance-fade (opacity easing) reverted — it
+    // correlated with renderer crashes in testing. Stops stay fully opaque
+    // until a safer quieting mechanism is validated.
   }
 
   var raycaster = new THREE.Raycaster();
