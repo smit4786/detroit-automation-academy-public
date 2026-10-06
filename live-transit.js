@@ -1084,6 +1084,115 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   $('bus-close').addEventListener('click', hideBus);
 
+  // --- Accessible browse panel: list-based alternative to canvas tapping ---
+  // Every tappable 3D object (stop pylon, bus pillar) is also reachable as a
+  // real <button> with a 44px minimum target, keyboard-focusable and
+  // screen-reader labeled. Selection flows through the same showStop/showBus
+  // paths as canvas taps, so behavior is identical.
+  var browseBusIds = '';
+  function setBrowse(open) {
+    var p = $('browse-panel'); if (!p) return;
+    p.hidden = !open;
+    $('browse-toggle').setAttribute('aria-expanded', String(open));
+    if (open) {
+      togglePanel(false); // mutually exclusive with the routes panel
+      buildBrowseStops();
+      refreshBrowseBuses(true);
+    }
+  }
+  $('browse-toggle').addEventListener('click', function () {
+    setBrowse($('browse-panel').hidden);
+  });
+  $('browse-close').addEventListener('click', function () { setBrowse(false); });
+  function browseTab(which) {
+    var stops = which === 'stops';
+    $('browse-tab-stops').setAttribute('aria-selected', String(stops));
+    $('browse-tab-buses').setAttribute('aria-selected', String(!stops));
+    $('browse-tab-stops').tabIndex = stops ? 0 : -1;
+    $('browse-tab-buses').tabIndex = stops ? -1 : 0;
+    $('browse-stops-pane').hidden = !stops;
+    $('browse-buses-pane').hidden = stops;
+    if (!stops) refreshBrowseBuses(true);
+  }
+  $('browse-tab-stops').addEventListener('click', function () { browseTab('stops'); });
+  $('browse-tab-buses').addEventListener('click', function () { browseTab('buses'); });
+  function browseStopRow(st) {
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    var n = (st.r || []).length;
+    b.setAttribute('aria-label', 'Stop ' + (st.n || 'unnamed') + ', served by ' + n + (n === 1 ? ' route' : ' routes'));
+    var dot = document.createElement('i'); dot.className = 'b-dot';
+    var rc = routeColors[(st.r || [])[0]];
+    dot.style.background = rc ? '#' + rc.getHexString() : '#9AA0A6';
+    var main = document.createElement('span'); main.className = 'b-main';
+    var name = document.createElement('b'); name.textContent = st.n || 'Stop';
+    var sub = document.createElement('span');
+    sub.textContent = n + (n === 1 ? ' route' : ' routes') + (st.id ? ' · ID ' + st.id : '');
+    main.appendChild(name); main.appendChild(sub);
+    b.appendChild(dot); b.appendChild(main);
+    b.addEventListener('click', function () { showStop(st); });
+    li.appendChild(b);
+    return li;
+  }
+  function buildBrowseStops() {
+    var list = $('browse-stop-list'); if (!list) return;
+    var q = ($('browse-stop-search').value || '').toLowerCase();
+    var all = (typeof stopPickList !== 'undefined' && stopPickList) || [];
+    var stops = all.slice().sort(function (a, b) { return (a.n || '').localeCompare(b.n || ''); });
+    if (q) stops = stops.filter(function (st) { return (st.n || '').toLowerCase().indexOf(q) >= 0; });
+    list.innerHTML = '';
+    if (!stops.length) {
+      var li = document.createElement('li');
+      li.className = 'browse-empty';
+      li.textContent = all.length ? 'No stops match.' : 'Stops still loading…';
+      list.appendChild(li); return;
+    }
+    stops.slice(0, 200).forEach(function (st) { list.appendChild(browseStopRow(st)); });
+    if (stops.length > 200) {
+      var more = document.createElement('li'); more.className = 'browse-empty';
+      more.textContent = 'Showing 200 of ' + stops.length + ' — refine your search.';
+      list.appendChild(more);
+    }
+  }
+  $('browse-stop-search').addEventListener('input', buildBrowseStops);
+  function browseBusRow(slot) {
+    var v = slot.vehicle;
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    var dest = formatDest(v.route_id, v.destination);
+    b.setAttribute('aria-label', 'Bus ' + (v.vehicle_id || '') + ', route ' + v.route_id + ' ' + (routeNames[v.route_id] || '') + (dest ? ', to ' + dest : ''));
+    var dot = document.createElement('i'); dot.className = 'b-dot';
+    var rc = routeColors[v.route_id];
+    dot.style.background = rc ? '#' + rc.getHexString() : '#F5F2EA';
+    var main = document.createElement('span'); main.className = 'b-main';
+    var name = document.createElement('b');
+    name.textContent = v.route_id + ' · ' + (v.vehicle_id || '');
+    var sub = document.createElement('span');
+    sub.textContent = dest ? 'to ' + dest : (routeNames[v.route_id] || 'DDOT');
+    main.appendChild(name); main.appendChild(sub);
+    b.appendChild(dot); b.appendChild(main);
+    b.addEventListener('click', function () { showBus(v); });
+    li.appendChild(b);
+    return li;
+  }
+  function refreshBrowseBuses(force) {
+    var list = $('browse-bus-list'); if (!list) return;
+    var ids = busSlots.map(function (s) { return s.vehicle.vehicle_id; }).join(',');
+    if (!force && ids === browseBusIds) return; // no change: keep focus/scroll
+    browseBusIds = ids;
+    var n = busSlots.length;
+    $('browse-bus-count').textContent = n ? '(' + n + ')' : '';
+    list.innerHTML = '';
+    if (!n) {
+      var li = document.createElement('li'); li.className = 'browse-empty';
+      li.textContent = 'No buses on the visible routes right now.';
+      list.appendChild(li); return;
+    }
+    busSlots.slice().sort(function (a, b) {
+      return String(a.vehicle.route_id).localeCompare(String(b.vehicle.route_id));
+    }).forEach(function (s) { list.appendChild(browseBusRow(s)); });
+  }
+
   // --- map navigation tools ----------------------------------------------------
   function zoomStep(dir) {
     var off = camera.position.clone().sub(controls.target);
@@ -3696,6 +3805,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     pollSeq++;
     updateLiveDelays(); // Phase 2b-i: match vehicles to trips, measure delays
     renderBusInstances();
+    if (typeof refreshBrowseBuses === 'function') {
+      var bp = document.getElementById('browse-panel');
+      if (bp && !bp.hidden) refreshBrowseBuses(false);
+    }
     if (selectedStop) renderStopLive();
     if (typeof refreshTripFusion === 'function') refreshTripFusion(); // live counts on trip legs
     if (selectedVehicleId) refreshBusInfo(); // tapped bus moved / new data
@@ -3946,10 +4059,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       // Soft location ask, once the map has settled. The old first-time
       // popup is gone — "?" is the help hub now.
       setTimeout(maybePromptLocation, 4000);
-      $('filter-btn').addEventListener('click', function () { togglePanel(); });
+      $('filter-btn').addEventListener('click', function () { togglePanel(); setBrowse(false); });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') togglePanel(false);
       });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setBrowse(false); });
 
       resize();
       setHeader(null, 'connecting…', false);
