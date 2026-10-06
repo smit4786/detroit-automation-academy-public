@@ -251,7 +251,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   var pillarGlowIM = new THREE.InstancedMesh(
     new THREE.CylinderGeometry(58, 58, PILLAR_H, 12, 1, true),
-    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.30, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
     BUS_MAX);
   var pillarCoreIM = new THREE.InstancedMesh(
     new THREE.CylinderGeometry(20, 27, PILLAR_H, 10),
@@ -922,6 +922,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       pin.scale.y = stopYS;
       pin.position.y = PM_DECK_Y + (300 * stopYS) / 2;
     }
+    // Visual hierarchy: stops are the static reference frame — they recede
+    // (opacity -> 0.5) at far zoom so the live buses lead, returning to full
+    // strength close up where stops are the navigation landmarks.
+    var ot = camDist >= 8000 ? 0.5 : camDist <= 2800 ? 1 : (function () {
+      var t = (camDist - 2800) / 5200; t = t * t * (3 - 2 * t); return 1 - 0.5 * t;
+    })();
+    var sm = stopIM.material;
+    if (!sm.transparent) sm.transparent = true;
+    if (Math.abs(sm.opacity - ot) > 0.01) sm.opacity = ot;
   }
 
   var raycaster = new THREE.Raycaster();
