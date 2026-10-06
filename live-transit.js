@@ -1239,8 +1239,18 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       li.textContent = q ? 'No buses match.' : 'No buses on the visible routes right now.';
       list.appendChild(li); return;
     }
+    // Numerical order: routes ascending numerically, then vehicle numbers
+    // ascending numerically (lexicographic fallback for non-numeric ids).
+    function numKey(x) { var n = parseInt(x, 10); return isNaN(n) ? null : n; }
     slots.slice().sort(function (a, b) {
-      return String(a.vehicle.route_id).localeCompare(String(b.vehicle.route_id));
+      var ar = a.vehicle.route_id, br = b.vehicle.route_id;
+      var an = numKey(ar), bn = numKey(br);
+      if (an !== null && bn !== null && an !== bn) return an - bn;
+      var rc = String(ar).localeCompare(String(br));
+      if (rc !== 0) return rc;
+      var av = numKey(a.vehicle.vehicle_id), bv = numKey(b.vehicle.vehicle_id);
+      if (av !== null && bv !== null && av !== bv) return av - bv;
+      return String(a.vehicle.vehicle_id).localeCompare(String(b.vehicle.vehicle_id));
     }).forEach(function (s) { list.appendChild(browseBusRow(s)); });
   }
   $('browse-bus-search').addEventListener('input', function () { refreshBrowseBuses(true); });
