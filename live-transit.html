@@ -94,6 +94,22 @@
   .filter-panel-head strong { font-family: "Space Grotesk", sans-serif; color: #F5F2EA; font-size: .95rem; }
   .filter-panel-head button { background: none; border: 1px solid rgba(232,93,26,.6); color: #E85D1A; border-radius: 999px; padding: .3rem .7rem; font-size: .75rem; cursor: pointer; font-family: "Inter", sans-serif; }
   .filter-panel-head button:hover { background: rgba(232,93,26,.12); }
+  .browse-panel { position: absolute; top: 4.75rem; right: 1.25rem; width: 21rem; max-width: calc(100% - 2.5rem); max-height: calc(100% - 7rem); overflow-y: auto; background: rgba(12,17,22,.94); border: 1px solid rgba(245,242,234,.16); border-radius: 14px; padding: .9rem 1rem 1rem; backdrop-filter: blur(10px); z-index: 5; font-family: "Inter", sans-serif; }
+  .browse-panel[hidden] { display: none; }
+  .browse-tabs { display: flex; gap: .5rem; margin: 0 0 .6rem; }
+  .browse-tabs [role="tab"] { flex: 1; min-height: 44px; border-radius: 10px; border: 1px solid rgba(245,242,234,.2); background: none; color: #F5F2EA; font-size: .85rem; font-weight: 600; cursor: pointer; font-family: "Inter", sans-serif; }
+  .browse-tabs [role="tab"][aria-selected="true"] { border-color: #E85D1A; color: #E85D1A; background: rgba(232,93,26,.1); }
+  .browse-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; }
+  .browse-list button { width: 100%; min-height: 44px; display: flex; align-items: center; gap: .6rem; text-align: left; background: rgba(245,242,234,.05); border: 1px solid rgba(245,242,234,.12); border-radius: 10px; color: #F5F2EA; padding: .55rem .7rem; font-size: .85rem; cursor: pointer; font-family: "Inter", sans-serif; }
+  .browse-list button:hover { border-color: #E85D1A; }
+  .browse-list button:focus-visible { outline: 2px solid #E85D1A; outline-offset: 2px; }
+  .browse-list .b-dot { width: .7rem; height: .7rem; border-radius: 3px; flex: none; }
+  .browse-list .b-main { min-width: 0; }
+  .browse-list .b-main b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .browse-list .b-main span { display: block; color: #9AA0A6; font-size: .75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #browse-stop-search { width: 100%; min-height: 44px; box-sizing: border-box; border-radius: 10px; border: 1px solid rgba(245,242,234,.2); background: rgba(245,242,234,.06); color: #F5F2EA; padding: .55rem .7rem; font-size: .9rem; margin-bottom: .6rem; font-family: "Inter", sans-serif; }
+  #browse-stop-search::placeholder { color: #9AA0A6; }
+  .browse-empty { color: #9AA0A6; font-size: .85rem; padding: .8rem 0; text-align: center; }
   .f-head-btns { display: flex; gap: .4rem; }
   .f-group { margin-bottom: .7rem; }
   .f-group:last-child { margin-bottom: 0; }
@@ -151,6 +167,7 @@
   body.fs-lock .map-tools { touch-action: none; }
   body.fs-lock .bus-card { touch-action: pan-y; }
   body.fs-lock .filter-panel,
+  body.fs-lock .browse-panel,
   body.fs-lock .nav-card,
   body.fs-lock #trip-search-results { touch-action: pan-y; overscroll-behavior: contain; }
   .map-toast { position: absolute; left: 50%; bottom: 5.5rem; transform: translateX(-50%); z-index: 9; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6rem; background: rgba(12,17,22,.95); border: 1px solid rgba(232,93,26,.6); color: #F5F2EA; border-radius: 16px; padding: .55rem 1rem; font-size: .82rem; font-family: "Inter", sans-serif; max-width: calc(100% - 2rem); cursor: pointer; text-align: center; }
@@ -365,6 +382,27 @@
         </div>
         <div class="resize-grip" id="panel-resize" aria-hidden="true"></div>
       </div>
+      <div class="browse-panel" id="browse-panel" hidden role="dialog" aria-label="Browse stops and buses">
+        <div class="filter-panel-head">
+          <strong>Browse</strong>
+          <span class="f-head-btns">
+            <button id="browse-close" aria-label="Close browse panel">&times;</button>
+          </span>
+        </div>
+        <div class="f-body">
+          <div class="browse-tabs" role="tablist" aria-label="Browse stops or buses">
+            <button id="browse-tab-stops" role="tab" aria-selected="true" aria-controls="browse-stops-pane">Stops</button>
+            <button id="browse-tab-buses" role="tab" aria-selected="false" aria-controls="browse-buses-pane" tabindex="-1">Buses <span id="browse-bus-count"></span></button>
+          </div>
+          <div id="browse-stops-pane" role="tabpanel" aria-labelledby="browse-tab-stops" tabindex="0">
+            <input type="search" id="browse-stop-search" placeholder="Search stops…" aria-label="Search stops" autocomplete="off">
+            <ul id="browse-stop-list" class="browse-list"></ul>
+          </div>
+          <div id="browse-buses-pane" role="tabpanel" aria-labelledby="browse-tab-buses" tabindex="0" hidden>
+            <ul id="browse-bus-list" class="browse-list"></ul>
+          </div>
+        </div>
+      </div>
       <div class="bus-card" id="bus-card" hidden>
         <button class="close" id="bus-close" aria-label="Close bus details">×</button>
         <div class="sel-eyebrow">Bus</div>
@@ -437,6 +475,7 @@
         <button id="view-reset" aria-label="Reset view">&#8962;</button>
         <button id="view-full" aria-label="Enter fullscreen" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
         <button id="view-locate" aria-label="Find my location" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+        <button id="browse-toggle" aria-label="Browse stops and buses" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.4" fill="currentColor" stroke="none"/></svg></button>
       </div>
       <div class="map-toast" id="map-toast" hidden></div>
       <div class="nav-overlay" id="nav-overlay" hidden>
@@ -483,7 +522,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261006-1145"></script>
+<script type="module" src="live-transit.js?v=20261006-1255"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
