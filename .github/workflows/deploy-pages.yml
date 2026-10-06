@@ -85,6 +85,11 @@ jobs:
             cp -r signal deployment/ || echo "signal copy failed"
           fi
 
+          # Copy Engineering series
+          if [ -d "engineering" ]; then
+            cp -r engineering deployment/ || echo "engineering copy failed"
+          fi
+
           # Copy asset directories
           cp -r assets deployment/   || (mkdir -p deployment/assets   && echo "assets dir created empty")
           cp -r branding deployment/ || (mkdir -p deployment/branding && echo "branding dir created empty")
