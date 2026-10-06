@@ -2176,7 +2176,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (tripLeaveMode === 'at' && tripLeaveTime) { hideGuidanceBanner(); return; }
     var j = tripJourneys[tripSel];
     var sig = journeySig(j);
-    if (guidanceDismissedSig === sig) { hideGuidanceBanner(); return; }
+    var dismissed = (guidanceDismissedSig === sig);
     var busLegs = j.legs.filter(function (l) { return l.type === 'bus'; });
     if (!busLegs.length) { hideGuidanceBanner(); return; }
     // Missed transfer: highest priority.
@@ -2193,8 +2193,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     for (var i = 0; i < busLegs.length; i++) {
       var g = guidanceForLeg(busLegs[i]);
       if (g === 'passed') continue;
-      if (g) { showGuidanceBanner(g.kind, g.text, !!g.urgent, false); return; }
+      // Urgent guidance (get off at the next stop) always shows: a dismissal
+      // must never suppress a safety-critical banner. Dismissal only quiets
+      // non-urgent guidance for this journey.
+      if (g) {
+        if (dismissed && !g.urgent) { hideGuidanceBanner(); return; }
+        showGuidanceBanner(g.kind, g.text, !!g.urgent, false);
+        return;
+      }
     }
+    if (dismissed) { hideGuidanceBanner(); return; }
     showGuidanceBanner('done', 'You have arrived.', false, true);
   }
   function renderTripResults(res) {
@@ -3287,7 +3295,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     fetch('https://raw.githubusercontent.com/smit4786/forge-line-transit-data/main/data/timing/segments.json',
       { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-      .then(function (d) { timingCells = (d && typeof d === 'object') ? d : null; })
+      .then(function (d) {
+        // segments.json is a document envelope {schema, built_at, cells, segments};
+        // the flat cell map lives under `segments`.
+        timingCells = (d && d.segments && typeof d.segments === 'object') ? d.segments : null;
+      })
       .catch(function () { /* keep the previous cache; the local map covers */ });
   }
 
@@ -3499,10 +3511,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     updateGuidance(); // Phase 2c: board/alight/missed-transfer banners
   }
 
-  // --- Phase 2b-ii (dormant): empirical timetable substitution ----------------
-  // Replaces scheduled segment times with mature timing-cell means. No-ops
-  // until cells mature (none as of 2026-10-05). The delay layer measures
-  // against this baseline when present, else against the raw schedule.
+  // --- Phase 2b-ii: empirical timetable substitution ---------------------------
+  // Replaces scheduled segment times with mature timing-cell means. The timing
+  // builder emits observed anchor-switch pairs, which can span several
+  // scheduled stops, so each adjacent pair first tries its exact cell key and
+  // then falls back to the tightest observed span covering it. A spanning
+  // cell's measured total is apportioned across its scheduled intervals by
+  // scheduled-time share (uniform split if the schedule gives no times), so
+  // the measured total is always preserved. No-ops until cells mature.
+  // The delay layer measures against this baseline when present, else against
+  // the raw schedule.
   function applyEmpiricalBaseline() {
     if (!tripTT) return 0;
     var tt = tripTT;
@@ -3519,10 +3537,45 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       pat.trips.forEach(function (t) {
         var dep2 = null, arr2 = null;
         if (hasCells) {
+          // Index this trip's observed spans by stop position.
+          var stopPos = {};
+          for (var s = 0; s < t.stops.length; s++) stopPos[String(t.stops[s])] = s;
+          var spans = [];
+          for (var k in timingCells) {
+            var p = k.split('|');
+            if (p.length !== 4 || p[0] !== routeId || p[3] !== bucket) continue;
+            var sc = timingCells[k];
+            if (!sc || !(sc.n >= 3) || !(sc.mean_s > 0)) continue;
+            var ia = stopPos[p[1]], ib = stopPos[p[2]];
+            if (ia == null || ib == null || ib <= ia) continue;
+            spans.push({ ia: ia, ib: ib, mean_s: sc.mean_s, n: sc.n });
+          }
           for (var j = 0; j + 1 < t.stops.length; j++) {
-            var cell = timingCells[routeId + '|' + t.stops[j] + '|' + t.stops[j + 1] + '|' + bucket];
-            if (cell && cell.n >= 3 && cell.mean_s > 0) {
-              var delta = cell.mean_s - (t.dep[j + 1] - t.dep[j]);
+            var emp = null;
+            var exact = timingCells[routeId + '|' + t.stops[j] + '|' + t.stops[j + 1] + '|' + bucket];
+            if (exact && exact.n >= 3 && exact.mean_s > 0) {
+              emp = exact.mean_s;
+            } else {
+              var bestS = null;
+              for (var q = 0; q < spans.length; q++) {
+                var sp = spans[q];
+                if (sp.ia <= j && j + 1 <= sp.ib) {
+                  if (!bestS || (sp.ib - sp.ia) < (bestS.ib - bestS.ia) ||
+                      ((sp.ib - sp.ia) === (bestS.ib - bestS.ia) && sp.n > bestS.n)) bestS = sp;
+                }
+              }
+              if (bestS) {
+                var spanSched = t.dep[bestS.ib] - t.dep[bestS.ia];
+                var pairSched = t.dep[j + 1] - t.dep[j];
+                if (spanSched > 0 && pairSched >= 0) {
+                  emp = bestS.mean_s * (pairSched / spanSched);
+                } else {
+                  emp = bestS.mean_s / (bestS.ib - bestS.ia);
+                }
+              }
+            }
+            if (emp != null && emp > 0) {
+              var delta = emp - (t.dep[j + 1] - t.dep[j]);
               if (Math.abs(delta) >= 1) {
                 if (!dep2) { dep2 = t.dep.slice(); arr2 = t.arr.slice(); }
                 for (var m = j + 1; m < dep2.length; m++) { dep2[m] += delta; arr2[m] += delta; }
