@@ -382,7 +382,7 @@
         </div>
         <div class="resize-grip" id="panel-resize" aria-hidden="true"></div>
       </div>
-      <div class="browse-panel" id="browse-panel" hidden role="dialog" aria-label="Browse stops and buses">
+      <div class="browse-panel" id="browse-panel" hidden role="dialog" aria-label="Browse buses and stops">
         <div class="filter-panel-head">
           <strong>Browse</strong>
           <span class="f-head-btns">
@@ -390,17 +390,17 @@
           </span>
         </div>
         <div class="f-body">
-          <div class="browse-tabs" role="tablist" aria-label="Browse stops or buses">
-            <button id="browse-tab-stops" role="tab" aria-selected="true" aria-controls="browse-stops-pane">Stops</button>
-            <button id="browse-tab-buses" role="tab" aria-selected="false" aria-controls="browse-buses-pane" tabindex="-1">Buses <span id="browse-bus-count"></span></button>
+          <div class="browse-tabs" role="tablist" aria-label="Browse buses or stops">
+            <button id="browse-tab-buses" role="tab" aria-selected="true" aria-controls="browse-buses-pane">Buses <span id="browse-bus-count"></span></button>
+            <button id="browse-tab-stops" role="tab" aria-selected="false" aria-controls="browse-stops-pane" tabindex="-1">Stops</button>
           </div>
-          <div id="browse-stops-pane" role="tabpanel" aria-labelledby="browse-tab-stops" tabindex="0">
-            <input type="search" id="browse-stop-search" placeholder="Search stops…" aria-label="Search stops" autocomplete="off">
-            <ul id="browse-stop-list" class="browse-list"></ul>
-          </div>
-          <div id="browse-buses-pane" role="tabpanel" aria-labelledby="browse-tab-buses" tabindex="0" hidden>
+          <div id="browse-buses-pane" role="tabpanel" aria-labelledby="browse-tab-buses" tabindex="0">
             <input type="search" id="browse-bus-search" placeholder="Search buses…" aria-label="Search buses" autocomplete="off">
             <ul id="browse-bus-list" class="browse-list"></ul>
+          </div>
+          <div id="browse-stops-pane" role="tabpanel" aria-labelledby="browse-tab-stops" tabindex="0" hidden>
+            <input type="search" id="browse-stop-search" placeholder="Search stops…" aria-label="Search stops" autocomplete="off">
+            <ul id="browse-stop-list" class="browse-list"></ul>
           </div>
         </div>
       </div>
@@ -476,7 +476,7 @@
         <button id="view-reset" aria-label="Reset view">&#8962;</button>
         <button id="view-full" aria-label="Enter fullscreen" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
         <button id="view-locate" aria-label="Find my location" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
-        <button id="browse-toggle" aria-label="Browse stops and buses" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+        <button id="browse-toggle" aria-label="Browse buses and stops" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.4" fill="currentColor" stroke="none"/></svg></button>
       </div>
       <div class="map-toast" id="map-toast" hidden></div>
       <div class="nav-overlay" id="nav-overlay" hidden>
@@ -523,7 +523,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261006-1300"></script>
+<script type="module" src="live-transit.js?v=20261006-1335"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {
