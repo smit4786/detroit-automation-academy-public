@@ -1212,7 +1212,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     sub.textContent = n + (n === 1 ? ' route' : ' routes') + (st.id ? ' · ID ' + st.id : '');
     main.appendChild(name); main.appendChild(sub);
     b.appendChild(dot); b.appendChild(main);
-    b.addEventListener('click', function () { showStop(st); });
+    b.addEventListener('click', function () { setBrowse(false); showStop(st); });
     li.appendChild(b);
     return li;
   }
@@ -1253,7 +1253,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     sub.textContent = dest ? 'to ' + dest : (routeNames[v.route_id] || 'DDOT');
     main.appendChild(name); main.appendChild(sub);
     b.appendChild(dot); b.appendChild(main);
-    b.addEventListener('click', function () { showBus(v); });
+    b.addEventListener('click', function () { setBrowse(false); showBus(v); });
     li.appendChild(b);
     return li;
   }
