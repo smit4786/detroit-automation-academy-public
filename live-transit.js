@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261006-2120';
+  var STAMP = '20261007-0715';
   // Build string in the help footer derives from the cache stamp — never
   // hardcoded (2026-10-06: a stale hardcoded "Build 20261002-2780" shipped
   // for days before anyone noticed).
@@ -212,6 +212,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var pmPins = [];         // station pin meshes (zoom-scaled with the stop family)
   var pmLabel = null, pmTether = null;
   var pmVisible = true;
+  var belleIsleLabel = null, belleIsleTether = null; // island landmass label (static layer)
   var PM_DECK_Y = 140;     // elevated guideway: floats above the highest DDOT route deck (~110)
 
   function project(lat, lon) {
@@ -715,6 +716,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var sp = badgePool[bi];
       if (bi < n && show) {
         var bs = busSlots[bi];
+        // The selected bus is identified by the card, the info sprite, and
+        // the selection pulse: its route badge would be a second floating
+        // label tracking the same bus. Hide it for visual clarity.
+        if (selectedVehicleId && bs.vehicle && bs.vehicle.vehicle_id === selectedVehicleId) {
+          sp.visible = false;
+          continue;
+        }
         var bt = routeBadgeTexture(bs.vehicle.route_id);
         if (sp.material.map !== bt.tex) { sp.material.map = bt.tex; sp.material.needsUpdate = true; }
         sp.userData.aspect = bt.aspect;
@@ -981,8 +989,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // they don't fight over the camera.
   function cancelStreetTween() {
     if (streetTween) { streetTween = null; if (!tripFly) controls.enabled = true; }
-    followVId = null; // any programmatic move also ends bus tracking
-    refreshFollowBtn();
+    setFollow(null); // any programmatic move also ends bus tracking (restores zoomToCursor)
   }
   renderer.domElement.addEventListener('pointerdown', function () {
     if (streetTween) { streetTween = null; if (!tripFly) controls.enabled = true; }
@@ -1417,11 +1424,16 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // with the bus's live slot position, so the selection stays on screen.
   // Any canvas pointerdown hands the camera back to the user.
   var followVId = null;
+  var followSuppressed = false; // user explicitly toggled follow OFF for this selection
   var _followPrev = new THREE.Vector3();
   // Single mutation point for follow state: keeps the Follow button label in
   // sync wherever tracking starts or stops.
   function setFollow(vid, slot) {
     followVId = vid || null;
+    // Cursor-anchored zoom re-anchors the orbit target to the cursor ray on
+    // every wheel tick, which fights followTick's bus-anchored target and
+    // teleports the camera off the bus. Track-centered zoom while following.
+    if (typeof controls !== 'undefined') controls.zoomToCursor = !followVId;
     if (followVId && slot) _followPrev.set(slot.x, 0, slot.z);
     refreshFollowBtn();
   }
@@ -1445,6 +1457,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   function showBus(v) {
     if (!v) return;
+    var isReselect = (v.vehicle_id === selectedVehicleId);
     tapBuzz();
     selectedVehicleId = v.vehicle_id;
     renderBusInstances(); // expand the selected indicator
@@ -1485,7 +1498,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (_bs) {
         TransitionEngine.go({
           vantage: TransitionEngine.vantageForBus(_bs.x, _bs.z),
-          follow: DisplayBounds.get().deviceClass === 'mobile' ? 'hold' : 'engage',
+          follow: (isReselect && followSuppressed) ? 'hold'
+            : (DisplayBounds.get().deviceClass === 'mobile' ? 'hold' : 'engage'),
           vehicleId: v.vehicle_id,
           slot: _bs
         });
@@ -1494,6 +1508,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   }
   function hideBus() {
     selectedVehicleId = null;
+    followSuppressed = false;
     setFollow(null); // stop tracking
     $('bus-card').hidden = true;
     busInfoSprite.visible = false;
@@ -1519,7 +1534,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
   }
   function toggleFollow() {
-    if (followVId) { setFollow(null); return; }
+    if (followVId) { setFollow(null); followSuppressed = true; return; }
+    followSuppressed = false;
     var sl = null;
     for (var i = 0; i < busSlots.length; i++) {
       if (busSlots[i].vehicle && busSlots[i].vehicle.vehicle_id === selectedVehicleId) { sl = busSlots[i]; break; }
@@ -3485,6 +3501,57 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     scene.add(pmGroup);
   }
 
+  // Belle Isle landmass: true-form OSM island outline (assets/belle-isle.json).
+  // Route 12 serves the island, but the uniform dark ground rendered no island
+  // at all. Filled polygon at y=3 (above ground, below the street tiers),
+  // dark park-green with a shoreline stroke, plus a floating place label.
+  // Optional layer: absent file = no island, map otherwise unaffected.
+  function buildBelleIsle(B) {
+    if (!B || !B.polygon || B.polygon.length < 3) return;
+    var contour = [];
+    for (var i = 0; i < B.polygon.length; i++) {
+      contour.push(new THREE.Vector2(B.polygon[i][0], B.polygon[i][1]));
+    }
+    var faces = THREE.ShapeUtils.triangulateShape(contour, []);
+    var pos = [];
+    for (var f = 0; f < faces.length; f++) {
+      for (var k = 0; k < 3; k++) {
+        var v = contour[faces[f][k]];
+        pos.push(v.x, 0, v.y);
+      }
+    }
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.computeVertexNormals();
+    var island = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x15211b }));
+    island.position.y = 3;
+    island.renderOrder = 1;
+    scene.add(island);
+    var shorePts = [];
+    for (var s = 0; s < B.polygon.length; s++) {
+      shorePts.push(new THREE.Vector3(B.polygon[s][0], 4, B.polygon[s][1]));
+    }
+    var shore = new THREE.LineLoop(
+      new THREE.BufferGeometry().setFromPoints(shorePts),
+      new THREE.LineBasicMaterial({ color: 0x33523f, transparent: true, opacity: 0.9 })
+    );
+    shore.renderOrder = 2;
+    scene.add(shore);
+    var lx = B.label ? B.label.x : 14015, lz = B.label ? B.label.z : 4478;
+    belleIsleLabel = makeLabel('Belle Isle', '#9db89a');
+    belleIsleLabel.position.set(lx, 560, lz);
+    belleIsleLabel.renderOrder = 36;
+    scene.add(belleIsleLabel);
+    belleIsleTether = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(lx, 4, lz),
+        new THREE.Vector3(lx, 490, lz)
+      ]),
+      new THREE.LineBasicMaterial({ color: 0x9db89a, transparent: true, opacity: 0.4 })
+    );
+    scene.add(belleIsleTether);
+  }
+
   // Screen-space nearest station (mirrors the stop touch fallback: forgiving
   // at far zooms, tighter for mouse). The pins are small; raycasting them
   // would be fiddly, so proximity picking is the primary path for both.
@@ -4582,6 +4649,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       // DDOT route filters. Absent (fetch failed) the map simply has no PM layer.
       if (pmData && pmData.loop && pmData.stations) buildPeopleMover(pmData);
 
+      // Belle Isle static layer: built once from the OSM island outline.
+      // Absent (fetch failed) the map simply has no island landmass.
+      fetch('assets/belle-isle.json?v=' + STAMP, { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+        .then(function (B) { buildBelleIsle(B); })
+        .catch(function () { /* island is a bonus; map works without it */ });
+
       /* LANDMARK-MASSING-BEGIN v20261006-1700 — staging-only Phase A.
          True-form OSM landmark massing (single merged mesh, 1 draw call).
          Geometry: /tmp/build_landmarks.py. Revert: delete this block and
@@ -4718,6 +4792,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           var pmLvis = pmGroup.visible && camDist > 7000;
           pmLabel.visible = pmLvis;
           if (pmTether) pmTether.visible = pmLvis;
+        }
+        // Belle Isle place label: static geography, so visibility follows only
+        // the street-zoom declutter rule — hidden at street zoom where street
+        // names take over, same as the People Mover label.
+        if (belleIsleLabel) {
+          var biLvis = camDist > 7000;
+          belleIsleLabel.visible = biLvis;
+          if (belleIsleTether) belleIsleTether.visible = biLvis;
         }
         if (stopHighlight.visible) {
           var shp = busPulse();
