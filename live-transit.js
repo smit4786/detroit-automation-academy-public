@@ -4708,7 +4708,23 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       fetchHistory();
       maybeRenderHistory();
       poll();
-      setInterval(poll, POLL_MS);
+      // Hidden-tab backoff (credit saver): while the tab is hidden, skip the
+      // 60 s vehicle poll and re-check every 10 min instead. On return to
+      // visible, poll immediately and resume the normal cadence.
+      var HIDDEN_POLL_MS = 600000;
+      var pollTimer = null;
+      function schedulePoll() {
+        if (pollTimer) clearTimeout(pollTimer);
+        pollTimer = setTimeout(function () {
+          pollTimer = null;
+          if (!document.hidden) poll();
+          schedulePoll();
+        }, document.hidden ? HIDDEN_POLL_MS : POLL_MS);
+      }
+      schedulePoll();
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) { poll(); schedulePoll(); }
+      });
       // Empirical motion prior: restore the local speed map, fetch the
       // telemetry timing cells now and hourly; persist the map on hide.
       loadSpeedmap();
