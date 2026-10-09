@@ -1,0 +1,116 @@
+name: Deploy Dev/UAT to Netlify
+
+on:
+  push:
+    branches: ["dev", "uat"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.160.0'
+          extended: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: blog-source
+        run: npm install
+
+      - name: Build with Hugo
+        working-directory: blog-source
+        run: |
+          echo "Building Hugo site..."
+          export PATH=$PWD/node_modules/.bin:$PATH
+          hugo \
+            --gc \
+            --minify \
+            --logLevel warning \
+            --baseURL "https://detroitautomationacademy.com/blog/" \
+            --destination "../public-blog"
+          echo "Hugo build complete."
+
+      - name: Prepare Deployment Directory
+        run: |
+          echo "Preparing deployment directory..."
+          mkdir -p deployment/blog
+          mkdir -p deployment/curriculum
+
+          cp *.html deployment/ || echo "No HTML files found"
+          cp *.sh deployment/   || echo "No shell scripts found"
+          cp *.css deployment/ || echo "No CSS files found"
+          cp *.js deployment/ || echo "No JS files found"
+          cp *.json deployment/ || echo "No JSON files found"
+
+          cp CNAME deployment/               || echo "CNAME not found"
+          cp .nojekyll deployment/           || echo ".nojekyll not found"
+          cp robots.txt deployment/          || echo "robots.txt not found"
+          cp sitemap.xml deployment/         || echo "sitemap.xml not found"
+
+          if [ -d "curriculum" ]; then
+            cp -r curriculum/* deployment/curriculum/
+          fi
+
+          if [ -d "signal" ]; then
+            cp -r signal deployment/ || echo "signal copy failed"
+          fi
+
+          if [ -d "engineering" ]; then
+            cp -r engineering deployment/ || echo "engineering copy failed"
+            cp -r live-transit-detroit deployment/ || echo "live-transit-detroit copy failed"
+          fi
+
+          if [ -d "press" ]; then
+            cp -r press deployment/ || echo "press copy failed"
+          fi
+
+          cp -r assets deployment/   || (mkdir -p deployment/assets   && echo "assets dir created empty")
+          cp -r branding deployment/ || (mkdir -p deployment/branding && echo "branding dir created empty")
+          cp -r qr_codes deployment/ || (mkdir -p deployment/qr_codes && echo "qr_codes dir created empty")
+
+          if [ -d "public-blog" ]; then
+            cp -r public-blog/* deployment/blog/
+          else
+            echo "FATAL: public-blog directory not found!"
+            exit 1
+          fi
+
+      - name: Deploy to Netlify (dev)
+        if: github.ref == 'refs/heads/dev'
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: './deployment'
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          enable-commit-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_DEV }}
+
+      - name: Deploy to Netlify (uat)
+        if: github.ref == 'refs/heads/uat'
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: './deployment'
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          enable-commit-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_UAT }}
