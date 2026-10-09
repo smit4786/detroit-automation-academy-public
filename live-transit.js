@@ -211,7 +211,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   var pmStations = [];     // pickable records {id, n, x, z, r:['DPM'], pm:true}
   var pmPins = [];         // station pin meshes (zoom-scaled with the stop family)
   var pmLabel = null, pmTether = null;
-  var pmVisible = true;
+  var pmVisible = false; // OFF by default: user enables via pm-toggle
   var belleIsleLabel = null, belleIsleTether = null; // island landmass label (static layer)
   var PM_DECK_Y = 140;     // elevated guideway: floats above the highest DDOT route deck (~110)
 
@@ -1394,6 +1394,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var hit = pickTopHit(e.clientX, e.clientY);
     if (hit && hit.kind === 'bus') { showBus(hit.vehicle); return; }
     if (hit && hit.kind === 'stop') { showStop(hit.stop); return; }
+    // People Mover stations first: their elevated pins were losing taps to the
+    // dense downtown DDOT stops beneath them. (No-op while the PM layer is off.)
+    var pm = pickPMStation(e.clientX, e.clientY, isTouch);
+    if (pm) { showStop(pm); return; }
     if (isTouch) {
       // Raycast missed everything: nearest-on-screen fallbacks, as before.
       var _r = renderer.domElement.getBoundingClientRect();
@@ -1402,8 +1406,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var _st = pickStopScreen(e.clientX, e.clientY, _r);
       if (_st) { showStop(_st); return; }
     }
-    var pm = pickPMStation(e.clientX, e.clientY, isTouch);
-    if (pm) { showStop(pm); return; }
     hideBus(); hideStop();
   });
   renderer.domElement.addEventListener('pointermove', function (e) {
@@ -3450,7 +3452,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // with the same lat0/lon0 as ddot-routes-3d.json so geometry aligns.
   // Visual language: Concrete #9AA0A6 deck (reads as infrastructure, distinct
   // from the saturated live-route colors), paper-white station pins, narrow
-  // 40 m guideway (single track, not a bus corridor). Nothing here implies
+  // 14 m single-track guideway (automated, one direction — not a bus corridor).
+  // Elevated at PM_DECK_Y with open air beneath: no continuous skirt, pillars
+  // only at stations, so ground-level stops, buses and buildings stay visible.
+  // Off by default; the pm-toggle enables it. Nothing here implies
   // live vehicles: no beacons, no "LIVE" marker, and the filter-panel note
   // states the static provenance outright.
   function buildPeopleMover(pm) {
@@ -3466,8 +3471,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     var deckMat = new THREE.MeshLambertMaterial({ color: concrete, side: THREE.DoubleSide });
     var skirtMat = new THREE.MeshLambertMaterial({ color: concrete.clone().multiplyScalar(0.35), side: THREE.DoubleSide });
     var loop = pm.loop.slice();
-    pmGroup.add(new THREE.Mesh(ribbonGeometry(loop, 40, PM_DECK_Y), deckMat));
-    pmGroup.add(new THREE.Mesh(skirtGeometry(loop, 40, PM_DECK_Y), skirtMat));
+    // Single-track elevated guideway, 14 m wide: narrow enough that street-level
+    // endpoints (stops, buses, buildings) stay visible beneath it. No continuous
+    // skirt — the solid wall obscured ground objects. Support pillars render
+    // ONLY at station locations (the known points), not as invented infill.
+    pmGroup.add(new THREE.Mesh(ribbonGeometry(loop, 14, PM_DECK_Y), deckMat));
+    var pillarGeo = new THREE.CylinderGeometry(6, 9, PM_DECK_Y, 10);
+    var pillarMat = new THREE.MeshLambertMaterial({ color: concrete.clone().multiplyScalar(0.55) });
 
     var pinGeo = new THREE.CylinderGeometry(24, 32, 300, 12);
     var pinMat = new THREE.MeshLambertMaterial({ color: 0xF5F2EA });
@@ -3478,6 +3488,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       pin.position.set(s.x, PM_DECK_Y + 150, s.z);
       pmGroup.add(pin);
       pmPins.push(pin);
+      var pillar = new THREE.Mesh(pillarGeo, pillarMat);
+      pillar.position.set(s.x, PM_DECK_Y / 2, s.z);
+      pmGroup.add(pillar);
       var ring = new THREE.Mesh(ringGeo, ringMat);
       ring.rotation.x = -Math.PI / 2;
       ring.position.set(s.x, PM_DECK_Y + 3, s.z);
