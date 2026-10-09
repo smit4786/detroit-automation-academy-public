@@ -16,7 +16,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.detroitautomationacademy.com/engineering/</loc>
+    <loc>https://www.detroitautomationacademy.com/live-transit-detroit/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -81,7 +81,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.detroitautomationacademy.com/engineering/2b-ii-postmortem/</loc>
+    <loc>https://www.detroitautomationacademy.com/live-transit-detroit/2b-ii-postmortem/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -121,7 +121,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.detroitautomationacademy.com/engineering/ship-day-20261006/</loc>
+    <loc>https://www.detroitautomationacademy.com/live-transit-detroit/ship-day-20261006/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -131,8 +131,13 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.detroitautomationacademy.com/engineering/belle-isle/</loc>
+    <loc>https://www.detroitautomationacademy.com/live-transit-detroit/belle-isle/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.detroitautomationacademy.com/live-transit-detroit/people-mover-under-construction/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>
