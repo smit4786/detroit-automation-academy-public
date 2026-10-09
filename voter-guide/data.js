@@ -132,7 +132,7 @@ const GUIDE = {
       id: "senate",
       title: "U.S. Senate — Michigan",
       voteFor: "Vote for 1",
-      context: "Open seat — Sen. Gary Peters is retiring when his term ends in January 2027. Six-year term. Widely rated a toss-up; control of the Senate may run through Michigan.",
+      context: "Open seat — Sen. Gary Peters is retiring when his term ends in January 2027. Six-year term. Widely rated a toss-up; control of the Senate may run through Michigan. First debate October 8, 2026; second debate October 21 on WXYZ-TV (Channel 7).",
       compare: {
         issues: [
           { q: "Health care", stances: {
@@ -180,7 +180,9 @@ const GUIDE = {
           sources: [
             ["2026 U.S. Senate election in Michigan — Wikipedia", "https://en.wikipedia.org/wiki/2026_United_States_Senate_election_in_Michigan"],
             ["Michigan 2026 U.S. Senate voter guide — MichWomen", "https://michwomen.com/blog/2026-candidates-for-michigan-us-senate"],
-            ["Senate & governor race overview — Detroit Free Press", "https://www.freep.com/story/news/politics/elections/2026/08/28/u-s-senate-governor-race-have-all-eyes-on-michigan/91456947007/"]
+            ["Senate & governor race overview — Detroit Free Press", "https://www.freep.com/story/news/politics/elections/2026/08/28/u-s-senate-governor-race-have-all-eyes-on-michigan/91456947007/"],
+            ["Oct 8, 2026 Senate debate recap — Detroit Free Press", "https://www.freep.com/story/news/politics/elections/2026/10/08/abdul-el-sayed-mike-rogers-us-senate-debate/92162055007/"],
+            ["Oct 8, 2026 Senate debate takeaways — USA Today", "https://www.usatoday.com/story/news/politics/elections/2026/10/08/michigan-senate-debate-takeaways/92160978007/"],
           ]
         },
         {
@@ -204,7 +206,9 @@ const GUIDE = {
             ["Rogers 2026 campaign — healthcare plan", "http://rogersforsenate.com/news/rogers-announces-healthcare-plan-healthcare-that-works-for-working-families"],
             ["Rogers Oct 2024 op-ed — Washington Reporter", "https://washingtonreporter.news/op-ed-mike-rogers-send-me-to-washington-to-clean-up-the-democrats-mess/"],
             ["2024 Senate debate — Oakland Post", "https://oaklandpostonline.com/51110/politics/rogers-michigan-senate-debate/"],
-            ["Senate candidates on health care — WCMU", "https://www.wcmu.org/local-regional-news/2026-09-19/michigans-two-major-party-candidates-for-u-s-senate-offer-differing-ideas-for-health-care"]
+            ["Senate candidates on health care — WCMU", "https://www.wcmu.org/local-regional-news/2026-09-19/michigans-two-major-party-candidates-for-u-s-senate-offer-differing-ideas-for-health-care"],
+            ["Oct 8, 2026 Senate debate recap — Detroit Free Press", "https://www.freep.com/story/news/politics/elections/2026/10/08/abdul-el-sayed-mike-rogers-us-senate-debate/92162055007/"],
+            ["Oct 8, 2026 Senate debate takeaways — USA Today", "https://www.usatoday.com/story/news/politics/elections/2026/10/08/michigan-senate-debate-takeaways/92160978007/"],
           ]
         },
         {
