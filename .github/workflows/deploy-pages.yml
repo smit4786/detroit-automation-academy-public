@@ -88,6 +88,7 @@ jobs:
           # Copy Engineering series
           if [ -d "engineering" ]; then
             cp -r engineering deployment/ || echo "engineering copy failed"
+            cp -r live-transit-detroit deployment/ || echo "live-transit-detroit copy failed"
           fi
 
           # Copy The Press (Just the Facts)
