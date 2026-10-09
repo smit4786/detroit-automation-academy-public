@@ -2186,7 +2186,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   function showStop(st) {
     if (!st) return;
     setFollow(null); // a stop selection ends bus tracking
-    if (typeof tripMode !== 'undefined' && tripMode) tripTapStop(st);
+    if (typeof tripMode !== 'undefined' && tripMode) tripStopTapped(st);
     tapBuzz();
     setStopSelectedColor(selectedStopIndex, false);
     selectedStop = st;
