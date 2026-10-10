@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261010-1400';
+  var STAMP = '20261010-1445';
   // Build string in the help footer derives from the cache stamp — never
   // hardcoded (2026-10-06: a stale hardcoded "Build 20261002-2780" shipped
   // for days before anyone noticed).
@@ -4530,7 +4530,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       // SMART routes via the Transit API: merged into the DDOT dataset so
       // route groups, filters, stops, and labels all work unchanged. The
       // proxy serves SMART vehicle snapshots on the same /api/vehicles feed;
-      // route_id values ("261", "125") match the proxy's Transit mapping.
+      // route_id values (SMART short names) match the proxy's Transit mapping.
       // Absent file: the map runs DDOT-only, no errors.
       if (smartData && Array.isArray(smartData.routes) && smartData.routes.length) {
         data.groups = (data.groups || []).concat(smartData.groups || []);
