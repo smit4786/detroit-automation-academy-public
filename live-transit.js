@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261010-1445';
+  var STAMP = '20261010-1500';
   // Build string in the help footer derives from the cache stamp — never
   // hardcoded (2026-10-06: a stale hardcoded "Build 20261002-2780" shipped
   // for days before anyone noticed).
@@ -3313,6 +3313,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
   }
 
+  var transitDataOn = false;
+  // Transit badge: minimum-size attribution, shown only when Transit-derived
+  // SMART data is both flowing and actually displayed (SMART group not
+  // filtered off). Never obscures the map: it lives in the header counter box.
+  function syncTransitBadge() {
+    var badge = $('transit-badge');
+    if (!badge) return;
+    var smartShown = false;
+    try { smartShown = groupSelState('smart') !== 'none'; } catch (e) {}
+    badge.style.display = (transitDataOn && smartShown) ? '' : 'none';
+  }
   function applyFilters() {
     routeOrder.forEach(function (rid) {
       if (routeGroups[rid]) routeGroups[rid].visible = routeShown(rid);
@@ -3324,6 +3335,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     rebuildStops();
     if (lastVehicles) updateBuses(lastVehicles);
     refreshHeaderCount();
+    syncTransitBadge();
   }
 
   function syncFilterUI() {
@@ -4448,11 +4460,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         setHeader(n, 'updated ' + fmtTime(d.generated_at ? new Date(d.generated_at) : null), false);
         // Transit attribution (API terms): visible only while SMART data is
         // actually served from the Transit API.
-        var transitBadge = $('transit-badge');
-        if (transitBadge) {
-          var transitOn = !!(d.sources && d.sources.smart && d.sources.smart.via === 'transit');
-          transitBadge.style.display = transitOn ? '' : 'none';
-        }
+        transitDataOn = !!(d.sources && d.sources.smart && d.sources.smart.via === 'transit'
+          && d.sources.smart.vehicles > 0);
+        syncTransitBadge();
       })
       .catch(function () {
         var text = liveEverOk
