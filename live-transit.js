@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261007-0715';
+  var STAMP = '20261010-1400';
   // Build string in the help footer derives from the cache stamp — never
   // hardcoded (2026-10-06: a stale hardcoded "Build 20261002-2780" shipped
   // for days before anyone noticed).
@@ -4446,6 +4446,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         refreshFilterCounts();
         lastTotal = n;
         setHeader(n, 'updated ' + fmtTime(d.generated_at ? new Date(d.generated_at) : null), false);
+        // Transit attribution (API terms): visible only while SMART data is
+        // actually served from the Transit API.
+        var transitBadge = $('transit-badge');
+        if (transitBadge) {
+          var transitOn = !!(d.sources && d.sources.smart && d.sources.smart.via === 'transit');
+          transitBadge.style.display = transitOn ? '' : 'none';
+        }
       })
       .catch(function () {
         var text = liveEverOk
@@ -4508,7 +4515,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       .catch(function () { return null; }),
     fetch('peoplemover-3d.json?v=' + STAMP, { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .catch(function () { return null; }) // static layer is optional: map works without it
+      .catch(function () { return null; }), // static layer is optional: map works without it
+    fetch('smart-routes-3d.json?v=' + STAMP, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; }) // SMART layer is optional: map works DDOT-only without it
   ])
     .then(function (all) {
       var data = all[0];
@@ -4516,6 +4526,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       streetData = all[2];
       streetNameData = all[3];
       var pmData = all[4];
+      var smartData = all[5];
+      // SMART routes via the Transit API: merged into the DDOT dataset so
+      // route groups, filters, stops, and labels all work unchanged. The
+      // proxy serves SMART vehicle snapshots on the same /api/vehicles feed;
+      // route_id values ("261", "125") match the proxy's Transit mapping.
+      // Absent file: the map runs DDOT-only, no errors.
+      if (smartData && Array.isArray(smartData.routes) && smartData.routes.length) {
+        data.groups = (data.groups || []).concat(smartData.groups || []);
+        data.routes = (data.routes || []).concat(smartData.routes);
+        data.stops = (data.stops || []).concat(smartData.stops || []);
+      }
       proj = {
         lat0: data.projection.lat0,
         lon0: data.projection.lon0,
