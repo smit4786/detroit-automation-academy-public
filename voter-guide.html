@@ -1416,17 +1416,7 @@ window.GUIDE = GUIDE;
     return "party-ind";
   }
 
-  /* ---------- mobile nav ---------- */
-  var navToggle = document.getElementById("navToggle");
-  var navLinks = document.getElementById("navLinks");
-  if (navToggle) {
-    navToggle.addEventListener("click", function () {
-      var open = navLinks.classList.toggle("open");
-      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    });
-  }
-
-  /* ---------- race chips ---------- */
+    /* ---------- race chips ---------- */
   var chipsEl = document.getElementById("raceChips");
   chipsEl.innerHTML = data.races.map(function (r) {
     return '<a class="chip" href="#race-' + r.id + '">' + esc(r.title) + "</a>";
