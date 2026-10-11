@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261010-2230';
+  var STAMP = '20261010-2345';
   // Build string in the help footer derives from the cache stamp — never
   // hardcoded (2026-10-06: a stale hardcoded "Build 20261002-2780" shipped
   // for days before anyone noticed).
@@ -98,6 +98,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // Street-map coverage bounds (WGS84). Streets are drawn as vector
   // geometry from U.S. Census TIGER/Line 2025 (see build scripts); no raster tiles.
   var STREET_BOUNDS = { lonW: -83.3431083, lonE: -82.8992288, latN: 42.47997522924901, latS: 42.25539743550126 };
+  // SMART service-area bounds: the expanded street mosaic (Downriver south,
+  // suburbs west) that fades in with the SMART filter group.
+  var SMART_BOUNDS = { lonW: -83.385, lonE: -82.8992288, latN: 42.47997522924901, latS: 42.178 };
 
   // --- path smoothing ---------------------------------------------------
   // Chaikin corner-cutting: each iteration replaces every segment with two
@@ -1928,8 +1931,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // --- location services ---------------------------------------------------------
   // Coverage = the Detroit street mosaic bounds (DDOT's service area).
   function inCoverage(lat, lon) {
-    return lat <= STREET_BOUNDS.latN && lat >= STREET_BOUNDS.latS &&
-           lon >= STREET_BOUNDS.lonW && lon <= STREET_BOUNDS.lonE;
+    if (lat <= STREET_BOUNDS.latN && lat >= STREET_BOUNDS.latS &&
+        lon >= STREET_BOUNDS.lonW && lon <= STREET_BOUNDS.lonE) return true;
+    // SMART suburbs: covered only while the SMART group is displayed, so
+    // "routes near you" and other location features work in the suburbs
+    // with SMART enabled and stay Detroit-scoped when it is off.
+    try {
+      if (groupSelState('smart') !== 'none' &&
+          lat <= SMART_BOUNDS.latN && lat >= SMART_BOUNDS.latS &&
+          lon >= SMART_BOUNDS.lonW && lon <= SMART_BOUNDS.lonE) return true;
+    } catch (e) {}
+    return false;
   }
   // --- 3D user representation (scaffold) -----------------------------------------
   // Branded "you are here" marker: Forge Orange beam + floating Forge D badge.
@@ -3353,6 +3365,50 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     }
   }
 
+  // --- SMART street extension -------------------------------------------------
+  // Street segments outside STREET_BOUNDS (Downriver, western suburbs) live
+  // in streetExt, a group that fades in/out with the SMART filter toggle.
+  // SMART defaults off, so the group starts invisible.
+  var streetExt = null;          // THREE.Group (assigned in buildStreets)
+  var streetExtLocal = null;     // extension local tier (own LOD rule)
+  var streetExtMats = [];        // {mat, baseOpacity} faded together
+  var streetExtFade = 0, streetExtFadeTarget = 0;
+  var streetExtFadeFrom = 0, streetExtFadeT0 = 0, streetExtFadeDur = 1;
+  var STREET_EXT_FADE_MS = 900;
+  // Called from applyFilters: starts (or reverses) the fade when the SMART
+  // group's displayed state changes. Reversing mid-fade continues from the
+  // current opacity — never a snap.
+  function syncStreetExt() {
+    if (!streetExt) return;
+    var on = false;
+    try { on = groupSelState('smart') !== 'none'; } catch (e) {}
+    var target = on ? 1 : 0;
+    if (target === streetExtFadeTarget) return;
+    streetExtFadeFrom = streetExtFade;
+    streetExtFadeTarget = target;
+    streetExtFadeT0 = performance.now();
+    // Duration scales with remaining distance: a full fade takes 900 ms,
+    // a mid-fade reversal covers only what's left.
+    streetExtFadeDur = Math.max(1, STREET_EXT_FADE_MS * Math.abs(target - streetExtFadeFrom));
+    if (target === 1) streetExt.visible = true;
+  }
+  function stepStreetExtFade(now) {
+    if (!streetExt || streetExtFade === streetExtFadeTarget) return;
+    var t = Math.min(1, (now - streetExtFadeT0) / streetExtFadeDur);
+    // Minimum-jerk easing: the same rest-to-rest profile as the camera glide.
+    var e = t * t * t * (t * (t * 6 - 15) + 10);
+    streetExtFade = streetExtFadeFrom + (streetExtFadeTarget - streetExtFadeFrom) * e;
+    for (var i = 0; i < streetExtMats.length; i++) {
+      var m = streetExtMats[i];
+      m.mat.opacity = m.baseOpacity * streetExtFade;
+    }
+    if (t >= 1) {
+      streetExtFade = streetExtFadeTarget;
+      // Perf: fully faded-out geometry leaves the render path entirely.
+      if (streetExtFadeTarget === 0) streetExt.visible = false;
+    }
+  }
+
   var transitDataOn = false;
   // Transit badge: minimum-size attribution, shown only when Transit-derived
   // SMART data is both flowing and actually displayed (SMART group not
@@ -3376,6 +3432,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     if (lastVehicles) updateBuses(lastVehicles);
     refreshHeaderCount();
     syncTransitBadge();
+    syncStreetExt();
   }
 
   function syncFilterUI() {
@@ -4603,6 +4660,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       // Absent file: the map runs DDOT-only, no errors.
       if (smartData && Array.isArray(smartData.routes) && smartData.routes.length) {
         data.groups = (data.groups || []).concat(smartData.groups || []);
+        // Unified SMART identity: every SMART visual — route lines, bus
+        // pillars, stop pylons, labels, filter chips, DOM dots — renders in
+        // SMART red. Applied once here so all downstream color resolution
+        // inherits it. Exempt: multi-route hub paper-white pylons and the
+        // selected-stop white highlight (state indicators, not route colors).
+        smartData.routes.forEach(function (r) { r.color = '#c30915'; });
         data.routes = (data.routes || []).concat(smartData.routes);
         data.stops = (data.stops || []).concat(smartData.stops || []);
       }
@@ -4613,26 +4676,36 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         mLon: 111320 * Math.cos(data.projection.lat0 * DEG)
       };
 
-      // Vector street map, drawn ourselves: dark ground + tiered OSM
-      // highway geometry. Crisp at every zoom; no raster tiles.
+      // Vector street map, drawn ourselves: dark ground + tiered Census
+      // TIGER/Line highway geometry. Crisp at every zoom; no raster tiles.
+      // The mosaic spans SMART_BOUNDS; segments inside STREET_BOUNDS render
+      // always, segments outside live in streetExt and fade with the SMART
+      // filter toggle (see syncStreetExt).
       var streetLocal = null;
       (function buildStreets() {
-        var nw = project(STREET_BOUNDS.latN, STREET_BOUNDS.lonW);
-        var se = project(STREET_BOUNDS.latS, STREET_BOUNDS.lonE);
-        var w = se[0] - nw[0], h = se[1] - nw[1];
+        // Ground covers the full SMART bbox permanently. #0d1319 against the
+        // #0c1116 scene background is near-identical, so the larger ground is
+        // visually a no-op while the extension is hidden.
+        var gnw = project(SMART_BOUNDS.latN, SMART_BOUNDS.lonW);
+        var gse = project(SMART_BOUNDS.latS, SMART_BOUNDS.lonE);
+        var gw = gse[0] - gnw[0], gh = gse[1] - gnw[1];
         var ground = new THREE.Mesh(
-          new THREE.PlaneGeometry(w, h),
+          new THREE.PlaneGeometry(gw, gh),
           new THREE.MeshBasicMaterial({ color: 0x0d1319 })
         );
         ground.rotation.x = -Math.PI / 2;
-        ground.position.set(nw[0] + w / 2, 0, nw[1] + h / 2);
+        ground.position.set(gnw[0] + gw / 2, 0, gnw[1] + gh / 2);
         scene.add(ground);
+        // Core bounds in meters for the partition test (midpoint-in-core).
+        var cnw = project(STREET_BOUNDS.latN, STREET_BOUNDS.lonW);
+        var cse = project(STREET_BOUNDS.latS, STREET_BOUNDS.lonE);
+        var cx0 = cnw[0], cx1 = cse[0], cz0 = cnw[1], cz1 = cse[1];
         // Safe-zone border: dashed amber perimeter at the coverage bounds so the
         // edge of the mapped area stays visible while panning/scrolling. Floats
         // at y=20 — above the street tiers (14-16), below the route decks (~66).
         // Brand: Amber #FFB000, the academy's signal accent.
         (function addBoundsBorder() {
-          var x0 = nw[0], x1 = se[0], z0 = nw[1], z1 = se[1], yB = 20;
+          var x0 = cx0, x1 = cx1, z0 = cz0, z1 = cz1, yB = 20;
           var g = new THREE.BufferGeometry().setFromPoints([
             new THREE.Vector3(x0, yB, z0),
             new THREE.Vector3(x1, yB, z0),
@@ -4648,8 +4721,42 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           border.name = 'safe-zone-border';
           scene.add(border);
         })();
+        // Extension group: hidden until the SMART toggle fades it in.
+        streetExt = new THREE.Group();
+        streetExt.visible = false;
+        scene.add(streetExt);
+        // Expanded-bounds border: same amber language at the SMART bounds,
+        // faded with the extension group so both states read correctly.
+        (function addExtBorder() {
+          var x0 = gnw[0], x1 = gse[0], z0 = gnw[1], z1 = gse[1], yB = 20;
+          var g = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(x0, yB, z0),
+            new THREE.Vector3(x1, yB, z0),
+            new THREE.Vector3(x1, yB, z1),
+            new THREE.Vector3(x0, yB, z1)
+          ]);
+          var mat = new THREE.LineDashedMaterial({
+            color: 0xFFB000, dashSize: 220, gapSize: 140,
+            transparent: true, opacity: 0, depthWrite: false
+          });
+          var border = new THREE.LineLoop(g, mat);
+          border.computeLineDistances();
+          border.renderOrder = 5;
+          border.name = 'safe-zone-border-ext';
+          streetExt.add(border);
+          streetExtMats.push({ mat: mat, baseOpacity: 0.55 });
+        })();
         if (!streetData) return; // ground still renders; streets absent
-        function addTier(arr, color, opacity, y) {
+        function splitTier(arr) {
+          var core = [], ext = [];
+          for (var i = 0; i < arr.length; i += 4) {
+            var mx = (arr[i] + arr[i + 2]) / 2, mz = (arr[i + 1] + arr[i + 3]) / 2;
+            ((mx >= cx0 && mx <= cx1 && mz >= cz0 && mz <= cz1) ? core : ext)
+              .push(arr[i], arr[i + 1], arr[i + 2], arr[i + 3]);
+          }
+          return { core: core, ext: ext };
+        }
+        function addTier(arr, color, opacity, y, parent) {
           if (!arr || !arr.length) return null;
           var n = arr.length / 4;
           var pos = new Float32Array(n * 6);
@@ -4663,15 +4770,22 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
           }
           var g = new THREE.BufferGeometry();
           g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-          var lines = new THREE.LineSegments(g,
-            new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity }));
+          var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity });
+          var lines = new THREE.LineSegments(g, mat);
           lines.frustumCulled = false;
-          scene.add(lines);
+          parent.add(lines);
+          if (parent === streetExt) streetExtMats.push({ mat: mat, baseOpacity: opacity });
           return lines;
         }
-        addTier(streetData.freeway, 0x8a94a0, 0.95, 16);
-        addTier(streetData.arterial, 0x4d5763, 0.9, 15);
-        streetLocal = addTier(streetData.local, 0x333c46, 0.8, 14);
+        var fw = splitTier(streetData.freeway);
+        addTier(fw.core, 0x8a94a0, 0.95, 16, scene);
+        addTier(fw.ext, 0x8a94a0, 0.95, 16, streetExt);
+        var ar = splitTier(streetData.arterial);
+        addTier(ar.core, 0x4d5763, 0.9, 15, scene);
+        addTier(ar.ext, 0x4d5763, 0.9, 15, streetExt);
+        var lo = splitTier(streetData.local);
+        streetLocal = addTier(lo.core, 0x333c46, 0.8, 14, scene);
+        streetExtLocal = addTier(lo.ext, 0x333c46, 0.8, 14, streetExt);
       })();
 
       var casingMat = new THREE.MeshBasicMaterial({ color: 0x0c1116, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
@@ -4837,6 +4951,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         updateLOD();
         if (typeof stepTripFly === 'function') stepTripFly(performance.now());
         stepStreetTween(performance.now());
+        stepStreetExtFade(performance.now());
         // Street-view handoff with hysteresis. The trip fly-through owns the
         // camera while active, so street view yields to it.
         var svDist = camera.position.distanceTo(controls.target);
@@ -4895,6 +5010,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         var camDist = camera.position.distanceTo(controls.target);
         // LOD: local streets and stops declutter at city-scale zooms.
         if (streetLocal) streetLocal.visible = camDist < 22000;
+        // Extension local tier obeys the same declutter rule (group
+        // visibility still gates whether it renders at all).
+        if (streetExtLocal) streetExtLocal.visible = camDist < 22000;
         if (stopGroup) stopGroup.visible = camDist < STOP_LOD_DIST;
         for (var i = 0; i < labelSprites.length; i++) {
           var L = labelSprites[i];
