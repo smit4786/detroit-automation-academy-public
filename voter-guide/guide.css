@@ -294,3 +294,26 @@ html.js .reveal.visible { opacity: 1; transform: none; }
 @media (max-width: 640px) {
   .align-card { padding: 20px; }
 }
+
+/* Platform nav v2 lanes (2026-10-10) — injected for self-contained pages */
+.nav-links .lane{color:var(--concrete);font-weight:500;}
+.nav-links .lane:hover{color:var(--paper);}
+.nav-links .lane[data-active="true"]{color:var(--forge);}
+.lane-group{position:relative;display:flex;align-items:center;padding:14px 0;margin:-14px 0;}
+.lane-label{background:none;border:0;padding:0;font:inherit;color:var(--concrete);font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.lane-label::after{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.7;}
+.lane-label:hover,.lane-group:focus-within>.lane-label{color:var(--paper);}
+.lane-label[data-active="true"]{color:var(--forge);}
+.lane-items{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);min-width:250px;margin:0;padding:8px;list-style:none;background:#11171d;border:1px solid rgba(245,242,234,.09);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.5);z-index:60;}
+.lane-group:hover .lane-items,.lane-group:focus-within .lane-items,.lane-group.open .lane-items{display:block;}
+.lane-items a{display:block;padding:11px 16px;border-radius:8px;white-space:nowrap;}
+.lane-items a:hover{background:rgba(232,93,26,.12);color:var(--paper);}
+@media (max-width:760px){
+.lane-group{display:block;padding:0;margin:0;}
+.lane-label{display:block;width:100%;text-align:left;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#E85D1A;padding:16px 0 4px;cursor:default;border-top:1px solid rgba(245,242,234,.09);}
+.lane-label::after{display:none;}
+.lane-items{display:block;position:static;transform:none;min-width:0;background:none;border:0;border-radius:0;box-shadow:none;padding:0;}
+.lane-items a{padding:13px 0 13px 18px;white-space:normal;}
+.nav-links>.lane{display:block;padding:13px 0;border-top:1px solid rgba(245,242,234,.09);}
+.nav-links>.lane:first-child{border-top:0;}
+}

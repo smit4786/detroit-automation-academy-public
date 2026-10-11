@@ -126,11 +126,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.detroitautomationacademy.com/blog/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.detroitautomationacademy.com/live-transit-detroit/belle-isle/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -140,4 +135,26 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://www.detroitautomationacademy.com/notes/</loc>
+  </url>
+  <url>
+    <loc>https://www.detroitautomationacademy.com/notes/at-diary-sprint-2/</loc>
+  </url>
+  <url>
+    <loc>https://www.detroitautomationacademy.com/notes/at-diary-sprint-3/</loc>
+  </url>
+  <url>
+    <loc>https://www.detroitautomationacademy.com/notes/app-group-stability/</loc>
+  </url>
+  <url>
+    <loc>https://www.detroitautomationacademy.com/notes/cicd-pipeline-postmortem/</loc>
+  </url>
+  <url>
+    <loc>https://www.detroitautomationacademy.com/notes/daa-crm-cloud-run-deployment/</loc>
+  </url>
+  <url>
+    <loc>https://www.detroitautomationacademy.com/notes/pause-and-pivot-protocol/</loc>
+  </url>
 </urlset>
+

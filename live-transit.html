@@ -44,7 +44,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261007">
+<link rel="stylesheet" href="styles.css?v=20261010-2130">
 <script type="importmap">
 {
   "imports": {
@@ -71,6 +71,8 @@
   .map-live strong { font-family: "Space Grotesk", sans-serif; font-size: 1.15rem; color: #F5F2EA; }
   .map-live span { display: block; color: #9AA0A6; font-size: .75rem; margin-top: .15rem; }
   .map-live .feed-warn { color: #FFB000; }
+  .transit-badge { display: inline-block; margin-top: .3rem; font-size: .6rem; letter-spacing: .03em; color: #9AA0A6; text-decoration: none; font-weight: 400; }
+  .transit-badge:hover { color: #F5F2EA; text-decoration: underline; }
   .route-chip { display: inline-flex; align-items: center; gap: .5rem; background: rgba(12,17,22,.82); border: 1px solid rgba(245,242,234,.16); color: #F5F2EA; border-radius: 999px; padding: .5rem .85rem; font-size: .82rem; cursor: pointer; backdrop-filter: blur(6px); transition: opacity .15s, border-color .15s; }
   .route-chip i { width: .7rem; height: .7rem; border-radius: 3px; display: inline-block; }
   .route-chip b { font-weight: 600; }
@@ -333,41 +335,23 @@
 </head>
 <body>
 
-<header class="nav">
-  <a class="brand" href="./" aria-label="Back to Detroit Automation Academy">
-    <img src="assets/logo.webp" alt="" class="brand-mark">
-    <span class="brand-word">Detroit Automation <em>Academy</em></span>
-  </a>
-  <nav class="nav-links" id="navLinks" aria-label="Primary">
-    <a href="/district.html">Try it</a>
-    <a href="/forge-line.html">Forge Line</a>
-    <a href="/live-transit.html">Live Transit</a>
-    <a href="/#mission">Mission</a>
-    <a href="/#programs">Programs</a>
-    <a href="/signal/">The Signal</a>
-    <a href="/live-transit-detroit/">Live Transit Detroit</a>
-    <a href="/press/">The Press</a>
-    <a href="/voter-guide.html">Voter Guide</a>
-    <a href="/#partners">Partners</a>
-  </nav>
-  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
-</header>
+<div id="daa-nav"></div>
+<script src="/nav.js?v=20261010-2150"></script>
 
 <main>
   <section class="map-stage" aria-label="Live 3D transit map">
-    <div id="live-map" role="img" aria-label="3D map of all 37 DDOT routes with live bus positions"></div>
+    <div id="live-map" role="img" aria-label="3D map of DDOT routes with live bus positions and SMART route snapshots"></div>
     <div class="map-ui">
       <div class="map-head">
         <div class="map-title">
           <h1>Live transit <span class="accent">· Detroit</span></h1>
-          <p>Every DDOT bus in Detroit — all 37 routes drawn on the actual streets in 3D. Drag to orbit, scroll to zoom, click a bus for details.</p>
+          <p>Every DDOT bus in Detroit — all 37 routes drawn on the actual streets in 3D, plus SMART route snapshots. Drag to orbit, scroll to zoom, click a bus for details.</p>
         </div>
         <div class="map-head-right">
           <div class="map-live" id="map-live">
             <div><span class="live-dot"></span><strong id="bus-total">–</strong> buses on the road</div>
             <span id="bus-updated">connecting…</span>
+            <a id="transit-badge" class="transit-badge" href="https://transitapp.com" target="_blank" rel="noopener" style="display:none">Powered by Transit</a>
           </div>
           <button class="filter-btn" id="filter-btn" aria-expanded="false" aria-controls="filter-panel"><span class="filter-ico">⧩</span> Routes</button>
           <button class="filter-btn" id="trip-btn" aria-pressed="false"><span class="filter-ico">◈</span> Plan trip</button>
@@ -526,7 +510,7 @@
       <div class="prose">
         <p>Route shapes and stop positions come from DDOT&rsquo;s published GTFS schedule data; the bus markers are live vehicle positions from the agency&rsquo;s own feed, refreshed every 60 seconds. Zoom in close and the markers resolve into true-scale bus models — each bus is matched to its fleet model (dimensions and seating from the DDOT fleet roster) and oriented to its reported heading. This is the same live layer behind the count on the <a href="forge-line.html#live">Forge Line page</a> — the Forge Line concept itself is modeled on the transit Detroit already runs.</p>
       </div>
-      <p class="fine">Route shapes &amp; stops: DDOT GTFS. Bus dimensions &amp; seating: DDOT fleet roster via <a href="https://cptdb.ca/wiki/index.php/Detroit_Department_of_Transportation">CPTDB wiki</a>. Street underlay: U.S. Census Bureau TIGER/Line 2025 (Wayne, Oakland &amp; Macomb counties). Live data: DDOT via Clever Devices BusTime. SMART live feed in progress. Developers: see the <a href="api.html">transit data API</a>.</p>
+      <p class="fine">Route shapes &amp; stops: DDOT GTFS. Bus dimensions &amp; seating: DDOT fleet roster via <a href="https://cptdb.ca/wiki/index.php/Detroit_Department_of_Transportation">CPTDB wiki</a>. Street underlay: U.S. Census Bureau TIGER/Line 2025 (Wayne, Oakland &amp; Macomb counties). Live data: DDOT via Clever Devices BusTime. SMART snapshots via the Transit API. Developers: see the <a href="api.html">transit data API</a>.</p>
       <p class="fine">Trademark notice: DDOT is a service mark of the City of Detroit. This is an unofficial project by Detroit Automation Academy — not affiliated with, endorsed by, or acting on behalf of DDOT or the City of Detroit. Detroit || else™ is a trademark of Detroit Automation Academy.</p>
     </div>
   </section>
@@ -546,7 +530,7 @@
 <script>
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
-<script type="module" src="live-transit.js?v=20261009-1205"></script>
+<script type="module" src="live-transit.js?v=20261010-1500"></script>
 <script>
   // Minimal nav toggle (mirrors index behavior for this standalone page)
   (function () {

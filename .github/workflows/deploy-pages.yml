@@ -1,4 +1,4 @@
-name: Deploy Hugo site to GitHub Pages
+name: Deploy site to GitHub Pages
 
 on:
   push:
@@ -28,38 +28,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: '0.160.0'
-          extended: true
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        working-directory: blog-source
-        run: npm install
-
-      - name: Build with Hugo
-        working-directory: blog-source
-        run: |
-          echo "Building Hugo site..."
-          export PATH=$PWD/node_modules/.bin:$PATH
-          hugo \
-            --gc \
-            --minify \
-            --logLevel warning \
-            --baseURL "https://detroitautomationacademy.com/blog/" \
-            --destination "../public-blog"
-          echo "Hugo build complete."
-
       - name: Prepare Deployment Directory
         run: |
           echo "Preparing deployment directory..."
-          mkdir -p deployment/blog
           mkdir -p deployment/curriculum
 
           # Copy all root HTML, CSS, JS, and shell scripts (dynamic collection)
@@ -94,6 +65,11 @@ jobs:
           # Copy The Press (Just the Facts)
           if [ -d "press" ]; then
             cp -r press deployment/ || echo "press copy failed"
+            cp -r apple-learning-coach deployment/ || echo "apple-learning-coach copy failed"
+          fi
+
+          if [ -d "watch" ]; then
+            cp -r watch deployment/ || echo "watch copy failed"
           fi
 
           # Copy asset directories
@@ -101,12 +77,14 @@ jobs:
           cp -r branding deployment/ || (mkdir -p deployment/branding && echo "branding dir created empty")
           cp -r qr_codes deployment/ || (mkdir -p deployment/qr_codes && echo "qr_codes dir created empty")
 
-          # Copy blog content (Hugo built output)
-          if [ -d "public-blog" ]; then
-            cp -r public-blog/* deployment/blog/
-          else
-            echo "FATAL: public-blog directory not found!"
-            exit 1
+          # Copy Notes (technical notes, migrated from retired blog)
+          if [ -d "notes" ]; then
+            cp -r notes deployment/ || echo "notes copy failed"
+          fi
+
+          # Copy blog redirect stubs (old /blog/ URLs -> /notes/)
+          if [ -d "blog" ]; then
+            cp -r blog deployment/ || echo "blog stubs copy failed"
           fi
 
       - name: Upload artifact
@@ -124,3 +102,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
