@@ -97,6 +97,10 @@ jobs:
             cp -r apple-learning-coach deployment/ || echo "apple-learning-coach copy failed"
           fi
 
+          if [ -d "watch" ]; then
+            cp -r watch deployment/ || echo "watch copy failed"
+          fi
+
           # Copy asset directories
           cp -r assets deployment/   || (mkdir -p deployment/assets   && echo "assets dir created empty")
           cp -r branding deployment/ || (mkdir -p deployment/branding && echo "branding dir created empty")
