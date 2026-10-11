@@ -18,38 +18,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: '0.160.0'
-          extended: true
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        working-directory: blog-source
-        run: npm install
-
-      - name: Build with Hugo
-        working-directory: blog-source
-        run: |
-          echo "Building Hugo site..."
-          export PATH=$PWD/node_modules/.bin:$PATH
-          hugo \
-            --gc \
-            --minify \
-            --logLevel warning \
-            --baseURL "https://detroitautomationacademy.com/blog/" \
-            --destination "../public-blog"
-          echo "Hugo build complete."
-
       - name: Prepare Deployment Directory
         run: |
           echo "Preparing deployment directory..."
-          mkdir -p deployment/blog
           mkdir -p deployment/curriculum
 
           cp *.html deployment/ || echo "No HTML files found"
@@ -78,17 +49,25 @@ jobs:
 
           if [ -d "press" ]; then
             cp -r press deployment/ || echo "press copy failed"
+            cp -r apple-learning-coach deployment/ || echo "apple-learning-coach copy failed"
+          fi
+
+          if [ -d "watch" ]; then
+            cp -r watch deployment/ || echo "watch copy failed"
           fi
 
           cp -r assets deployment/   || (mkdir -p deployment/assets   && echo "assets dir created empty")
           cp -r branding deployment/ || (mkdir -p deployment/branding && echo "branding dir created empty")
           cp -r qr_codes deployment/ || (mkdir -p deployment/qr_codes && echo "qr_codes dir created empty")
 
-          if [ -d "public-blog" ]; then
-            cp -r public-blog/* deployment/blog/
-          else
-            echo "FATAL: public-blog directory not found!"
-            exit 1
+          # Copy Notes (technical notes, migrated from retired blog)
+          if [ -d "notes" ]; then
+            cp -r notes deployment/ || echo "notes copy failed"
+          fi
+
+          # Copy blog redirect stubs (old /blog/ URLs -> /notes/)
+          if [ -d "blog" ]; then
+            cp -r blog deployment/ || echo "blog stubs copy failed"
           fi
 
       - name: Deploy to Netlify (dev)
@@ -114,3 +93,4 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_UAT }}
+

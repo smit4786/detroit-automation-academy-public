@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stabilität durch gemeinsamen Speicher: Der App-Group-Meilenstein — Notizen · Detroit Automation Academy</title>
+<meta name="description" content="Eine gemeinsame App-Group-Architektur, damit eine iOS-App und ihr Home-Screen-Widget denselben SwiftData-Speicher lesen und schreiben — das Leere-Widget-Problem beseitigt.">
+<link rel="icon" type="image/webp" href="../../../assets/logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../styles.css?v=20261010-2130">
+<link rel="canonical" href="https://www.detroitautomationacademy.com/notes/de/app-group-stability/">
+</head>
+<body>
+
+<div id="daa-nav"></div>
+<script src="/nav.js?v=20261010-2130"></script>
+
+<main id="top">
+
+  <article class="section">
+    <div class="wrap">
+      <p class="kicker"><a href="../">Notizen</a> · iOS · Februar 2026</p>
+      <h2>Stabilität durch gemeinsamen Speicher: <span class="accent">Der App-Group-Meilenstein</span></h2>
+      <p class="fine">Veröffentlicht 21. Februar 2026 · Detroit Automation Academy · Historische technische Notiz — aus dem stillgelegten Blog migriert.</p>
+      <div class="prose">
+        <p>Systemstabilität ist nicht verhandelbar. Wir haben eine gemeinsame <strong>App-Group</strong>-Architektur für die Tagebuch-App implementiert, die einen nahtlosen Datenfluss zwischen der Hauptanwendung und ihrem Home-Screen-Widget gewährleistet.</p>
+        <ul>
+          <li><strong>Gemeinsamer Modell-Container:</strong> Die Migration auf einen Gruppen-Container eliminierte Datenlatenzen zwischen den App- und Widget-Zielen.</li>
+          <li><strong>Entitlement-Abgleich:</strong> Die Sicherheitsstruktur von App und Widget wurde vereinheitlicht, um Echtzeit-Lese-/Schreibzugriff auf den Kern-SwiftData-Speicher zu ermöglichen.</li>
+          <li><strong>Zuverlässigkeit:</strong> Das verhindert das „Leere-Widget-Syndrom“ — das Widget spiegelt immer die neuesten Daten statt eines veralteten oder fehlenden Snapshots.</li>
+        </ul>
+        <p>Diese Grundlagenarbeit bereitet die App auf hintergrundgetriebene Funktionen wie Live-Standortverfolgung und Hintergrund-Fotoverarbeitung vor.</p>
+        <hr>
+        <p><em>Dies ist ein privates Projekt. Derzeit ist keine Veröffentlichung im App Store geplant.</em></p>
+      </div>
+      <div class="signal-pager">
+        <a href="../" class="btn btn-ghost">← Alle Notizen</a>
+      </div>
+    </div>
+  </article>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <img src="../../../assets/logo.webp" alt="" class="brand-mark">
+      <span>Detroit Automation Academy</span>
+    </div>
+    <p class="footer-line">Built without funding. Finished on principle.</p>
+    <p class="footer-fine">© 2026 Detroit Automation Academy · Detroit, Michigan</p>
+  </div>
+</footer>
+
+<script src="../../../script.js"></script>
+</body>
+</html>
