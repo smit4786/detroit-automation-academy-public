@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261010-2211';
+  var STAMP = '20261010-2230';
   // Build string in the help footer derives from the cache stamp — never
   // hardcoded (2026-10-06: a stale hardcoded "Build 20261002-2780" shipped
   // for days before anyone noticed).
@@ -3402,7 +3402,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     groups.forEach(function (g) {
       // Calm default: only the ConnectTen core network is on. The panel
       // opens as an accordion (3 rows); route chips expand per group.
+      // SMART is a separate beta group, default OFF until the user opts in;
+      // the choice persists in localStorage once made.
       var gOn = (g.id === 'connect-ten');
+      var gLabel = g.name;
+      if (g.id === 'smart') {
+        gLabel = g.name + ' (beta)';
+        try {
+          var savedSmart = localStorage.getItem('lt-smart-on');
+          gOn = (savedSmart === '1');
+        } catch (e) { gOn = false; }
+      }
       filterState.groups[g.id] = gOn;
       var sec = document.createElement('div');
       sec.className = 'f-group';
@@ -3412,11 +3422,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       head.dataset.group = g.id;
       var check = document.createElement('button');
       check.className = 'f-check';
-      check.setAttribute('aria-label', 'Toggle all ' + g.name + ' routes');
+      check.setAttribute('aria-label', 'Toggle all ' + gLabel + ' routes');
       check.innerHTML = '<span class="f-box"></span>';
       check.addEventListener('click', function () {
         var on = groupSelState(g.id) !== 'all'; // all-on -> switch off; else switch on
         filterState.groups[g.id] = on;
+        if (g.id === 'smart') { try { localStorage.setItem('lt-smart-on', on ? '1' : '0'); } catch (e) {} }
         g.routes.forEach(function (rid) { filterState.routes[rid] = on; delete nearMeAdded[rid]; });
         applyFilters();
         syncFilterUI();
@@ -3424,8 +3435,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       var label = document.createElement('button');
       label.className = 'f-label';
       label.setAttribute('aria-expanded', 'false');
-      label.setAttribute('aria-label', 'Expand ' + g.name + ' routes');
-      label.innerHTML = '<b>' + g.name + '</b>' +
+      label.setAttribute('aria-label', 'Expand ' + gLabel + ' routes');
+      label.innerHTML = '<b>' + gLabel + '</b>' +
         '<span class="f-count" id="fgc-' + g.id + '">–</span><span class="f-chev">▾</span>';
       label.addEventListener('click', function () {
         var open = sec.classList.toggle('open');
@@ -3456,6 +3467,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       });
       sec.appendChild(head);
       sec.appendChild(list);
+      if (g.id === 'smart') {
+        var betaNote = document.createElement('p');
+        betaNote.className = 'f-beta-note';
+        betaNote.textContent = 'Beta: 2 of 45 routes have map lines so far. Vehicle positions via the Transit API.';
+        sec.appendChild(betaNote);
+      }
       host.appendChild(sec);
     });
     $('filter-all').addEventListener('click', function () {
@@ -3464,6 +3481,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (filterState.nearMe) setNearMe(false);
       groupOrder.forEach(function (gid) { filterState.groups[gid] = true; });
       routeOrder.forEach(function (rid) { filterState.routes[rid] = true; });
+      try { localStorage.setItem('lt-smart-on', '1'); } catch (e) {}
       applyFilters();
       syncFilterUI();
     });
@@ -3473,6 +3491,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       if (filterState.nearMe) setNearMe(false);
       groupOrder.forEach(function (gid) { filterState.groups[gid] = false; });
       routeOrder.forEach(function (rid) { filterState.routes[rid] = false; });
+      try { localStorage.setItem('lt-smart-on', '0'); } catch (e) {}
       applyFilters();
       syncFilterUI();
     });
