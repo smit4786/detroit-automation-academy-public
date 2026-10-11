@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/styles.css?v=20261010-2130">
 <style>
 .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-top: 1.5rem; }
 .status-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
@@ -32,27 +32,8 @@
 </head>
 <body>
 
-<header class="nav">
-  <a class="brand" href="/" aria-label="Detroit Automation Academy home">
-    <img src="/assets/logo.webp" alt="" class="brand-mark">
-    <span class="brand-name">Detroit Automation Academy</span>
-  </a>
-  <nav class="nav-links" id="navLinks" aria-label="Primary">
-    <a href="/district.html">Try it</a>
-    <a href="/forge-line.html">Forge Line</a>
-    <a href="/live-transit.html">Live Transit</a>
-    <a href="/#mission">Mission</a>
-    <a href="/#programs">Programs</a>
-    <a href="/signal/">The Signal</a>
-    <a href="/engineering/">Engineering</a>
-    <a href="/press/">The Press</a>
-    <a href="/voter-guide.html">Voter Guide</a>
-    <a href="/#partners">Partners</a>
-  </nav>
-  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
-</header>
+<div id="daa-nav"></div>
+<script src="/nav.js?v=20261010-2130"></script>
 
 <main id="top">
   <section class="section">
