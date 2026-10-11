@@ -1,5 +1,5 @@
 /* Detroit Automation Academy — platform navigation, single source.
- * v2.0 (2026-10-10): audience lanes (Watch / Read / Do / About / Subscribe).
+ * v2.1 (2026-10-10): audience lanes; Blog retired -> Notes (Watch / Read / Do / About / Subscribe).
  * Renders the site header into #daa-nav. Works from any host serving this
  * file at site root (detroitautomationacademy.com, Netlify dev/uat).
  * data-audience hooks (viewer|reader|user|visitor|subscriber) are stable
@@ -18,7 +18,7 @@
         { label: 'The Signal', href: '/signal/' },
         { label: 'The Press', href: '/press/' },
         { label: 'Live Transit Detroit', href: '/live-transit-detroit/' },
-        { label: 'Blog', href: '/blog/' },
+        { label: 'Notes', href: '/notes/' },
         { label: 'Voter Guide', href: '/voter-guide.html' }
       ]
     },
@@ -36,7 +36,7 @@
   /* Map the current path to its lane for the active state. */
   function activeLane(path) {
     if (/^\/watch\//.test(path)) return 'Watch';
-    if (/^\/(signal|press|live-transit-detroit|blog)\//.test(path) || /^\/voter-guide/.test(path)) return 'Read';
+    if (/^\/(signal|press|live-transit-detroit|notes)\//.test(path) || /^\/voter-guide/.test(path)) return 'Read';
     if (/^\/(live-transit\.html|district\.html)/.test(path)) return 'Do';
     return null;
   }
@@ -147,3 +147,4 @@
     build();
   }
 })();
+
