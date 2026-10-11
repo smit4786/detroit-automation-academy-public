@@ -13,7 +13,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 (function () {
   'use strict';
 
-  var STAMP = '20261010-1500';
+  var STAMP = '20261010-2211';
   // Build string in the help footer derives from the cache stamp — never
   // hardcoded (2026-10-06: a stale hardcoded "Build 20261002-2780" shipped
   // for days before anyone noticed).
@@ -99,19 +99,61 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // geometry from U.S. Census TIGER/Line 2025 (see build scripts); no raster tiles.
   var STREET_BOUNDS = { lonW: -83.3431083, lonE: -82.8992288, latN: 42.47997522924901, latS: 42.25539743550126 };
 
+  // --- path smoothing ---------------------------------------------------
+  // Chaikin corner-cutting: each iteration replaces every segment with two
+  // quarter-points, quadrupling density and rounding kinks into smooth
+  // curves. Fixes the blocky "plank joint" look at intermediate zooms.
+  // Returns a new array; the input is never mutated.
+  function chaikin(pts) {
+    var n = pts.length;
+    if (n < 3) return pts.slice();
+    var out = [pts[0]];
+    for (var i = 0; i < n - 1; i++) {
+      var a = pts[i], b = pts[i + 1];
+      out.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25]);
+      out.push([a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]);
+    }
+    out.push(pts[n - 1]);
+    return out;
+  }
+  // True miter offset for point i: offset along the angle bisector, scaled
+  // by 1/cos(half-angle) so the ribbon holds constant width through turns
+  // instead of pinching. Clamped to 2x to avoid spikes on hairpins.
+  function miterOffset(pts, i, hw) {
+    var n = pts.length;
+    var p = pts[i];
+    var a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)];
+    var d0x = p[0] - a[0], d0z = p[1] - a[1];
+    var d1x = b[0] - p[0], d1z = b[1] - p[1];
+    var l0 = Math.hypot(d0x, d0z), l1 = Math.hypot(d1x, d1z);
+    var nx, nz, m;
+    if (l0 < 1e-6 || l1 < 1e-6) {
+      var ex = l0 >= l1 ? d0x : d1x, ez = l0 >= l1 ? d0z : d1z;
+      var el = Math.hypot(ex, ez) || 1;
+      nx = -ez / el; nz = ex / el; m = 1;
+    } else {
+      d0x /= l0; d0z /= l0; d1x /= l1; d1z /= l1;
+      var tx = d0x + d1x, tz = d0z + d1z, tl = Math.hypot(tx, tz);
+      if (tl < 1e-6) { nx = -d0z; nz = d0x; m = 1; }
+      else {
+        tx /= tl; tz /= tl; nx = -tz; nz = tx;
+        m = 1 / Math.max(0.5, nx * -d0z + nz * d0x);
+      }
+    }
+    return [nx * hw * m, nz * hw * m];
+  }
+
   // --- geometry helpers ---------------------------------------------------
   function ribbonGeometry(pts, width, y) {
+    pts = chaikin(chaikin(pts));
     var n = pts.length;
     var pos = new Float32Array(n * 2 * 3);
     var idx = [];
+    var hw = width / 2;
     for (var i = 0; i < n; i++) {
-      var p = pts[i];
-      var a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)];
-      var dx = b[0] - a[0], dz = b[1] - a[1];
-      var len = Math.hypot(dx, dz) || 1;
-      var nx = -dz / len, nz = dx / len, hw = width / 2;
-      pos.set([p[0] + nx * hw, y, p[1] + nz * hw], i * 6);
-      pos.set([p[0] - nx * hw, y, p[1] - nz * hw], i * 6 + 3);
+      var p = pts[i], o = miterOffset(pts, i, hw);
+      pos.set([p[0] + o[0], y, p[1] + o[1]], i * 6);
+      pos.set([p[0] - o[0], y, p[1] - o[1]], i * 6 + 3);
       if (i < n - 1) {
         var k = i * 2;
         idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2);
@@ -126,16 +168,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   // Vertical skirts under an elevated ribbon: turns a flat strip into a solid
   // 3D guideway. One skirt per edge, from y=0 up to yTop.
   function skirtGeometry(pts, width, yTop) {
+    pts = chaikin(chaikin(pts));
     var n = pts.length;
     var pos = [];
     var idx = [];
+    var hw = width / 2;
     function edgePt(i, side, y) {
-      var p = pts[i];
-      var a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)];
-      var dx = b[0] - a[0], dz = b[1] - a[1];
-      var len = Math.hypot(dx, dz) || 1;
-      var nx = -dz / len, nz = dx / len, hw = width / 2;
-      return [p[0] + nx * hw * side, y, p[1] + nz * hw * side];
+      var p = pts[i], o = miterOffset(pts, i, hw);
+      return [p[0] + o[0] * side, y, p[1] + o[1] * side];
     }
     [1, -1].forEach(function (side) {
       var base = pos.length / 3;
