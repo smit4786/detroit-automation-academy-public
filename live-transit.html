@@ -531,16 +531,5 @@
   window.FORGE_LIVE_PROXY = "https://forge-line-live-proxy.netlify.app";
 </script>
 <script type="module" src="live-transit.js?v=20261010-1500"></script>
-<script>
-  // Minimal nav toggle (mirrors index behavior for this standalone page)
-  (function () {
-    var t = document.getElementById('navToggle'), l = document.getElementById('navLinks');
-    if (!t || !l) return;
-    t.addEventListener('click', function () {
-      var open = l.classList.toggle('open');
-      t.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-  })();
-</script>
 </body>
 </html>
